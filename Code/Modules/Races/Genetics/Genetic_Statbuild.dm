@@ -26,6 +26,7 @@ datum/genetics/proc/build_stats() //time to take the original stats of the racia
 		return
 	//
 	//EVERYONE ELSE 
+	if(!racial_protos.len) return //nothing to build from; don't zero the stats (would leave the char with all-0 stats / broken BP)
 	for(var/a in m_stats)
 		m_stats[a] = 0
 	for(var/a in misc_stats)
@@ -35,7 +36,7 @@ datum/genetics/proc/build_stats() //time to take the original stats of the racia
 		var/list/nM = ancestor.m_stats.Copy()
 		var/list/nMc = ancestor.misc_stats.Copy()
 		if(this_class in ancestor.class_stats)
-			var/list/L = class_stats[this_class].Copy()
+			var/list/L = ancestor.class_stats[this_class].Copy() //read from the proto (ancestor), not the live genome's class_stats, which is empty for menu-created chars
 			for(var/I=1,I <= L.len, I++)
 				if(L[I] in nMc) //wish we could switch it but we can't. Conditionals can't be switch()'d. 
 					nMc[nMc[I]] = L[L[I]] / (racial_protos[name]/100)

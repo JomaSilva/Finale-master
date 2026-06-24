@@ -9,16 +9,16 @@ mob/proc/statsaiyan()
 	GravMastered=10 //Saiyans are native to Vegeta (10x gravity); start acclimated so they aren't crushed/frozen on their own homeworld.
 	if(!genome)
 		genome = new/datum/genetics/Saiyan(/datum/genetics/proto/Saiyan)
-		var/SUPA=rand(1,8)
-		var/Choice
-		if(SUPA>=1&&SUPA<=3)
-			Choice="Low-Class"
-		if(SUPA>=4&&SUPA<=7)
-			Choice="Normal"
-		if(SUPA==8)
-			Choice="Elite"
-		if(Class!="None") Choice = Class
-		genome.this_class = Class
+		if(Class != "None")
+			genome.this_class = Class //explicit class (bred/egg/admin) wins
+		else
+			//random Saiyan birth class: ~1% Legendary, ~4% Elite, ~45% Low-Class, ~50% Normal
+			var/roll = rand(1,1000)
+			if(roll <= 10) Class = "Legendary"
+			else if(roll <= 50) Class = "Elite"
+			else if(roll <= 500) Class = "Low-Class"
+			else Class = "Normal"
+			genome.this_class = Class
 
 /datum/genetics/proto/Saiyan
 	name = "Saiyan" //Name of race.
@@ -101,7 +101,7 @@ mob/proc/statsaiyan()
 		"Starting BP" = 100,//starting BP
 		"Tech Modifier" = 1)//how naturally good you are at technology
 		//gravity mastered is a product of your home planet's gravity. nothing more, nothing less.
-	list/Class_Spread = list("Normal" = 45,"Low-Class" = 45,"Elite" = 4,"Legendary" = 1)
+	list/Class_Spread = list("Legendary" = 1,"Elite" = 4,"Low-Class" = 45,"Normal" = 50) //Legendary rolled FIRST (true ~1%); Normal is LAST so it absorbs decide_Class's force-last fallback (bred Saiyans)
 	//format is list("class_name" = weight) //CLASS NAME HERE MUST BE THE SAME AS CLASS NAME BELOW (wont work otherwise.)
 	list/class_stats = list(
 		"Low-Class" = list(

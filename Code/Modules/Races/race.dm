@@ -113,6 +113,8 @@ mob/proc/StatRace(choice,genome_override) //choice of race, and then whether or 
 	BP = max(saveBP,BP)
 	if(genome == null)
 		genome = genome_override //a just in case.
+	if(spawnPlanet)
+		GravMastered = max(GravMastered, PlanetGravity(spawnPlanet)) //every race starts acclimated to its home/spawn planet's gravity so high-grav races aren't crushed/frozen at spawn
 
 var/list
 	bio_creator_list = list()

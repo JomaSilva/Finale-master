@@ -132,10 +132,11 @@ datum/genetics
 		list/race_list = list()//when get races is called or the gene is finalized, this is updated.
 	New()
 		..()
-		for(var/datum/genetics/a in args)//for newbies
-			if(istype(a))//if its a new object, put it in protos
-				racial_protos["[a.name]"] = round(100/args.len)
-			if(ispath(a))//if its a reference to an existing prototype, put that in instead.
+		for(var/a in args)//iterate ALL args: a type-filtered loop dropped PATH args, leaving racial_protos empty for menu-created chars (statXXX pass /datum/genetics/proto/X paths)
+			if(istype(a, /datum/genetics))//a live proto instance
+				var/datum/genetics/inst = a
+				racial_protos["[inst.name]"] = round(100/args.len)
+			else if(ispath(a))//a proto TYPE PATH -> resolve the registered instance
 				var/datum/genetics/gene = locate(a) in original_genome_list
 				if(gene) racial_protos["[gene.name]"] = round(100/args.len)
 		if(racial_protos.len == 0)
@@ -157,10 +158,11 @@ datum/genetics
 		add_race()
 			if(args.len == 0)
 				return TRUE
-			for(var/datum/genetics/a in args)
-				if(istype(a))//if its a new object, put it in protos
-					racial_protos["[a.name]"] = round(100/args.len)
-				if(ispath(a))//if its a reference to an existing prototype, put that in instead.
+			for(var/a in args)//iterate ALL args (type-filtered loop dropped PATH args)
+				if(istype(a, /datum/genetics))
+					var/datum/genetics/inst = a
+					racial_protos["[inst.name]"] = round(100/args.len)
+				else if(ispath(a))
 					var/datum/genetics/gene = locate(a) in original_genome_list
 					if(gene) racial_protos["[gene.name]"] = round(100/args.len)
 			refresh_protos()
@@ -274,7 +276,9 @@ datum/genetics
 			savant.techmod = misc_stats["Tech Modifier"]
 		
 		assign_starting_BP()
-			savant.BP = (misc_stats["Starting BP"]/10) + (rand(((1 / misc_stats["Starting BP"]))*100,200*misc_stats["Starting BP"])/100)
+			var/sbp = misc_stats["Starting BP"]
+			if(sbp <= 0) sbp = 1 //guard against divide-by-zero / missing seed
+			savant.BP = (sbp/10) + (rand((1 / sbp)*100,200*sbp)/100)
 			savant.BP = max(1,savant.BP) //starting BP from race seed only (no server AverageBP)
 	proc
 		stats(index)
@@ -591,6 +595,7 @@ datum/genetics
 		//
 		post_init_savant()
 			if(finalize_Race() == FALSE) return FALSE//we decide the "race" first thing, meaning we actually hafta apply shit here.
+			build_stats()//menu-created (non-bred) chars never ran build_stats, so misc_stats stayed at base defaults (Starting BP=1 -> BP~1). Build now so race+class stats actually apply.
 			apply_stats()//then stats
 
 		logout()

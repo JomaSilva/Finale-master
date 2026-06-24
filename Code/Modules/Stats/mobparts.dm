@@ -49,6 +49,10 @@ mob
 				sleep(5)
 				Generate_Droid_Parts()
 		bupdateseed=bresolveseed
+		var/datum/Body/Tail/_T = get_Tail()
+		if(_T) //Saiyan-type tail: the body is fully built now, so activate it (login sets mob.Tail=1; Refresh_Overlay adds the visible overlay). Runs after TestMobParts' own waitfor=0/sleep, so the part exists.
+			_T.login(src)
+			_T.Refresh_Overlay()
 
 	proc/does_Body_Pair_Exist(var/bodytype)
 		if(bodytype == null) return FALSE
@@ -299,6 +303,10 @@ datum/Body
 			savant.updateOverlay(tailType,tailicon)
 			savant.Tail = 1
 		proc/Refresh_Overlay()
+			if(tailicon == null && get_Tail_Icon == TRUE) //always have an icon to draw
+				tailicon = savant.tailicon
+			if(!lopped) savant.Tail = 1 //the saiyantail overlay's EffectLoop holds alpha=0 unless mob.Tail is on
+			else savant.Tail = 0
 			savant.updateOverlay(tailType,tailicon)
 
 

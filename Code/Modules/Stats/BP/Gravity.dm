@@ -128,6 +128,21 @@ mob/proc/Grav()
 
 mob/var/tmp
 	dungeonGains=1
+
+//Returns the gravity multiplier of a named planet, mirroring the switch in Grav() above.
+//Used at character creation so a new char starts acclimated (GravMastered) to their spawn planet and isn't crushed/frozen.
+mob/proc/PlanetGravity(planet)
+	switch(planet)
+		if("Sealed") return 17
+		if("God Realm") return 500
+		if("Vegeta") return 10
+		if("Icer Planet") return 15
+		if("Hera") return 10
+		if("Hell") return 10
+		if("Big Gete Star") return 25
+		if("Arlia") return 2
+		else return 1
+
 obj/items/Gravity
 	plane=MOB_LAYER+5
 	SaveItem=1

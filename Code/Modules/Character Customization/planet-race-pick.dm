@@ -88,7 +88,7 @@ mob/proc/initialize_race_window(planet)
 			Halfie_Year+=0.5
 		if(M.Race=="Saiyan"&&M.Age>=16&&M.SAge>=16)
 			Halfie_Year+=0.5
-	var/canlegend = 1 //Legendary Saiyan is unlocked from the start for everyone; no admin unlock or scarcity/poll gate (immune to any persisted canlegendary=0 setting).
+	var/canlegend = 0 //Legendary Saiyan is NOT pickable from the menu; it is only a ~1% random birth outcome for normal Saiyans (see statsaiyan.dm).
 	//for(var/mob/M) if(M.client) if(M.Race=="Half-Saiyan"&&M.hasssj)
 	//	usr.canqs=1
 	//	break
