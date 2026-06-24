@@ -77,11 +77,10 @@ mob
 					current_area.my_mob_list |= src
 				return
 			lostTarget()
-				var
-					rng = range(aggro_loc,aggro_dist)
-					tmp/mob/trg
-					mdist = aggro_dist-1
-					d
+				var/rng = range(aggro_loc,aggro_dist)
+				var/tmp/mob/trg
+				var/mdist = aggro_dist-1
+				var/d
 				//search for combatants within range
 				for(var/mob/c in rng)
 					if(!c.client || c.KO || c.HP <= 20) continue
@@ -355,9 +354,8 @@ mob
 			resetState()
 				set waitfor=0
 				if(home_loc && src.hasAI)
-					var
-						//allow us longer than it should take to get home via distance
-						returntime = world.time + get_dist(src,home_loc) * (3 + chase_speed)
+					//allow us longer than it should take to get home via distance
+					var/returntime = world.time + get_dist(src,home_loc) * (3 + chase_speed)
 					while(world.time<returntime&&src.loc!=home_loc)
 						//if the path is blocked, take a random step
 						. = step(src,get_dir(src,home_loc))

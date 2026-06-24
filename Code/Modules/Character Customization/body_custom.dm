@@ -39,7 +39,7 @@ mob
 			if(Class=="Genie"||Class=="Ogre"||Race=="Majin")
 				alert("Choose a body color.")
 				var/rgbsuccess
-				sleep rgbsuccess=input("Choose a color.","Color",0) as color
+				rgbsuccess=input("Choose a color.","Color",0) as color
 				var/list/oldrgb=0
 				oldrgb=hrc_hex2rgb(rgbsuccess,1)
 				while(!oldrgb)

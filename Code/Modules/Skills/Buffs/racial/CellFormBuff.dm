@@ -19,7 +19,7 @@ obj/buff/SuperPerfect/Loop()
 				container.stamina -= trans_drain*max(0.001,container.cell4drain)/2 //max statement ensures you won't be hitting exactly zero if drain changes mid drain.
 	if(lastForm!=container.ssj)
 		lastForm=container.ssj
-		sleep container.RemoveHair()
+		container.RemoveHair()
 		switch(container.ssj)
 			if(1)
 				container.originalicon = container.icon
@@ -34,7 +34,7 @@ obj/buff/SuperPerfect/DeBuff()
 	container.ssjBuff = 1
 	container.Ki = container.Ki / container.trueKiMod
 	container.trueKiMod = 1
-	sleep container.RemoveHair()
+	container.RemoveHair()
 	container.icon=container.originalicon
 	container.removeOverlay(/obj/overlay/hairs/SuperPerfect/sp1)
 	container.removeOverlay(/obj/overlay/effects/electrictyeffects/spc)

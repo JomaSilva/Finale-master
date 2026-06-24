@@ -7,7 +7,7 @@ var/obj/selection=0
 				if(usr.zenni>=cost)
 					usr.zenni-=cost
 					var/newrgb
-					sleep newrgb=input("Choose a color.","Color",0) as color
+					newrgb=input("Choose a color.","Color",0) as color
 					var/list/oldrgb=0
 					oldrgb=hrc_hex2rgb(newrgb,1)
 					while(!oldrgb)

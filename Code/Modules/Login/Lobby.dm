@@ -167,7 +167,7 @@ mob
 		if(!isNPC && had_client)
 			src << "[src] left the game."
 			player_list -= src
-			sleep OnLogout()
+			OnLogout()
 		//sleep OfflineSave()
 		..()
 	New_Character()
@@ -189,7 +189,7 @@ mob
 	verb/backtolobby()
 		set category = "Other"
 		set name= "Back to Lobby"
-		sleep Save()
+		Save()
 		sleep(2)
 		winshow(usr,"Login_Pane",1)
 		winshow(usr,"characterpane",0)

@@ -1,5 +1,9 @@
+#ifndef TRUE
 #define TRUE 1 //tg artifact but also a healthy addition
+#endif
+#ifndef FALSE
 #define FALSE 0 //why the fuck wasn't TRUE defaulted to 1 anyway?
+#endif
 				 //I'm blaming Tens.
 mob/var
 	list/learned_skills = list()

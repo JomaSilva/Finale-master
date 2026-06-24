@@ -303,7 +303,7 @@ datum/Absorbs
 			spawn(300)
 				if(activing) container.absorber_timeout = 1
 			if(WillTakeBody)
-				sleep choice = alert(container,"Make this mob a major absorb? If you do, your BP will average out with the mob, and at a later point you may expell the mob. This acts like a seal. Biodroids will ascend to the next form per major absorb. This doesn't work on NPCs.","","Yes","No")
+				choice = alert(container,"Make this mob a major absorb? If you do, your BP will average out with the mob, and at a later point you may expell the mob. This acts like a seal. Biodroids will ascend to the next form per major absorb. This doesn't work on NPCs.","","Yes","No")
 			activing = 1
 			if(choice=="Yes")
 				ismajor = TRUE

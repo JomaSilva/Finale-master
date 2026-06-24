@@ -54,12 +54,11 @@ mob/var
 
 mob/keyable/verb/Zanzoken_Rush()
 	set category = "Skills"
-	var
-		staminaReq=angerBuff*5/(usr.Ephysoff+usr.Etechnique)*BaseDrain
-		rushcount = 0
-		jumpspeed = usr.Eactspeed*globalmeleeattackspeed / 2
-		zrcd = jumpspeed*20
-		targarea
+	var/staminaReq=angerBuff*5/(usr.Ephysoff+usr.Etechnique)*BaseDrain
+	var/rushcount = 0
+	var/jumpspeed = usr.Eactspeed*globalmeleeattackspeed / 2
+	var/zrcd = jumpspeed*20
+	var/targarea
 	get_me_a_target()
 	if(usr.Ki>=staminaReq&&usr.target&&usr.target!=usr&&get_dist(usr,usr.target)<20&&!usr.KO&&usr.currush<1)
 		usr<<"You attempt to appear next to your target!"

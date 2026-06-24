@@ -31,7 +31,7 @@ obj/overlay/effects/MysticEffect
 		..()
 		container<<"<font color=yellow> You unleash your godly Mystic form."
 		container.Revert()
-		sleep container.RemoveHair()
+		container.RemoveHair()
 		if(!container.Apeshit)
 			container.updateOverlay(/obj/overlay/hairs/hair)
 		container.updateOverlay(/obj/overlay/effects/MysticEffect)

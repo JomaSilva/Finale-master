@@ -475,9 +475,8 @@ mob/npc/pet
 		set waitfor=0
 		if(!owner_ref) deleteMe()
 
-		var
-			//allow us longer than it should take to get home via distance
-			returntime = world.time + get_dist(src,owner_ref.loc) * (3 + chase_speed)
+		//allow us longer than it should take to get home via distance
+		var/returntime = world.time + get_dist(src,owner_ref.loc) * (3 + chase_speed)
 		while(world.time<returntime&&src.loc!=owner_ref.loc)
 			//if the path is blocked, take a random step
 			. = step(src,get_dir(src,owner_ref.loc))

@@ -2,9 +2,9 @@
 #define HRC_LEGIT 1
 
 proc
-	//These are support procs and shouldn't be called directly, as they are dumb procs that\
-	do not check if data passed to them is valid. Any mess-ups related to calling these four\
-	procs are solely your fault.
+	//These are support procs and shouldn't be called directly, as they are dumb procs that
+	// do not check if data passed to them is valid. Any mess-ups related to calling these four
+	// procs are solely your fault.
 	hrc_sup_delimiter(_rgb)
 		for(var/i=1;i<=length(_rgb);i++)
 			if(text2ascii(_rgb,i) < 48 || text2ascii(_rgb,i) > 57) return copytext(_rgb,i,i+1)

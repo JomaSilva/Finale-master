@@ -101,7 +101,7 @@ obj/buff/Werewolf
 					container.stamina -= trans_drain*max(0.001,container.wolfdrain)/2 //max statement ensures you won't be hitting exactly zero if drain changes mid drain.
 		if(lastForm!=container.iswolfform)
 			lastForm=container.iswolfform
-			sleep container.RemoveHair()
+			container.RemoveHair()
 			switch(container.iswolfform)
 				if(1)
 					container.originalicon = container.icon
@@ -111,7 +111,7 @@ obj/buff/Werewolf
 		..()
 	DeBuff()
 		container.ParanormalBPMult = NormalBPMult
-		sleep container.RemoveHair()
+		container.RemoveHair()
 		container.iswolfform=0
 		container.icon=container.originalicon
 		container.removeOverlay(/obj/overlay/effects/electrictyeffects/spc)

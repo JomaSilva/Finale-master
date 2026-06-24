@@ -57,7 +57,7 @@ obj/buff/LSSJ/Loop()
 		if(pastAngerMod)
 			container.angerMod = pastAngerMod
 			pastAngerMod = 0
-		sleep container.RemoveHair()
+		container.RemoveHair()
 		switch(container.lssj)
 			if(1)
 				container.ssjBuff=container.restssjmult

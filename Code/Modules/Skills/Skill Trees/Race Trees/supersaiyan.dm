@@ -160,7 +160,7 @@ mob/var/ismssj
 				savant<<"Your body is getting used to Super Saiyan."
 				expbarrier=9000
 				savant.ssjdrain=0.015
-					savant.ssjmult=4 //SSJ1 mastery raises the multiplier (2 -> 4 -> 6)
+				savant.ssjmult=4 //SSJ1 mastery raises the multiplier (2 -> 4 -> 6)
 				savant.restssjdrain = 0.002
 				savant.unrestssjdrain=0.008
 			if(savant.ssj==1 || savant.lssj)
@@ -170,7 +170,7 @@ mob/var/ismssj
 				levelup=0
 				savant<<"Super Saiyan is almost effortless now."
 				savant.ssjdrain=0.005
-					savant.ssjmult=6 //SSJ1 fully mastered: x6
+				savant.ssjmult=6 //SSJ1 fully mastered: x6
 				savant.restssjdrain = 0.001
 				savant.unrestssjdrain=0.005
 
@@ -410,7 +410,7 @@ mob/var/activatedUSSJ
 			if(levelup == 1)
 				levelup = 0
 				savant<<"You've done it! You've unlocked something beyond an Ascended Super Saiyan."
-					savant.ssj2mult=10 //SSJ2 fully mastered: x10
+				savant.ssj2mult=10 //SSJ2 fully mastered: x10
 
 /datum/skill/forms/ssj3
 	skilltype = "Super Saiyan Form"

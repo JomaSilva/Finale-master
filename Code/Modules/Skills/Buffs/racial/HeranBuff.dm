@@ -30,7 +30,7 @@ obj/buff/MaxPower/Loop()
 				container.stamina -= trans_drain*max(0.001,container.ssj2drain)/2 //max statement ensures you won't be hitting exactly zero if drain changes mid drain.
 	if(lastForm!=container.ssj)
 		lastForm=container.ssj
-		sleep container.RemoveHair()
+		container.RemoveHair()
 		switch(container.ssj)
 			if(1)
 				container.ssjBuff=container.ssjmult
@@ -50,7 +50,7 @@ obj/buff/MaxPower/DeBuff()
 	container.ssjBuff = 1
 	container.Ki = container.Ki / container.trueKiMod
 	container.trueKiMod = 1
-	sleep container.RemoveHair()
+	container.RemoveHair()
 	container.removeOverlay(/obj/overlay/hairs/superheran/sh1)
 	container.removeOverlay(/obj/overlay/hairs/superheran/sh2)
 	container.updateOverlay(/obj/overlay/hairs/hair)

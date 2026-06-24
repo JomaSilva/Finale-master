@@ -83,7 +83,7 @@ datum/Fusion
 				FuseHairSSJ3 = input(Keeper,"Add a hair. It won't be centered.") as icon
 			if("Hair Color")
 				var/rgbsuccess
-				sleep rgbsuccess= input(Keeper,"Change hair color.") as color
+				rgbsuccess= input(Keeper,"Change hair color.") as color
 				var/list/oldrgb
 				oldrgb=hrc_hex2rgb(rgbsuccess,1)
 				while(!oldrgb)
@@ -138,7 +138,7 @@ datum/Fusion
 			Keeper.hairblue=FuseHairColor[2]
 			Keeper.hairgreen=FuseHairColor[3]
 		if(FuseHair||FuseHairColor)
-			sleep Keeper.RemoveHair()
+			Keeper.RemoveHair()
 			Keeper.AddHair()
 		Keeper.overlayList += FuseOverlays
 		Keeper.overlaychanged=1
@@ -165,7 +165,7 @@ datum/Fusion
 			Keeper.hairblue=oldhaircolor[2]
 			Keeper.hairgreen=oldhaircolor[3]
 		if(FuseHair||FuseHairColor)
-			sleep Keeper.RemoveHair()
+			Keeper.RemoveHair()
 			Keeper.AddHair()
 		if(FType==1) Keeper.removeOverlay(/obj/overlay/clothes/FusionPads)
 		if(FType==2) Keeper.removeOverlay(/obj/overlay/clothes/PotaraEarrings)

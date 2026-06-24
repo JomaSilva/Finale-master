@@ -13,9 +13,9 @@ mob
 				sleep(5)
 			Gender()
 			Skin()
-			sleep Hair()
+			Hair()
 			src.overlays +=hair
-			sleep Eyes()
+			Eyes()
 			Age()
 			BodyType()
 			AuraR=rand(0,255)
@@ -90,7 +90,7 @@ mob
 			var/pt2=num2text(rand(1,999),3)
 			var/insert2=num2text(rand(20,30),2)
 			signature=addtext(pt1,insert1,pt2,insert2)
-			sleep name=input("What do you want your name to be? (30 letter limit.)")
+			name=input("What do you want your name to be? (30 letter limit.)")
 			name=copytext(name,1,30)
 			var/tempfirst = uppertext(copytext(name,1,2))
 			name="[tempfirst][copytext(name,2,30)]" //ensures that the first letter will always be capitalized.
@@ -121,7 +121,7 @@ mob
 		Eyes()
 			alert(usr,"Select your eye color.")
 			var/newrgb
-			sleep newrgb=input("Choose a color.","Color",0) as color
+			newrgb=input("Choose a color.","Color",0) as color
 			var/list/oldrgb=0
 			oldrgb=hrc_hex2rgb(newrgb,1)
 			while(!oldrgb)
@@ -137,7 +137,7 @@ mob
 			newrgb=0
 			alert("Choose a aura color.")
 			var/rgbsuccess
-			sleep rgbsuccess=input("Choose a color.","Color",0) as color
+			rgbsuccess=input("Choose a color.","Color",0) as color
 			var/list/oldrgb=0
 			oldrgb=hrc_hex2rgb(rgbsuccess,1)
 			while(!oldrgb)
@@ -161,7 +161,7 @@ mob
 			set waitfor = 0
 			alert("Customize your blast color")
 			var/rgbsuccess
-			sleep rgbsuccess=input("Choose a color.","Color",0) as color
+			rgbsuccess=input("Choose a color.","Color",0) as color
 			var/list/oldrgb=0
 			oldrgb=hrc_hex2rgb(rgbsuccess,1)
 			while(!oldrgb)

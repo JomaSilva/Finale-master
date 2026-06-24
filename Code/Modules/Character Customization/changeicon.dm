@@ -161,7 +161,7 @@ mob
 				usr.overlaychanged=1
 				usr.Hair(1)
 			if("Change Hair Color")
-				sleep {usr.RemoveHair()}
+				usr.RemoveHair()
 				var/rgbsuccess
 				rgbsuccess=input("Choose a color.","Color",0) as color
 				var/list/oldrgb=0
@@ -374,7 +374,7 @@ mob
 			hairblue=0
 			hair=input("Select your normal hair.","Hair Select",null) as icon
 			var rgbsuccess
-			sleep rgbsuccess=input("Choose a color.","Color",0) as color
+			rgbsuccess=input("Choose a color.","Color",0) as color
 			var/list/oldrgb=0
 			oldrgb=hrc_hex2rgb(rgbsuccess,1)
 			while(!oldrgb)

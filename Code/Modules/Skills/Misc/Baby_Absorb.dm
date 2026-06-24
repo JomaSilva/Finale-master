@@ -33,7 +33,7 @@ obj/Modules/Reibi_Module
 							absorbedsig = M.signature
 							usr.originalicon = icon
 							usr.icon=M.icon
-							sleep usr.RemoveHair()
+							usr.RemoveHair()
 							ohair = usr.hair
 							usr.hair = M.hair
 							usr.hair += rgb(100,100,100)

@@ -165,7 +165,7 @@ obj/buff/SuperSaiyan/DeBuff()
 	container.ssjBuff = 1
 	container.MaxKi = container.MaxKi / container.trueKiMod
 	container.trueKiMod = 1
-	sleep container.RemoveHair()
+	container.RemoveHair()
 	container.overlayList-='Electric_Yellow.dmi'
 	container.overlayList-='Elec.dmi'
 	container.removeOverlay(/obj/overlay/body/saiyan/saiyan4body)

@@ -8,7 +8,7 @@ mob/proc/BioCustomization()
 		newrgb=0
 		alert("Choose a body color. This is the body color of your super form.")
 		var/rgbsuccess
-		sleep rgbsuccess=input("Choose a color. This is the body color of your super form.","Color",0) as color
+		rgbsuccess=input("Choose a color. This is the body color of your super form.","Color",0) as color
 		var/list/oldrgb=0
 		oldrgb=hrc_hex2rgb(rgbsuccess,1)
 		while(!oldrgb)

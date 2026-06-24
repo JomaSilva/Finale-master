@@ -64,8 +64,8 @@ client
 
     proc/firstChannel(sound/sound)                      // Searches for the first channel available and returns after properly setting it.
         if(sound_channels.len==1 && isnull(sound_channels[1]))    // If len is 1 and the index is null, we just use it and early escape.
-            sound_channels[1] = "\ref[sound]"                // Un-nullify the index by placing a reference to the sound datum.\
-                                                         (No usage as of now, but you have track of sounds a player has playing by checking this list.
+            sound_channels[1] = "\ref[sound]"                // Un-nullify the index by placing a reference to the sound datum.
+                                                         // (No usage as of now, but you have track of sounds a player has playing by checking this list.
             return 1                                 // Does not return true, but the index, keep in mind.
 
         for(var/i in 1 to sound_channels.len)                // If theres more than one index, iterate list until an available spot is found.
@@ -74,10 +74,10 @@ client
                 return i                                // Store a reference to the sound in the _channels list, and return the available channel.
 
         . = ++sound_channels.len                                // If no _channels are available on the list, expand the list appropiately for the new sound.
-        sound_channels[sound_channels.len] = "\ref[sound]"      // Also sets the default return value to the newly created index, and stores a reference\
-                                                                of sound into the index so we can keep track. (If needed)
+        sound_channels[sound_channels.len] = "\ref[sound]"      // Also sets the default return value to the newly created index, and stores a reference
+                                                                // of sound into the index so we can keep track. (If needed)
                                                         // The engine does never de-reference this list, it is just so it is not null.
-                                                        // I could just put a TRUE there, but a reference is better if we want to manually\
+                                                        // I could just put a TRUE there, but a reference is better if we want to manually
                                                         //  modify the /sound:
                                                         // var/sound/_sound = locate(_channel[index])
                                                         // _sound.volume = 50
@@ -172,9 +172,9 @@ proc/_SoundEngine(sound, atom/location, range=1, channel=-1, volume=100, repeat=
         S.repeat = repeat
         S.range = range
         S.timesToRepeat = repeat_times
-        S.falloff = falloff             // This will let you specify ranges and falloff separately.\
-                                            (By default falloff = range | The passed range is multiplied by 2 to get the real range.)\
-                                            So range = 5 = falloff = 5 = real_range = 10 where real_range = range*2
+        S.falloff = falloff             // This will let you specify ranges and falloff separately.
+                                            // (By default falloff = range | The passed range is multiplied by 2 to get the real range.)
+                                            // So range = 5 = falloff = 5 = real_range = 10 where real_range = range*2
     #ifdef SE_DEBUG
         world<<"calling update()"       // Debugging messages just to know where I am at when testing.
     #endif

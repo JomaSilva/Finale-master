@@ -5,7 +5,7 @@ mob/proc/SSJ3Cinematic()
 		move=0
 		//Flashy stuff
 		sleep(10)
-		sleep RemoveHair()
+		RemoveHair()
 		overlayList-='Elec.dmi'
 		overlaychanged=1
 		updateOverlay(/obj/overlay/hairs/hair)
