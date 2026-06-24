@@ -112,8 +112,7 @@ obj/buff/SuperSaiyan/Loop()
 				if(prob(15)) container.Ki+=0.002 * container.MaxKi //ki gains a bit of energy.
 				//there is no stamina loss from SSJ4.
 	if(lastForm!=container.ssj)
-		var/_oldTKM = container.trueKiMod //keep Ki% on revert: remember the OLD form's ki multiplier before it is reset
-		var/_down = (container.ssj < lastForm) //true only when stepping DOWN (revert), not transforming up
+		var/_oldTKM = container.trueKiMod //keep Ki% on EVERY form change: remember the old form's ki multiplier before it is reset
 		lastForm=container.ssj
 		container.RemoveHair()
 		container.overlayList-='Elec.dmi'
@@ -158,7 +157,7 @@ obj/buff/SuperSaiyan/Loop()
 				container.ssjBuff=container.ssj4mult
 				container.trueKiMod = container.ssj4energymod
 				container.MaxKi *= container.trueKiMod
-		if(_down && _oldTKM && !container.LoggingOut) //reverting -> keep the SAME Ki% relative to the new (lower) MaxKi
+		if(_oldTKM) //keep the SAME Ki% across the form change (up OR down) by scaling Ki with the MaxKi/trueKiMod change
 			container.Ki = container.Ki * container.trueKiMod / _oldTKM
 	if(container.godki && container.trans_min_val)
 		if(container.godki.usage && container.trans_min_val < container.ssj)
@@ -183,7 +182,7 @@ obj/buff/SuperSaiyan/DeBuff()
 		if(container.expandlevelussj>0)
 			sleep(0)
 			container.ExpandRevert()
-	if(!container.LoggingOut && _oldTKM > 1) //real revert to base -> keep the same Ki% vs base MaxKi (skip on logout so relog restores the form's Ki)
+	if(_oldTKM > 1) //keep the same Ki% relative to base MaxKi when dropping to base (logout scales down, relog's buff re-add scales back up -> consistent)
 		container.Ki = container.Ki / _oldTKM
 	if(container.Ki>container.MaxKi*2)
 		container.Ki = container.MaxKi*2

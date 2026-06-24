@@ -8,16 +8,16 @@ world
 	version=31
 	cache_lifespan=0
 	loop_checks=1
-	name="Dragonball Climax"
+	name="Dragonball Jandirus"
 //status="<font color=#000000><b><font size=1>" Hate old formatting. hate it so much.
-	hub = "Kingzombiethe1st.DragonballClimax" //determines if this even shows up in the same hub. (change to format yourname.hubname, make sure if you change to set a hub at byond.com)
+	hub = "Kingzombiethe1st.DragonballJandirus" //determines if this even shows up in the same hub. (change to format yourname.hubname, make sure if you change to set a hub at byond.com)
 var/server_desc = "Godki!"
 
 world
 	New()
 		..()
 		log = file("DEBUG.log")
-		world.status="<font color=#000000 size=1><b> Dragonball Climax: Hosting: [world.host], Main Fork version [gameversion] | [server_desc]</b></font>"
+		world.status="<font color=#000000 size=1><b> Dragonball Jandirus: Hosting: [world.host], Main Fork version [gameversion] | [server_desc]</b></font>"
 		spawn(10) Initialize()
 		spawn(50) AutoRevive()
 /*

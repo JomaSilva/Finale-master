@@ -1,5 +1,5 @@
 //a simple typing checking script that adds a overlay when you're typing, and removes it when you're not.
-//Code below is mostly done (and copied verbatum) by Ss4toby (http://www.byond.com/developer/Ss4toby/TypingChecker), modified for Climax's purposes.
+//Code below is mostly done (and copied verbatum) by Ss4toby (http://www.byond.com/developer/Ss4toby/TypingChecker), modified for Jandirus's purposes.
 
 mob/var/tmp/typing = 0//variable
 mob/var/tmp/typewindow = 0

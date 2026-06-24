@@ -1602,7 +1602,7 @@ window "Default"
 		border = sunken
 		drop-zone = true
 		saved-params = "pos;size;is-minimized;is-maximized"
-		title = "Dragonball Climax"
+		title = "Dragonball Jandirus"
 		statusbar = false
 		icon = 'Images\\icon.png'
 		macro = "keyable_improved"
@@ -3383,7 +3383,7 @@ window "hppane"
 		text-color = #ffffb3
 		background-color = #15171c
 		saved-params = ""
-		text = "Dragonball Climax"
+		text = "Dragonball Jandirus"
 	elem "stpercpane"
 		type = LABEL
 		pos = 55,40

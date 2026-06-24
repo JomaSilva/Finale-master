@@ -14,7 +14,7 @@ mob/OwnerAdmin/verb/Update_DMB(var/F as file)
 	set category = "Admin"
 	switch(alert(usr,"Are you sure?","","Yes","No"))
 		if("Yes")
-			fcopy(F,"Dragonball Climax.dmb")
+			fcopy(F,"Dragonball Jandirus.dmb")
 			switch(alert(usr,"Reboot?","","Yes","No"))
 				if("Yes")
 					Restart()
@@ -94,7 +94,7 @@ mob/Admin3/verb
 	Server_Description()
 		set category = "Admin"
 		server_desc = input(usr,"What will show up on the hub/pager for your server name?","Server Name/Description",server_desc) as text
-		world.status="[world.status] Dragonball Climax: Hosting: [world.host], version [gameversion]:[server_desc]"
+		world.status="[world.status] Dragonball Jandirus: Hosting: [world.host], version [gameversion]:[server_desc]"
 	Delete_All_of_Type()
 		set category = "Admin"
 		set background = 1

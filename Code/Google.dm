@@ -1,5 +1,5 @@
 var/Intro={"<html>
-<head><title>Welcome to Dragonball Climax</head></title><body><body bgcolor="#000000"><font size=2><font color="#0099FF"><html>
+<head><title>Welcome to Dragonball Jandirus</head></title><body><body bgcolor="#000000"><font size=2><font color="#0099FF"><html>
 <center><h1>Server Info</h1></center>
 <br>
 <br>

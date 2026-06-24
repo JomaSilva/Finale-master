@@ -1,7 +1,7 @@
 //So the problem with many things is that bounding boxes can be a pain in the ass to do. SO, let's make a system that simplifies it.
 
 /obj/bounding_box
-	//Climax specific anti-object variables, somewhat unneccessary?.
+	//Jandirus specific anti-object variables, somewhat unneccessary?.
 	IsntAItem = 1
 	canGrab = 0
 	//To ensure nobody can 'find' this.

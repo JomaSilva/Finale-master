@@ -6,8 +6,8 @@ ItemSave
 
 MapSave
 /Rules
-/Dragonball Climax.int
-/Dragonball Climax.rsc
+/Dragonball Jandirus.int
+/Dragonball Jandirus.rsc
 /Finale.int
 /Finale.rsc
 /GAIN
@@ -31,10 +31,10 @@ readme.txt
 /Save
 /Admins
 /BANS
-/Dragonball Climax.dyn.rsc
-/Dragonball Climax.dyn.rsc.lk
-/Dragonball Climax.int
-/Dragonball Climax.rsc.lk
+/Dragonball Jandirus.dyn.rsc
+/Dragonball Jandirus.dyn.rsc.lk
+/Dragonball Jandirus.int
+/Dragonball Jandirus.rsc.lk
 /Code/*.bak
 /lib/Deadron.Test/Test/demo/Game.dm
 /lib/Deadron.Test/Test/demo/ground.dmi
@@ -59,7 +59,7 @@ readme.txt
 /lib/Sound System/sample_sound/Explosion.ogg
 /lib/Sound System/sample_sound/Portal.ogg
 /lib/Sound System/sample_sound/Wrong!.ogg
-/Dragonball Climax.lk
+/Dragonball Jandirus.lk
 /AdminLog.log
 /Code/Modules/Autoranks/*.bak
 /*.bak

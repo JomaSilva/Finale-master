@@ -1,6 +1,6 @@
 proc/generateTXT()
 	var/thetext = {"
-	Hello! If you're seeing this file, that means Dragonball Climax launched successfully! In order to help you out with your new server,
+	Hello! If you're seeing this file, that means Dragonball Jandirus launched successfully! In order to help you out with your new server,
 	I'd like to tell you a few things!
 	You have a few files that are 'deletable' and 'not deletable'
 	First and formost, the ItemSave and MapSave files contain the save data for the map. All objects dropped on the floor that can

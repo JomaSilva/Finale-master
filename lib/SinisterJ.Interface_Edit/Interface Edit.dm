@@ -209,7 +209,7 @@ mob //Define it under any which mob you'd like
 		InEdit=0//To let the system know youre editing
 		list/Editing//Your current target
 		list/EditVar=list()//List containing your targets
-	Admin3 //addition for Climax
+	Admin3 //addition for Jandirus
 		verb
 			Edit(atom/A in world)// This verb exists to give you a "Right Click" option for chosing your edit target - Optional as long as you use the Double Click call
 				set category="Admin"
