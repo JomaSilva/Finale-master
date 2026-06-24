@@ -1,0 +1,63 @@
+"a" = (/turf/Other/Stars,/area/Outside)
+"b" = (/obj/DBVTitle,/turf/Other/Stars,/area/Outside)
+"c" = (/turf/Other/Sky1,/area/Outside)
+"f" = (/turf/UnbreakableTurfs/Void_Wall,/area/Outside)
+"g" = (/obj/pixelOBJ,/turf/UnbreakableTurfs/Void_Wall,/area/Outside)
+
+(1,1,1) = {"
+ffffffffffffffffffffffffffffgf
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaf
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaf
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaf
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaf
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaf
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaf
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaf
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaf
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaf
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaf
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaf
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaf
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaf
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaf
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaf
+aaaaaaaaaaabaaaaaaaaaaaaaaaaaf
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaf
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaf
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaf
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaf
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaf
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaf
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaf
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaf
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaf
+"}
+
+(1,1,2) = {"
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+acccccccccccccccccccccccccccca
+acccccccccccccccccccccccccccca
+acccccccccccccccccccccccccccca
+acccccccccccccccccccccccccccca
+acccccccccccccccccccccccccccca
+acccccccccccccccccccccccccccca
+acccccccccccccccccccccccccccca
+acccccccccccccccccccccccccccca
+acccccccccccccccccccccccccccca
+acccccccccccccccccccccccccccca
+acccccccccccccccccccccccccccca
+acccccccccccccccccccccccccccca
+acccccccccccccccccccccccccccca
+acccccccccccccccccccccccccccca
+acccccccccccccccccccccccccccca
+acccccccccccccccccccccccccccca
+acccccccccccccccccccccccccccca
+acccccccccccccccccccccccccccca
+acccccccccccccccccccccccccccca
+acccccccccccccccccccccccccccca
+acccccccccccccccccccccccccccca
+acccccccccccccccccccccccccccca
+acccccccccccccccccccccccccccca
+acccccccccccccccccccccccccccca
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+"}

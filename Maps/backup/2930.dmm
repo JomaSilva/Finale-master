@@ -1,0 +1,65 @@
+"a" = (/turf/Other/Stars,/area/Outside)
+"b" = (/obj/DBVTitle,/turf/Other/Stars,/area/Outside)
+"c" = (/turf/Other/Sky1,/area/Outside)
+"d" = (/turf/Ground/GroundSnow,/turf/Plant8,/area/Outside)
+"e" = (/turf/Ground/Ground7,/turf/Plant8,/area/Outside)
+"f" = (/turf/UnbreakableTurfs/Void_Wall,/area/Outside)
+"g" = (/obj/pixelOBJ,/turf/UnbreakableTurfs/Void_Wall,/area/Outside)
+
+(1,1,1) = {"
+ffffffffffffffffffffffffffffgf
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaf
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaf
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaf
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaf
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaf
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaf
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaf
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaf
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaf
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaf
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaf
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaf
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaf
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaf
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaf
+aaaaaaaaaaabaaaaaaaaaaaaaaaaaf
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaf
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaf
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaf
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaf
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaf
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaf
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaf
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaf
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaf
+"}
+
+(1,1,2) = {"
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+acccccccccccccccccccccccccccca
+acccccccccccccccccccccccccccca
+accccdccccccccccccccccccccccca
+acccccccccccccccccccccccecccca
+acccccccccccccccccccccccccccca
+acccccccccccccccccccccccccccca
+acccccccccccccccccccccccccccca
+acccccccccccccccccccccccccccca
+accccccccccccccdccccccccccccca
+acccccccccccccccccccccccccccca
+acccccccccccccccccccccccccccca
+acccccccccccccccccccccccccccca
+acccccccccccccccccccccccccccca
+acccccccccccccccccccccccccccca
+acccccccccccccccccccccccccccca
+acccccecccccccccccccccccccccca
+acccccccccccccccccccccccccccca
+acccccccccccccccccccccccccccca
+acccccccccccccccccccccceccccca
+acccccccccccccccccccccccccccca
+acccccccccccccccccccccccccccca
+acccccccccccccccccccccccccccca
+acccccccccccccccccccccccccccca
+acccccccccccccccccccccccccccca
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+"}

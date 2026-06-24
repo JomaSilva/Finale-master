@@ -1,0 +1,71 @@
+//This is where default templates and basics for artifacts go. Typically, these and variants of these should be given out for RP or event rewards.
+//Some Artifact rewards will offer skills, mini-stat boosters, and/or "build-up" to stronger variants or upgrades of your current Artifact(s) or Equipment (multi-part arcs?)
+//Note that Equipment and the like should *not* be created as an Artifact, and thus do not belong here. Artifacts =/= Equipment
+obj/Artifacts/Boosters
+//Small stat boosters. Customizable icons for arcs and such.
+	name="Emblem"
+	desc="A powerful artifact that touches the wearer's soul, improving upon one of their key attributes."
+	icon='ShikonJewel.dmi'
+	cantblueprint=1
+	SaveItem=1
+	var/strength=0
+	var/defense=0
+	var/ki=0
+	var/resistance=0
+	var/teq=0
+	var/kiskl=0
+	var/magskl=0
+	var/spd=0
+	var/willpower=0
+	OnEquip()
+		..()
+		usr.Tphysoff+=strength
+		usr.Tphysdef+=defense
+		usr.Tkioff+=ki
+		usr.Tkidef+=resistance
+		usr.Ttechnique+=teq
+		usr.Tspeed+=spd
+		usr.Tkiskill+=kiskl
+		usr.Tmagi+=magskl
+		usr.TwillpowerMod+=willpower
+		return
+	OnUnEquip()
+		..()
+		usr.Tphysoff-=strength
+		usr.Tphysdef-=defense
+		usr.Tkioff-=ki
+		usr.Tkidef-=resistance
+		usr.Ttechnique-=teq
+		usr.Tspeed-=spd
+		usr.Tkiskill-=kiskl
+		usr.Tmagi-=magskl
+		usr.TwillpowerMod-=willpower
+		return
+
+	Strength_Gem
+		icon_state="Red"
+		strength=5
+	Defense_Gem
+		icon_state="Blue"
+		defense=5
+	Ki_Gem
+		icon_state="Pink"
+		ki=5
+	Resistance_Gem
+		icon_state="Cyan"
+		resistance=5
+	Technique_Gem
+		icon_state="Green"
+		teq=5
+	Ki_Skill_Gem
+		icon_state="Gray"
+		kiskl=5
+	Magic_Gem
+		icon_state="Purple"
+		magskl=5
+	Speed_Gem
+		icon_state="Black"
+		spd=5
+	Willpower_Gem
+		icon_state="Yellow"
+		willpower=5

@@ -1,0 +1,15 @@
+{
+	"name":"Iced Area",
+	"icon":"Rocky",
+	"levels":1,
+	"targetBP":0,
+	"timer":1,
+	"allowed_areas":[],
+	"reward_BP":[ 1.14 , "mult" ],
+	"repeatable":1,
+	"cooldown":1250,
+	"afk_time":3000,
+	"multiple_players":0,
+	"start_coord":[55,118],
+	"map_file":"icedungeon.dmm"
+}

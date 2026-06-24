@@ -1,0 +1,52 @@
+Don't enable these files, they're dungeon files that are randomly picked for RNG dungeons.
+
+HOW 2 DUNGEON:
+Needed Knowledge: The Maps/dungeons folder is where all maps will be saved and loaded from. When done with creating a map, take it from this directory and place it into the equivilant server directory. (../Maps/Dungeons/)
+You need a copy of the source files to compile and create your map.
+Step 1: Open Dream Maker
+Step 2: Pre-emptively compile the game. (If there is errors, get a earlier version or wait for another version. Most versions won't have this issue.)
+Step 3: Create a new map file that is 125x125
+Try to make the map the last alphabetically. Sometimes there may be a empty template already there. (zzz_map_template.dmm)
+Step 4: Using editor objects and tiles, create the map. Take note of the spawnpoint you want, and place two dungeon exits somewhere. Instanced items are saved, and do work.
+Step 5: Create a .txt file with the same name as the dungeon file name, and copy the parameters below.
+Step 6: Edit appropriately. After you're satisfied, copy both files to server directory, and upon dungeon rotation, it will automatically be included in the list.
+Step 7: You can create a dungeon manually via Admin commands. Knowing the specific name of the dungeon is important in this case.
+
+
+
+Dungeon Templates: Each are 125 x 125, and four can be initialized at once. Leave one entrance, one exit. Dungeons do not persist through reboots.
+Leave a wall around the entire dungeon. If there is no entrance defined in the code's dungeon list, you will not be able to enter the dungeon.
+
+//// Annotated Dungeon Guide //// (if you copy/paste, delete the comments!)
+{
+	"name":"Dungeon", //name, can be whatever
+	"icon":"Dirty", //DO NOT REFERENCE A FILE. put "Dirty", "Rocky", "Castle", or "Forest"! These are preset icons, if, upon loading you require a custom icon, a admin must set it up. Keep in mind, these are icon states. So if there are more icon states within this source code, you can use 'em!
+	"levels":1, //How many floors it has. Not in use. (yet)
+	"targetBP":0, //When should this dungeon appear at?
+	"timer":1, //How long should a dungeon last? (Temporary dungeons do not persist through reboots!)
+	"allowed_areas":[], //"Earth", "Vegeta", "Icer Planet"... etc, use the actual code area name. (Sometimes you can get this by right clicking the ground.)
+	"reward_BP":[ 1.12 , "mult" ], //add or mult, how much bp should it give you on completion?
+	"repeatable":1, //repeatable? this is per-person.
+	"cooldown":1250, //cooldown if repeatable.
+	"afk_time":3000, //how much time can someone spend in a dungeon without doing anything? (ignores KO, does not ignore meditation, ignores active training.)
+	"multiple_players":0, //max player count? 0 disables a limit.
+	"start_coord":[0,0], //where do people teleport to on the map? Basically when they enter they are zapped here.
+	"map_file":"simpledungeon.dmm" //dmm file. Make sure its the same name as the txt. Every character matters. Case sensitive.
+	"semi_perm":0 //whether or not the map is permanent, also controls if it spawns in naturally. Permanent maps do not yet persist through reboots
+}
+//// Non-commented copy-friendly copy
+{
+	"name":"Dungeon",
+	"icon":"null",
+	"levels":1,
+	"targetBP":0,
+	"allowed_areas":[],
+	"reward_BP":[ 1.12 , "mult" ],
+	"repeatable":1,
+	"cooldown":1250,
+	"afk_time":3000,
+	"multiple_players":0,
+	"start_coord":[0,0],
+	"map_file":"simpledungeon.dmm",
+	"semi_perm":0
+}

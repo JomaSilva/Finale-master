@@ -1,0 +1,27 @@
+// BEGIN_INTERNALS
+/*
+PACKAGE_DMB_HUB: 
+PACKAGE_DMS_URL: 
+PACKAGE_DMS_RSCCHECK: OFF
+PACKAGE_RSC_NAME: C:\Program Files\BYOND\bin\dec converter\Converter_rsc.zip
+AUTO_FILE_DIR: ON
+PACKAGE_DMS_CLEANCHECK: OFF
+PACKAGE_DME_CLEANCHECK: ON
+PACKAGE_DMB_CLEANCHECK: OFF
+PACKAGE_DMB_INFO: 
+MAP_ICON_TYPE: 0
+PACKAGE_DMS_INFO: 
+PACKAGE_DME_NAME: C:\Documents and Settings\Mobius\Application Data\BYOND\lib\enigmaster2002\hexrgbconverter\Converter_src.zip
+PACKAGE_TYPE: 2
+PACKAGE_DME_START: Converter.dm
+PACKAGE_DMS_NAME: C:\Program Files\BYOND\bin\dec converter\Converter_link.zip
+WINDOW: Converter.dm
+PACKAGE_RSC_CLEANCHECK: OFF
+PACKAGE_DMS_EXECHECK: OFF
+PACKAGE_DMB_EXECHECK: OFF
+PACKAGE_DME_INFO: 
+FILE: Converter.dm
+PACKAGE_DME_DEMO: demo.dm
+PACKAGE_DMB_NAME: C:\Program Files\BYOND\bin\dec converter\Converter.zip
+*/
+// END_INTERNALS

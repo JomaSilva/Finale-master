@@ -1,0 +1,145 @@
+[File]
+Version=1724
+Split tracks=-1
+Rearrange split tracks=1
+
+[Arrangement]
+Num Audio Tracks=0
+Num Layer Tracks=0
+Midi file=D:\Kevin's Shit\Dragonball Climax\Sounds\Music\BATTLE.MID
+Play Tracks=,0,1,1,1,1,1,1,1,1,1,1,1,1,1
+Active Tracks=,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+MidiChnl to VSTBus=0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+Track 1 LockPresetLive=0
+Track 1 Sf2 Prog=C:\Program Files (x86)\SynthFont\SYNTHGMS.SF2>0:0
+Track 1 extras=127,0,0,0,0,1,-1,255,0,
+Track 1 Ignore Bank Numbers=0
+Track 2 LockPresetLive=0
+Track 2 Sf2 Prog=C:\Users\Kevin III\Downloads\merlin_gmv32.sf2>0:44
+Track 2 extras=153,0,0,0,0,1,-1,255,0,
+Track 2 Ignore Bank Numbers=0
+Track 3 LockPresetLive=0
+Track 3 Sf2 Prog=C:\Users\Kevin III\Downloads\merlin_gmv32.sf2>0:2
+Track 3 extras=165,0,0,0,0,1,-1,255,0,
+Track 3 Ignore Bank Numbers=0
+Track 4 LockPresetLive=0
+Track 4 Sf2 Prog=C:\Users\Kevin III\Downloads\merlin_gmv32.sf2>0:39
+Track 4 extras=133,0,0,0,0,1,-1,255,0,
+Track 4 Ignore Bank Numbers=0
+Track 5 LockPresetLive=0
+Track 5 Sf2 Prog=C:\Users\Kevin III\Downloads\merlin_gmv32.sf2>128:0
+Track 5 extras=146,0,0,0,0,1,-1,255,0,
+Track 5 Ignore Bank Numbers=0
+Track 6 LockPresetLive=0
+Track 6 Sf2 Prog=C:\Program Files (x86)\SynthFont\SYNTHGMS.SF2>0:0
+Track 6 extras=127,0,0,0,0,1,-1,255,0,
+Track 6 Ignore Bank Numbers=0
+Track 7 LockPresetLive=0
+Track 7 Sf2 Prog=C:\Users\Kevin III\Downloads\merlin_gmv32.sf2>0:57
+Track 7 extras=152,0,0,0,0,1,-1,255,0,
+Track 7 Ignore Bank Numbers=0
+Track 8 LockPresetLive=0
+Track 8 Sf2 Prog=C:\Users\Kevin III\Downloads\merlin_gmv32.sf2>0:42
+Track 8 extras=165,0,0,0,0,1,-1,255,0,
+Track 8 Ignore Bank Numbers=0
+Track 9 LockPresetLive=0
+Track 9 Sf2 Prog=C:\Users\Kevin III\Downloads\merlin_gmv32.sf2>0:52
+Track 9 extras=165,0,0,0,0,1,-1,255,0,
+Track 9 Ignore Bank Numbers=0
+Track 10 LockPresetLive=0
+Track 10 Sf2 Prog=C:\Users\Kevin III\Downloads\merlin_gmv32.sf2>0:90
+Track 10 extras=165,0,0,0,0,1,-1,255,0,
+Track 10 Ignore Bank Numbers=0
+Track 11 LockPresetLive=0
+Track 11 Sf2 Prog=C:\Users\Kevin III\Downloads\merlin_gmv32.sf2>0:46
+Track 11 extras=191,0,0,0,0,1,-1,255,0,
+Track 11 Ignore Bank Numbers=0
+Track 12 LockPresetLive=0
+Track 12 Sf2 Prog=C:\Users\Kevin III\Downloads\merlin_gmv32.sf2>0:55
+Track 12 extras=203,0,0,0,0,1,-1,255,0,
+Track 12 Ignore Bank Numbers=0
+Track 13 LockPresetLive=0
+Track 13 Sf2 Prog=C:\Users\Kevin III\Downloads\merlin_gmv32.sf2>0:88
+Track 13 extras=152,0,0,0,0,1,-1,255,0,
+Track 13 Ignore Bank Numbers=0
+Track 14 LockPresetLive=0
+Track 14 Sf2 Prog=C:\Users\Kevin III\Downloads\merlin_gmv32.sf2>0:48
+Track 14 extras=159,0,0,0,0,1,-1,255,0,
+Track 14 Ignore Bank Numbers=0
+Left Volume=100
+Right Volume=100
+Mixer state=0
+Tuning scale=Equal Temperament
+Tuning root key=0
+BMP factor=1065353216
+Final decay time=2
+Selected track=3
+
+[Track names]
+1=untitled
+2=Microsoft Synthesizer
+3=Microsoft Synthesizer #2
+4=Microsoft Synthesizer #3
+5=Microsoft Synthesizer #4
+6=Slayer2
+7=Microsoft Synthesizer #5
+8=Microsoft Synthesizer #6
+9=Microsoft Synthesizer #7
+10=Microsoft Synthesizer #8
+11=Microsoft Synthesizer #9
+12=Microsoft Synthesizer #10
+13=Microsoft Synthesizer #11
+14=Microsoft Synthesizer #12
+
+[Pan spread]
+Track 1=0,100,100,0
+Track 2=0,100,100,0
+Track 3=0,100,100,0
+Track 4=0,100,100,0
+Track 5=0,100,100,0
+Track 6=0,100,100,0
+Track 7=0,100,100,0
+Track 8=0,100,100,0
+Track 9=0,100,100,0
+Track 10=0,100,100,0
+Track 11=0,100,100,0
+Track 12=0,100,100,0
+Track 13=0,100,100,0
+Track 14=0,100,100,0
+
+[Pitch Shifting Method]
+Track2=0
+Track3=0
+Track4=0
+Track5=0
+Track7=0
+Track8=0
+Track9=0
+Track10=0
+Track11=0
+Track12=0
+Track13=0
+Track14=0
+
+[Pianoroll]
+Melodic scale=Natural major
+Key signature=0
+Horizontal position=0
+Vertical position=122
+
+[Play region]
+Use markers=1
+Start at=1,1
+Stop at=40,1
+Loop=0
+Loop count=0
+Loop continue=1
+Loop start pos=1
+
+[VST Effects]
+Bypass all=0
+
+[Pianoroll Markers]
+Start at=Start
+Stop at=Stop at Bar/Beat
+
