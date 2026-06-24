@@ -9,7 +9,7 @@ dmm_suite
 	//-- Used to store meta data in dmm files --------
 	comment
 		parent_type = /obj
-		icon = 'dmm_suite.dmi'
+		icon = 'dmm_suite.png'
 		icon_state = "comment"
 		layer = FLY_LAYER+1
 		var
@@ -32,7 +32,7 @@ dmm_suite
 	//-- Fills maps when writing with IGNORE_TURFS ---
 	clear_turf
 		parent_type = /turf
-		icon = 'dmm_suite.dmi'
+		icon = 'dmm_suite.png'
 		icon_state = "clear_turf"
 		layer = FLY_LAYER
 		//New()
@@ -40,7 +40,7 @@ dmm_suite
 	//-- Fills maps when writing with IGNORE_AREAS ---
 	clear_area
 		parent_type = /area
-		icon = 'dmm_suite.dmi'
+		icon = 'dmm_suite.png'
 		icon_state = "clear_area"
 		layer = FLY_LAYER
 		//New()
