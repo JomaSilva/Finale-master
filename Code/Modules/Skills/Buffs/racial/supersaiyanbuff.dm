@@ -16,6 +16,9 @@ mob/var
 	ultrassjstrength=1.5
 	hasultrassj
 	firsttime=0
+	ssj1_music_played=0 //first-transformation theme flags; persist in saves so each plays only once ever (like ssj3firsttime)
+	ssj2_music_played=0
+	blue_music_played=0
 	trans=0
 	hastrans=0
 	hastrans2=0
@@ -183,6 +186,9 @@ mob/proc/SSj()
 	if(!transing)
 		Revert()
 		transing=1
+		if(!ssj1_music_played) //first time becoming Super Saiyan -> play the SSJ1 theme from the START of the transformation
+			ssj1_music_played=1
+			emit_Sound('Dragon Ball Z Dokkan Battle TEQ LR SSJ Goku Revival OST (Extended).mp3')
 		attackable=0
 		var/ssjcolor = "yellow"
 		if(godki && godki.usage) ssjcolor = "blue"
@@ -248,6 +254,9 @@ mob/proc/SSj2()
 	if(!transing)
 		if(ssj>=3) return
 		transing=1
+		if(!ssj2_music_played) //first time becoming Super Saiyan 2 -> play the SSJ2 theme from the START of the transformation
+			ssj2_music_played=1
+			emit_Sound('Dragon Ball Z   Day Of Fate Unmei No Hi (Hironobu Kageyama)   By Gladius.mp3')
 		attackable=0
 		var/ssjcolor = "yellow"
 		if(godki?.usage) ssjcolor = "blue"
