@@ -268,7 +268,7 @@ var
 	autorevivetimer=18000
 	GotoSpawnpoint = 1 //1 on, 0 off.
 	canbio=0 //
-	canlegendary=0 //
+	canlegendary=1 //Legendary Saiyan unlocked from the start (no admin action needed)
 	candroid=0 //
 	canDemigod=1 //
 	canheran=1

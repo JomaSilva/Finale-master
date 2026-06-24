@@ -209,6 +209,7 @@ mob/proc/NewCharacterStuff()
 	generatetrees(1)
 	spawn Variance()
 	TestMobParts()
+	if(has_Tail()) get_Tail().login(src) //newborn Saiyans: activate the tail body-part now so mob.Tail=1 and the tail overlay shows immediately
 	Generate_Droid_Parts()
 	Savable=1
 	var/hasZenni

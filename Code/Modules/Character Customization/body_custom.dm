@@ -22,7 +22,23 @@ mob
 				return
 			var/list/skin_list = list()
 			//see Genetic_Icons.dm
-			skin_list += genome.returnIcons()
+			if(Race == "Saiyan" || Race == "Human") //Saiyans and Humans are limited to the five approved base bodies
+				switch(pgender)
+					if("Male")
+						skin_list += 'NewPaleMale.dmi'
+						skin_list += 'NewTanMale.dmi'
+					if("Female")
+						skin_list += 'NewPaleFemale.dmi'
+						skin_list += 'NewTanFemale.dmi'
+						skin_list += 'NewBlackFemale.dmi'
+					else
+						skin_list += 'NewPaleMale.dmi'
+						skin_list += 'NewTanMale.dmi'
+						skin_list += 'NewPaleFemale.dmi'
+						skin_list += 'NewTanFemale.dmi'
+						skin_list += 'NewBlackFemale.dmi'
+			else
+				skin_list += genome.returnIcons()
 			var/list/tmp_obj_list = list()
 			for(var/a in skin_list)
 				var/obj/Dummy_Race_Icon/oba = new

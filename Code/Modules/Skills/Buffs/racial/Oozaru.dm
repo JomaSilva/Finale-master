@@ -260,8 +260,8 @@ obj/overlay/oozarou_overlay
 	if(Apeshit)
 		usr << "Can't use this with Oozaru!"
 		return
-	if(!Tail && container.Class !="Legendary")
-		usr << "You can't use this without your tail!"
+	if(Class != "Legendary" || Tail)
+		usr << "Only Legendary Saiyans who have lost their tail can enter the Wrathful State!"
 		return
 	else if(isBuffed(/obj/buff/Wrathful_State)) stopbuff(/obj/buff/Wrathful_State)
 	else startbuff(/obj/buff/Wrathful_State)

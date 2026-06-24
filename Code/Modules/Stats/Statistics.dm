@@ -131,10 +131,20 @@ mob/proc
 
 	StatsContacts()
 		if(("contacts" in tabson) && ("Contacts" in panels))
-			if(!statpanel("Contacts")) return //simultaneously create the tab but dont run any code below if they arent looking at it
-			for(var/obj/Contact/c in known_contact_list)
-				stat(c)
-				stat("Relation: [c.relation[signature]]","Familiarity: [c.familiarity[signature]]")
+			if(!statpanel("Known People")) return //creates the tab; skips the body unless they're actually viewing it
+			for(var/sig in known_contact_list)
+				var/obj/Contact/c = known_contact_list[sig]
+				if(!istype(c)) continue
+				stat(c) //paperdoll snapshot: body + clothes + hair, as last seen
+				var/info = "[c.c_race] / [c.c_class]"
+				if(c.c_gender && c.c_gender != "?") info += " / [c.c_gender]"
+				if(c.c_age) info += " / Age [c.c_age]"
+				stat("    Info",info)
+				var/fpts = friendship["[c.signature]"]
+				stat("    Acquaintance","[acquaintance_label(fpts)]   ([round(fpts)] pts)")
+				var/rel = c.relation["[signature]"]
+				if(rel) stat("    Relation",rel)
+				stat("")
 
 
 	StatsFactions()

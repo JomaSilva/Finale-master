@@ -24,10 +24,21 @@ mob/proc/accrue_friendship()
 	for(var/mob/M in view(FRIEND_RANGE, src))
 		if(M == src || !M.client || M.isNPC || !M.signature) continue
 		friendship["[M.signature]"] += FRIEND_RATE
+		if(isnull(known_contact_list["[M.signature]"]) && contact_list["[M.signature]"])
+			known_contact_list["[M.signature]"] = contact_list["[M.signature]"] //seeing someone often makes them a known person (with their last snapshot)
 
 mob/proc/is_friend(var/mob/M)
 	if(!M || !M.signature || !friendship) return FALSE
 	return friendship["[M.signature]"] >= FRIEND_REQ
+
+// Degree-of-acquaintance label derived from accumulated friendship points (drives the Known People tab).
+mob/proc/acquaintance_label(var/fpts)
+	if(!fpts) return "Barely Known"
+	if(fpts >= 200) return "Bonded"
+	if(fpts >= FRIEND_REQ) return "Friend"
+	if(fpts >= 20) return "Familiar"
+	if(fpts >= 5) return "Acquaintance"
+	return "Barely Known"
 
 // =====================================================================
 // SUPER SAIYAN 3 — unlike SSJ1/SSJ2 it is NOT awakened by rage. It is

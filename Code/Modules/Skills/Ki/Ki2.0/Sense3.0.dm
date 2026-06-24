@@ -18,6 +18,7 @@ mob
 			bubb2 = new/obj/screen/healthbar/maskbar/enemy_ki(src)
 			update_health_bar()
 		sense_hud_softinit()
+			return //over-head HP/Ki bars removed: HP and Ki are private, never attached to vis_contents for others to see
 			vis_contents += bubb
 			vis_contents += bubb2
 		sense_hud_softdenit()
@@ -66,6 +67,7 @@ mob
 				for(var/mob/M in gotblist)
 					remove_bub(M)*/
 		update_health_bar()
+			return //over-head HP/Ki bars removed: HP and Ki are private (no creation/fill of the enemy bars)
 			if(isnull(bubb) || isnull(bubb2))
 				bubb = new/obj/screen/healthbar/maskbar/enemy_hp(src)
 				bubb2 = new/obj/screen/healthbar/maskbar/enemy_ki(src)

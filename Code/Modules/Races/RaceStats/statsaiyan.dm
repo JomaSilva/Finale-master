@@ -25,6 +25,7 @@ mob/proc/statsaiyan()
 	base_icon = 'White Male.dmi' //doesn't really do anything right now, as icons are controlled by other things.
 	alternate_icon_flags = list("Human") //These actually do control what racial bodytypes you see. Flags are combined from all parent races.
 	special_icon_list = list() //icon 'list' flags. Human gives you human-like bodies, Alien alien. 
+	extra_limb_list = list(/datum/Body/Tail/Saiyan_Tail) //Saiyans are born with a tail: this body-part datum's login() sets mob.Tail=1 and adds the tail overlay
 	prevalance = 2 //remember that this is multiplying the ratio of a genome.
 	special_info(var/datum/genetics/invoker,var/prev)
 		..()
@@ -132,7 +133,7 @@ mob/proc/statsaiyan()
 			"Energy Level" = 1.4,
 			"Tech Modifier" = 2,
 			"Ki Regeneration" = 1.1,
-			"Starting BP" = 500,
+			"Starting BP" = 1000,
 			"Potential" = 2.5
 		),
 		"Legendary" = list(
@@ -148,7 +149,7 @@ mob/proc/statsaiyan()
 			"Energy Level" = 1.2,
 			"Tech Modifier" = 1,
 			"Ki Regeneration" = 1,
-			"Starting BP" = 1000,
+			"Starting BP" = 10000,
 			"Potential" = 2,
 			"Zenkai" = 15,
 			"Spar Mod" = 4,

@@ -88,20 +88,7 @@ mob/proc/initialize_race_window(planet)
 			Halfie_Year+=0.5
 		if(M.Race=="Saiyan"&&M.Age>=16&&M.SAge>=16)
 			Halfie_Year+=0.5
-	var/canlegend=0
-	if(canlegendary)
-		if(legend_sig.len >= 1)
-			if(legend_override && AscensionStarted) canlegend = 1
-			else
-				if(legend_pre_ssj)
-					for(var/mob/M) if(M.client)
-						if(M.Class=="Legendary")
-							canlegend=0
-							break
-		else if(legend_pre_ssj) canlegend = 1
-	if(canlegend)
-		legend_override = 0//double check to prevent people from queuing up multiple Legendaries.
-		usr<<"<br><br>The requirements for Legendary Saiyan have been unlocked: there isnt a Legendary Saiyan online already, or the Legendary Saiyan hasn't been on for awhile."
+	var/canlegend = 1 //Legendary Saiyan is unlocked from the start for everyone; no admin unlock or scarcity/poll gate (immune to any persisted canlegendary=0 setting).
 	//for(var/mob/M) if(M.client) if(M.Race=="Half-Saiyan"&&M.hasssj)
 	//	usr.canqs=1
 	//	break

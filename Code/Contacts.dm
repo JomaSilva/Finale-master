@@ -14,6 +14,10 @@ mob/proc/update_my_contact()
 			sleep(1)
 			A.overlays += bc
 		A.icon = icon
+		A.c_race = Race
+		A.c_class = Class
+		A.c_gender = pgender
+		A.c_age = round(Age)
 	else
 		var/obj/Contact/A=contact_list["[signature]"]
 		A.name="[name] ([displaykey])"
@@ -22,6 +26,10 @@ mob/proc/update_my_contact()
 			sleep(1)
 			A.overlays += bc
 		A.icon = icon
+		A.c_race = Race
+		A.c_class = Class
+		A.c_gender = pgender
+		A.c_age = round(Age)
 
 mob/proc/check_relation(var/mob/M,list/L)
 	if(isnull(known_contact_list["[M.signature]"])) return FALSE
@@ -38,9 +46,10 @@ mob/proc/check_familiarity(var/mob/M)
 mob/proc/add_familiarity(var/mob/M)
 	if(isnull(contact_list["[M.signature]"])) return FALSE
 	else
-		var/obj/Contact/O = known_contact_list["[M.signature]"]
+		var/obj/Contact/O = contact_list["[M.signature]"]
+		known_contact_list["[M.signature]"] = O
 		O.familiarity["[M.signature]"]++
-		known_contact_list["[M.signature]"] = contact_list["[M.signature]"]
+		spawn(0) M.update_my_contact() //refresh their "as last seen" snapshot in the background
 		return TRUE
 
 mob/var/list/known_contact_list =list()
@@ -50,6 +59,10 @@ obj/Contact
 	var/list/familiarity=list()
 	var/list/relation=list()
 	var/signature=""
+	var/c_race = "?" //basic-info snapshot, refreshed by update_my_contact()
+	var/c_class = "?"
+	var/c_gender = "?"
+	var/c_age = 0
 	canGrab=0
 	IsntAItem = 1
 	New()
