@@ -63,6 +63,9 @@ obj/buff/SuperSaiyan
 obj/buff/SuperSaiyan/Buff()
 	lastForm=0
 	..()
+//Dreno de Ki das formas SSJ: fracao do MaxKi consumida por ciclo do BuffLoop (~4x/seg), multiplicada pelo drain da forma (ssjdrain/ssj2drain/ssj3drain...).
+//Ex.: SSJ3 nao-masterizado ssj3drain=0.075 -> 0.075*0.1 = 0.75% do MaxKi por ciclo (~3%/seg, idle ~30s). Aumente para drenar mais rapido.
+#define TRANS_KI_DRAIN 0.1
 obj/buff/SuperSaiyan/Loop()
 	if(!container.transing)
 		switch(container.ssj)
@@ -71,7 +74,7 @@ obj/buff/SuperSaiyan/Loop()
 			//Super Saiyan Drain
 			if(1) if(container.ssjdrain)
 				if(container.stamina>=container.maxstamina*container.ssjdrain||container.dead)
-					if(prob(20)) container.Ki-=container.ssjdrain*container.BaseDrain //ki takes a small hit regardless.
+					container.Ki-=container.MaxKi*container.ssjdrain*TRANS_KI_DRAIN //dreno de Ki = % do MaxKi por ciclo, escala com o drain da forma (nao-masterizada drena mais; maestria reduz ssjdrain)
 					if(container.Ki<=container.MaxKi*container.ssjdrain)
 						container.Revert()
 						container<<"You are too tired to sustain your form."
@@ -80,7 +83,7 @@ obj/buff/SuperSaiyan/Loop()
 			//Ultra Super Saiyan Drain
 			if(1.5) if(container.ultrassjdrain)
 				if(container.stamina>=container.maxstamina*container.ultrassjdrain||container.dead)
-					if(prob(25)) container.Ki-=container.ultrassjdrain*container.BaseDrain //ki takes a small hit regardless.
+					container.Ki-=container.MaxKi*container.ultrassjdrain*TRANS_KI_DRAIN //dreno de Ki = % do MaxKi por ciclo
 					if(container.Ki<=container.MaxKi*container.ultrassjdrain)
 						container.Revert()
 						container<<"You are too tired to sustain your form."
@@ -89,7 +92,7 @@ obj/buff/SuperSaiyan/Loop()
 			//Super Saiyan 2 Drain
 			if(2) if(container.ssj2drain)
 				if(container.stamina>=container.maxstamina*container.ssj2drain||container.dead)
-					if(prob(30)) container.Ki-=container.ssj2drain*container.BaseDrain //ki takes a small hit regardless.
+					container.Ki-=container.MaxKi*container.ssj2drain*TRANS_KI_DRAIN //dreno de Ki = % do MaxKi por ciclo
 					if(container.Ki<=container.MaxKi*container.ssj2drain)
 						container.Revert()
 						container<<"You are too tired to sustain your form."
@@ -98,7 +101,7 @@ obj/buff/SuperSaiyan/Loop()
 			//Super Saiyan 3 Drain
 			if(3) if(container.ssj3drain)
 				if(container.stamina>=container.maxstamina*container.ssj3drain||container.dead)
-					if(prob(35)) container.Ki-=container.ssj3drain*container.BaseDrain //ki takes a small hit regardless.
+					container.Ki-=container.MaxKi*container.ssj3drain*TRANS_KI_DRAIN //dreno de Ki = % do MaxKi por ciclo
 					if(container.Ki<=container.MaxKi*container.ssj3drain)
 						container.Revert()
 						container<<"You are too tired to sustain your form."
@@ -211,6 +214,9 @@ mob/proc/SSj()
 		if(!Apeshit)
 			if(!hasssj)
 				ssjat/=2
+				if(!HasSkill(/datum/skill/forms/ssj)) //primeira transformacao -> comeca a Maestria Super Saiyajin de forma natural (sem gastar ponto)
+					learnSkill(new/datum/skill/forms/ssj, 0)
+					src << "You begin to feel your body adapt to the Super Saiyan form... (Super Saiyan Mastery begun)"
 			poweruprunning=0
 			hasssj=1
 			emit_Sound('powerup.wav')

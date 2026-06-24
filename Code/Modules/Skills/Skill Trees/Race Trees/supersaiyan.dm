@@ -110,11 +110,8 @@ mob/var/ismssj
 /datum/skill/tree/SuperSaiyanMastery/growbranches()
 	..()
 	if(savant)
-		if(!savant.ismssj)
-			if(!savant.HasSkill(/datum/skill/forms/mssj))
-				var/datum/skill/forms/ssj/F = locate(/datum/skill/forms/ssj) in savant.learned_skills
-				if(F && F.level==3)
-					enableskill(/datum/skill/forms/mssj)
+		if(savant.ismssj) //maestria completa (natural) libera a Transformacao Direta para compra
+			enableskill(/datum/skill/forms/ssj/DirectSSJ)
 		if(savant.hasssj2&&savant.ismssj)
 			if(!savant.HasSkill(/datum/skill/forms/mssj2))
 				enableskill(/datum/skill/forms/mssj2)
@@ -147,7 +144,7 @@ mob/var/ismssj
 		if(1)
 			if(levelup == 1)
 				levelup=0
-				savant<<"You're getting close to something..."
+				savant<<"You're getting close to something... Super Saiyan Mastery is now level [level]!"
 				expbarrier=3000
 				savant.ssjdrain=0.020
 				savant.restssjdrain = 0.004
@@ -157,23 +154,49 @@ mob/var/ismssj
 		if(2)
 			if(levelup == 1)
 				levelup=0
-				savant<<"Your body is getting used to Super Saiyan."
+				savant<<"Your body is getting used to Super Saiyan. Super Saiyan Mastery is now level [level]!"
 				expbarrier=9000
 				savant.ssjdrain=0.015
 				savant.ssjmult=4 //SSJ1 mastery raises the multiplier (2 -> 4 -> 6)
 				savant.restssjdrain = 0.002
 				savant.unrestssjdrain=0.008
+				if(!savant.hasussj) //USSJ agora libera NATURALMENTE na maestria 2/3 (era a skill comprada 'ussj')
+					savant.hasussj=1
+					savant.ultrassjenabled=1
+					savant.assignverb(/mob/keyable/verb/Toggle_USSJ)
+					savant<<"You feel like you are able to go somewhat beyond the regular Super Saiyan."
+					savant<<"USSJ is enabled! Power up past 750 million as a Super Saiyan to access it."
 			if(savant.ssj==1 || savant.lssj)
 				exp+=1
 		if(3)
 			if(levelup == 1)
 				levelup=0
-				savant<<"Super Saiyan is almost effortless now."
-				savant.ssjdrain=0.005
-				savant.ssjmult=6 //SSJ1 fully mastered: x6
-				savant.restssjdrain = 0.001
-				savant.unrestssjdrain=0.005
+				savant<<"Super Saiyan is almost effortless now. Super Saiyan Mastery is now level [level]!"
+				if(!savant.ismssj) //maestria completa de Super Saiyajin agora e NATURAL (era a skill comprada 'mssj')
+					savant.ismssj=1
+					savant<<"You've mastered Super Saiyan completely!"
+					savant.ssjmult=6
+					savant.ssjdrain=0
+					savant.ssjmod=2
+					savant.unrestssjmult += 5
+					savant.lssjmult+=10
+					savant.unrestssjdrain=0
+					savant.restssjdrain=0
+					savant.restssjmult+=5
+					savant.ssj2mod=10
+					if(savant.hasssj2&&savant.ssj2drain<300)
+						savant<<"In addition, your Super Saiyan 2 form will improve faster."
+					savant.testunlocks()
+				else
+					savant.ssjdrain=0.005
+					savant.ssjmult=6 //SSJ1 fully mastered: x6
+					savant.restssjdrain = 0.001
+					savant.unrestssjdrain=0.005
 
+/datum/skill/forms/ssj/login(var/mob/logger)
+	..()
+	if(logger.hasussj)
+		logger.assignverb(/mob/keyable/verb/Toggle_USSJ)
 /datum/skill/forms/ssj/DirectSSJ
 	skilltype = "Super Saiyan Form"
 	name = "Direct Transformation"
@@ -181,7 +204,7 @@ mob/var/ismssj
 	skillcost = 1
 	can_forget = FALSE
 	common_sense = FALSE
-	prereqs = list(new/datum/skill/forms/mssj)
+	prereqs = list(new/datum/skill/forms/ssj) //pre-req agora e a Maestria SSJ natural (mssj nao precisa mais ser comprada)
 	tier = 1
 	enabled=0
 	after_learn()
