@@ -47,9 +47,9 @@ mob/proc/statfrost()
 		"Starting BP" = 1000,//starting BP
 		"Tech Modifier" = 3)//how naturally good you are at technology
 		//gravity mastered is a product of your home planet's gravity. nothing more, nothing less.
-	list/Class_Spread = list("Frieza" = 25,"Cold" = 50,"Cooler" = 25)
+	Class_Spread = list("Frieza" = 25,"Cold" = 50,"Cooler" = 25)
 	//format is list("class_name" = weight) //CLASS NAME HERE MUST BE THE SAME AS CLASS NAME BELOW (wont work otherwise.)
-	list/class_stats = list(
+	class_stats = list(
 		"Cold" = list(
 			"Physical Offense" = 1.1,
 			"Physical Defense" = 1.5,

@@ -39,5 +39,5 @@ mob/proc/statmakyo()
 		"Starting BP" = 50,//starting BP
 		"Tech Modifier" = 1)//how naturally good you are at technology
 		//gravity mastered is a product of your home planet's gravity. nothing more, nothing less.
-	list/Class_Spread = list("None" = 100)
+	Class_Spread = list("None" = 100)
 	//format is list("class_name" = weight) //CLASS NAME HERE MUST BE THE SAME AS CLASS NAME BELOW (wont work otherwise.)

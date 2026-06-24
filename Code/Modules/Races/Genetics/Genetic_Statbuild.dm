@@ -39,9 +39,9 @@ datum/genetics/proc/build_stats() //time to take the original stats of the racia
 			var/list/L = ancestor.class_stats[this_class].Copy() //read from the proto (ancestor), not the live genome's class_stats, which is empty for menu-created chars
 			for(var/I=1,I <= L.len, I++)
 				if(L[I] in nMc) //wish we could switch it but we can't. Conditionals can't be switch()'d. 
-					nMc[nMc[I]] = L[L[I]] / (racial_protos[name]/100)
+					nMc[L[I]] = L[L[I]] / (racial_protos[name]/100) //fixed key: was nMc[nMc[I]] (wrong index) which wrote class stats to the WRONG misc key (corrupting Lifespan/etc. and never applying class Starting BP) - verified headless
 				if(L[I] in nM)
-					nM[nM[I]] = L[L[I]] / (racial_protos[name]/100)
+					nM[L[I]] = L[L[I]] / (racial_protos[name]/100) //fixed key: was nM[nM[I]] (wrong index)
 				if(L[I] == "Icon_Type")
 					if(!L[L[I]] in alternate_icon_flags) alternate_icon_flags += L[L[I]]//this can get slow, luckily it should usually be a string or short list.
 

@@ -101,9 +101,9 @@ mob/proc/statsaiyan()
 		"Starting BP" = 100,//starting BP
 		"Tech Modifier" = 1)//how naturally good you are at technology
 		//gravity mastered is a product of your home planet's gravity. nothing more, nothing less.
-	list/Class_Spread = list("Legendary" = 1,"Elite" = 4,"Low-Class" = 45,"Normal" = 50) //Legendary rolled FIRST (true ~1%); Normal is LAST so it absorbs decide_Class's force-last fallback (bred Saiyans)
+	Class_Spread = list("Legendary" = 1,"Elite" = 4,"Low-Class" = 45,"Normal" = 50) //Legendary rolled FIRST (true ~1%); Normal is LAST so it absorbs decide_Class's force-last fallback (bred Saiyans)
 	//format is list("class_name" = weight) //CLASS NAME HERE MUST BE THE SAME AS CLASS NAME BELOW (wont work otherwise.)
-	list/class_stats = list(
+	class_stats = list(
 		"Low-Class" = list(
 			"Physical Offense" = 1.2,
 			"Physical Defense" = 0.8,

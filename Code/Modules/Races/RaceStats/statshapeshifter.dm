@@ -39,4 +39,4 @@ mob/proc/statshapeshift()
 		"Starting BP" = 10,//starting BP
 		"Tech Modifier" = 2)//how naturally good you are at technology
 		//gravity mastered is a product of your home planet's gravity. nothing more, nothing less.
-	list/Class_Spread = list("None" = 100)
+	Class_Spread = list("None" = 100)

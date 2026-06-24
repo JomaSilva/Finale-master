@@ -51,8 +51,8 @@ mob/proc/statgray()
 		"Starting BP" = 25,//starting BP
 		"Tech Modifier" = 1)//how naturally good you are at technology
 		//gravity mastered is a product of your home planet's gravity. nothing more, nothing less.
-	list/Class_Spread = list("Hermano" = 5, "Gray" = 95)
-	list/class_stats = list(
+	Class_Spread = list("Hermano" = 5, "Gray" = 95)
+	class_stats = list(
 		"Hermano" = list(
 			"Physical Offense" = 1.7,//stats
 			"Physical Defense" = 1.7,

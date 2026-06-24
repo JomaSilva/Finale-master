@@ -85,9 +85,9 @@ mob/proc/statdemi()
 		"Starting BP" = 50,//starting BP
 		"Tech Modifier" = 1)//how naturally good you are at technology
 		//gravity mastered is a product of your home planet's gravity. nothing more, nothing less.
-	list/Class_Spread = list("Ogre" = 33,"Demigod" = 33,"Genie" = 33)
+	Class_Spread = list("Ogre" = 33,"Demigod" = 33,"Genie" = 33)
 	//format is list("class_name" = weight) //CLASS NAME HERE MUST BE THE SAME AS CLASS NAME BELOW (wont work otherwise.)
-	list/class_stats = list(
+	class_stats = list(
 		"Ogre" = list(
 			"Physical Offense" = 1.5,
 			"Physical Defense" = 1.5,

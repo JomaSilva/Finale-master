@@ -45,6 +45,6 @@ mob/proc/stathuman()
 		"Starting BP" = 10,//starting BP
 		"Tech Modifier" = 3)//how naturally good you are at technology
 		//gravity mastered is a product of your home planet's gravity. nothing more, nothing less.
-	list/Class_Spread = list("Human" = 100)
+	Class_Spread = list("Human" = 100)
 	//format is list("class_name" = weight) //CLASS NAME HERE MUST BE THE SAME AS CLASS NAME BELOW (wont work otherwise.)
-	list/class_stats = list("None" = list())
+	class_stats = list("None" = list())

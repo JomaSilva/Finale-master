@@ -111,7 +111,7 @@
 		),
 		"None" = list(null)) //and keep a "None" or default Class class if you don't want any of the three classes applied.
 	)//ending brackets for momma list
-	list/Class_Spread = list("None" = 95, "Omega" = 10,"Weak" = 25)//Normal list rules
+	Class_Spread = list("None" = 95, "Omega" = 10,"Weak" = 25)//Normal list rules
 	//we then define the class spread. This is how rare a given class should be. Higher is less rare. It's a PERCENT. (x/100 deal)
 	//Doesn't need to actually add up, as seen.
 

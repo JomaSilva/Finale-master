@@ -21,6 +21,8 @@ mob
 			operation_list = list(/datum/Body/Head,/datum/Body/Head/Brain,/datum/Body/Torso,/datum/Body/Abdomen,/datum/Body/Organs,/datum/Body/Reproductive_Organs,/datum/Body/Arm,/datum/Body/Arm/Hand,/datum/Body/Arm,/datum/Body/Arm/Hand,/datum/Body/Leg,/datum/Body/Leg/Foot,/datum/Body/Leg,/datum/Body/Leg/Foot)
 		else
 			operation_list = genome.vital_list + genome.limb_list + genome.extra_limb_list
+		if((Race == "Saiyan" || Parent_Race == "Saiyan" || istype(genome, /datum/genetics/Saiyan)) && !(/datum/Body/Tail/Saiyan_Tail in operation_list))
+			operation_list += /datum/Body/Tail/Saiyan_Tail //force the Saiyan tail into the body (robust vs genome.extra_limb_list not propagating)
 		for(var/i in operation_list)
 			var/datum/Body/nB = new i
 			//contents += nB
@@ -76,7 +78,7 @@ mob
 	//a premade one for Tail species.
 	proc/get_Tail()
 		for(var/datum/Body/b in body)
-			if("Tail" in b.name)
+			if(findtext(b.name, "Tail")) //BYOND `in` does NOT substring-match text ("Tail" in "Saiyan Tail" is FALSE); findtext is the real substring check so get_Tail/has_Tail finally work
 				return b
 	proc/has_Tail()
 		if(get_Tail())
@@ -272,7 +274,7 @@ datum/Body
 		capacity = 0
 		eslots = 0
 		maxeslots = 0
-		symmetry_info = list(1,"")
+		symmetry_info = list(0,"",0) //not a paired limb, so no "Left/Right" prefix (was "Left Saiyan Tail"); 3 elements so the parentlimb pass never reads a missing [3]
 		vital = 0
 		regenerationrate = 0.125
 		isnested=0
@@ -291,6 +293,7 @@ datum/Body
 				savant.Tail = 0
 			else
 				savant.Tail = 1
+			Refresh_Overlay() //also ADD the tail overlay so it renders; OnLogin's body loop calls login() every login -> fixes existing Saiyans
 		LopLimb(var/nestedlop)
 			if(..(nestedlop) == TRUE)
 				return TRUE

@@ -138,6 +138,11 @@ datum/genetics
 				racial_protos["[inst.name]"] = round(100/args.len)
 			else if(ispath(a))//a proto TYPE PATH -> resolve the registered instance
 				var/datum/genetics/gene = locate(a) in original_genome_list
+				if(!gene) //proto not registered (original_genome_list was empty/cleared at startup) -> create & register it now, so build_stats' fetch_race_by_Name also finds it
+					gene = new a
+					gene.original_genome = 1
+					if(!original_genome_list) original_genome_list = list()
+					original_genome_list += gene
 				if(gene) racial_protos["[gene.name]"] = round(100/args.len)
 		if(racial_protos.len == 0)
 			original_genome = 1

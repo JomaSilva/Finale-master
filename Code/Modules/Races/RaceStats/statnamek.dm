@@ -47,8 +47,8 @@ mob/proc/statnamek()
 		"Starting BP" = 30,//starting BP
 		"Tech Modifier" = 2)//how naturally good you are at technology
 		//gravity mastered is a product of your home planet's gravity. nothing more, nothing less.
-	list/Class_Spread = list("New Namek" = 25, "Namekian" = 50,"Albino Namekian" = 25)
-	list/class_stats = list(
+	Class_Spread = list("New Namek" = 25, "Namekian" = 50,"Albino Namekian" = 25)
+	class_stats = list(
 		"Albino Namekian" = list(
 			"Physical Offense" = 1.2,//stats
 			"Physical Defense" = 1.6,
