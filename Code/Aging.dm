@@ -55,7 +55,6 @@ mob/proc/AgeCheck(var/skipTimeText)
 	if(!skipTimeText) src<<checkthetimeidiot()
 	if(LastYear==Year||Year-LastYear==0) return
 	if(dead && !Planet in list("Heaven","Hell","Afterlife"))returning=1 //And finally, send them to the death checkpoint...
-	hiddenpotential = max(AverageBP/15,hiddenpotential)
 	hiddenpotential += (BP)*UPMod*(max(Year-LastYear,0.1))
 	if(Age<=InclineAge)
 		if(!MSWorthy)
@@ -65,10 +64,7 @@ mob/proc/AgeCheck(var/skipTimeText)
 					check++
 				else break
 			if(prob(1) && prob(check) && hiddenpotential >= BP * 10) MSWorthy = 1
-		if(BP<AverageBP)
-			hiddenpotential += BP*2*UPMod*(AverageBP/(max(BP,1))*(max(Year-LastYear,0.1)))
-		else
-			hiddenpotential += BP*UPMod*(max(Year-LastYear,0.1))
+		hiddenpotential += BP*UPMod*(max(Year-LastYear,0.1)) //bonus extra de jovem, baseado no proprio BP e potencial (sem media do servidor)
 		Body=Age
 		AgeStatus="Young"
 	cap_hp()

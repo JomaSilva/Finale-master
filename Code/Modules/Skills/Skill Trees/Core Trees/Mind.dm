@@ -860,7 +860,7 @@ mob/var/buffregen=0//ki buffs will speedBuff natural healing
 	if(savant)
 		if(savant.MaxKi <= 300)
 			exp *= savant.MaxKi/3000
-	var/gain = exp*max((2+((AverageKiLevel-savant.KiTotal())/(AverageKiLevel+1))),0.25)*savant.Ekiskill*GlobalKiExpRate
+	var/gain = exp*2*savant.Ekiskill*GlobalKiExpRate //self-based: ganho fixo (a taxa neutra de 2x), sem comparar com a media de Ki do servidor (AverageKiLevel)
 	if(expbuffer)
 		if(expbuffer-gain>0)
 			expbuffer-=gain

@@ -4,7 +4,7 @@ mob/var/Incarnate
 mob/proc/CheckIncarnate()
 	if(!Created&&client.ReincarnationBonus)
 		if(ckey==client.ReincarnationBonus.ckey)
-			BP += max(((AverageBP+client.ReincarnationBonus.oldBP)/(100/BPMod)),2*BPMod)
+			BP += max((client.ReincarnationBonus.oldBP/(100/BPMod)),2*BPMod) //self-based: bonus de BP baseado so no seu BP anterior (oldBP), sem a media do servidor
 			hiddenpotential += client.ReincarnationBonus.oldBP
 			if(godki) godki.naturalization = client.ReincarnationBonus.naturalization
 			src << "You just had a reincarnation bonus applied to this character!"
