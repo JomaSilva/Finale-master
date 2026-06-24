@@ -12,7 +12,7 @@ mob/proc
 		client.screen+=zone_sel
 		while(client)
 			sleep(3)
-			damage_indct.update_icon()
+			damage_indct.update_icon(src) //was update_icon() with no arg, which hit the `if(source) else return` guard and never refreshed -> the limb paperdoll froze on its initial (often pre-body-init) state, showing healthy arms/legs as purple/Broken
 			var/nonzeroki=usr.MaxKi
 			if(nonzeroki<=0)
 				nonzeroki=1

@@ -8,6 +8,9 @@ mob
 	icon_state = "health_hud"
 	screen_loc = "EAST-2,NORTH-2"
 	mouse_opacity = 0
+	New()
+		..() //the /obj/screen base New() applies a 3x2 stretch meant for the HP/Ki bars; reset so this 96x96 limb paperdoll renders at its native size instead of a giant distorted body
+		transform = matrix()
 
 /obj/screen/damage_indct/proc/update_icon(mob/source)
 	set waitfor = 0
@@ -69,7 +72,7 @@ mob
 			llegs += 1
 			overallllegHP += (A.health / A.maxhealth) * 100
 
-	var/totalllarmhp = 0
+	var/totalllarmhp = 100 //default to healthy: if no left-arm limbs are counted this frame, don't fall through the switch into "Broken" (purple)
 	if(larms)
 		totalllarmhp = round(overalllarmHP/larms,1)
 	var/larmstate = "Healthy"
@@ -81,7 +84,7 @@ mob
 		if(0 to 19) larmstate = "Broken"
 	overlayList += image('health_hud_leftarm.dmi', "[larmstate]")
 
-	var/totalrarmhp = 0
+	var/totalrarmhp = 100 //default to healthy (see left arm note)
 	if(rarms)
 		totalrarmhp = round(overallrarmHP/rarms,1)
 	var/rarmstate = "Healthy"
@@ -93,7 +96,7 @@ mob
 		if(0 to 19) rarmstate = "Broken"
 	overlayList += image('health_hud_rightarm.dmi', "[rarmstate]")
 
-	var/ltotalleghp = 0
+	var/ltotalleghp = 100 //default to healthy (see left arm note)
 	if(llegs)
 		ltotalleghp = round(overallllegHP/llegs,1)
 	var/llegstate = "Healthy"
@@ -105,7 +108,7 @@ mob
 		if(0 to 19) llegstate = "Broken"
 	overlayList += image('health_hud_leftleg.dmi', "[llegstate]")
 
-	var/rtotalleghp = 0
+	var/rtotalleghp = 100 //default to healthy (see left arm note)
 	if(rlegs)
 		rtotalleghp = round(overallrlegHP/rlegs,1)
 	var/rlegstate = "Healthy"

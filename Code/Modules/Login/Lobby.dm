@@ -52,7 +52,6 @@ mob/lobby
 	choreoattk = 1
 	Login()
 		displaykey = ckey(ckey)
-		world.log << "DBG-LOBBYLOGIN: key=[key] type=[type] client=[client]" //TEMP DIAGNOSTIC
 		name = key
 		temporary = 1
 		lobby_list += src
@@ -133,7 +132,6 @@ mob
 	Login()
 		..()
 		player_list += src
-		world.log << "DBG-MOBLOGIN: key=[key] type=[type] Created=[Created] Race=[Race]" //TEMP DIAGNOSTIC
 		last_login = round(world.realtime,100)//rounds to 10 seconds
 		if(BlankPlayer)
 			return
@@ -155,7 +153,6 @@ mob
 		client.show_verb_panel=1
 		src << "[src] entered the game."
 		displaykey = ckey(ckey)
-		world.log << "DBG-LOGINPROC: key=[key] type=[type] iscreating=[client.iscreating] Created=[Created] Race=[Race]" //TEMP DIAGNOSTIC
 		if(client.iscreating)
 			client.iscreating = 0
 			New_Character()

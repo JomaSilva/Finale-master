@@ -57,6 +57,7 @@ mob/Stat()
 		StatWorld()
 		StatParty()
 		StatKi()
+		StatTransformations()
 		sleep(4)
 
 mob/var/tmp/list/panels = new //the tabs that should be displayed to the player. it is calculated in TabDeciderLoop() below
@@ -251,6 +252,50 @@ mob/proc
 					if(!pcount)
 						Party-=A
 
+	StatTransformations()
+		if(!statpanel("Transformations")) return
+		stat("== Transformations & Mastery ==")
+		var/shown = 0
+		var/datum/skill/kaioken/Kk = locate(/datum/skill/kaioken) in learned_skills
+		if(Kk && Kk.level >= 1)
+			shown = 1
+			stat("Kaio-Ken","Mastered up to x[round(KaiokenMastery)] (current x[round(KaiokenMastery,0.1)])")
+		if(Class == "Legendary")
+			if(hasssj)
+				shown = 1
+				stat("Restrained SSJ","power x[restssjmult]")
+				stat("Unrestrained SSJ","power x[unrestssjmult]")
+				stat("Legendary SSJ","power x[lssjmult]")
+		else
+			if(hasssj)
+				shown = 1
+				var/datum/skill/forms/ssj/Sj = locate(/datum/skill/forms/ssj) in learned_skills
+				var/sjlvl = Sj ? Sj.level : 0
+				stat("Super Saiyan","Mastery [sjlvl]/3 - power x[ssjmult]")
+			if(hasussj)
+				shown = 1
+				stat("Ultra Super Saiyan","Unlocked - power x[ultrassjmult]")
+			if(ismssj)
+				shown = 1
+				stat("Mastered Super Saiyan","Fully mastered")
+			if(hasssj2)
+				shown = 1
+				var/datum/skill/forms/mssj2/S2 = locate(/datum/skill/forms/mssj2) in learned_skills
+				var/s2lvl = S2 ? S2.level : 0
+				stat("Super Saiyan 2","Mastery [s2lvl]/3 - power x[ssj2mult]")
+			if(ssj3able)
+				shown = 1
+				var/datum/skill/forms/ssj3/S3 = locate(/datum/skill/forms/ssj3) in learned_skills
+				var/s3lvl = S3 ? S3.level : 0
+				stat("Super Saiyan 3","Mastery [s3lvl]/3 - power x[ssj3mult]")
+			if(hasssj4)
+				shown = 1
+				stat("Super Saiyan 4","Unlocked - power x[ssj4mult]")
+		if(godki && godki.tier)
+			shown = 1
+			stat("God Ki","Tier [godki.tier] - power x[godki.godki_mult]")
+		if(!shown)
+			stat("No transformations unlocked yet.")
 	StatKi()
 		if(("masterylevels" in tabson))
 			if(!statpanel("Mastery")) return

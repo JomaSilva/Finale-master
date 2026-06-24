@@ -17,7 +17,6 @@ world
 	New()
 		..()
 		log = file("DEBUG.log")
-		world.log << "DBG-STARTUP: world.mob=[world.mob]" //TEMP DIAGNOSTIC
 		world.status="<font color=#000000 size=1><b> Dragonball Climax: Hosting: [world.host], Main Fork version [gameversion] | [server_desc]</b></font>"
 		spawn(10) Initialize()
 		spawn(50) AutoRevive()

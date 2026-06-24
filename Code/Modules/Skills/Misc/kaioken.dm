@@ -6,6 +6,18 @@ mob/var
 		firable=0
 		kaioamount=1
 
+//Mapeia o tier de Kaio-Ken escolhido (o "x[amt]") para um multiplicador real de poder.
+//Padrao: x2=1.2, x3=1.3, x4=1.4, x10=1.5, x20=1.75, x50=2, x100=4 (minimo 1.2x, maximo 4x). Tiers intermediarios sao interpolados.
+mob/proc/KaiokenMult(var/amt)
+	if(amt <= 2) return 1.2
+	if(amt <= 3) return 1.2 + (amt-2)*0.1
+	if(amt <= 4) return 1.3 + (amt-3)*0.1
+	if(amt <= 10) return 1.4 + (amt-4)*0.1/6
+	if(amt <= 20) return 1.5 + (amt-10)*0.25/10
+	if(amt <= 50) return 1.75 + (amt-20)*0.25/30
+	if(amt <= 100) return 2.0 + (amt-50)*2.0/50
+	return 4.0
+
 //TIERED SKILLS//
 //see: Modules/Multi-Stage Moves/skill.dm
 
@@ -151,7 +163,7 @@ mob/proc/SetKaioken()
 			view(container)<<"<font size=[container.TextSize]><[container.SayColor]>[container]: KAIOKEN TIMES [container.kaioamount]!!!"
 		container.emit_Sound('kaioken.wav')
 		container.poweruprunning=1
-		container.KaioPcnt=container.kaioamount //Kaiopercent
+		container.KaioPcnt=container.KaiokenMult(container.kaioamount) //tier -> multiplicador real (ver KaiokenMult)
 	Loop()
 		if(container.KaioPcnt != 1)
 			if(container.KO) container.KaiokenRevert()
@@ -170,7 +182,7 @@ mob/proc/SetKaioken()
 					if(!container.dead) spawn container.Body_Parts()
 					else spawn container.Death()
 				container.KaiokenRevert()
-			container.KaioPcnt=container.kaioamount //Kaiopercent
+			container.KaioPcnt=container.KaiokenMult(container.kaioamount) //tier -> multiplicador real (ver KaiokenMult)
 	DeBuff()
 		container.KaioPcnt=1
 		container.kaioamount=1

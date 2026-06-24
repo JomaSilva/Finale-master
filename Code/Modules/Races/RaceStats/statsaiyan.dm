@@ -31,6 +31,13 @@ mob/proc/statsaiyan()
 		if(invoker.savant && invoker.beenSSJed < prev)
 			invoker.beenSSJed = prev
 			invoker.savant.Omult=6
+			//cada personagem tem um BP minimo um pouco diferente para liberar cada forma (margem aleatoria, varia de pessoa para pessoa).
+			//SSJ1/SSJ2 (e Restrained, no Legendary) sao randomizados por classe no switch abaixo; aqui randomizamos as demais formas.
+			invoker.savant.ssj3at = initial(invoker.savant.ssj3at) * rand(9,13)/10
+			invoker.savant.ultrassjat = initial(invoker.savant.ultrassjat) * rand(9,13)/10
+			invoker.savant.rawssj4at = initial(invoker.savant.rawssj4at) * rand(9,13)/10
+			invoker.savant.unrestssjat = initial(invoker.savant.unrestssjat) * rand(9,13)/10
+			invoker.savant.lssjat = initial(invoker.savant.lssjat) * rand(9,13)/10
 			switch(invoker.this_class)
 				if("Elite")
 					invoker.savant.ssjat= initial(invoker.savant.ssjat) * rand(11,14)/10
