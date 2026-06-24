@@ -109,7 +109,7 @@ mob
 		attackable=1
 		if(signiture) signature = signiture //compatibility between older versions
 		attacking=0
-		displaykey=key
+		displaykey=ckey(key) //was 'displaykey=key'; keep it canonical so it matches ckey(ckey) used elsewhere and the save path stays consistent
 		statstab=1
 		CheckGodki()
 		FirstYearPower=round(BP)

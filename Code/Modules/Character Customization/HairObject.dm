@@ -8,6 +8,7 @@ mob
 			else plscrash = 1*/
 obj/overlay/hairs
 	plane = HAIR_LAYER
+	layer = MOB_LAYER + HAIR_LAYER //reinforce z-order via layer so hair stays in front of the body even if the client doesn't honor plane-only ordering for vis_contents (BYOND 516)
 	name = "hair"
 	ID = 3
 	var/gdkid = 0

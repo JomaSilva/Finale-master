@@ -62,8 +62,8 @@ mob/lobby
 		client.Title_Music()
 		//player_list += src
 		loginTests()
-		winshow(usr,"Login_Pane",1)
-		winshow(usr,"characterpane",0)
+		winshow(src,"Login_Pane",1) //usr is unreliable/null inside Login() on BYOND 516; src is always the connecting lobby mob, so the New/Load menu actually shows
+		winshow(src,"characterpane",0)
 
 		if(fexists(GetSavePath(1)))
 			savefiles[1] = TRUE
@@ -177,6 +177,7 @@ mob
 		NewCharacterStuff()
 		OnLogin()
 		if(client) client.iscreating=0
+		Save() //persist the brand-new character immediately so it is never lost before the first logout save
 	var
 		storedname
 		save_path = 1
@@ -208,7 +209,7 @@ mob
 			for(var/obj/Artifacts/A in contents)
 				if(A.ContentsDontSave)
 					artifactlist += A
-					A.loc = usr.loc
+					A.loc = src.loc
 			if(Savable)
 				xco = x
 				yco = y
@@ -222,14 +223,14 @@ mob
 				save["overlays"] << overlays
 				save["underlays"] << underlays
 			for(var/obj/A in artifactlist)
-				A.Move(usr)
+				A.Move(src)
 		BSave()
 			set waitfor = 0
 			var/list/artifactlist = list()
 			for(var/obj/Artifacts/A in contents)
 				if(A.ContentsDontSave)
 					artifactlist += A
-					A.loc = usr.loc
+					A.loc = src.loc
 			if(Savable)
 				xco = x
 				yco = y
@@ -238,43 +239,41 @@ mob
 				if(client.SavePlayer(GetSaveBckup(save_path)))
 					src << "Saved!"
 			for(var/obj/A in artifactlist)
-				A.Move(usr)
+				A.Move(src)
 		OfflineSave()
 			set waitfor = 0
 			var/list/artifactlist = list()
 			for(var/obj/Artifacts/A in contents)
 				if(A.ContentsDontSave)
 					artifactlist += A
-					A.loc = usr.loc
+					A.loc = src.loc
 			if(Savable&&!istype(src, /mob/lobby))
 				xco = x
 				yco = y
 				zco = z
 				storedname = name
 				var savefile/save = new (GetSavePath(save_path))
-				save << usr
+				save << src //was 'save << usr'; usr is null on an engine-triggered logout (BYOND 516), which wrote a blank mob and clobbered the real save
 				save["name"] << name
 				save["icon"] << icon
 				save["overlays"] << overlays
 				save["underlays"] << underlays
 			for(var/obj/A in artifactlist)
-				A.Move(usr)
+				A.Move(src)
 		GetSavePath(var/spath as num)
 // If you want multiple save slots, return a variable here instead
 // that contains the path to that particular save.
 			if(spath)
 			else spath = 1
-			if(!ckey)
-				return "Save/[displaykey]/save[spath].dbcsav"
-			return "Save/[ckey(ckey)]/save[spath].dbcsav"
+			var/folder = ckey ? ckey(ckey) : ckey(displaykey) //normalize the folder so the path is identical whether ckey is set (login) or cleared (logout); stops saving to one folder and loading from another
+			return "Save/[folder]/save[spath].dbcsav"
 		GetSaveBckup(var/spath as num)
 // If you want multiple save slots, return a variable here instead
 // that contains the path to that particular save.
 			if(spath)
 			else spath = 1
-			if(!ckey)
-				return "Save/backups/[displaykey]/save[spath].dbcsav"
-			return "Save/backups/[ckey(ckey)]/save[spath].dbcsav"
+			var/folder = ckey ? ckey(ckey) : ckey(displaykey) //normalize the folder so login/logout always agree on the path
+			return "Save/backups/[folder]/save[spath].dbcsav"
 
 mob
 	Read(savefile/F)

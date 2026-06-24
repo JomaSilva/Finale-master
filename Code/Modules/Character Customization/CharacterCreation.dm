@@ -14,7 +14,6 @@ mob
 			Gender()
 			Skin()
 			Hair()
-			src.overlays +=hair
 			Eyes()
 			Age()
 			BodyType()
@@ -61,7 +60,6 @@ mob
 					client.mob = new /mob/lobby
 					del(src)
 					return
-			usr.overlays -=hair
 			usr.AddHair()
 			if(Race != "Frost Demon" && !ChangieType) usr.form1icon = icon
 			usr.originalicon = icon

@@ -70,6 +70,7 @@ obj/overlay/hairs/ssj/lssjhair/EffectStart()
 obj/overlay/hairs/tails/saiyantail
 	name = "saiyan tail"
 	plane = BODY_LAYER
+	layer = MOB_LAYER + BODY_LAYER //inherits from /hairs; pin layer back to body level so the tail isn't lifted above the hair
 	var/pssj
 	EffectStart()
 		..()
