@@ -310,6 +310,7 @@ datum/Body
 				tailicon = savant.tailicon
 			if(!lopped) savant.Tail = 1 //the saiyantail overlay's EffectLoop holds alpha=0 unless mob.Tail is on
 			else savant.Tail = 0
+			savant.removeOverlay(tailType) //remove the old tail overlay first: updateOverlay's Update only resets the base icon (losing the runtime gold/blue tint), so re-adding forces EffectStart to re-apply the form color (fixes the tail going base/black on relog)
 			savant.updateOverlay(tailType,tailicon)
 
 

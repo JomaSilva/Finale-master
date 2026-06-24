@@ -315,6 +315,7 @@ mob/proc
 		if(lssj && !isBuffed(/obj/buff/LSSJ))
 			startbuff(/obj/buff/LSSJ,'SSJIcon.dmi')
 		if(ssj || lssj) AddHair() //restore the hair overlay right away so there's no bald window before the buff loop runs
+		if(has_Tail()) get_Tail().Refresh_Overlay() //relog: re-derive the tail color now that ssj + god ki are restored (so a transformed tail isn't left base/black)
 		if(Created && (isnull(loc) || z == 29 || z == 30)) //limbo recovery: never leave a finished character in the lobby/creation void or at a null location
 			if(!spawnPlanet) spawnPlanet = "Earth"
 			GotoPlanet(spawnPlanet,1)

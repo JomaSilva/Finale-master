@@ -91,45 +91,41 @@ obj/overlay/hairs/tails/saiyantail
 	plane = BODY_LAYER
 	layer = MOB_LAYER + BODY_LAYER //inherits from /hairs; pin layer back to body level so the tail isn't lifted above the hair
 	var/pssj
+	gdki_me()
+		return //God Ki tint is applied directly in EffectStart (re-derived every call) so the tail keeps its color after relog/refresh, mirroring the SSJ hair
+	ungdki_me()
+		return
 	EffectStart()
 		..()
 		icon+=rgb(container.HairR/2,container.HairG/2,container.HairB/2)
-		if(container.ssj) icon += rgb(218, 218, 38)
-		
-	EffectLoop()
-		..()
-		if((container.ssj && !pssj) || (!container.ssj && pssj)) if(prob(50))
-			EffectStart()
-			gdkid=0
-			if(!container.ssj)
-				pssj=0
+		if(container.ssj) //transformed -> tint the tail to match the form
+			if(container.godki && container.godki.usage==1) //Super Saiyan + God Ki = Blue (or Rose)
+				icon -= rgb(100,100,100)
+				if(container.godki_mod > 1)
+					icon += rgb(238, 51, 130)
+					icon += rgb(238, 51, 130)
+					icon += rgb(238, 51, 130)
+				else
+					icon += rgb(13, 73, 238)
+					icon += rgb(13, 73, 238)
+					icon += rgb(13, 73, 238)
 			else
-				pssj=1
-				icon += rgb(218, 218, 38)
+				icon += rgb(218, 218, 38) //plain Super Saiyan gold
+	EffectLoop()
+		if((container.ssj && !pssj) || (!container.ssj && pssj)) //ssj state changed -> re-derive the tail color
+			pssj = container.ssj ? 1 : 0
+			gdkid = (container.godki && container.godki.usage==1) ? 1 : 0
+			EffectStart()
+		else if(container.godki) //God Ki toggled while ssj stayed -> re-derive the tail color
+			if(container.godki.usage==1 && !gdkid)
+				gdkid = 1
+				EffectStart()
+			else if(gdkid && container.godki.usage==0)
+				gdkid = 0
+				EffectStart()
+		..()
 		if(!container.Tail) alpha = 0
 		else alpha = 255
-	gdki_me()
-		icon -= rgb(30,30,30)
-		if(pssj)
-			icon += rgb(13, 73, 238)
-			icon += rgb(13, 73, 238)
-		else
-			if(container.godki.tier == godki_cap)
-				added_color[1] += 245
-				added_color[2] += 245
-				added_color[3] += 245
-				prevgdki=3
-			else if(container.godki.tier == godki_cap - 1)
-				added_color[1] += 163
-				added_color[3] += 136
-				prevgdki=2
-			else
-				added_color[1] += 226
-				added_color[2] += 51
-				added_color[3] += 28
-				prevgdki=1
-	ungdki_me()
-		EffectStart()
 
 
 obj/overlay/body
