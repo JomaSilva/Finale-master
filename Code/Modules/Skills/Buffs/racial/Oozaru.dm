@@ -168,7 +168,7 @@ obj/buff/Oozaru/Loop()
 		if(!container.KO && ticker > 5)
 			ticker = 0
 			container.ctrlParalysis=1
-			//container.Apeshitskill += 0.01
+			if(container.Apeshitskill < 10) container.Apeshitskill += 0.01 //gain Oozaru control mastery from time spent transformed (was commented out, so it never grew)
 			if(prob(container.Ekiskill*10))
 				var/bcolor='12.dmi'
 				bcolor+=rgb(container.blastR,container.blastG,container.blastB)

@@ -138,7 +138,7 @@
 				savant.ssjmult*=1.2
 				savant.ssjdrain = 0.01
 
-/datum/skill/heran/TMstedMXPWR/effector()
+/datum/skill/heran/MstedTMXPWR/effector() //was TMstedMXPWR (typo) - the effector now attaches to the constituent skill that is actually learned, so SSJ2 Heran gains mastery from use
 	..()
 	switch(level)
 		if(0)

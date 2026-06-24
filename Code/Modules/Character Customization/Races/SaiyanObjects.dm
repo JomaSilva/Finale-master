@@ -3,12 +3,33 @@ obj/overlay/hairs/ssj
 	plane = HAIR_LAYER
 	ID = 6
 	gdki_me()
-		icon -= rgb(100,100,100)
-		icon += rgb(13, 73, 238)
-		icon += rgb(13, 73, 238)
-		icon += rgb(13, 73, 238)
+		return //God Ki tint for SSJ hair is applied in EffectStart() (re-derived every call) so it can't be lost to the EffectStart/EffectLoop ordering race
 	ungdki_me()
-		EffectStart()
+		return
+	EffectStart()
+		. = ..()
+		if(container.godki && container.godki.usage==1)
+			icon -= rgb(100,100,100) //darken first so the new color reads strongly, then push the hair toward the God-Ki form color
+			if(container.godki_mod > 1) //Super Saiyan Rose (pink)
+				icon += rgb(238, 51, 130)
+				icon += rgb(238, 51, 130)
+				icon += rgb(238, 51, 130)
+			else //Super Saiyan Blue
+				icon += rgb(13, 73, 238)
+				icon += rgb(13, 73, 238)
+				icon += rgb(13, 73, 238)
+	EffectLoop()
+		if(container.Apeshit) alpha = 1
+		else alpha = 255
+		if(container.godki)
+			if(container.godki.usage==1 && !gdkid)
+				gdkid = 1
+				EffectStart() //God Ki active on a freshly-added SSJ hair (the Blue bug) -> set icon + color now
+			else if(gdkid && container.godki.usage==0)
+				gdkid = 0
+				EffectStart() //God Ki turned off -> re-derive the plain SSJ hair
+		pixel_x = container.overlay_x + o_px
+		pixel_y = container.overlay_y + o_py
 
 obj/overlay/hairs/ssj/ssj1
 	name = "ssj1 hair"
@@ -45,11 +66,9 @@ obj/overlay/hairs/ssj/ussj
 	name = "ussj hair"
 
 	gdki_me()
-		added_color[2] += 75
-		added_color[3] += 161
+		return //God Ki coloring is handled by the shared SSJ EffectStart (see /obj/overlay/hairs/ssj)
 	ungdki_me()
-		added_color[2] -= 75
-		added_color[3] -= 161
+		return
 
 obj/overlay/hairs/ssj/ussj/EffectStart()
 	icon=container.ussjhair
