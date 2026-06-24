@@ -165,9 +165,6 @@ mob/keyable/verb
 		set category = "Skills"
 		if(godki)
 			if(!godki.usage)
-				if(!blue_music_played) //first time turning blue (God Ki) -> play the SSJ Blue theme from the START
-					blue_music_played=1
-					emit_Sound('Dragon Ball Z Dokkan Battle AGL LR Super Saiyan Blue Goku & Vegeta Intro OST (Extended).mp3')
 				if(buffoutput[1] != "None") animate(src,time=8,color=rgb(14, 130, 238))
 				else animate(src,time=8,color=rgb(255, 81, 0))
 				spawn(1) color=null

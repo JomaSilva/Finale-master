@@ -112,6 +112,8 @@ obj/buff/SuperSaiyan/Loop()
 				if(prob(15)) container.Ki+=0.002 * container.MaxKi //ki gains a bit of energy.
 				//there is no stamina loss from SSJ4.
 	if(lastForm!=container.ssj)
+		var/_oldTKM = container.trueKiMod //keep Ki% on revert: remember the OLD form's ki multiplier before it is reset
+		var/_down = (container.ssj < lastForm) //true only when stepping DOWN (revert), not transforming up
 		lastForm=container.ssj
 		container.RemoveHair()
 		container.overlayList-='Elec.dmi'
@@ -156,6 +158,8 @@ obj/buff/SuperSaiyan/Loop()
 				container.ssjBuff=container.ssj4mult
 				container.trueKiMod = container.ssj4energymod
 				container.MaxKi *= container.trueKiMod
+		if(_down && _oldTKM && !container.LoggingOut) //reverting -> keep the SAME Ki% relative to the new (lower) MaxKi
+			container.Ki = container.Ki * container.trueKiMod / _oldTKM
 	if(container.godki && container.trans_min_val)
 		if(container.godki.usage && container.trans_min_val < container.ssj)
 			container.Revert()
@@ -166,6 +170,7 @@ obj/buff/SuperSaiyan/Delevel()
 	if(container.ssj < 1) DeBuff()
 obj/buff/SuperSaiyan/DeBuff()
 	container.ssjBuff = 1
+	var/_oldTKM = container.trueKiMod //keep Ki% when fully reverting to base
 	container.MaxKi = container.MaxKi / container.trueKiMod
 	container.trueKiMod = 1
 	container.RemoveHair()
@@ -178,6 +183,8 @@ obj/buff/SuperSaiyan/DeBuff()
 		if(container.expandlevelussj>0)
 			sleep(0)
 			container.ExpandRevert()
+	if(!container.LoggingOut && _oldTKM > 1) //real revert to base -> keep the same Ki% vs base MaxKi (skip on logout so relog restores the form's Ki)
+		container.Ki = container.Ki / _oldTKM
 	if(container.Ki>container.MaxKi*2)
 		container.Ki = container.MaxKi*2
 	..()
@@ -186,9 +193,14 @@ mob/proc/SSj()
 	if(!transing)
 		Revert()
 		transing=1
-		if(!ssj1_music_played) //first time becoming Super Saiyan -> play the SSJ1 theme from the START of the transformation
-			ssj1_music_played=1
-			emit_Sound('Dragon Ball Z Dokkan Battle TEQ LR SSJ Goku Revival OST (Extended).mp3')
+		if(godki && godki.usage)
+			if(!blue_music_played) //SSJ1 while in God Ki = Super Saiyan Blue: Blue theme from the START (first time only)
+				blue_music_played=1
+				emit_Sound('Dragon Ball Z Dokkan Battle AGL LR Super Saiyan Blue Goku & Vegeta Intro OST (Extended).mp3')
+		else
+			if(!ssj1_music_played) //first regular Super Saiyan: SSJ1 theme from the START
+				ssj1_music_played=1
+				emit_Sound('Dragon Ball Z Dokkan Battle TEQ LR SSJ Goku Revival OST (Extended).mp3')
 		attackable=0
 		var/ssjcolor = "yellow"
 		if(godki && godki.usage) ssjcolor = "blue"
@@ -254,9 +266,14 @@ mob/proc/SSj2()
 	if(!transing)
 		if(ssj>=3) return
 		transing=1
-		if(!ssj2_music_played) //first time becoming Super Saiyan 2 -> play the SSJ2 theme from the START of the transformation
-			ssj2_music_played=1
-			emit_Sound('Dragon Ball Z   Day Of Fate Unmei No Hi (Hironobu Kageyama)   By Gladius.mp3')
+		if(godki && godki.usage)
+			if(!blue_music_played) //SSJ2 while in God Ki = Super Saiyan Blue: Blue theme from the START (first time only)
+				blue_music_played=1
+				emit_Sound('Dragon Ball Z Dokkan Battle AGL LR Super Saiyan Blue Goku & Vegeta Intro OST (Extended).mp3')
+		else
+			if(!ssj2_music_played) //first regular Super Saiyan 2: SSJ2 theme from the START
+				ssj2_music_played=1
+				emit_Sound('Dragon Ball Z   Day Of Fate Unmei No Hi (Hironobu Kageyama)   By Gladius.mp3')
 		attackable=0
 		var/ssjcolor = "yellow"
 		if(godki?.usage) ssjcolor = "blue"

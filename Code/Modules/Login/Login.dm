@@ -310,6 +310,11 @@ mob/proc
 		AgeCheck()
 		CheckGodki()
 		CheckTime()
+		if(ssj && !isBuffed(/obj/buff/SuperSaiyan)) //relog while transformed: persistent buff was destroyed at logout, recreate it so the form (stats + hair) is restored instead of coming back bald
+			startbuff(/obj/buff/SuperSaiyan,'SSJIcon.dmi')
+		if(lssj && !isBuffed(/obj/buff/LSSJ))
+			startbuff(/obj/buff/LSSJ,'SSJIcon.dmi')
+		if(ssj || lssj) AddHair() //restore the hair overlay right away so there's no bald window before the buff loop runs
 		if(Created && (isnull(loc) || z == 29 || z == 30)) //limbo recovery: never leave a finished character in the lobby/creation void or at a null location
 			if(!spawnPlanet) spawnPlanet = "Earth"
 			GotoPlanet(spawnPlanet,1)
