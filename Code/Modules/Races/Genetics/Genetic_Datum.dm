@@ -644,6 +644,7 @@ racial boundaries are still kept intact, if you're a hybrid then you get marked 
 /datum/genetics/Quarter_Saiyan
 /datum/genetics/Saibaman
 /datum/genetics/Saiyan
+	extra_limb_list = list(/datum/Body/Tail/Saiyan_Tail) //pure Saiyans are born with a tail; TestMobParts reads genome.extra_limb_list directly (build_stats only seeds it for hybrids via majority_genome, which single-race chars never set)
 /datum/genetics/Shapeshifter
 /datum/genetics/SpiritDoll
 /datum/genetics/Tsujin

@@ -27,6 +27,7 @@ mob
 					if("Male")
 						skin_list += 'NewPaleMale.dmi'
 						skin_list += 'NewTanMale.dmi'
+						skin_list += 'NewBlackMale.dmi'
 					if("Female")
 						skin_list += 'NewPaleFemale.dmi'
 						skin_list += 'NewTanFemale.dmi'
@@ -34,6 +35,7 @@ mob
 					else
 						skin_list += 'NewPaleMale.dmi'
 						skin_list += 'NewTanMale.dmi'
+						skin_list += 'NewBlackMale.dmi'
 						skin_list += 'NewPaleFemale.dmi'
 						skin_list += 'NewTanFemale.dmi'
 						skin_list += 'NewBlackFemale.dmi'
