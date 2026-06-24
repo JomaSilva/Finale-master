@@ -401,8 +401,8 @@ window "Attackpane"
 		anchor2 = 100,100
 		font-size = 9
 		font-style = "bold"
-		text-color = #327899
-		background-color = #090400
+		text-color = #9fb4c4
+		background-color = #15171c
 		border = line
 		saved-params = "max-lines"
 
@@ -413,7 +413,7 @@ window "BuildListWindow"
 		size = 654x479
 		anchor1 = none
 		anchor2 = none
-		background-color = #004040
+		background-color = #1b1d23
 		is-visible = false
 		saved-params = "pos;size;is-minimized;is-maximized"
 		title = "Build Window"
@@ -426,8 +426,8 @@ window "BuildListWindow"
 		size = 128x20
 		anchor1 = 81,18
 		anchor2 = 100,22
-		text-color = #004040
-		background-color = #408080
+		text-color = #d6d9df
+		background-color = #2c313a
 		saved-params = "is-checked"
 		text = "Toggle Inside/Outside"
 		command = "buildwindowtoggleio"
@@ -437,8 +437,8 @@ window "BuildListWindow"
 		size = 88x32
 		anchor1 = 0,0
 		anchor2 = 54,15
-		text-color = #004040
-		background-color = #408080
+		text-color = #d6d9df
+		background-color = #2c313a
 		saved-params = ""
 		text = "Brush Size: 1x1\nTiles are Inside!"
 		align = left
@@ -449,8 +449,8 @@ window "BuildListWindow"
 		size = 112x20
 		anchor1 = 82,13
 		anchor2 = 99,17
-		text-color = #004040
-		background-color = #408080
+		text-color = #d6d9df
+		background-color = #2c313a
 		saved-params = "is-checked"
 		text = "Toggle Brush Size"
 		command = "buildwindowtoggle"
@@ -460,8 +460,8 @@ window "BuildListWindow"
 		size = 402x40
 		anchor1 = 4,90
 		anchor2 = 65,99
-		text-color = #004040
-		background-color = #408080
+		text-color = #d6d9df
+		background-color = #2c313a
 		saved-params = ""
 		text = "Change the draw order/layer of the object via this button. Higher numbers means it's drawn higher."
 		align = left
@@ -472,8 +472,8 @@ window "BuildListWindow"
 		size = 165x20
 		anchor1 = 66,92
 		anchor2 = 92,96
-		text-color = #004040
-		background-color = #408080
+		text-color = #d6d9df
+		background-color = #2c313a
 		saved-params = "is-checked"
 		text = "Change Layer"
 		command = "Change-Layer"
@@ -483,8 +483,8 @@ window "BuildListWindow"
 		size = 61x20
 		anchor1 = 62,47
 		anchor2 = 72,51
-		text-color = #004040
-		background-color = #408080
+		text-color = #d6d9df
+		background-color = #2c313a
 		saved-params = "is-checked"
 		text = "Change"
 		command = "buildwindowchange3"
@@ -494,8 +494,8 @@ window "BuildListWindow"
 		size = 61x20
 		anchor1 = 34,47
 		anchor2 = 44,51
-		text-color = #004040
-		background-color = #408080
+		text-color = #d6d9df
+		background-color = #2c313a
 		saved-params = "is-checked"
 		text = "Change"
 		command = "buildwindowchange2"
@@ -505,8 +505,8 @@ window "BuildListWindow"
 		size = 60x20
 		anchor1 = 6,47
 		anchor2 = 16,51
-		text-color = #004040
-		background-color = #408080
+		text-color = #d6d9df
+		background-color = #2c313a
 		saved-params = "is-checked"
 		text = "Change"
 		command = "buildwindowchange1"
@@ -516,8 +516,8 @@ window "BuildListWindow"
 		size = 62x20
 		anchor1 = 62,80
 		anchor2 = 72,84
-		text-color = #004040
-		background-color = #408080
+		text-color = #d6d9df
+		background-color = #2c313a
 		saved-params = "is-checked"
 		text = "Icon"
 		command = "buildwindowchange6"
@@ -527,8 +527,8 @@ window "BuildListWindow"
 		size = 61x20
 		anchor1 = 34,80
 		anchor2 = 44,84
-		text-color = #004040
-		background-color = #408080
+		text-color = #d6d9df
+		background-color = #2c313a
 		saved-params = "is-checked"
 		text = "Icon"
 		command = "buildwindowchange5"
@@ -538,8 +538,8 @@ window "BuildListWindow"
 		size = 61x20
 		anchor1 = 6,80
 		anchor2 = 16,84
-		text-color = #004040
-		background-color = #408080
+		text-color = #d6d9df
+		background-color = #2c313a
 		saved-params = "is-checked"
 		text = "Icon"
 		command = "buildwindowchange4"
@@ -549,8 +549,8 @@ window "BuildListWindow"
 		size = 62x20
 		anchor1 = 62,75
 		anchor2 = 72,79
-		text-color = #004040
-		background-color = #408080
+		text-color = #d6d9df
+		background-color = #2c313a
 		saved-params = "is-checked"
 		text = "Build"
 		command = "buildwindow6"
@@ -560,8 +560,8 @@ window "BuildListWindow"
 		size = 61x20
 		anchor1 = 34,75
 		anchor2 = 44,79
-		text-color = #004040
-		background-color = #408080
+		text-color = #d6d9df
+		background-color = #2c313a
 		saved-params = "is-checked"
 		text = "Build"
 		command = "buildwindow5"
@@ -571,8 +571,8 @@ window "BuildListWindow"
 		size = 61x20
 		anchor1 = 6,75
 		anchor2 = 16,79
-		text-color = #004040
-		background-color = #408080
+		text-color = #d6d9df
+		background-color = #2c313a
 		saved-params = "is-checked"
 		text = "Build"
 		command = "buildwindow4"
@@ -582,8 +582,8 @@ window "BuildListWindow"
 		size = 62x20
 		anchor1 = 62,42
 		anchor2 = 72,46
-		text-color = #004040
-		background-color = #408080
+		text-color = #d6d9df
+		background-color = #2c313a
 		saved-params = "is-checked"
 		text = "Build"
 		command = "buildwindow3"
@@ -593,8 +593,8 @@ window "BuildListWindow"
 		size = 61x20
 		anchor1 = 34,42
 		anchor2 = 44,46
-		text-color = #004040
-		background-color = #408080
+		text-color = #d6d9df
+		background-color = #2c313a
 		saved-params = "is-checked"
 		text = "Build"
 		command = "buildwindow2"
@@ -604,8 +604,8 @@ window "BuildListWindow"
 		size = 61x20
 		anchor1 = 6,42
 		anchor2 = 16,46
-		text-color = #004040
-		background-color = #408080
+		text-color = #d6d9df
+		background-color = #2c313a
 		saved-params = "is-checked"
 		text = "Build"
 		command = "buildwindow1"
@@ -615,8 +615,8 @@ window "BuildListWindow"
 		size = 65x64
 		anchor1 = 62,60
 		anchor2 = 72,74
-		text-color = #004040
-		background-color = #408080
+		text-color = #d6d9df
+		background-color = #2c313a
 		saved-params = ""
 		cells = 1x0
 		current-cell = 1,1
@@ -628,8 +628,8 @@ window "BuildListWindow"
 		size = 65x64
 		anchor1 = 34,60
 		anchor2 = 44,74
-		text-color = #004040
-		background-color = #408080
+		text-color = #d6d9df
+		background-color = #2c313a
 		saved-params = ""
 		cells = 1x0
 		current-cell = 1,1
@@ -641,8 +641,8 @@ window "BuildListWindow"
 		size = 115x32
 		anchor1 = 59,52
 		anchor2 = 76,58
-		text-color = #004040
-		background-color = #408080
+		text-color = #d6d9df
+		background-color = #2c313a
 		saved-params = ""
 		text = "C-Barrier:"
 		align = left
@@ -653,8 +653,8 @@ window "BuildListWindow"
 		size = 114x32
 		anchor1 = 31,52
 		anchor2 = 48,58
-		text-color = #004040
-		background-color = #408080
+		text-color = #d6d9df
+		background-color = #2c313a
 		saved-params = ""
 		text = "C-Decor:"
 		align = left
@@ -665,8 +665,8 @@ window "BuildListWindow"
 		size = 114x32
 		anchor1 = 3,52
 		anchor2 = 20,58
-		text-color = #004040
-		background-color = #408080
+		text-color = #d6d9df
+		background-color = #2c313a
 		saved-params = ""
 		text = "C-Tile:"
 		align = left
@@ -677,8 +677,8 @@ window "BuildListWindow"
 		size = 65x64
 		anchor1 = 6,60
 		anchor2 = 16,74
-		text-color = #004040
-		background-color = #408080
+		text-color = #d6d9df
+		background-color = #2c313a
 		saved-params = ""
 		cells = 1x0
 		current-cell = 1,1
@@ -690,8 +690,8 @@ window "BuildListWindow"
 		size = 116x64
 		anchor1 = 59,27
 		anchor2 = 76,40
-		text-color = #004040
-		background-color = #408080
+		text-color = #d6d9df
+		background-color = #2c313a
 		saved-params = ""
 		cells = 1x0
 		current-cell = 1,1
@@ -703,8 +703,8 @@ window "BuildListWindow"
 		size = 114x64
 		anchor1 = 30,27
 		anchor2 = 48,40
-		text-color = #004040
-		background-color = #408080
+		text-color = #d6d9df
+		background-color = #2c313a
 		saved-params = ""
 		cells = 1x0
 		current-cell = 1,1
@@ -716,8 +716,8 @@ window "BuildListWindow"
 		size = 115x32
 		anchor1 = 59,18
 		anchor2 = 76,25
-		text-color = #004040
-		background-color = #408080
+		text-color = #d6d9df
+		background-color = #2c313a
 		saved-params = ""
 		text = "Barrier:"
 		align = left
@@ -728,8 +728,8 @@ window "BuildListWindow"
 		size = 114x32
 		anchor1 = 31,18
 		anchor2 = 48,25
-		text-color = #004040
-		background-color = #408080
+		text-color = #d6d9df
+		background-color = #2c313a
 		saved-params = ""
 		text = "Decor:"
 		align = left
@@ -740,8 +740,8 @@ window "BuildListWindow"
 		size = 114x32
 		anchor1 = 3,18
 		anchor2 = 20,25
-		text-color = #004040
-		background-color = #408080
+		text-color = #d6d9df
+		background-color = #2c313a
 		saved-params = ""
 		text = "Tile:"
 		align = left
@@ -752,8 +752,8 @@ window "BuildListWindow"
 		size = 115x64
 		anchor1 = 3,27
 		anchor2 = 20,40
-		text-color = #004040
-		background-color = #408080
+		text-color = #d6d9df
+		background-color = #2c313a
 		saved-params = ""
 		cells = 1x0
 		current-cell = 1,1
@@ -765,8 +765,8 @@ window "BuildListWindow"
 		size = 528x80
 		anchor1 = 0,0
 		anchor2 = 54,15
-		text-color = #004040
-		background-color = #408080
+		text-color = #d6d9df
+		background-color = #2c313a
 		saved-params = ""
 		text = "There are three types of buildings: Tiles, Decor, and Barriers. Tiles are unmovable, and can block movement and sight. Decor are for looks. Barriers are unmovable and you can only fly through them from some directions. Only tiles have health. Wall upgraders will upgrade only walls in range, but they're manual. Otherwise, they're built to your current intelligence. Custom tiles and barriers must be 32x32.\nClick \"Build\" under each type to start building that type. Click on any turf to actually build. Custom turfs must have icons to be built. You must choose a type to build presets."
 		align = left
@@ -777,8 +777,8 @@ window "BuildListWindow"
 		size = 61x20
 		anchor1 = 85,8
 		anchor2 = 94,12
-		text-color = #004040
-		background-color = #408080
+		text-color = #d6d9df
+		background-color = #2c313a
 		saved-params = "is-checked"
 		text = "Done"
 		command = "buildwindowdone"
@@ -805,8 +805,8 @@ window "Chatpane"
 		anchor2 = 100,100
 		font-size = 9
 		font-style = "bold"
-		text-color = #327899
-		background-color = #090400
+		text-color = #9fb4c4
+		background-color = #15171c
 		is-default = true
 		border = line
 		saved-params = "max-lines"
@@ -833,7 +833,7 @@ window "Chatswitch"
 		anchor1 = 0,0
 		anchor2 = 100,100
 		text-color = #ffffff
-		background-color = #000000
+		background-color = #15171c
 		saved-params = ""
 		tabs = "Chatpane,Attackpane"
 		current-tab = "Chatpane"
@@ -845,7 +845,7 @@ window "CreateAttackWindow"
 		size = 486x680
 		anchor1 = none
 		anchor2 = none
-		background-color = #33676a
+		background-color = #22252c
 		is-visible = false
 		saved-params = "pos;size;is-minimized;is-maximized"
 		can-close = false
@@ -871,8 +871,8 @@ window "CreateAttackWindow"
 		anchor2 = 14,84
 		font-size = 8
 		font-style = "bold"
-		text-color = #bbf7f7
-		background-color = #33676a
+		text-color = #d6d9df
+		background-color = #22252c
 		is-disabled = true
 		saved-params = "is-checked"
 		text = ""
@@ -886,8 +886,8 @@ window "CreateAttackWindow"
 		anchor2 = 23,81
 		font-size = 8
 		font-style = "bold"
-		text-color = #bbf7f7
-		background-color = #33676a
+		text-color = #d6d9df
+		background-color = #22252c
 		saved-params = ""
 		text = "Use Charge Aura?"
 	elem "label11"
@@ -898,8 +898,8 @@ window "CreateAttackWindow"
 		anchor2 = 45,81
 		font-size = 8
 		font-style = "bold"
-		text-color = #bbf7f7
-		background-color = #33676a
+		text-color = #d6d9df
+		background-color = #22252c
 		saved-params = ""
 		text = "Use Attack Aura?"
 	elem "attackauraoverlaycheckbox"
@@ -910,8 +910,8 @@ window "CreateAttackWindow"
 		anchor2 = 36,84
 		font-size = 8
 		font-style = "bold"
-		text-color = #bbf7f7
-		background-color = #33676a
+		text-color = #d6d9df
+		background-color = #22252c
 		is-disabled = true
 		saved-params = "is-checked"
 		text = ""
@@ -925,8 +925,8 @@ window "CreateAttackWindow"
 		anchor2 = 99,85
 		font-size = 8
 		font-style = "bold"
-		text-color = #bbf7f7
-		background-color = #33676a
+		text-color = #d6d9df
+		background-color = #22252c
 		saved-params = ""
 		text = "Shout After Attack?"
 	elem "shoutbeforechecklbl"
@@ -937,8 +937,8 @@ window "CreateAttackWindow"
 		anchor2 = 73,81
 		font-size = 8
 		font-style = "bold"
-		text-color = #bbf7f7
-		background-color = #33676a
+		text-color = #d6d9df
+		background-color = #22252c
 		saved-params = ""
 		text = "Shout During Charge?"
 	elem "shoutaftercheckbox"
@@ -949,8 +949,8 @@ window "CreateAttackWindow"
 		anchor2 = 87,84
 		font-size = 8
 		font-style = "bold"
-		text-color = #bbf7f7
-		background-color = #33676a
+		text-color = #d6d9df
+		background-color = #22252c
 		is-disabled = true
 		saved-params = "is-checked"
 		text = ""
@@ -964,8 +964,8 @@ window "CreateAttackWindow"
 		anchor2 = 61,84
 		font-size = 8
 		font-style = "bold"
-		text-color = #bbf7f7
-		background-color = #33676a
+		text-color = #d6d9df
+		background-color = #22252c
 		is-disabled = true
 		saved-params = "is-checked"
 		text = ""
@@ -977,8 +977,8 @@ window "CreateAttackWindow"
 		size = 227x44
 		anchor1 = 50,70
 		anchor2 = 97,77
-		text-color = #99f2ee
-		background-color = #0e3e43
+		text-color = #d6d9df
+		background-color = #22252c
 		is-disabled = true
 		saved-params = ""
 		multi-line = true
@@ -991,8 +991,8 @@ window "CreateAttackWindow"
 		anchor2 = 87,70
 		font-size = 8
 		font-style = "bold"
-		text-color = #bbf7f7
-		background-color = #33676a
+		text-color = #d6d9df
+		background-color = #22252c
 		saved-params = ""
 		text = "Attack Shout"
 	elem "beforeattacklabel"
@@ -1003,8 +1003,8 @@ window "CreateAttackWindow"
 		anchor2 = 88,59
 		font-size = 8
 		font-style = "bold"
-		text-color = #bbf7f7
-		background-color = #33676a
+		text-color = #d6d9df
+		background-color = #22252c
 		saved-params = ""
 		text = "Charge Shout"
 	elem "attackdescriptionlabel"
@@ -1015,8 +1015,8 @@ window "CreateAttackWindow"
 		anchor2 = 38,59
 		font-size = 8
 		font-style = "bold"
-		text-color = #bbf7f7
-		background-color = #33676a
+		text-color = #d6d9df
+		background-color = #22252c
 		saved-params = ""
 		text = "Description"
 	elem "beforeattacktext"
@@ -1025,8 +1025,8 @@ window "CreateAttackWindow"
 		size = 227x44
 		anchor1 = 50,60
 		anchor2 = 97,67
-		text-color = #99f2ee
-		background-color = #0e3e43
+		text-color = #d6d9df
+		background-color = #22252c
 		is-disabled = true
 		saved-params = ""
 		multi-line = true
@@ -1037,8 +1037,8 @@ window "CreateAttackWindow"
 		size = 227x113
 		anchor1 = 2,60
 		anchor2 = 49,77
-		text-color = #99f2ee
-		background-color = #0e3e43
+		text-color = #d6d9df
+		background-color = #22252c
 		is-disabled = true
 		saved-params = ""
 		multi-line = true
@@ -1049,8 +1049,8 @@ window "CreateAttackWindow"
 		size = 112x241
 		anchor1 = 74,16
 		anchor2 = 98,51
-		text-color = #bbf7f7
-		background-color = #1f3e3f
+		text-color = #d6d9df
+		background-color = #22252c
 		saved-params = ""
 		cells = 1x0
 		current-cell = 1,1
@@ -1065,8 +1065,8 @@ window "CreateAttackWindow"
 		anchor2 = 26,11
 		font-size = 8
 		font-style = "bold"
-		text-color = #bbf7f7
-		background-color = #33676a
+		text-color = #d6d9df
+		background-color = #22252c
 		saved-params = ""
 		text = "5"
 	elem "label28"
@@ -1077,8 +1077,8 @@ window "CreateAttackWindow"
 		anchor2 = 33,8
 		font-size = 8
 		font-style = "bold"
-		text-color = #bbf7f7
-		background-color = #33676a
+		text-color = #d6d9df
+		background-color = #22252c
 		saved-params = ""
 		text = "Customization Points"
 	elem "addmodifierbtn"
@@ -1089,8 +1089,8 @@ window "CreateAttackWindow"
 		anchor2 = 98,55
 		font-size = 8
 		font-style = "bold"
-		text-color = #bbf7f7
-		background-color = #489d9d
+		text-color = #d6d9df
+		background-color = #353b45
 		is-disabled = true
 		saved-params = "is-checked"
 		text = "Add Modifier"
@@ -1103,8 +1103,8 @@ window "CreateAttackWindow"
 		anchor2 = none
 		font-size = 8
 		font-style = "bold"
-		text-color = #bbf7f7
-		background-color = #33676a
+		text-color = #d6d9df
+		background-color = #22252c
 		saved-params = ""
 		text = "Modifiers"
 	elem "usestaminalabel"
@@ -1115,8 +1115,8 @@ window "CreateAttackWindow"
 		anchor2 = 36,44
 		font-size = 8
 		font-style = "bold"
-		text-color = #bbf7f7
-		background-color = #33676a
+		text-color = #d6d9df
+		background-color = #22252c
 		saved-params = ""
 		text = "Use Stamina?"
 	elem "usestaminacheckbox"
@@ -1127,8 +1127,8 @@ window "CreateAttackWindow"
 		anchor2 = 25,48
 		font-size = 8
 		font-style = "bold"
-		text-color = #bbf7f7
-		background-color = #33676a
+		text-color = #d6d9df
+		background-color = #22252c
 		is-disabled = true
 		saved-params = "is-checked"
 		text = ""
@@ -1142,8 +1142,8 @@ window "CreateAttackWindow"
 		anchor2 = 64,44
 		font-size = 8
 		font-style = "bold"
-		text-color = #bbf7f7
-		background-color = #33676a
+		text-color = #d6d9df
+		background-color = #22252c
 		saved-params = ""
 		text = "Stamina Cost"
 	elem "staminacostminus"
@@ -1154,8 +1154,8 @@ window "CreateAttackWindow"
 		anchor2 = 33,48
 		font-size = 8
 		font-style = "bold"
-		text-color = #bbf7f7
-		background-color = #489d9d
+		text-color = #d6d9df
+		background-color = #353b45
 		is-disabled = true
 		saved-params = "is-checked"
 		text = "<"
@@ -1168,8 +1168,8 @@ window "CreateAttackWindow"
 		anchor2 = 71,48
 		font-size = 8
 		font-style = "bold"
-		text-color = #bbf7f7
-		background-color = #489d9d
+		text-color = #d6d9df
+		background-color = #353b45
 		is-disabled = true
 		saved-params = "is-checked"
 		text = ">"
@@ -1182,8 +1182,8 @@ window "CreateAttackWindow"
 		anchor2 = 64,47
 		font-size = 8
 		font-style = "bold"
-		text-color = #bbf7f7
-		background-color = #33676a
+		text-color = #d6d9df
+		background-color = #22252c
 		saved-params = ""
 		text = "0"
 	elem "speeddisplay"
@@ -1194,8 +1194,8 @@ window "CreateAttackWindow"
 		anchor2 = 64,54
 		font-size = 8
 		font-style = "bold"
-		text-color = #bbf7f7
-		background-color = #33676a
+		text-color = #d6d9df
+		background-color = #22252c
 		saved-params = ""
 		text = "0"
 	elem "speedminus"
@@ -1206,8 +1206,8 @@ window "CreateAttackWindow"
 		anchor2 = 33,55
 		font-size = 8
 		font-style = "bold"
-		text-color = #bbf7f7
-		background-color = #489d9d
+		text-color = #d6d9df
+		background-color = #353b45
 		is-disabled = true
 		saved-params = "is-checked"
 		text = "<"
@@ -1220,8 +1220,8 @@ window "CreateAttackWindow"
 		anchor2 = 71,55
 		font-size = 8
 		font-style = "bold"
-		text-color = #bbf7f7
-		background-color = #489d9d
+		text-color = #d6d9df
+		background-color = #353b45
 		is-disabled = true
 		saved-params = "is-checked"
 		text = ">"
@@ -1234,8 +1234,8 @@ window "CreateAttackWindow"
 		anchor2 = 64,51
 		font-size = 8
 		font-style = "bold"
-		text-color = #bbf7f7
-		background-color = #33676a
+		text-color = #d6d9df
+		background-color = #22252c
 		saved-params = ""
 		text = "Beam Speed"
 	elem "kicostdisplay"
@@ -1246,8 +1246,8 @@ window "CreateAttackWindow"
 		anchor2 = 64,40
 		font-size = 8
 		font-style = "bold"
-		text-color = #bbf7f7
-		background-color = #33676a
+		text-color = #d6d9df
+		background-color = #22252c
 		saved-params = ""
 		text = "0"
 	elem "kicostminus"
@@ -1258,8 +1258,8 @@ window "CreateAttackWindow"
 		anchor2 = 33,40
 		font-size = 8
 		font-style = "bold"
-		text-color = #bbf7f7
-		background-color = #489d9d
+		text-color = #d6d9df
+		background-color = #353b45
 		is-disabled = true
 		saved-params = "is-checked"
 		text = "<"
@@ -1272,8 +1272,8 @@ window "CreateAttackWindow"
 		anchor2 = 71,40
 		font-size = 8
 		font-style = "bold"
-		text-color = #bbf7f7
-		background-color = #489d9d
+		text-color = #d6d9df
+		background-color = #353b45
 		is-disabled = true
 		saved-params = "is-checked"
 		text = ">"
@@ -1286,8 +1286,8 @@ window "CreateAttackWindow"
 		anchor2 = 64,36
 		font-size = 8
 		font-style = "bold"
-		text-color = #bbf7f7
-		background-color = #33676a
+		text-color = #d6d9df
+		background-color = #22252c
 		saved-params = ""
 		text = "Ki Cost"
 	elem "chargeattacklabel"
@@ -1298,8 +1298,8 @@ window "CreateAttackWindow"
 		anchor2 = 36,29
 		font-size = 8
 		font-style = "bold"
-		text-color = #bbf7f7
-		background-color = #33676a
+		text-color = #d6d9df
+		background-color = #22252c
 		saved-params = ""
 		text = "Charge Attack?"
 	elem "chargeattackcheckbox"
@@ -1310,8 +1310,8 @@ window "CreateAttackWindow"
 		anchor2 = 25,33
 		font-size = 8
 		font-style = "bold"
-		text-color = #bbf7f7
-		background-color = #33676a
+		text-color = #d6d9df
+		background-color = #22252c
 		is-disabled = true
 		saved-params = "is-checked"
 		text = ""
@@ -1325,8 +1325,8 @@ window "CreateAttackWindow"
 		anchor2 = 64,33
 		font-size = 8
 		font-style = "bold"
-		text-color = #bbf7f7
-		background-color = #33676a
+		text-color = #d6d9df
+		background-color = #22252c
 		saved-params = ""
 		text = "0"
 	elem "chargetimeplus"
@@ -1337,8 +1337,8 @@ window "CreateAttackWindow"
 		anchor2 = 71,33
 		font-size = 8
 		font-style = "bold"
-		text-color = #bbf7f7
-		background-color = #489d9d
+		text-color = #d6d9df
+		background-color = #353b45
 		is-disabled = true
 		saved-params = "is-checked"
 		text = ">"
@@ -1351,8 +1351,8 @@ window "CreateAttackWindow"
 		anchor2 = 33,33
 		font-size = 8
 		font-style = "bold"
-		text-color = #bbf7f7
-		background-color = #489d9d
+		text-color = #d6d9df
+		background-color = #353b45
 		is-disabled = true
 		saved-params = "is-checked"
 		text = "<"
@@ -1365,8 +1365,8 @@ window "CreateAttackWindow"
 		anchor2 = 64,30
 		font-size = 8
 		font-style = "bold"
-		text-color = #bbf7f7
-		background-color = #33676a
+		text-color = #d6d9df
+		background-color = #22252c
 		saved-params = ""
 		text = "Charge Time"
 	elem "actualattackpowerdisplay"
@@ -1377,8 +1377,8 @@ window "CreateAttackWindow"
 		anchor2 = 63,25
 		font-size = 8
 		font-style = "bold"
-		text-color = #bbf7f7
-		background-color = #33676a
+		text-color = #d6d9df
+		background-color = #22252c
 		saved-params = ""
 		text = "0"
 	elem "baseattackpowerdisplay"
@@ -1389,8 +1389,8 @@ window "CreateAttackWindow"
 		anchor2 = 63,19
 		font-size = 8
 		font-style = "bold"
-		text-color = #bbf7f7
-		background-color = #33676a
+		text-color = #d6d9df
+		background-color = #22252c
 		saved-params = ""
 		text = "0"
 	elem "label14"
@@ -1401,8 +1401,8 @@ window "CreateAttackWindow"
 		anchor2 = 64,23
 		font-size = 8
 		font-style = "bold"
-		text-color = #bbf7f7
-		background-color = #33676a
+		text-color = #d6d9df
+		background-color = #22252c
 		saved-params = ""
 		text = "Actual Attack Power"
 	elem "baseattackpowerlbl"
@@ -1413,8 +1413,8 @@ window "CreateAttackWindow"
 		anchor2 = 63,16
 		font-size = 8
 		font-style = "bold"
-		text-color = #bbf7f7
-		background-color = #33676a
+		text-color = #d6d9df
+		background-color = #22252c
 		saved-params = ""
 		text = "Base Attack Power"
 	elem "baseattackpowerminus"
@@ -1425,8 +1425,8 @@ window "CreateAttackWindow"
 		anchor2 = 33,19
 		font-size = 8
 		font-style = "bold"
-		text-color = #bbf7f7
-		background-color = #489d9d
+		text-color = #d6d9df
+		background-color = #353b45
 		is-disabled = true
 		saved-params = "is-checked"
 		text = "<"
@@ -1439,8 +1439,8 @@ window "CreateAttackWindow"
 		anchor2 = 71,19
 		font-size = 8
 		font-style = "bold"
-		text-color = #bbf7f7
-		background-color = #489d9d
+		text-color = #d6d9df
+		background-color = #353b45
 		is-disabled = true
 		saved-params = "is-checked"
 		text = ">"
@@ -1453,8 +1453,8 @@ window "CreateAttackWindow"
 		anchor2 = 99,90
 		font-size = 8
 		font-style = "bold"
-		text-color = #bbf7f7
-		background-color = #489d9d
+		text-color = #d6d9df
+		background-color = #353b45
 		is-disabled = true
 		saved-params = "is-checked"
 		text = "Create!"
@@ -1467,8 +1467,8 @@ window "CreateAttackWindow"
 		anchor2 = 78,90
 		font-size = 8
 		font-style = "bold"
-		text-color = #bbf7f7
-		background-color = #489d9d
+		text-color = #d6d9df
+		background-color = #353b45
 		is-disabled = true
 		saved-params = "is-checked"
 		text = "Select Aura Overlay"
@@ -1481,8 +1481,8 @@ window "CreateAttackWindow"
 		anchor2 = 52,90
 		font-size = 8
 		font-style = "bold"
-		text-color = #bbf7f7
-		background-color = #489d9d
+		text-color = #d6d9df
+		background-color = #353b45
 		is-disabled = true
 		saved-params = "is-checked"
 		text = "Select Beam Icon"
@@ -1495,8 +1495,8 @@ window "CreateAttackWindow"
 		anchor2 = 25,90
 		font-size = 8
 		font-style = "bold"
-		text-color = #bbf7f7
-		background-color = #489d9d
+		text-color = #d6d9df
+		background-color = #353b45
 		is-disabled = true
 		saved-params = "is-checked"
 		text = "Select Charge Icon"
@@ -1509,8 +1509,8 @@ window "CreateAttackWindow"
 		anchor2 = 59,8
 		font-size = 8
 		font-style = "bold"
-		text-color = #bbf7f7
-		background-color = #33676a
+		text-color = #d6d9df
+		background-color = #22252c
 		saved-params = ""
 		text = "Attack Name"
 	elem "attacknameinput"
@@ -1519,8 +1519,8 @@ window "CreateAttackWindow"
 		size = 168x18
 		anchor1 = 33,8
 		anchor2 = 67,11
-		text-color = #99f2ee
-		background-color = #0e3e43
+		text-color = #d6d9df
+		background-color = #22252c
 		is-disabled = true
 		saved-params = ""
 		no-command = true
@@ -1532,8 +1532,8 @@ window "CreateAttackWindow"
 		anchor2 = 74,4
 		font-size = 12
 		font-style = "bold"
-		text-color = #bbf7f7
-		background-color = #33676a
+		text-color = #d6d9df
+		background-color = #22252c
 		saved-params = ""
 		text = "Create Your Attack"
 	elem "attacktypebtn"
@@ -1544,8 +1544,8 @@ window "CreateAttackWindow"
 		anchor2 = 97,11
 		font-size = 8
 		font-style = "bold"
-		text-color = #bbf7f7
-		background-color = #489d9d
+		text-color = #d6d9df
+		background-color = #353b45
 		saved-params = "is-checked"
 		text = "Select Attack Type"
 		command = "PickAttackType"
@@ -1557,7 +1557,7 @@ window "CreateListWindow"
 		size = 640x480
 		anchor1 = none
 		anchor2 = none
-		background-color = #004040
+		background-color = #1b1d23
 		is-visible = false
 		saved-params = "pos;size;is-minimized;is-maximized"
 		title = "Create List"
@@ -1571,8 +1571,8 @@ window "CreateListWindow"
 		size = 60x20
 		anchor1 = none
 		anchor2 = none
-		text-color = #004040
-		background-color = #408080
+		text-color = #d6d9df
+		background-color = #2c313a
 		saved-params = "is-checked"
 		text = "Done"
 		command = "donebutton"
@@ -1582,8 +1582,8 @@ window "CreateListWindow"
 		size = 520x480
 		anchor1 = none
 		anchor2 = none
-		text-color = #408080
-		background-color = #004040
+		text-color = #d6d9df
+		background-color = #1b1d23
 		saved-params = ""
 		cells = 1x0
 		current-cell = 1,1
@@ -1597,7 +1597,7 @@ window "Default"
 		size = 1259x818
 		anchor1 = none
 		anchor2 = none
-		background-color = #c0c0c0
+		background-color = #22252c
 		is-default = true
 		border = sunken
 		drop-zone = true
@@ -1640,7 +1640,7 @@ window "Default"
 		anchor2 = 100,100
 		font-size = 9
 		text-color = #ffffff
-		background-color = #000000
+		background-color = #15171c
 		is-default = true
 		border = line
 		saved-params = ""
@@ -1650,7 +1650,7 @@ window "Default"
 		size = 1259x784
 		anchor1 = 0,0
 		anchor2 = 100,96
-		background-color = #000000
+		background-color = #15171c
 		saved-params = "splitter"
 		left = "lpane"
 		right = "rpane"
@@ -1674,7 +1674,7 @@ window "HealthWindow"
 		size = 185x70
 		anchor1 = none
 		anchor2 = none
-		background-color = #4c4c4c
+		background-color = #22252c
 		is-visible = false
 		is-default = true
 		border = sunken
@@ -1694,7 +1694,7 @@ window "HealthWindow"
 		size = 185x27
 		anchor1 = none
 		anchor2 = none
-		background-color = #4c4c4c
+		background-color = #22252c
 		saved-params = ""
 		text = ""
 	elem "HPNum"
@@ -1703,7 +1703,7 @@ window "HealthWindow"
 		size = 131x11
 		anchor1 = 70,80
 		anchor2 = 100,98
-		background-color = #4c4c4c
+		background-color = #22252c
 		saved-params = ""
 		text = "(100%)"
 	elem "HPPercent"
@@ -1712,7 +1712,7 @@ window "HealthWindow"
 		size = 50x12
 		anchor1 = 70,80
 		anchor2 = 100,98
-		background-color = #4c4c4c
+		background-color = #22252c
 		saved-params = ""
 		text = "(100%)"
 	elem "KINum"
@@ -1721,7 +1721,7 @@ window "HealthWindow"
 		size = 131x11
 		anchor1 = 70,80
 		anchor2 = 100,98
-		background-color = #4c4c4c
+		background-color = #22252c
 		saved-params = ""
 		text = "(100%)"
 	elem "KIPercent"
@@ -1730,7 +1730,7 @@ window "HealthWindow"
 		size = 50x12
 		anchor1 = 70,80
 		anchor2 = 100,98
-		background-color = #4c4c4c
+		background-color = #22252c
 		saved-params = ""
 		text = "(100%)"
 	elem "BP"
@@ -1739,7 +1739,7 @@ window "HealthWindow"
 		size = 21x13
 		anchor1 = 59,80
 		anchor2 = 70,98
-		background-color = #4c4c4c
+		background-color = #22252c
 		saved-params = ""
 		text = "BP"
 	elem "BPPercent"
@@ -1748,7 +1748,7 @@ window "HealthWindow"
 		size = 50x13
 		anchor1 = 70,80
 		anchor2 = 100,98
-		background-color = #4c4c4c
+		background-color = #22252c
 		saved-params = ""
 		text = "(100%)"
 	elem "BPNum"
@@ -1757,7 +1757,7 @@ window "HealthWindow"
 		size = 109x13
 		anchor1 = 0,80
 		anchor2 = 59,98
-		background-color = #4c4c4c
+		background-color = #22252c
 		saved-params = ""
 		text = "1"
 	elem "STBar"
@@ -1766,7 +1766,7 @@ window "HealthWindow"
 		size = 144x11
 		anchor1 = 16,4
 		anchor2 = 94,19
-		background-color = #242424
+		background-color = #15171c
 		saved-params = ""
 		bar-color = #e8e800
 		is-slider = false
@@ -1777,7 +1777,7 @@ window "HealthWindow"
 		size = 144x11
 		anchor1 = 16,4
 		anchor2 = 94,19
-		background-color = #242424
+		background-color = #15171c
 		saved-params = ""
 		bar-color = #005ebb
 		is-slider = false
@@ -1788,7 +1788,7 @@ window "HealthWindow"
 		size = 144x11
 		anchor1 = 16,4
 		anchor2 = 94,19
-		background-color = #242424
+		background-color = #15171c
 		saved-params = ""
 		bar-color = #b30000
 		is-slider = false
@@ -1815,14 +1815,14 @@ window "Infopane"
 		anchor1 = 0,0
 		anchor2 = 100,100
 		font-size = 9
-		text-color = #b3c2ce
-		background-color = #000000
+		text-color = #d6d9df
+		background-color = #15171c
 		is-default = true
 		border = sunken
 		saved-params = ""
 		highlight-color = #ffffff
-		tab-text-color = #afd1d1
-		tab-background-color = #000000
+		tab-text-color = #d6d9df
+		tab-background-color = #15171c
 		tab-font-size = 9
 
 window "InvisibleBrowser"
@@ -1853,7 +1853,7 @@ window "Login_Pane"
 		size = 126x113
 		anchor1 = none
 		anchor2 = none
-		background-color = #22252f
+		background-color = #1b1d23
 		is-visible = false
 		saved-params = "pos;size;is-minimized;is-maximized"
 		title = "Load"
@@ -1868,8 +1868,8 @@ window "Login_Pane"
 		size = 87x20
 		anchor1 = none
 		anchor2 = none
-		text-color = #4e5bbe
-		background-color = #333755
+		text-color = #6fa8c4
+		background-color = #2c313a
 		saved-params = "is-checked"
 		text = "Info"
 		command = "showinfopane"
@@ -1879,8 +1879,8 @@ window "Login_Pane"
 		size = 87x20
 		anchor1 = none
 		anchor2 = none
-		text-color = #4b5ac0
-		background-color = #333755
+		text-color = #6fa8c4
+		background-color = #2c313a
 		saved-params = "is-checked"
 		text = "Load"
 		command = "loadwindow"
@@ -1890,8 +1890,8 @@ window "Login_Pane"
 		size = 87x20
 		anchor1 = none
 		anchor2 = none
-		text-color = #4e5bbe
-		background-color = #333755
+		text-color = #6fa8c4
+		background-color = #2c313a
 		saved-params = "is-checked"
 		text = "New"
 		command = "startnewcharacter"
@@ -1903,7 +1903,7 @@ window "MasteryChoice"
 		size = 329x388
 		anchor1 = none
 		anchor2 = none
-		background-color = #242424
+		background-color = #15171c
 		is-visible = false
 		border = line
 		saved-params = "pos;size;is-minimized;is-maximized"
@@ -1919,7 +1919,7 @@ window "MasteryChoice"
 		size = 60x20
 		anchor1 = none
 		anchor2 = none
-		background-color = #408080
+		background-color = #2c313a
 		saved-params = "is-checked"
 		text = "Lock"
 		command = "LockButton"
@@ -1929,7 +1929,7 @@ window "MasteryChoice"
 		size = 60x20
 		anchor1 = none
 		anchor2 = none
-		background-color = #408080
+		background-color = #2c313a
 		saved-params = "is-checked"
 		text = "Allocate"
 		command = "AllocateButton"
@@ -1939,7 +1939,7 @@ window "MasteryChoice"
 		size = 296x86
 		anchor1 = none
 		anchor2 = none
-		background-color = #408080
+		background-color = #2c313a
 		border = sunken
 		saved-params = ""
 		text = ""
@@ -1951,7 +1951,7 @@ window "MasteryChoice"
 		size = 84x20
 		anchor1 = none
 		anchor2 = none
-		background-color = #408080
+		background-color = #2c313a
 		border = sunken
 		saved-params = ""
 		text = ""
@@ -1961,7 +1961,7 @@ window "MasteryChoice"
 		size = 84x20
 		anchor1 = none
 		anchor2 = none
-		background-color = #408080
+		background-color = #2c313a
 		border = sunken
 		saved-params = ""
 		text = ""
@@ -1971,7 +1971,7 @@ window "MasteryChoice"
 		size = 96x20
 		anchor1 = none
 		anchor2 = none
-		background-color = #408080
+		background-color = #2c313a
 		border = sunken
 		saved-params = ""
 		text = "Level:"
@@ -1983,7 +1983,7 @@ window "MasteryChoice"
 		size = 36x36
 		anchor1 = none
 		anchor2 = none
-		background-color = #242424
+		background-color = #15171c
 		drop-zone = false
 		saved-params = ""
 		cells = 1x1
@@ -1996,7 +1996,7 @@ window "MasteryChoice"
 		size = 200x20
 		anchor1 = none
 		anchor2 = none
-		background-color = #408080
+		background-color = #2c313a
 		border = sunken
 		saved-params = ""
 		text = "Mastery Name"
@@ -2006,7 +2006,7 @@ window "MasteryChoice"
 		size = 192x20
 		anchor1 = none
 		anchor2 = none
-		background-color = #408080
+		background-color = #2c313a
 		border = sunken
 		saved-params = ""
 		text = "Exp:"
@@ -2018,7 +2018,7 @@ window "MasteryChoice"
 		size = 224x92
 		anchor1 = none
 		anchor2 = none
-		background-color = #408080
+		background-color = #2c313a
 		border = sunken
 		saved-params = ""
 		text = ""
@@ -2030,7 +2030,7 @@ window "MasteryChoice"
 		size = 60x20
 		anchor1 = none
 		anchor2 = none
-		background-color = #408080
+		background-color = #2c313a
 		saved-params = "is-checked"
 		text = "Done"
 		command = "DoneButtonM"
@@ -2040,7 +2040,7 @@ window "MasteryChoice"
 		size = 60x20
 		anchor1 = none
 		anchor2 = none
-		background-color = #408080
+		background-color = #2c313a
 		saved-params = "is-checked"
 		text = "Learn"
 		command = "LearnButton"
@@ -2050,7 +2050,7 @@ window "MasteryChoice"
 		size = 296x80
 		anchor1 = none
 		anchor2 = none
-		background-color = #408080
+		background-color = #2c313a
 		border = sunken
 		saved-params = ""
 		text = ""
@@ -2072,7 +2072,7 @@ window "MasteryChoice"
 		size = 327x19
 		anchor1 = 0,0
 		anchor2 = 99,7
-		background-color = #408080
+		background-color = #2c313a
 		border = line
 		saved-params = ""
 		text = "Mastery Info"
@@ -2084,7 +2084,7 @@ window "MasteryWindow"
 		size = 640x480
 		anchor1 = none
 		anchor2 = none
-		background-color = #004040
+		background-color = #1b1d23
 		is-visible = false
 		saved-params = "pos;size;is-minimized;is-maximized"
 		title = "Masteries"
@@ -2097,7 +2097,7 @@ window "MasteryWindow"
 		size = 192x20
 		anchor1 = none
 		anchor2 = none
-		background-color = #408080
+		background-color = #2c313a
 		saved-params = ""
 		text = ""
 	elem "texplabel"
@@ -2106,7 +2106,7 @@ window "MasteryWindow"
 		size = 224x20
 		anchor1 = none
 		anchor2 = none
-		background-color = #408080
+		background-color = #2c313a
 		saved-params = ""
 		text = ""
 		text-wrap = true
@@ -2116,7 +2116,7 @@ window "MasteryWindow"
 		size = 112x20
 		anchor1 = 41,6
 		anchor2 = 59,10
-		background-color = #408080
+		background-color = #2c313a
 		saved-params = ""
 		text = "Insights:"
 	elem "button20"
@@ -2125,7 +2125,7 @@ window "MasteryWindow"
 		size = 60x20
 		anchor1 = 91,0
 		anchor2 = 100,4
-		background-color = #408080
+		background-color = #2c313a
 		border = line
 		saved-params = "is-checked"
 		text = "Done"
@@ -2137,7 +2137,7 @@ window "MasteryWindow"
 		anchor1 = 3,10
 		anchor2 = 98,97
 		text-color = #ffffff
-		background-color = #002424
+		background-color = #15171c
 		saved-params = ""
 		cells = 1x0
 		current-cell = 1,1
@@ -2149,8 +2149,8 @@ window "MasteryWindow"
 		size = 608x24
 		anchor1 = 20,0
 		anchor2 = 80,5
-		text-color = #090400
-		background-color = #408080
+		text-color = #d6d9df
+		background-color = #2c313a
 		border = line
 		saved-params = ""
 		text = "Masteries"
@@ -2173,8 +2173,8 @@ window "MultipurposeGrid"
 		size = 696x56
 		anchor1 = 0,0
 		anchor2 = 100,10
-		text-color = #357575
-		background-color = #004040
+		text-color = #9aa0ab
+		background-color = #1b1d23
 		saved-params = ""
 		text = " TEXT:"
 	elem "multipurposegrid"
@@ -2183,8 +2183,8 @@ window "MultipurposeGrid"
 		size = 696x488
 		anchor1 = 0,10
 		anchor2 = 100,99
-		text-color = #357575
-		background-color = #004040
+		text-color = #9aa0ab
+		background-color = #1b1d23
 		saved-params = ""
 		cells = 1x0
 		current-cell = 1,1
@@ -2198,7 +2198,7 @@ window "SkillTreeWindow"
 		size = 640x552
 		anchor1 = none
 		anchor2 = none
-		background-color = #316262
+		background-color = #22252c
 		is-visible = false
 		saved-params = "pos;size;is-minimized;is-maximized"
 		title = "Skill Trees"
@@ -2212,8 +2212,8 @@ window "SkillTreeWindow"
 		size = 216x36
 		anchor1 = none
 		anchor2 = none
-		text-color = #408080
-		background-color = #004040
+		text-color = #d6d9df
+		background-color = #1b1d23
 		saved-params = ""
 		text = "Skillpoints:"
 		text-wrap = true
@@ -2223,8 +2223,8 @@ window "SkillTreeWindow"
 		size = 60x20
 		anchor1 = none
 		anchor2 = none
-		text-color = #004040
-		background-color = #408080
+		text-color = #d6d9df
+		background-color = #2c313a
 		saved-params = ""
 		text = "Tier 0"
 	elem "SkillTreeTier0Grid"
@@ -2233,8 +2233,8 @@ window "SkillTreeWindow"
 		size = 561x59
 		anchor1 = none
 		anchor2 = none
-		text-color = #408080
-		background-color = #004040
+		text-color = #d6d9df
+		background-color = #1b1d23
 		drop-zone = false
 		saved-params = ""
 		cells = 1x0
@@ -2248,8 +2248,8 @@ window "SkillTreeWindow"
 		size = 60x20
 		anchor1 = none
 		anchor2 = none
-		text-color = #004040
-		background-color = #408080
+		text-color = #d6d9df
+		background-color = #2c313a
 		saved-params = ""
 		text = "Tier 6"
 	elem "SkillTreeTier6Grid"
@@ -2258,8 +2258,8 @@ window "SkillTreeWindow"
 		size = 561x59
 		anchor1 = none
 		anchor2 = none
-		text-color = #408080
-		background-color = #004040
+		text-color = #d6d9df
+		background-color = #1b1d23
 		drop-zone = false
 		saved-params = ""
 		cells = 1x0
@@ -2273,8 +2273,8 @@ window "SkillTreeWindow"
 		size = 60x20
 		anchor1 = none
 		anchor2 = none
-		text-color = #004040
-		background-color = #408080
+		text-color = #d6d9df
+		background-color = #2c313a
 		saved-params = ""
 		text = "Tier 5"
 	elem "SkillTreeTier5Grid"
@@ -2283,8 +2283,8 @@ window "SkillTreeWindow"
 		size = 561x59
 		anchor1 = none
 		anchor2 = none
-		text-color = #408080
-		background-color = #004040
+		text-color = #d6d9df
+		background-color = #1b1d23
 		drop-zone = false
 		saved-params = ""
 		cells = 1x0
@@ -2298,8 +2298,8 @@ window "SkillTreeWindow"
 		size = 60x20
 		anchor1 = none
 		anchor2 = none
-		text-color = #004040
-		background-color = #408080
+		text-color = #d6d9df
+		background-color = #2c313a
 		saved-params = ""
 		text = "Tier 4"
 	elem "SkillTreeTier4Grid"
@@ -2308,8 +2308,8 @@ window "SkillTreeWindow"
 		size = 561x59
 		anchor1 = none
 		anchor2 = none
-		text-color = #408080
-		background-color = #004040
+		text-color = #d6d9df
+		background-color = #1b1d23
 		drop-zone = false
 		saved-params = ""
 		cells = 1x0
@@ -2323,8 +2323,8 @@ window "SkillTreeWindow"
 		size = 60x20
 		anchor1 = none
 		anchor2 = none
-		text-color = #004040
-		background-color = #408080
+		text-color = #d6d9df
+		background-color = #2c313a
 		saved-params = ""
 		text = "Tier 3"
 	elem "SkillTreeTier3Grid"
@@ -2333,8 +2333,8 @@ window "SkillTreeWindow"
 		size = 561x59
 		anchor1 = none
 		anchor2 = none
-		text-color = #408080
-		background-color = #004040
+		text-color = #d6d9df
+		background-color = #1b1d23
 		drop-zone = false
 		saved-params = ""
 		cells = 1x0
@@ -2348,8 +2348,8 @@ window "SkillTreeWindow"
 		size = 60x20
 		anchor1 = none
 		anchor2 = none
-		text-color = #004040
-		background-color = #408080
+		text-color = #d6d9df
+		background-color = #2c313a
 		saved-params = ""
 		text = "Tier 2"
 	elem "SkillTreeTier2Grid"
@@ -2358,8 +2358,8 @@ window "SkillTreeWindow"
 		size = 561x59
 		anchor1 = none
 		anchor2 = none
-		text-color = #408080
-		background-color = #004040
+		text-color = #d6d9df
+		background-color = #1b1d23
 		drop-zone = false
 		saved-params = ""
 		cells = 1x0
@@ -2373,8 +2373,8 @@ window "SkillTreeWindow"
 		size = 60x20
 		anchor1 = none
 		anchor2 = none
-		text-color = #004040
-		background-color = #408080
+		text-color = #d6d9df
+		background-color = #2c313a
 		saved-params = ""
 		text = "Tier 1"
 	elem "button17"
@@ -2383,8 +2383,8 @@ window "SkillTreeWindow"
 		size = 60x20
 		anchor1 = none
 		anchor2 = none
-		text-color = #408080
-		background-color = #004040
+		text-color = #d6d9df
+		background-color = #1b1d23
 		saved-params = "is-checked"
 		text = "Get"
 		command = "gettrees"
@@ -2394,8 +2394,8 @@ window "SkillTreeWindow"
 		size = 216x36
 		anchor1 = none
 		anchor2 = none
-		text-color = #408080
-		background-color = #004040
+		text-color = #d6d9df
+		background-color = #1b1d23
 		saved-params = ""
 		text = "Window Mode:"
 		text-wrap = true
@@ -2405,8 +2405,8 @@ window "SkillTreeWindow"
 		size = 60x20
 		anchor1 = none
 		anchor2 = none
-		text-color = #408080
-		background-color = #004040
+		text-color = #d6d9df
+		background-color = #1b1d23
 		saved-params = "is-checked"
 		text = "Select"
 		command = "selecttrees"
@@ -2416,8 +2416,8 @@ window "SkillTreeWindow"
 		size = 312x52
 		anchor1 = none
 		anchor2 = none
-		text-color = #004040
-		background-color = #408080
+		text-color = #d6d9df
+		background-color = #2c313a
 		saved-params = ""
 		text = "Log: Click on a tree, it'll be opened in the Skill Window, acquired, or refunded depending on mode."
 		align = top-left
@@ -2428,8 +2428,8 @@ window "SkillTreeWindow"
 		size = 60x20
 		anchor1 = none
 		anchor2 = none
-		text-color = #408080
-		background-color = #004040
+		text-color = #d6d9df
+		background-color = #1b1d23
 		saved-params = "is-checked"
 		text = "Refund"
 		command = "refundtree"
@@ -2439,8 +2439,8 @@ window "SkillTreeWindow"
 		size = 60x20
 		anchor1 = none
 		anchor2 = none
-		text-color = #004040
-		background-color = #408080
+		text-color = #d6d9df
+		background-color = #2c313a
 		saved-params = "is-checked"
 		text = "Done"
 		command = "donebutton"
@@ -2450,8 +2450,8 @@ window "SkillTreeWindow"
 		size = 561x59
 		anchor1 = none
 		anchor2 = none
-		text-color = #408080
-		background-color = #004040
+		text-color = #d6d9df
+		background-color = #1b1d23
 		drop-zone = false
 		saved-params = ""
 		cells = 1x0
@@ -2467,7 +2467,7 @@ window "SkillsListWindow"
 		size = 640x560
 		anchor1 = none
 		anchor2 = none
-		background-color = #316262
+		background-color = #22252c
 		is-visible = false
 		saved-params = "pos;size;is-minimized;is-maximized"
 		title = "Skills List"
@@ -2482,8 +2482,8 @@ window "SkillsListWindow"
 		size = 216x36
 		anchor1 = none
 		anchor2 = none
-		text-color = #408080
-		background-color = #004040
+		text-color = #d6d9df
+		background-color = #1b1d23
 		saved-params = ""
 		text = "Skillpoints:"
 		text-wrap = true
@@ -2493,8 +2493,8 @@ window "SkillsListWindow"
 		size = 60x20
 		anchor1 = none
 		anchor2 = none
-		text-color = #004040
-		background-color = #408080
+		text-color = #d6d9df
+		background-color = #2c313a
 		saved-params = ""
 		text = "Tier 0"
 	elem "SkillListTier0Grid"
@@ -2503,8 +2503,8 @@ window "SkillsListWindow"
 		size = 561x59
 		anchor1 = none
 		anchor2 = none
-		text-color = #408080
-		background-color = #004040
+		text-color = #d6d9df
+		background-color = #1b1d23
 		saved-params = ""
 		cells = 1x0
 		current-cell = 1,1
@@ -2517,8 +2517,8 @@ window "SkillsListWindow"
 		size = 60x20
 		anchor1 = none
 		anchor2 = none
-		text-color = #004040
-		background-color = #408080
+		text-color = #d6d9df
+		background-color = #2c313a
 		saved-params = ""
 		text = "Tier 6"
 	elem "SkillListTier6Grid"
@@ -2527,8 +2527,8 @@ window "SkillsListWindow"
 		size = 561x59
 		anchor1 = none
 		anchor2 = none
-		text-color = #408080
-		background-color = #004040
+		text-color = #d6d9df
+		background-color = #1b1d23
 		saved-params = ""
 		cells = 1x0
 		current-cell = 1,1
@@ -2541,8 +2541,8 @@ window "SkillsListWindow"
 		size = 60x20
 		anchor1 = none
 		anchor2 = none
-		text-color = #004040
-		background-color = #408080
+		text-color = #d6d9df
+		background-color = #2c313a
 		saved-params = ""
 		text = "Tier 5"
 	elem "SkillListTier5Grid"
@@ -2551,8 +2551,8 @@ window "SkillsListWindow"
 		size = 561x59
 		anchor1 = none
 		anchor2 = none
-		text-color = #408080
-		background-color = #004040
+		text-color = #d6d9df
+		background-color = #1b1d23
 		saved-params = ""
 		cells = 1x0
 		current-cell = 1,1
@@ -2565,8 +2565,8 @@ window "SkillsListWindow"
 		size = 60x20
 		anchor1 = none
 		anchor2 = none
-		text-color = #004040
-		background-color = #408080
+		text-color = #d6d9df
+		background-color = #2c313a
 		saved-params = ""
 		text = "Tier 4"
 	elem "SkillListTier4Grid"
@@ -2575,8 +2575,8 @@ window "SkillsListWindow"
 		size = 561x59
 		anchor1 = none
 		anchor2 = none
-		text-color = #408080
-		background-color = #004040
+		text-color = #d6d9df
+		background-color = #1b1d23
 		saved-params = ""
 		cells = 1x0
 		current-cell = 1,1
@@ -2589,8 +2589,8 @@ window "SkillsListWindow"
 		size = 60x20
 		anchor1 = none
 		anchor2 = none
-		text-color = #004040
-		background-color = #408080
+		text-color = #d6d9df
+		background-color = #2c313a
 		saved-params = ""
 		text = "Tier 3"
 	elem "SkillListTier3Grid"
@@ -2599,8 +2599,8 @@ window "SkillsListWindow"
 		size = 561x59
 		anchor1 = none
 		anchor2 = none
-		text-color = #408080
-		background-color = #004040
+		text-color = #d6d9df
+		background-color = #1b1d23
 		saved-params = ""
 		cells = 1x0
 		current-cell = 1,1
@@ -2613,8 +2613,8 @@ window "SkillsListWindow"
 		size = 60x20
 		anchor1 = none
 		anchor2 = none
-		text-color = #004040
-		background-color = #408080
+		text-color = #d6d9df
+		background-color = #2c313a
 		saved-params = ""
 		text = "Tier 2"
 	elem "SkillListTier2Grid"
@@ -2623,8 +2623,8 @@ window "SkillsListWindow"
 		size = 561x59
 		anchor1 = none
 		anchor2 = none
-		text-color = #408080
-		background-color = #004040
+		text-color = #d6d9df
+		background-color = #1b1d23
 		saved-params = ""
 		cells = 1x0
 		current-cell = 1,1
@@ -2637,8 +2637,8 @@ window "SkillsListWindow"
 		size = 60x20
 		anchor1 = none
 		anchor2 = none
-		text-color = #004040
-		background-color = #408080
+		text-color = #d6d9df
+		background-color = #2c313a
 		saved-params = ""
 		text = "Tier 1"
 	elem "loglabel"
@@ -2647,8 +2647,8 @@ window "SkillsListWindow"
 		size = 312x52
 		anchor1 = none
 		anchor2 = none
-		text-color = #004040
-		background-color = #408080
+		text-color = #d6d9df
+		background-color = #2c313a
 		saved-params = ""
 		text = "Log: Click on a skill, it'll learned or forgotten depending on mode."
 		align = top-left
@@ -2659,8 +2659,8 @@ window "SkillsListWindow"
 		size = 561x59
 		anchor1 = none
 		anchor2 = none
-		text-color = #408080
-		background-color = #004040
+		text-color = #d6d9df
+		background-color = #1b1d23
 		saved-params = ""
 		cells = 1x0
 		current-cell = 1,1
@@ -2673,8 +2673,8 @@ window "SkillsListWindow"
 		size = 152x20
 		anchor1 = none
 		anchor2 = none
-		text-color = #408080
-		background-color = #004040
+		text-color = #d6d9df
+		background-color = #1b1d23
 		saved-params = ""
 		text = "Mode:"
 	elem "switchrefundlearn"
@@ -2683,8 +2683,8 @@ window "SkillsListWindow"
 		size = 312x20
 		anchor1 = none
 		anchor2 = none
-		text-color = #408080
-		background-color = #004040
+		text-color = #d6d9df
+		background-color = #1b1d23
 		saved-params = ""
 		text = "Switch Refund/Learn Mode"
 	elem "button16"
@@ -2693,8 +2693,8 @@ window "SkillsListWindow"
 		size = 64x20
 		anchor1 = none
 		anchor2 = none
-		text-color = #004040
-		background-color = #408080
+		text-color = #d6d9df
+		background-color = #2c313a
 		saved-params = "is-checked"
 		text = "Learn Skill"
 		command = "learnskill"
@@ -2704,8 +2704,8 @@ window "SkillsListWindow"
 		size = 68x20
 		anchor1 = none
 		anchor2 = none
-		text-color = #004040
-		background-color = #408080
+		text-color = #d6d9df
+		background-color = #2c313a
 		saved-params = "is-checked"
 		text = "Refund Skill"
 		command = "refundskill"
@@ -2715,8 +2715,8 @@ window "SkillsListWindow"
 		size = 152x20
 		anchor1 = none
 		anchor2 = none
-		text-color = #004040
-		background-color = #408080
+		text-color = #d6d9df
+		background-color = #2c313a
 		saved-params = "is-checked"
 		text = "Back To Trees"
 		command = "backbutton"
@@ -2726,8 +2726,8 @@ window "SkillsListWindow"
 		size = 60x20
 		anchor1 = none
 		anchor2 = none
-		text-color = #004040
-		background-color = #408080
+		text-color = #d6d9df
+		background-color = #2c313a
 		saved-params = "is-checked"
 		text = "Done"
 		command = "donebutton"
@@ -2739,7 +2739,7 @@ window "StyleSelector"
 		size = 640x480
 		anchor1 = none
 		anchor2 = none
-		background-color = #004040
+		background-color = #1b1d23
 		is-visible = false
 		saved-params = "pos;size;is-minimized;is-maximized"
 		title = "Style Selection"
@@ -2752,7 +2752,7 @@ window "StyleSelector"
 		size = 60x20
 		anchor1 = none
 		anchor2 = none
-		background-color = #408080
+		background-color = #2c313a
 		border = line
 		saved-params = "is-checked"
 		text = "Clear"
@@ -2763,7 +2763,7 @@ window "StyleSelector"
 		size = 60x20
 		anchor1 = none
 		anchor2 = none
-		background-color = #408080
+		background-color = #2c313a
 		border = line
 		saved-params = "is-checked"
 		text = "Done"
@@ -2774,7 +2774,7 @@ window "StyleSelector"
 		size = 352x56
 		anchor1 = none
 		anchor2 = none
-		background-color = #408080
+		background-color = #2c313a
 		border = sunken
 		saved-params = ""
 		text = ""
@@ -2784,7 +2784,7 @@ window "StyleSelector"
 		size = 216x20
 		anchor1 = none
 		anchor2 = none
-		background-color = #408080
+		background-color = #2c313a
 		border = line
 		saved-params = ""
 		text = "Finish Effect"
@@ -2794,7 +2794,7 @@ window "StyleSelector"
 		size = 352x104
 		anchor1 = none
 		anchor2 = none
-		background-color = #408080
+		background-color = #2c313a
 		border = sunken
 		saved-params = ""
 		text = ""
@@ -2804,7 +2804,7 @@ window "StyleSelector"
 		size = 216x20
 		anchor1 = none
 		anchor2 = none
-		background-color = #408080
+		background-color = #2c313a
 		border = line
 		saved-params = ""
 		text = "Flow Effects"
@@ -2814,7 +2814,7 @@ window "StyleSelector"
 		size = 216x20
 		anchor1 = none
 		anchor2 = none
-		background-color = #408080
+		background-color = #2c313a
 		border = line
 		saved-params = ""
 		text = "Form Effects"
@@ -2824,7 +2824,7 @@ window "StyleSelector"
 		size = 352x104
 		anchor1 = none
 		anchor2 = none
-		background-color = #408080
+		background-color = #2c313a
 		border = sunken
 		saved-params = ""
 		text = ""
@@ -2834,7 +2834,7 @@ window "StyleSelector"
 		size = 216x20
 		anchor1 = none
 		anchor2 = none
-		background-color = #408080
+		background-color = #2c313a
 		border = line
 		saved-params = ""
 		text = "Active Style"
@@ -2844,7 +2844,7 @@ window "StyleSelector"
 		size = 192x36
 		anchor1 = none
 		anchor2 = none
-		background-color = #408080
+		background-color = #2c313a
 		border = sunken
 		drop-zone = false
 		saved-params = ""
@@ -2859,7 +2859,7 @@ window "StyleSelector"
 		size = 200x20
 		anchor1 = none
 		anchor2 = none
-		background-color = #408080
+		background-color = #2c313a
 		border = line
 		saved-params = ""
 		text = "Styles"
@@ -2869,7 +2869,7 @@ window "StyleSelector"
 		size = 200x440
 		anchor1 = none
 		anchor2 = none
-		background-color = #408080
+		background-color = #2c313a
 		border = sunken
 		drop-zone = false
 		saved-params = ""
@@ -2885,7 +2885,7 @@ window "balancewin"
 		size = 382x92
 		anchor1 = none
 		anchor2 = none
-		background-color = #004040
+		background-color = #1b1d23
 		is-visible = false
 		saved-params = "pos;size;is-minimized;is-maximized"
 		titlebar = false
@@ -2897,8 +2897,8 @@ window "balancewin"
 		size = 60x29
 		anchor1 = 0,68
 		anchor2 = 16,100
-		text-color = #008080
-		background-color = #004040
+		text-color = #d6d9df
+		background-color = #1b1d23
 		saved-params = "is-checked"
 		text = "Expel Energy"
 		command = "Expel-Bal"
@@ -2908,7 +2908,7 @@ window "balancewin"
 		size = 304x32
 		anchor1 = 17,61
 		anchor2 = 96,96
-		background-color = #004040
+		background-color = #1b1d23
 		saved-params = ""
 		bar-color = #000000
 		is-slider = true
@@ -2921,7 +2921,7 @@ window "balancewin"
 		size = 304x32
 		anchor1 = 17,35
 		anchor2 = 96,70
-		background-color = #004040
+		background-color = #1b1d23
 		saved-params = ""
 		bar-color = #ffff00
 		is-slider = true
@@ -2935,8 +2935,8 @@ window "balancewin"
 		size = 60x20
 		anchor1 = 0,43
 		anchor2 = 16,65
-		text-color = #008080
-		background-color = #004040
+		text-color = #d6d9df
+		background-color = #1b1d23
 		saved-params = "is-checked"
 		text = "Balance!"
 		command = "Add-Bal"
@@ -2946,8 +2946,8 @@ window "balancewin"
 		size = 352x32
 		anchor1 = 4,0
 		anchor2 = 96,35
-		text-color = #008080
-		background-color = #004040
+		text-color = #d6d9df
+		background-color = #1b1d23
 		saved-params = ""
 		text = "Balance Meter: Get The Black Near The Yellow! \nPress C or the button to increase."
 		text-wrap = true
@@ -2970,7 +2970,7 @@ window "browserwindow"
 		size = 640x480
 		anchor1 = 0,0
 		anchor2 = 100,100
-		background-color = #000000
+		background-color = #15171c
 		is-default = true
 		saved-params = ""
 
@@ -2981,7 +2981,7 @@ window "characterpane"
 		size = 302x203
 		anchor1 = none
 		anchor2 = none
-		background-color = #333755
+		background-color = #2c313a
 		is-visible = false
 		saved-params = "pos;size;is-minimized;is-maximized"
 		statusbar = false
@@ -2992,8 +2992,8 @@ window "characterpane"
 		size = 64x32
 		anchor1 = none
 		anchor2 = none
-		text-color = #4e5bbe
-		background-color = #333755
+		text-color = #6fa8c4
+		background-color = #2c313a
 		saved-params = ""
 		cells = 1x1
 		current-cell = 1,1
@@ -3005,8 +3005,8 @@ window "characterpane"
 		size = 64x32
 		anchor1 = none
 		anchor2 = none
-		text-color = #4e5bbe
-		background-color = #333755
+		text-color = #6fa8c4
+		background-color = #2c313a
 		saved-params = ""
 		cells = 1x1
 		current-cell = 1,1
@@ -3018,8 +3018,8 @@ window "characterpane"
 		size = 64x32
 		anchor1 = none
 		anchor2 = none
-		text-color = #4e5bbe
-		background-color = #333755
+		text-color = #6fa8c4
+		background-color = #2c313a
 		saved-params = ""
 		cells = 1x1
 		current-cell = 1,1
@@ -3031,8 +3031,8 @@ window "characterpane"
 		size = 176x24
 		anchor1 = none
 		anchor2 = none
-		text-color = #4e5bbe
-		background-color = #333755
+		text-color = #6fa8c4
+		background-color = #2c313a
 		saved-params = ""
 		text = ""
 		align = left
@@ -3043,8 +3043,8 @@ window "characterpane"
 		size = 176x24
 		anchor1 = none
 		anchor2 = none
-		text-color = #4e5bbe
-		background-color = #333755
+		text-color = #6fa8c4
+		background-color = #2c313a
 		saved-params = ""
 		text = ""
 		align = left
@@ -3055,8 +3055,8 @@ window "characterpane"
 		size = 176x24
 		anchor1 = none
 		anchor2 = none
-		text-color = #4e5bbe
-		background-color = #333755
+		text-color = #6fa8c4
+		background-color = #2c313a
 		saved-params = ""
 		text = ""
 		align = left
@@ -3067,8 +3067,8 @@ window "characterpane"
 		size = 24x24
 		anchor1 = 40,71
 		anchor2 = 90,83
-		text-color = #4e5bbe
-		background-color = #333755
+		text-color = #6fa8c4
+		background-color = #2c313a
 		saved-params = "is-checked"
 		text = "X"
 		command = "delete1"
@@ -3078,8 +3078,8 @@ window "characterpane"
 		size = 24x24
 		anchor1 = 40,71
 		anchor2 = 90,83
-		text-color = #4e5bbe
-		background-color = #333755
+		text-color = #6fa8c4
+		background-color = #2c313a
 		saved-params = "is-checked"
 		on-size = "deletecharacter"
 		text = "X"
@@ -3090,8 +3090,8 @@ window "characterpane"
 		size = 152x24
 		anchor1 = 40,71
 		anchor2 = 90,83
-		text-color = #4e5bbe
-		background-color = #333755
+		text-color = #6fa8c4
+		background-color = #2c313a
 		saved-params = "is-checked"
 		text = ""
 		command = "loadchar3"
@@ -3101,8 +3101,8 @@ window "characterpane"
 		size = 152x24
 		anchor1 = 40,43
 		anchor2 = 90,55
-		text-color = #4e5bbe
-		background-color = #333755
+		text-color = #6fa8c4
+		background-color = #2c313a
 		saved-params = "is-checked"
 		text = ""
 		command = "loadchar2"
@@ -3112,8 +3112,8 @@ window "characterpane"
 		size = 24x24
 		anchor1 = 40,71
 		anchor2 = 90,83
-		text-color = #4e5bbe
-		background-color = #333755
+		text-color = #6fa8c4
+		background-color = #2c313a
 		saved-params = "is-checked"
 		on-size = "deletecharacter"
 		text = "X"
@@ -3124,8 +3124,8 @@ window "characterpane"
 		size = 152x24
 		anchor1 = 40,16
 		anchor2 = 90,28
-		text-color = #4e5bbe
-		background-color = #333755
+		text-color = #6fa8c4
+		background-color = #2c313a
 		saved-params = "is-checked"
 		text = ""
 		command = "loadchar1"
@@ -3151,8 +3151,8 @@ window "clothingwindow"
 		size = 112x24
 		anchor1 = none
 		anchor2 = none
-		text-color = #b3c2ce
-		background-color = #327899
+		text-color = #d6d9df
+		background-color = #2c313a
 		saved-params = "is-checked"
 		text = "Done"
 		command = "ClothDoneButton"
@@ -3162,8 +3162,8 @@ window "clothingwindow"
 		size = 472x480
 		anchor1 = 0,0
 		anchor2 = 100,100
-		text-color = #b3c2ce
-		background-color = #327899
+		text-color = #d6d9df
+		background-color = #2c313a
 		saved-params = ""
 		cells = 1x0
 		current-cell = 1,1
@@ -3191,8 +3191,8 @@ window "formwindow"
 		size = 112x24
 		anchor1 = none
 		anchor2 = none
-		text-color = #32414e
-		background-color = #939300
+		text-color = #9aa0ab
+		background-color = #2c313a
 		saved-params = "is-checked"
 		text = "Done"
 		command = "ClothDoneButton"
@@ -3202,8 +3202,8 @@ window "formwindow"
 		size = 416x480
 		anchor1 = 0,0
 		anchor2 = 100,100
-		text-color = #b3c2ce
-		background-color = #9b9b00
+		text-color = #d6d9df
+		background-color = #22252c
 		saved-params = ""
 		cells = 1x0
 		current-cell = 1,1
@@ -3217,7 +3217,7 @@ window "hotkeys"
 		size = 790x568
 		anchor1 = none
 		anchor2 = none
-		background-color = #4f2000
+		background-color = #1b1d23
 		is-visible = false
 		border = line
 		saved-params = "pos;size;is-minimized;is-maximized"
@@ -3232,8 +3232,8 @@ window "hotkeys"
 		size = 136x136
 		anchor1 = 80,10
 		anchor2 = 97,34
-		text-color = #808080
-		background-color = #000000
+		text-color = #9aa0ab
+		background-color = #15171c
 		saved-params = ""
 		text = "Toggle between your macros and the default macros.\nKeyable = your macros (defined here) + client macros\nDefault = default macros + client macros."
 		text-wrap = true
@@ -3243,8 +3243,8 @@ window "hotkeys"
 		size = 76x24
 		anchor1 = 67,23
 		anchor2 = 77,27
-		text-color = #004040
-		background-color = #008080
+		text-color = #d6d9df
+		background-color = #2c313a
 		saved-params = "is-checked"
 		text = "Default"
 		command = "predefined"
@@ -3254,8 +3254,8 @@ window "hotkeys"
 		size = 76x24
 		anchor1 = 67,17
 		anchor2 = 77,21
-		text-color = #004040
-		background-color = #408080
+		text-color = #d6d9df
+		background-color = #2c313a
 		saved-params = "is-checked"
 		text = "Keyable"
 		command = "keyables"
@@ -3266,8 +3266,8 @@ window "hotkeys"
 		anchor1 = 67,0
 		anchor2 = 99,4
 		font-size = 8
-		text-color = #c0c0c0
-		background-color = #ffffff
+		text-color = #d6d9df
+		background-color = #2c313a
 		saved-params = "is-checked"
 		text = "CLEAR KEYS"
 		command = "clearkeys"
@@ -3279,8 +3279,8 @@ window "hotkeys"
 		anchor2 = 66,100
 		font-size = 12
 		font-style = "bold"
-		text-color = #808080
-		background-color = #000000
+		text-color = #9aa0ab
+		background-color = #15171c
 		border = line
 		saved-params = ""
 		cells = 1x1
@@ -3293,8 +3293,8 @@ window "hotkeys"
 		size = 283x568
 		anchor1 = 0,0
 		anchor2 = 36,100
-		text-color = #808080
-		background-color = #000000
+		text-color = #9aa0ab
+		background-color = #15171c
 		border = line
 		saved-params = ""
 		cells = 1x1
@@ -3309,7 +3309,7 @@ window "hppane"
 		size = 662x60
 		anchor1 = none
 		anchor2 = none
-		background-color = #000000
+		background-color = #15171c
 		saved-params = "pos;size;is-minimized;is-maximized"
 		title = "HPInbuiltWindow"
 		titlebar = false
@@ -3327,7 +3327,7 @@ window "hppane"
 		font-family = "Segoe UI Semibold"
 		font-size = 11
 		text-color = #ffff80
-		background-color = #000000
+		background-color = #15171c
 		saved-params = ""
 		text = "NT:"
 	elem "currentnutid"
@@ -3336,8 +3336,8 @@ window "hppane"
 		size = 44x20
 		anchor1 = 26,67
 		anchor2 = 33,100
-		text-color = #0080ff
-		background-color = #000000
+		text-color = #6fa8c4
+		background-color = #15171c
 		saved-params = ""
 		text = "%"
 	elem "kinum"
@@ -3346,8 +3346,8 @@ window "hppane"
 		size = 85x20
 		anchor1 = 23,33
 		anchor2 = 36,67
-		text-color = #0080ff
-		background-color = #000000
+		text-color = #6fa8c4
+		background-color = #15171c
 		saved-params = ""
 		text = "Ki:"
 	elem "NameNFile"
@@ -3357,8 +3357,8 @@ window "hppane"
 		anchor1 = 0,0
 		anchor2 = 22,33
 		font-size = 8
-		text-color = #0080ff
-		background-color = #000000
+		text-color = #6fa8c4
+		background-color = #15171c
 		saved-params = ""
 		text = "Name:   File:"
 	elem "label10"
@@ -3367,7 +3367,7 @@ window "hppane"
 		size = 24x20
 		anchor1 = 83,67
 		anchor2 = 87,100
-		background-color = #000000
+		background-color = #15171c
 		saved-params = ""
 		text = ""
 		image = 'Images\\icon.png'
@@ -3381,7 +3381,7 @@ window "hppane"
 		anchor2 = 100,100
 		font-size = 6
 		text-color = #ffffb3
-		background-color = #000000
+		background-color = #15171c
 		saved-params = ""
 		text = "Dragonball Climax"
 	elem "stpercpane"
@@ -3390,8 +3390,8 @@ window "hppane"
 		size = 44x20
 		anchor1 = 8,67
 		anchor2 = 15,100
-		text-color = #0080ff
-		background-color = #000000
+		text-color = #6fa8c4
+		background-color = #15171c
 		saved-params = ""
 		text = "%"
 	elem "kipercpane"
@@ -3400,8 +3400,8 @@ window "hppane"
 		size = 56x20
 		anchor1 = 36,33
 		anchor2 = 44,67
-		text-color = #0080ff
-		background-color = #000000
+		text-color = #6fa8c4
+		background-color = #15171c
 		saved-params = ""
 		text = "%"
 	elem "hppercpane"
@@ -3410,8 +3410,8 @@ window "hppane"
 		size = 60x20
 		anchor1 = 7,33
 		anchor2 = 16,67
-		text-color = #0080ff
-		background-color = #000000
+		text-color = #6fa8c4
+		background-color = #15171c
 		saved-params = ""
 		text = "%"
 	elem "powerpcntpane"
@@ -3420,8 +3420,8 @@ window "hppane"
 		size = 72x18
 		anchor1 = 71,27
 		anchor2 = 82,57
-		text-color = #0080ff
-		background-color = #000000
+		text-color = #6fa8c4
+		background-color = #15171c
 		saved-params = ""
 		text = "100%"
 	elem "bpnumpane"
@@ -3430,8 +3430,8 @@ window "hppane"
 		size = 312x18
 		anchor1 = 53,0
 		anchor2 = 100,27
-		text-color = #0080ff
-		background-color = #000000
+		text-color = #6fa8c4
+		background-color = #15171c
 		saved-params = ""
 		text = "BP:"
 	elem "label9"
@@ -3443,7 +3443,7 @@ window "hppane"
 		font-family = "Segoe UI Semibold"
 		font-size = 11
 		text-color = #dfdf00
-		background-color = #000000
+		background-color = #15171c
 		saved-params = ""
 		text = "ST"
 	elem "label8"
@@ -3454,8 +3454,8 @@ window "hppane"
 		anchor2 = 24,67
 		font-family = "Segoe UI Semibold"
 		font-size = 11
-		text-color = #8282ff
-		background-color = #000000
+		text-color = #6fa8c4
+		background-color = #15171c
 		saved-params = ""
 		text = "KI"
 	elem "label5"
@@ -3467,7 +3467,7 @@ window "hppane"
 		font-family = "Segoe UI Semibold"
 		font-size = 11
 		text-color = #ff0000
-		background-color = #000000
+		background-color = #15171c
 		saved-params = ""
 		text = "HP"
 
@@ -3492,7 +3492,7 @@ window "lpane"
 		size = 640x480
 		anchor1 = 0,0
 		anchor2 = 100,100
-		background-color = #000000
+		background-color = #15171c
 		saved-params = "splitter"
 		left = "hppane"
 		right = "mappane"
@@ -3519,7 +3519,7 @@ window "mappane"
 		size = 479x529
 		anchor1 = 0,0
 		anchor2 = 100,100
-		text-color = #000000
+		text-color = #d6d9df
 		is-default = true
 		border = sunken
 		saved-params = "icon-size"
@@ -3545,8 +3545,8 @@ window "miscwindow"
 		size = 120x40
 		anchor1 = 81,0
 		anchor2 = 100,8
-		text-color = #008080
-		background-color = #004040
+		text-color = #d6d9df
+		background-color = #1b1d23
 		saved-params = ""
 		text = ""
 		text-wrap = true
@@ -3556,8 +3556,8 @@ window "miscwindow"
 		size = 112x24
 		anchor1 = none
 		anchor2 = none
-		text-color = #408080
-		background-color = #004040
+		text-color = #d6d9df
+		background-color = #1b1d23
 		saved-params = "is-checked"
 		text = "Done"
 		command = "DoneButton"
@@ -3567,8 +3567,8 @@ window "miscwindow"
 		size = 520x480
 		anchor1 = 0,0
 		anchor2 = 100,100
-		text-color = #408080
-		background-color = #004040
+		text-color = #d6d9df
+		background-color = #1b1d23
 		saved-params = ""
 		cells = 1x0
 		current-cell = 1,1
@@ -3594,7 +3594,7 @@ window "race_pick"
 		size = 480x533
 		anchor1 = 0,0
 		anchor2 = 68,100
-		background-color = #800080
+		background-color = #22252c
 		saved-params = ""
 		cells = 1x0
 		current-cell = 1,1
@@ -3606,8 +3606,8 @@ window "race_pick"
 		size = 104x24
 		anchor1 = 78,14
 		anchor2 = 93,18
-		text-color = #8080c0
-		background-color = #800080
+		text-color = #6fa8c4
+		background-color = #22252c
 		saved-params = "is-checked"
 		text = "Done"
 		command = "racedone"
@@ -3631,7 +3631,7 @@ window "race_pick_act"
 		size = 667x88
 		anchor1 = 7,57
 		anchor2 = 72,71
-		background-color = #5b7900
+		background-color = #22252c
 		saved-params = ""
 		cells = 1x0
 		current-cell = 1,1
@@ -3720,7 +3720,7 @@ window "race_pick_act"
 		size = 667x328
 		anchor1 = 7,0
 		anchor2 = 72,49
-		background-color = #5b7900
+		background-color = #22252c
 		drop-zone = false
 		saved-params = ""
 		cells = 1x0
@@ -3748,7 +3748,7 @@ window "rit_wind"
 		size = 64x64
 		anchor1 = 11,48
 		anchor2 = 21,59
-		background-color = #808080
+		background-color = #22252c
 		saved-params = ""
 		cells = 1x0
 		current-cell = 1,1
@@ -3760,7 +3760,7 @@ window "rit_wind"
 		size = 64x64
 		anchor1 = 11,48
 		anchor2 = 21,59
-		background-color = #808080
+		background-color = #22252c
 		saved-params = ""
 		cells = 1x0
 		current-cell = 1,1
@@ -3772,7 +3772,7 @@ window "rit_wind"
 		size = 64x64
 		anchor1 = 11,48
 		anchor2 = 21,59
-		background-color = #808080
+		background-color = #22252c
 		saved-params = ""
 		cells = 1x0
 		current-cell = 1,1
@@ -3784,7 +3784,7 @@ window "rit_wind"
 		size = 64x64
 		anchor1 = 11,48
 		anchor2 = 21,59
-		background-color = #808080
+		background-color = #22252c
 		saved-params = ""
 		cells = 1x0
 		current-cell = 1,1
@@ -3796,7 +3796,7 @@ window "rit_wind"
 		size = 64x64
 		anchor1 = 11,48
 		anchor2 = 21,59
-		background-color = #808080
+		background-color = #22252c
 		saved-params = ""
 		cells = 1x0
 		current-cell = 1,1
@@ -3823,8 +3823,8 @@ window "rpane"
 		size = 136x20
 		anchor1 = 26,96
 		anchor2 = 51,100
-		text-color = #b7ccc8
-		background-color = #000000
+		text-color = #d6d9df
+		background-color = #15171c
 		border = sunken
 		saved-params = "is-checked"
 		text = "LOOC"
@@ -3835,7 +3835,7 @@ window "rpane"
 		size = 552x472
 		anchor1 = 0,0
 		anchor2 = 100,96
-		background-color = #000000
+		background-color = #15171c
 		saved-params = "splitter"
 		left = "Infopane"
 		right = "Chatswitch"
@@ -3846,8 +3846,8 @@ window "rpane"
 		size = 144x20
 		anchor1 = 0,96
 		anchor2 = 26,100
-		text-color = #b7ccc8
-		background-color = #000000
+		text-color = #d6d9df
+		background-color = #15171c
 		border = sunken
 		saved-params = "is-checked"
 		text = "OOC"
@@ -3858,8 +3858,8 @@ window "rpane"
 		size = 136x20
 		anchor1 = 51,96
 		anchor2 = 75,100
-		text-color = #c2d1ce
-		background-color = #000000
+		text-color = #d6d9df
+		background-color = #15171c
 		border = sunken
 		saved-params = "is-checked"
 		text = "Say"
@@ -3870,8 +3870,8 @@ window "rpane"
 		size = 136x20
 		anchor1 = 75,96
 		anchor2 = 100,100
-		text-color = #bccbc8
-		background-color = #000000
+		text-color = #d6d9df
+		background-color = #15171c
 		border = sunken
 		saved-params = "is-checked"
 		text = " Emote"
@@ -3892,8 +3892,8 @@ window "sensewindow"
 		size = 200x457
 		anchor1 = 0,0
 		anchor2 = 100,100
-		text-color = #408080
-		background-color = #004040
+		text-color = #d6d9df
+		background-color = #1b1d23
 		saved-params = ""
 		cells = 1x0
 		current-cell = 1,1
@@ -3908,7 +3908,7 @@ window "stylewindow"
 		size = 416x480
 		anchor1 = none
 		anchor2 = none
-		background-color = #1d3838
+		background-color = #22252c
 		is-visible = false
 		saved-params = "pos;size;is-minimized;is-maximized"
 		title = "Style Config"
@@ -3922,8 +3922,8 @@ window "stylewindow"
 		size = 292x24
 		anchor1 = none
 		anchor2 = none
-		text-color = #008080
-		background-color = #004040
+		text-color = #d6d9df
+		background-color = #1b1d23
 		saved-params = ""
 		text = ""
 	elem "kideflabel"
@@ -3932,8 +3932,8 @@ window "stylewindow"
 		size = 160x22
 		anchor1 = none
 		anchor2 = none
-		text-color = #004040
-		background-color = #408080
+		text-color = #d6d9df
+		background-color = #2c313a
 		saved-params = ""
 		text = ""
 	elem "kidefup"
@@ -3942,8 +3942,8 @@ window "stylewindow"
 		size = 128x24
 		anchor1 = none
 		anchor2 = none
-		text-color = #004040
-		background-color = #408080
+		text-color = #d6d9df
+		background-color = #2c313a
 		saved-params = "is-checked"
 		text = ">"
 		command = "Addkidef"
@@ -3953,8 +3953,8 @@ window "stylewindow"
 		size = 128x24
 		anchor1 = none
 		anchor2 = none
-		text-color = #004040
-		background-color = #408080
+		text-color = #d6d9df
+		background-color = #2c313a
 		saved-params = "is-checked"
 		text = "<"
 		command = "Subtractkidef"
@@ -3964,8 +3964,8 @@ window "stylewindow"
 		size = 160x24
 		anchor1 = none
 		anchor2 = none
-		text-color = #408080
-		background-color = #004040
+		text-color = #d6d9df
+		background-color = #1b1d23
 		saved-params = ""
 		text = ""
 	elem "kiregenlabel"
@@ -3974,8 +3974,8 @@ window "stylewindow"
 		size = 160x24
 		anchor1 = none
 		anchor2 = none
-		text-color = #004040
-		background-color = #408080
+		text-color = #d6d9df
+		background-color = #2c313a
 		saved-params = ""
 		text = ""
 	elem "speedlabel"
@@ -3984,8 +3984,8 @@ window "stylewindow"
 		size = 160x24
 		anchor1 = none
 		anchor2 = none
-		text-color = #408080
-		background-color = #004040
+		text-color = #d6d9df
+		background-color = #1b1d23
 		saved-params = ""
 		text = ""
 	elem "kiskilllabel"
@@ -3994,8 +3994,8 @@ window "stylewindow"
 		size = 160x24
 		anchor1 = none
 		anchor2 = none
-		text-color = #408080
-		background-color = #004040
+		text-color = #d6d9df
+		background-color = #1b1d23
 		saved-params = ""
 		text = ""
 	elem "kiofflabel"
@@ -4004,8 +4004,8 @@ window "stylewindow"
 		size = 160x24
 		anchor1 = none
 		anchor2 = none
-		text-color = #408080
-		background-color = #004040
+		text-color = #d6d9df
+		background-color = #1b1d23
 		saved-params = ""
 		text = ""
 	elem "techlabel"
@@ -4014,8 +4014,8 @@ window "stylewindow"
 		size = 160x23
 		anchor1 = none
 		anchor2 = none
-		text-color = #004040
-		background-color = #408080
+		text-color = #d6d9df
+		background-color = #2c313a
 		saved-params = ""
 		text = ""
 	elem "physdeflabel"
@@ -4024,8 +4024,8 @@ window "stylewindow"
 		size = 160x24
 		anchor1 = none
 		anchor2 = none
-		text-color = #004040
-		background-color = #408080
+		text-color = #d6d9df
+		background-color = #2c313a
 		saved-params = ""
 		text = ""
 	elem "physofflabel"
@@ -4034,8 +4034,8 @@ window "stylewindow"
 		size = 160x24
 		anchor1 = none
 		anchor2 = none
-		text-color = #408080
-		background-color = #004040
+		text-color = #d6d9df
+		background-color = #1b1d23
 		saved-params = ""
 		text = ""
 	elem "physoffup"
@@ -4044,8 +4044,8 @@ window "stylewindow"
 		size = 128x24
 		anchor1 = none
 		anchor2 = none
-		text-color = #408080
-		background-color = #004040
+		text-color = #d6d9df
+		background-color = #1b1d23
 		saved-params = "is-checked"
 		text = ">"
 		command = "Addphysoff"
@@ -4055,8 +4055,8 @@ window "stylewindow"
 		size = 128x24
 		anchor1 = none
 		anchor2 = none
-		text-color = #004040
-		background-color = #408080
+		text-color = #d6d9df
+		background-color = #2c313a
 		saved-params = "is-checked"
 		text = ">"
 		command = "Addphysdef"
@@ -4066,8 +4066,8 @@ window "stylewindow"
 		size = 128x24
 		anchor1 = none
 		anchor2 = none
-		text-color = #004040
-		background-color = #408080
+		text-color = #d6d9df
+		background-color = #2c313a
 		saved-params = "is-checked"
 		text = ">"
 		command = "Addtech"
@@ -4077,8 +4077,8 @@ window "stylewindow"
 		size = 128x24
 		anchor1 = none
 		anchor2 = none
-		text-color = #408080
-		background-color = #004040
+		text-color = #d6d9df
+		background-color = #1b1d23
 		saved-params = "is-checked"
 		text = ">"
 		command = "Addkioff"
@@ -4088,8 +4088,8 @@ window "stylewindow"
 		size = 128x24
 		anchor1 = none
 		anchor2 = none
-		text-color = #408080
-		background-color = #004040
+		text-color = #d6d9df
+		background-color = #1b1d23
 		saved-params = "is-checked"
 		text = ">"
 		command = "Addkiskill"
@@ -4099,8 +4099,8 @@ window "stylewindow"
 		size = 128x24
 		anchor1 = none
 		anchor2 = none
-		text-color = #408080
-		background-color = #004040
+		text-color = #d6d9df
+		background-color = #1b1d23
 		saved-params = "is-checked"
 		text = ">"
 		command = "Addspeed"
@@ -4110,8 +4110,8 @@ window "stylewindow"
 		size = 128x24
 		anchor1 = none
 		anchor2 = none
-		text-color = #004040
-		background-color = #408080
+		text-color = #d6d9df
+		background-color = #2c313a
 		saved-params = "is-checked"
 		on-size = "Addkiregen"
 		text = ">"
@@ -4122,8 +4122,8 @@ window "stylewindow"
 		size = 128x24
 		anchor1 = none
 		anchor2 = none
-		text-color = #408080
-		background-color = #004040
+		text-color = #d6d9df
+		background-color = #1b1d23
 		saved-params = "is-checked"
 		text = ">"
 		command = "Addstamina"
@@ -4133,8 +4133,8 @@ window "stylewindow"
 		size = 128x24
 		anchor1 = none
 		anchor2 = none
-		text-color = #408080
-		background-color = #004040
+		text-color = #d6d9df
+		background-color = #1b1d23
 		saved-params = "is-checked"
 		text = "<"
 		command = "Subtractphysoff"
@@ -4144,8 +4144,8 @@ window "stylewindow"
 		size = 128x24
 		anchor1 = none
 		anchor2 = none
-		text-color = #004040
-		background-color = #408080
+		text-color = #d6d9df
+		background-color = #2c313a
 		saved-params = "is-checked"
 		text = "<"
 		command = "Subtractphysdef"
@@ -4155,8 +4155,8 @@ window "stylewindow"
 		size = 128x24
 		anchor1 = none
 		anchor2 = none
-		text-color = #004040
-		background-color = #408080
+		text-color = #d6d9df
+		background-color = #2c313a
 		saved-params = "is-checked"
 		text = "<"
 		command = "Subtracttech"
@@ -4166,8 +4166,8 @@ window "stylewindow"
 		size = 128x24
 		anchor1 = none
 		anchor2 = none
-		text-color = #408080
-		background-color = #004040
+		text-color = #d6d9df
+		background-color = #1b1d23
 		saved-params = "is-checked"
 		text = "<"
 		command = "Subtractkioff"
@@ -4177,8 +4177,8 @@ window "stylewindow"
 		size = 128x24
 		anchor1 = none
 		anchor2 = none
-		text-color = #408080
-		background-color = #004040
+		text-color = #d6d9df
+		background-color = #1b1d23
 		saved-params = "is-checked"
 		text = "<"
 		command = "Subtractkiskill"
@@ -4188,8 +4188,8 @@ window "stylewindow"
 		size = 128x21
 		anchor1 = none
 		anchor2 = none
-		text-color = #408080
-		background-color = #004040
+		text-color = #d6d9df
+		background-color = #1b1d23
 		saved-params = "is-checked"
 		text = "<"
 		command = "Subtractspeed"
@@ -4199,8 +4199,8 @@ window "stylewindow"
 		size = 128x24
 		anchor1 = none
 		anchor2 = none
-		text-color = #004040
-		background-color = #408080
+		text-color = #d6d9df
+		background-color = #2c313a
 		saved-params = "is-checked"
 		text = "<"
 		command = "Subtractkiregen"
@@ -4210,8 +4210,8 @@ window "stylewindow"
 		size = 128x24
 		anchor1 = none
 		anchor2 = none
-		text-color = #408080
-		background-color = #004040
+		text-color = #d6d9df
+		background-color = #1b1d23
 		saved-params = "is-checked"
 		text = "<"
 		command = "Subtractstamina"
@@ -4221,8 +4221,8 @@ window "stylewindow"
 		size = 139x24
 		anchor1 = none
 		anchor2 = none
-		text-color = #408080
-		background-color = #004040
+		text-color = #d6d9df
+		background-color = #1b1d23
 		saved-params = ""
 		text = "Add Skillpoints"
 	elem "label4"
@@ -4231,8 +4231,8 @@ window "stylewindow"
 		size = 138x24
 		anchor1 = none
 		anchor2 = none
-		text-color = #408080
-		background-color = #004040
+		text-color = #d6d9df
+		background-color = #1b1d23
 		saved-params = ""
 		text = "Subtract Skillpoints"
 	elem "button11"
@@ -4241,8 +4241,8 @@ window "stylewindow"
 		size = 60x32
 		anchor1 = none
 		anchor2 = none
-		text-color = #408080
-		background-color = #004040
+		text-color = #d6d9df
+		background-color = #1b1d23
 		saved-params = "is-checked"
 		text = "Change Desc"
 		command = "StyleDescButton"
@@ -4252,8 +4252,8 @@ window "stylewindow"
 		size = 60x32
 		anchor1 = none
 		anchor2 = none
-		text-color = #408080
-		background-color = #004040
+		text-color = #d6d9df
+		background-color = #1b1d23
 		saved-params = "is-checked"
 		text = "Change Name"
 		command = "StyleNameButton"
@@ -4263,8 +4263,8 @@ window "stylewindow"
 		size = 60x32
 		anchor1 = none
 		anchor2 = none
-		text-color = #408080
-		background-color = #004040
+		text-color = #d6d9df
+		background-color = #1b1d23
 		saved-params = "is-checked"
 		text = "Counter Flavor"
 		command = "CounterFlavorButton"
@@ -4274,8 +4274,8 @@ window "stylewindow"
 		size = 60x32
 		anchor1 = none
 		anchor2 = none
-		text-color = #408080
-		background-color = #004040
+		text-color = #d6d9df
+		background-color = #1b1d23
 		saved-params = "is-checked"
 		text = "Dodge Flavor"
 		command = "DodgeFlavorButton"
@@ -4285,8 +4285,8 @@ window "stylewindow"
 		size = 60x32
 		anchor1 = none
 		anchor2 = none
-		text-color = #408080
-		background-color = #004040
+		text-color = #d6d9df
+		background-color = #1b1d23
 		saved-params = "is-checked"
 		text = "Attack Flavor"
 		command = "AttackFlavorButton"
@@ -4296,8 +4296,8 @@ window "stylewindow"
 		size = 139x24
 		anchor1 = none
 		anchor2 = none
-		text-color = #004040
-		background-color = #408080
+		text-color = #d6d9df
+		background-color = #2c313a
 		saved-params = ""
 		text = "Name of Stat And Value"
 	elem "allocatedlabel"
@@ -4306,8 +4306,8 @@ window "stylewindow"
 		size = 292x24
 		anchor1 = none
 		anchor2 = none
-		text-color = #008080
-		background-color = #004040
+		text-color = #d6d9df
+		background-color = #1b1d23
 		saved-params = ""
 		text = "Allocated Skillpoints:"
 	elem "PickStyle"
@@ -4316,8 +4316,8 @@ window "stylewindow"
 		size = 60x20
 		anchor1 = none
 		anchor2 = none
-		text-color = #408080
-		background-color = #004040
+		text-color = #d6d9df
+		background-color = #1b1d23
 		saved-params = "is-checked"
 		text = "Pick Style"
 		command = "PickStyleButton"
@@ -4327,8 +4327,8 @@ window "stylewindow"
 		size = 60x20
 		anchor1 = none
 		anchor2 = none
-		text-color = #408080
-		background-color = #004040
+		text-color = #d6d9df
+		background-color = #1b1d23
 		saved-params = "is-checked"
 		text = "Done"
 		command = "DoneButton"
@@ -4338,8 +4338,8 @@ window "stylewindow"
 		size = 192x48
 		anchor1 = none
 		anchor2 = none
-		text-color = #004040
-		background-color = #408080
+		text-color = #d6d9df
+		background-color = #2c313a
 		saved-params = ""
 		text = "Style Name: Description"
 		text-wrap = true
@@ -4349,8 +4349,8 @@ window "stylewindow"
 		size = 292x24
 		anchor1 = none
 		anchor2 = none
-		text-color = #008080
-		background-color = #004040
+		text-color = #d6d9df
+		background-color = #1b1d23
 		saved-params = ""
 		text = "Unallocated Skillpoints:"
 	elem "ResetButton"
@@ -4359,8 +4359,8 @@ window "stylewindow"
 		size = 60x20
 		anchor1 = none
 		anchor2 = none
-		text-color = #408080
-		background-color = #004040
+		text-color = #d6d9df
+		background-color = #1b1d23
 		saved-params = "is-checked"
 		text = "Reset"
 		command = "ResetButton"
@@ -4372,7 +4372,7 @@ window "EditPage"
 		size = 361x396
 		anchor1 = none
 		anchor2 = none
-		background-color = #646464
+		background-color = #22252c
 		is-visible = false
 		saved-params = "pos;size;is-minimized;is-maximized"
 		title = "Edit"
@@ -4386,7 +4386,7 @@ window "EditPage"
 		size = 256x20
 		anchor1 = none
 		anchor2 = none
-		background-color = #b4b4b4
+		background-color = #22252c
 		border = sunken
 		saved-params = ""
 		command = "EditSearch"
@@ -4396,7 +4396,7 @@ window "EditPage"
 		size = 80x20
 		anchor1 = none
 		anchor2 = none
-		background-color = #b4b4b4
+		background-color = #22252c
 		saved-params = ""
 		text = "Search"
 	elem "SelectedOut"
@@ -4405,7 +4405,7 @@ window "EditPage"
 		size = 256x20
 		anchor1 = none
 		anchor2 = none
-		background-color = #b4b4b4
+		background-color = #22252c
 		border = sunken
 		saved-params = "max-lines"
 		max-lines = 1
@@ -4415,7 +4415,7 @@ window "EditPage"
 		size = 80x20
 		anchor1 = none
 		anchor2 = none
-		background-color = #b4b4b4
+		background-color = #22252c
 		saved-params = "is-checked"
 		text = "Null"
 		command = "ChangeValue \"Null\""
@@ -4425,7 +4425,7 @@ window "EditPage"
 		size = 80x20
 		anchor1 = none
 		anchor2 = none
-		background-color = #b4b4b4
+		background-color = #22252c
 		saved-params = "is-checked"
 		text = "Reference"
 		command = "ChangeValue \"Loc\""
@@ -4435,7 +4435,7 @@ window "EditPage"
 		size = 80x20
 		anchor1 = none
 		anchor2 = none
-		background-color = #b4b4b4
+		background-color = #22252c
 		saved-params = "is-checked"
 		text = "Default"
 		command = "ChangeValue \"Default\""
@@ -4445,7 +4445,7 @@ window "EditPage"
 		size = 80x20
 		anchor1 = none
 		anchor2 = none
-		background-color = #b4b4b4
+		background-color = #22252c
 		saved-params = "is-checked"
 		text = "Type"
 		command = "ChangeValue \"Type\""
@@ -4455,7 +4455,7 @@ window "EditPage"
 		size = 80x20
 		anchor1 = none
 		anchor2 = none
-		background-color = #b4b4b4
+		background-color = #22252c
 		saved-params = "is-checked"
 		text = "File"
 		command = "ChangeValue \"File\""
@@ -4465,7 +4465,7 @@ window "EditPage"
 		size = 80x20
 		anchor1 = none
 		anchor2 = none
-		background-color = #b4b4b4
+		background-color = #22252c
 		saved-params = "is-checked"
 		text = "Number"
 		command = "ChangeValue \"Num\""
@@ -4475,7 +4475,7 @@ window "EditPage"
 		size = 80x20
 		anchor1 = none
 		anchor2 = none
-		background-color = #b4b4b4
+		background-color = #22252c
 		saved-params = "is-checked"
 		text = "Icon"
 		command = "ChangeValue \"Icon\""
@@ -4485,7 +4485,7 @@ window "EditPage"
 		size = 80x20
 		anchor1 = none
 		anchor2 = none
-		background-color = #b4b4b4
+		background-color = #22252c
 		saved-params = "is-checked"
 		text = "Text"
 		command = "ChangeValue \"Text\""
@@ -4495,7 +4495,7 @@ window "EditPage"
 		size = 256x20
 		anchor1 = none
 		anchor2 = none
-		background-color = #b4b4b4
+		background-color = #22252c
 		border = sunken
 		saved-params = "max-lines"
 		max-lines = 1
@@ -4505,7 +4505,7 @@ window "EditPage"
 		size = 256x20
 		anchor1 = none
 		anchor2 = none
-		background-color = #b4b4b4
+		background-color = #22252c
 		border = sunken
 		saved-params = "max-lines"
 		max-lines = 1
@@ -4515,7 +4515,7 @@ window "EditPage"
 		size = 361x6
 		anchor1 = none
 		anchor2 = none
-		background-color = #000000
+		background-color = #15171c
 		saved-params = ""
 		text = ""
 	elem "label46"
@@ -4524,7 +4524,7 @@ window "EditPage"
 		size = 80x20
 		anchor1 = none
 		anchor2 = none
-		background-color = #b4b4b4
+		background-color = #22252c
 		saved-params = ""
 		text = "Current Value"
 	elem "label42"
@@ -4533,7 +4533,7 @@ window "EditPage"
 		size = 80x20
 		anchor1 = none
 		anchor2 = none
-		background-color = #b4b4b4
+		background-color = #22252c
 		saved-params = ""
 		text = "Selected Var"
 	elem "label36"
@@ -4542,7 +4542,7 @@ window "EditPage"
 		size = 80x20
 		anchor1 = none
 		anchor2 = none
-		background-color = #b4b4b4
+		background-color = #22252c
 		saved-params = ""
 		text = "Selected"
 	elem "VarGrid"
@@ -4551,8 +4551,8 @@ window "EditPage"
 		size = 345x200
 		anchor1 = none
 		anchor2 = none
-		text-color = #c9c9c9
-		background-color = #1e1e1e
+		text-color = #d6d9df
+		background-color = #15171c
 		saved-params = ""
 		cells = 1x1
 		current-cell = 1,1
@@ -4566,8 +4566,8 @@ window "EditPage"
 		size = 8x12
 		anchor1 = none
 		anchor2 = none
-		text-color = #d7d7d7
-		background-color = #1e1e1e
+		text-color = #d6d9df
+		background-color = #15171c
 		is-visible = false
 		saved-params = "is-checked"
 		text = "<"
