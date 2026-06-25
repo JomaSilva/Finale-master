@@ -107,69 +107,19 @@
 
 /datum/skill/heran/MstedMXPWR/effector()
 	..()
-	switch(level)
-		if(0)
-			if(levelup)
-				levelup = 0
-			if(savant.ssj)
-				exp+=1
-		if(1)
-			if(levelup)
-				levelup = 0
-				savant << "You've just accomplished a milestone in your efforts to master your transformation!"
-				savant.ssjmult*=1.2
-				savant.ssjdrain = 0.20
-				expbarrier=4000
-			if(savant.ssj)
-				exp+=1
-		if(2)
-			if(levelup)
-				levelup = 0
-				savant << "You've just accomplished a milestone in your efforts to master your transformation!"
-				savant.ssjmult*=1.4
-				savant.ssjdrain = 0.10
-				expbarrier=8000
-			if(savant.ssj)
-				exp+=1
-		if(3)
-			if(levelup)
-				levelup = 0
-				savant << "You've just completely mastered your transformation!!"
-				savant.ssjmult*=1.2
-				savant.ssjdrain = 0.01
+	//Maestria do Super Heran 1 agora cresce em % no buff Loop (HeranBuff.dm); multiplicador/dreno em degraus pela %. Base (ssjmult) nao e mais alterada aqui.
 
 /datum/skill/heran/MstedTMXPWR/effector() //was TMstedMXPWR (typo) - the effector now attaches to the constituent skill that is actually learned, so SSJ2 Heran gains mastery from use
 	..()
-	switch(level)
-		if(0)
-			if(levelup)
-				levelup = 0
-			if(savant.ssj)
-				exp+=1
-		if(1)
-			if(levelup)
-				levelup = 0
-				savant << "You've just accomplished a milestone in your efforts to master your transformation!"
-				savant.ssj2mult*=1.2
-				savant.ssj2drain = 0.25
-				expbarrier=5000
-			if(savant.ssj==2)
-				exp+=1
-		if(2)
-			if(levelup)
-				levelup = 0
-				savant << "You've just accomplished a milestone in your efforts to master your transformation!"
-				savant.ssj2mult*=1.4
-				savant.ssj2drain = 0.15
-				expbarrier=8000
-			if(savant.ssj==2)
-				exp+=1
-		if(3)
-			if(levelup)
-				levelup = 0
-				savant << "You've just completely mastered your transformation!!"
-				savant.ssj2mult*=1.2
-				savant.ssj2drain = 0.05
+	//Maestria do Super Heran 2 agora cresce em % no buff Loop (HeranBuff.dm); multiplicador/dreno em degraus pela %. Base (ssj2mult) nao e mais alterada aqui.
+
+/datum/skill/heran/MstedMXPWR/login(var/mob/logger)
+	..()
+	logger.migrate_heran_mastery()
+
+/datum/skill/heran/MstedTMXPWR/login(var/mob/logger)
+	..()
+	logger.migrate_heran_mastery()
 
 
 /datum/skill/heran/Energy_Blues

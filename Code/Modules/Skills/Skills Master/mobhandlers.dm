@@ -55,6 +55,14 @@ mob/proc/canLearnSkill(datum/skill/S)
 		if(src.Class in allowedclass)	return TRUE
 	return FALSE
 
+mob/proc/skillUnlockOK(datum/skill/S) //pode este mob desbloquear S por classe/raca? (sem restricao = sim). Usado pelo testskillprereqs das arvores.
+	if(!S.compatible_races.len && !S.compatible_classes.len) return TRUE
+	for(var/allowedrace in S.compatible_races)
+		if(src.Race in allowedrace) return TRUE
+	for(var/allowedclass in S.compatible_classes)
+		if(src.Class in allowedclass) return TRUE
+	return FALSE
+
 mob/proc/learnSkill(datum/skill/S, var/baselevel)
 	S.learn(src, baselevel)
 

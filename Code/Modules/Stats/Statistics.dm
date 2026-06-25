@@ -290,18 +290,23 @@ mob/proc
 		if(Kk && Kk.level >= 1)
 			shown = 1
 			stat("Kaio-Ken","Mastered up to x[round(KaiokenMastery)] (current x[round(KaiokenMastery,0.1)])")
-		if(Class == "Legendary")
+		if(Class == "Legendary" && Race != "Heran") //Herans podem rolar Class=="Legendary"; o ramo Heran abaixo tem prioridade
 			if(hasssj)
 				shown = 1
 				stat("Restrained SSJ","power x[restssjmult]")
 				stat("Unrestrained SSJ","power x[unrestssjmult]")
 				stat("Legendary SSJ","power x[lssjmult]")
+		else if(Race == "Heran") //Heran usa heran1mastery/heran2mastery (vars proprias), nao a escada Saiyajin
+			if(hasssj)
+				shown = 1
+				stat("Max Power","Mastery [round(heran1mastery)]% - power x[round(stepped_mastery_mult(heran1mastery, list(ssjmult, ssjmult*1.2, ssjmult*1.68, ssjmult*2.016)))]")
+			if(hasssj2)
+				shown = 1
+				stat("True Max Power","Mastery [round(heran2mastery)]% - power x[round(stepped_mastery_mult(heran2mastery, list(ssj2mult, ssj2mult*1.2, ssj2mult*1.68, ssj2mult*2.016)))]")
 		else
 			if(hasssj)
 				shown = 1
-				var/datum/skill/forms/ssj/Sj = locate(/datum/skill/forms/ssj) in learned_skills
-				var/sjlvl = Sj ? Sj.level : 0
-				stat("Super Saiyan","Mastery [sjlvl]/3 - power x[ssjmult]")
+				stat("Super Saiyan","Mastery [round(ssj1mastery)]% - power x[round(canSSJ ? ssjmult : ssj1_mult())]")
 			if(hasussj)
 				shown = 1
 				stat("Ultra Super Saiyan","Unlocked - power x[ultrassjmult]")
@@ -310,14 +315,10 @@ mob/proc
 				stat("Mastered Super Saiyan","Fully mastered")
 			if(hasssj2)
 				shown = 1
-				var/datum/skill/forms/mssj2/S2 = locate(/datum/skill/forms/mssj2) in learned_skills
-				var/s2lvl = S2 ? S2.level : 0
-				stat("Super Saiyan 2","Mastery [s2lvl]/3 - power x[ssj2mult]")
+				stat("Super Saiyan 2","Mastery [round(ssj2mastery)]% - power x[round(canSSJ ? ssj2mult : ssj2_mult())]")
 			if(ssj3able)
 				shown = 1
-				var/datum/skill/forms/ssj3/S3 = locate(/datum/skill/forms/ssj3) in learned_skills
-				var/s3lvl = S3 ? S3.level : 0
-				stat("Super Saiyan 3","Mastery [s3lvl]/3 - power x[ssj3mult]")
+				stat("Super Saiyan 3","Mastery [round(ssj3mastery)]% - power x[round(canSSJ ? ssj3mult : ssj3_mult())]")
 			if(hasssj4)
 				shown = 1
 				stat("Super Saiyan 4","Mastery [round(ssj4mastery)]% - power x[round(ssj4mult + (ssj4maxmult-ssj4mult)*ssj4mastery/100)]")

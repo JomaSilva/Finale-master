@@ -1,3 +1,8 @@
+mob/var
+	heran1mastery = 0 //Maestria do Super Heran 1 (0-100). Degraus pela %: base -> base*2.016 (topo so em 100%).
+	heran2mastery = 0 //Maestria do Super Heran 2 (0-100).
+	heranMastryMigrated = 0 //flag de migracao unica (recupera a base que o sistema antigo inflava)
+
 obj/buff/MaxPower
 	name = "Max Power"
 	icon='SSJIcon.dmi'
@@ -28,18 +33,26 @@ obj/buff/MaxPower/Loop()
 					container.Revert()
 					container<<"You are too tired to sustain your form."
 				container.stamina -= trans_drain*max(0.001,container.ssj2drain)/2 //max statement ensures you won't be hitting exactly zero if drain changes mid drain.
+		if(container.ssj == 1 && container.HasSkill(/datum/skill/heran/MstedMXPWR) && container.heran1mastery < 100) //Maestria do Super Heran cresce na forma (degraus pela %); requer a skill de maestria comprada
+			container.heran1mastery = min(100, container.heran1mastery + 0.0174)
+			container.ssjdrain = container.stepped_mastery_mult(container.heran1mastery, list(0.025, 0.015, 0.008, 0))
+			container.ssjBuff = container.heran_form_mult()
+		else if(container.ssj == 2 && container.HasSkill(/datum/skill/heran/MstedTMXPWR) && container.heran2mastery < 100)
+			container.heran2mastery = min(100, container.heran2mastery + 0.0116)
+			container.ssj2drain = container.stepped_mastery_mult(container.heran2mastery, list(0.040, 0.025, 0.012, 0))
+			container.ssjBuff = container.heran_form_mult()
 	if(lastForm!=container.ssj)
 		lastForm=container.ssj
 		container.RemoveHair()
 		switch(container.ssj)
 			if(1)
-				container.ssjBuff=container.ssjmult
+				container.ssjBuff=container.heran_form_mult()
 				container.trueKiMod = container.ssjenergymod //herans share the saiyans energy boost.
 				container.Ki *= container.trueKiMod
 				container.updateOverlay(/obj/overlay/hairs/superheran/sh1)
 			if(2)
 				container.updateOverlay(/obj/overlay/hairs/superheran/sh2)
-				container.ssjBuff=container.ssj2mult
+				container.ssjBuff=container.heran_form_mult()
 				container.trueKiMod = container.ssj2energymod
 				container.Ki *= container.trueKiMod
 	if(container.godki && container.trans_min_val)
@@ -173,7 +186,7 @@ mob/proc/Max_Power()
 		updateOverlay(/obj/overlay/hairs/superheran/sh1)
 		ssj=1
 		startbuff(/obj/buff/MaxPower,'SSJIcon.dmi')
-		ssjBuff=ssjmult
+		ssjBuff=heran_form_mult()
 		transing=0
 		attackable=1
 mob/proc/True_Max_Power()
@@ -241,6 +254,30 @@ mob/proc/True_Max_Power()
 		view(6)<<"<font color=green>*Red sparks begin to burst around [src]!*"
 		ssj=2
 		updateOverlay(/obj/overlay/hairs/superheran/sh2)
-		ssjBuff=ssj2mult
+		ssjBuff=heran_form_mult()
 		transing=0
 		attackable=1
+
+mob/proc/heran_form_mult() //Heran: multiplicador em degraus pela % (mesma regra do SSJ). Base = ssjmult/ssj2mult (imutavel, por classe); topo = base*2.016 (so em 100%).
+	switch(ssj)
+		if(1) return stepped_mastery_mult(heran1mastery, list(ssjmult, ssjmult * 1.2, ssjmult * 1.68, ssjmult * 2.016))
+		if(2) return stepped_mastery_mult(heran2mastery, list(ssj2mult, ssj2mult * 1.2, ssj2mult * 1.68, ssj2mult * 2.016))
+		else return 1
+
+mob/proc/migrate_heran_mastery() //migracao unica: o sistema antigo inflava ssjmult/ssj2mult (*=1.2/1.4/1.2). Recupera a base e converte o nivel antigo em maestria %.
+	if(heranMastryMigrated) return
+	heranMastryMigrated = 1
+	var/list/comp = list(1, 1.2, 1.68, 2.016) //fatores acumulados dos antigos niveis 0/1/2/3
+	var/list/pct = list(0, 50, 75, 100)
+	var/datum/skill/heran/MstedMXPWR/_mp = locate(/datum/skill/heran/MstedMXPWR) in learned_skills
+	if(_mp)
+		var/lv = min(_mp.level, 3)
+		if(comp[lv + 1]) ssjmult = ssjmult / comp[lv + 1]
+		heran1mastery = pct[lv + 1]
+		ssjdrain = stepped_mastery_mult(heran1mastery, list(0.025, 0.015, 0.008, 0))
+	var/datum/skill/heran/MstedTMXPWR/_tp = locate(/datum/skill/heran/MstedTMXPWR) in learned_skills
+	if(_tp)
+		var/lv2 = min(_tp.level, 3)
+		if(comp[lv2 + 1]) ssj2mult = ssj2mult / comp[lv2 + 1]
+		heran2mastery = pct[lv2 + 1]
+		ssj2drain = stepped_mastery_mult(heran2mastery, list(0.040, 0.025, 0.012, 0))

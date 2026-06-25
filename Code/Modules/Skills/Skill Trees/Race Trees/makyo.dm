@@ -12,6 +12,37 @@
 
 
 
+mob/var
+	makyosunmastery = 0 //Makyo Star (Sun): maestria 0-100; o bonus do astro sobe em degraus pela % (+1 base ate +maxlevel)
+	makyomoonmastery = 0 //Makyo Star (Lua)
+	makyoaamastery = 0 //Makyo Star (Above All)
+	makyoMasteryMigrated = 0 //flag de migracao unica (semeia a maestria a partir do nivel antigo)
+
+mob/proc/makyo_bonus(mastery, maxlvl) //bonus do Makyo Star em degraus pela %: +1 (base) ate +maxlvl (so em 100%)
+	var/list/tiers = list()
+	for(var/i = 1 to maxlvl) tiers += i
+	return stepped_mastery_mult(mastery, tiers)
+
+mob/proc/migrate_makyo_mastery() //migracao unica: semeia a maestria % a partir do nivel antigo (level*100/maxlevel reproduz o bonus +level)
+	if(makyoMasteryMigrated) return
+	makyoMasteryMigrated = 1
+	var/datum/skill/makyo/Sun/_s = locate(/datum/skill/makyo/Sun) in learned_skills
+	if(_s) makyosunmastery = min(100, _s.level * 100 / _s.maxlevel)
+	var/datum/skill/makyo/Moon/_m = locate(/datum/skill/makyo/Moon) in learned_skills
+	if(_m) makyomoonmastery = min(100, _m.level * 100 / _m.maxlevel)
+	var/datum/skill/makyo/Above_All/_a = locate(/datum/skill/makyo/Above_All) in learned_skills
+	if(_a) makyoaamastery = min(100, _a.level * 100 / _a.maxlevel)
+
+/datum/skill/makyo/Sun/login(var/mob/logger)
+	..()
+	logger.migrate_makyo_mastery()
+/datum/skill/makyo/Moon/login(var/mob/logger)
+	..()
+	logger.migrate_makyo_mastery()
+/datum/skill/makyo/Above_All/login(var/mob/logger)
+	..()
+	logger.migrate_makyo_mastery()
+
 /datum/skill/makyo/Sun
 	skilltype = "misc"
 	name = "Sun"
@@ -46,16 +77,16 @@
 		if(!locate(/datum/skill/makyo/Above_All) in savant.learned_skills)
 			switch(savant.currentDaylight)
 				if(1)
-					savant.ssjBuff = 1.2 + level
+					savant.ssjBuff = 1.2 + savant.makyo_bonus(savant.makyosunmastery, maxlevel)
 				if(2)
-					savant.ssjBuff = 1.6 + level
+					savant.ssjBuff = 1.6 + savant.makyo_bonus(savant.makyosunmastery, maxlevel)
 				if(3)
-					savant.ssjBuff = 2 + level
-					if(level<maxlevel) exp++
+					savant.ssjBuff = 2 + savant.makyo_bonus(savant.makyosunmastery, maxlevel)
+					if(savant.makyosunmastery < 100) savant.makyosunmastery += 0.02 //maestria do astro cresce no pico do dia
 				if(4)
-					savant.ssjBuff = 1.6 + level
+					savant.ssjBuff = 1.6 + savant.makyo_bonus(savant.makyosunmastery, maxlevel)
 				if(5)
-					savant.ssjBuff = 1.2 + level
+					savant.ssjBuff = 1.2 + savant.makyo_bonus(savant.makyosunmastery, maxlevel)
 
 /datum/skill/makyo/Moon
 	skilltype = "misc"
@@ -89,7 +120,8 @@
 			expbarrier = 10000 * (2 ** level)
 		switch(savant.currentDaylight)
 			if(6 to 10)
-				savant.ssjBuff = 1.2 + level
+				savant.ssjBuff = 1.2 + savant.makyo_bonus(savant.makyomoonmastery, maxlevel)
+				if(savant.makyomoonmastery < 100) savant.makyomoonmastery += 0.02 //corrige o bug: a Lua nao tinha fonte de maestria/XP
 		if(savant.currentDaylight >= 6)
 			switch(savant.currentMoonlight==5)
 				if(2)savant.Tmagimon = 1.2
@@ -133,33 +165,33 @@ mob/var/hellstar_disabled = 1
 				gaingot = 0
 		switch(savant.currentDaylight)
 			if(1)
-				savant.ssjBuff = 1.2 + level
+				savant.ssjBuff = 1.2 + savant.makyo_bonus(savant.makyoaamastery, maxlevel)
 				if(savant.Ki < savant.MaxKi*2.5)
-					savant.Ki += 0.0005 * savant.MaxKi * level //passive Ki boost
+					savant.Ki += 0.0005 * savant.MaxKi * savant.makyo_bonus(savant.makyoaamastery, maxlevel) //passive Ki boost
 				savant.overcharge = 1
 			if(2)
-				savant.ssjBuff = 1.6 + level
+				savant.ssjBuff = 1.6 + savant.makyo_bonus(savant.makyoaamastery, maxlevel)
 				if(savant.Ki < savant.MaxKi*2.5)
-					savant.Ki += 0.0006 * savant.MaxKi * level //passive Ki boost
+					savant.Ki += 0.0006 * savant.MaxKi * savant.makyo_bonus(savant.makyoaamastery, maxlevel) //passive Ki boost
 				savant.overcharge = 1
 			if(3)
-				savant.ssjBuff = 2 + level
-				if(level<maxlevel) exp++
+				savant.ssjBuff = 2 + savant.makyo_bonus(savant.makyoaamastery, maxlevel)
+				if(savant.makyoaamastery < 100) savant.makyoaamastery += 0.02 //maestria do astro cresce no pico do dia
 				if(!gaingot)
 					savant.tgains *= 5
 					gaingot = 1
 				if(savant.Ki < savant.MaxKi*2.5)
-					savant.Ki += 0.0009 * savant.MaxKi * level //passive Ki boost
+					savant.Ki += 0.0009 * savant.MaxKi * savant.makyo_bonus(savant.makyoaamastery, maxlevel) //passive Ki boost
 				savant.overcharge = 1
 			if(4)
-				savant.ssjBuff = 1.6 + level
+				savant.ssjBuff = 1.6 + savant.makyo_bonus(savant.makyoaamastery, maxlevel)
 				if(savant.Ki < savant.MaxKi*2.5)
-					savant.Ki += 0.0006 * savant.MaxKi * level //passive Ki boost
+					savant.Ki += 0.0006 * savant.MaxKi * savant.makyo_bonus(savant.makyoaamastery, maxlevel) //passive Ki boost
 				savant.overcharge = 1
 			if(5)
-				savant.ssjBuff = 1.2 + level
+				savant.ssjBuff = 1.2 + savant.makyo_bonus(savant.makyoaamastery, maxlevel)
 				if(savant.Ki < savant.MaxKi*2.5)
-					savant.Ki += 0.0005 * savant.MaxKi * level //passive Ki boost
+					savant.Ki += 0.0005 * savant.MaxKi * savant.makyo_bonus(savant.makyoaamastery, maxlevel) //passive Ki boost
 				savant.overcharge = 1
 
 /datum/skill/makyo/Supreme_Magic

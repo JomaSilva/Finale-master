@@ -30,12 +30,14 @@
 			for(var/datum/skill/nS in S.prereqs)
 				if(locate(nS.type) in savant.learned_skills)
 					precheck-=1
-			if(precheck<=0&&S.enabled==0)
-				if(allowedtier >= S.tier) savant<<"You can now acquire Skill [S.name]!"
-				S.enabled = 1
-			else if(precheck>0&&S.enabled==1)
-				if(allowedtier >= S.tier) savant<<"You can no longer acquire Skill [S.name]."
-				S.enabled = 0
+			if(precheck<=0 && savant.skillUnlockOK(S)) //prereqs atendidos E a classe/raca permite (ex.: Wrathful so para Class=="Legendary")
+				if(S.enabled==0)
+					if(allowedtier >= S.tier) savant<<"You can now acquire Skill [S.name]!"
+					S.enabled = 1
+			else
+				if(S.enabled==1)
+					if(allowedtier >= S.tier) savant<<"You can no longer acquire Skill [S.name]."
+					S.enabled = 0
 	for(var/datum/skill/S in savant.learned_skills)
 		if(S.prereqs.len > 0)
 			precheck = S.prereqs.len - S.prereqthreshold

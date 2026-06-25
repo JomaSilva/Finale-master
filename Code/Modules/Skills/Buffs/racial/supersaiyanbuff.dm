@@ -8,6 +8,12 @@ mob/var
 	ssjmult=2
 	ssjdrain=0.025 //1/4 of a stamina point per second. That's what this represents. It's not 0.25, we're pre-dividing it by 10 for 1 tenth of a second.
 	ssjmod=1
+	ssj1mastery=0 //maestria do SSJ1 (0-100). Sobe em DEGRAUS pela %: 2x ->(66%) 4x ->(100%) 6x. Ao 100% = Super Saiyajin completamente dominado (ismssj).
+	ssjmasteryMigrated=0 //flag de migracao unica: converte o progresso antigo (niveis de skill) em maestria % no primeiro login
+	ssj1base=2 //base (tier 1) do SSJ1 por raca/nerf: 2 normal, 1.35 Half/diluido/canSSJ. Capturada 1x; o degrau base usa este valor (mestre vai ao topo normal 6x)
+	ssj2base=4 //base do SSJ2 (4 normal, 1.75 nerfado)
+	ssj3base=16 //base do SSJ3 (16 normal, 2 nerfado)
+	ssjBaseCaptured=0 //flag: ja capturei as bases por-raca/nerf
 	ultrassjenabled=0
 	ultrassjat=750000000 //750mil for ultassj.
 	ultrassjmult=3
@@ -31,6 +37,7 @@ mob/var
 	ssj2mult=4
 	ssj2drain=0.040
 	ssj2mod=1
+	ssj2mastery=0 //maestria do SSJ2 (0-100). Degraus: 4x ->(50%) 6x ->(75%) 8x ->(100%) 10x.
 
 	ssj3firsttime=1
 	ssj3able=0
@@ -40,6 +47,7 @@ mob/var
 	ssj3mult=16
 	ssj3drain=0.075
 	ssj3mod=1
+	ssj3mastery=0 //maestria do SSJ3 (0-100). Degraus: 16x ->(100%) 20x.
 
 	ssj4at=1.0e011//100 billion. As Golden Oozarou (SSJ x50 * x10 from Oozarou, but nerfed down to 500x) it's really only 200 mil base BP.
 	rawssj4at = 200000000 //200 mil
@@ -86,8 +94,7 @@ obj/buff/SuperSaiyan/Loop()
 				if(container.stamina>=container.maxstamina*container.ssjdrain||container.dead)
 					container.Ki-=container.MaxKi*container.ssjdrain*TRANS_KI_DRAIN //dreno de Ki = % do MaxKi por ciclo, escala com o drain da forma (nao-masterizada drena mais; maestria reduz ssjdrain)
 					if(container.Ki<=container.MaxKi*container.ssjdrain)
-						container.Revert()
-						container<<"You are too tired to sustain your form."
+						container.tooTiredRevert()
 					container.stamina -= trans_drain*max(0.001,container.ssjdrain) //max statement ensures you won't be hitting exactly zero if drain changes mid drain.
 				else container.Revert()
 			//Ultra Super Saiyan Drain
@@ -95,8 +102,7 @@ obj/buff/SuperSaiyan/Loop()
 				if(container.stamina>=container.maxstamina*container.ultrassjdrain||container.dead)
 					container.Ki-=container.MaxKi*container.ultrassjdrain*TRANS_KI_DRAIN //dreno de Ki = % do MaxKi por ciclo
 					if(container.Ki<=container.MaxKi*container.ultrassjdrain)
-						container.Revert()
-						container<<"You are too tired to sustain your form."
+						container.tooTiredRevert()
 					container.stamina -= trans_drain*max(0.001,container.ultrassjdrain) //max statement ensures you won't be hitting exactly zero if drain changes mid drain.
 				else container.Revert()
 			//Super Saiyan 2 Drain
@@ -104,8 +110,7 @@ obj/buff/SuperSaiyan/Loop()
 				if(container.stamina>=container.maxstamina*container.ssj2drain||container.dead)
 					container.Ki-=container.MaxKi*container.ssj2drain*TRANS_KI_DRAIN //dreno de Ki = % do MaxKi por ciclo
 					if(container.Ki<=container.MaxKi*container.ssj2drain)
-						container.Revert()
-						container<<"You are too tired to sustain your form."
+						container.tooTiredRevert()
 					container.stamina -= trans_drain*max(0.001,container.ssj2drain) //max statement ensures you won't be hitting exactly zero if drain changes mid drain.
 				else container.Revert()
 			//Super Saiyan 3 Drain
@@ -113,16 +118,14 @@ obj/buff/SuperSaiyan/Loop()
 				if(container.stamina>=container.maxstamina*container.ssj3drain||container.dead)
 					container.Ki-=container.MaxKi*container.ssj3drain*TRANS_KI_DRAIN //dreno de Ki = % do MaxKi por ciclo
 					if(container.Ki<=container.MaxKi*container.ssj3drain)
-						container.Revert()
-						container<<"You are too tired to sustain your form."
+						container.tooTiredRevert()
 					container.stamina -= trans_drain*max(0.001,container.ssj3drain) //max statement ensures you won't be hitting exactly zero if drain changes mid drain.
 				else container.Revert()
 			if(3.5) if(container.ssj3drain) //LSSJ3 (Primal Legendary): dreno estilo SSJ3
 				if(container.stamina>=container.maxstamina*container.ssj3drain||container.dead)
 					container.Ki-=container.MaxKi*container.ssj3drain*TRANS_KI_DRAIN
 					if(container.Ki<=container.MaxKi*container.ssj3drain)
-						container.Revert()
-						container<<"You are too tired to sustain your form."
+						container.tooTiredRevert()
 					container.stamina -= trans_drain*max(0.001,container.ssj3drain)
 				else container.Revert()
 			//Super Saiyan 4 Tail Check + Energy Gain
@@ -156,6 +159,35 @@ obj/buff/SuperSaiyan/Loop()
 					view(container) << "[container]'s tail was lost, reverting them from SSJ4 Limit Breaker!"
 					DeBuff()
 				if(prob(15)) container.Ki+=0.002 * container.MaxKi //SSJ4 Limit Breaker: sem dreno de stamina
+		if(container.Class != "Legendary Primal Saiyan" && !container.FutureLineage && !container.canSSJ) //SSJ1/2/3 padrao: a maestria (%) cresce na forma; os degraus de multiplicador/dreno sobem pela %, igual ao SSJ4
+			switch(container.ssj)
+				if(1)
+					if(container.ssj1mastery < 100)
+						container.ssj1mastery = min(100, container.ssj1mastery + 0.0174) //~2h de uso continuo (forma mais facil)
+						container.recompute_saiyan_form_mults()
+						if(container.ssj1mastery >= 50 && container.ssj1mastery - 0.0174 < 50) //cruzou 50%: libera a COMPRA do USSJ na arvore de skills
+							container.testunlocks()
+						if(container.ssj1mastery >= 100 && !container.ismssj) //100%: Super Saiyajin completamente dominado (substitui o antigo nivel 3 / skill mssj)
+							container.ismssj = 1
+							container.ssjmod = 2
+							container.unrestssjmult += 5
+							container.lssjmult += 10
+							container.restssjmult += 5
+							container.ssj2mod = 10
+							container << "You've mastered Super Saiyan completely!"
+							container.testunlocks()
+				if(2)
+					if(container.ssj2mastery < 100)
+						container.ssj2mastery = min(100, container.ssj2mastery + 0.0116) //~3h
+						container.recompute_saiyan_form_mults()
+						if(container.ssj2mastery >= 100)
+							container.testunlocks() //SSJ2 100% -> cascade em supersaiyan.dm libera o SSJ3
+				if(3)
+					if(container.ssj3mastery < 100)
+						container.ssj3mastery = min(100, container.ssj3mastery + 0.0099) //~3.5h
+						container.recompute_saiyan_form_mults()
+						if(container.ssj3mastery >= 100)
+							container.testunlocks()
 		if(container.Class == "Legendary Primal Saiyan") //Primal Legendary: maestria das formas que escalam (SSJ2/SSJ3); SSJ4/FP usam ssj4mastery/ssj4fpmastery
 			if(container.ssj == 2) container.legp_m2 = min(100, container.legp_m2 + 0.0116)
 			else if(container.ssj == 3) container.legp_m3 = min(100, container.legp_m3 + 0.0116)
@@ -261,6 +293,7 @@ obj/buff/SuperSaiyan/DeBuff()
 
 mob/proc/SSj()
 	if(!transing)
+		if(cantSustainForm(ssjdrain)) return //sem Ki pra sustentar: nao vira SSJ1
 		Revert()
 		transing=1
 		if(godki && godki.usage)
@@ -307,6 +340,7 @@ mob/proc/SSj()
 mob/proc/Ultra_SSj()
 	if(!transing)
 		if(ssj>=2) return
+		if(cantSustainForm(ultrassjdrain)) return
 		transing=1
 		attackable=0
 		var/ssjcolor = "yellow"
@@ -337,6 +371,7 @@ mob/proc/SSj2()
 	if(!transing)
 		if(FutureLineage) return //Future Lineage: forma unica (SSJ1 em estagios), nao acessa SSJ2
 		if(ssj>=3) return
+		if(cantSustainForm(ssj2drain)) return
 		transing=1
 		if(godki && godki.usage)
 			if(!blue_music_played) //SSJ2 while in God Ki = Super Saiyan Blue: Blue theme from the START (first time only)
@@ -384,6 +419,7 @@ mob/proc/SSj3()
 		if(FutureLineage) return //Future Lineage: forma unica (SSJ1 em estagios), nao acessa SSJ3
 		if(firsttime==2) Super_Saiyan_Stats()
 		if(ssj>=4) return
+		if(cantSustainForm(ssj3drain)) return
 		transing=1
 		attackable=0
 		poweruprunning=1
@@ -477,17 +513,64 @@ mob/proc/legprimal_form_mult() //Imagem 24: ladder do Primal Legendary (Form Ris
 			return 1
 	. *= 1 + min(combatTime / 720, 1) * 0.2 //Form Rising: bonus de combate continuo +0%..+20%
 
+mob/var/tmp/tooTiredMsg = 0 //rate-limit do aviso "too tired" (evita spam quando o Ki acaba)
+mob/proc/tooTiredRevert() //reverte por falta de Ki e mostra o aviso no maximo 1x a cada ~5s (evita o spam de chat)
+	Revert()
+	if(!tooTiredMsg)
+		tooTiredMsg = 1
+		src << "You are too tired to sustain your form."
+		spawn(50) tooTiredMsg = 0
+
+mob/proc/cantSustainForm(drain) //TRUE se falta Ki pra sustentar uma forma com este dreno; avisa (rate-limited). Evita transformar-e-reverter em loop (ex.: meditar com Ki baixo).
+	if(drain && Ki <= MaxKi*drain)
+		if(!tooTiredMsg)
+			tooTiredMsg = 1
+			src << "You don't have enough Ki to sustain that form right now."
+			spawn(50) tooTiredMsg = 0
+		return TRUE
+	return FALSE
+
+mob/proc/stepped_mastery_mult(mastery, list/tiers) //maestria em DEGRAUS por %: o tier k (1=base) ativa em maestria >= k/n*100%; o tier MAXIMO so em 100%. Ex. SSJ1 [2,4,6]: 2x ate 66%, 4x ate 100%, 6x em 100%.
+	var/n = tiers.len
+	if(n < 1) return 1
+	var/idx = 1
+	for(var/k = 2 to n)
+		if(mastery >= k * 100 / n) //k*100/n e divisao em ponto flutuante (ex. 2*100/3 = 66.67)
+			idx = k
+	return tiers[idx]
+
+mob/proc/ssj1_mult() return stepped_mastery_mult(ssj1mastery, list(ssj1base, 4, 6))      //SSJ1: base ->(66%) 4x ->(100%) 6x
+mob/proc/ssj2_mult() return stepped_mastery_mult(ssj2mastery, list(ssj2base, 6, 8, 10))  //SSJ2: base ->(50%) 6x ->(75%) 8x ->(100%) 10x
+mob/proc/ssj3_mult() return stepped_mastery_mult(ssj3mastery, list(ssj3base, 20))        //SSJ3: base ->(100%) 20x
+
+mob/proc/recompute_saiyan_form_mults() //sincroniza ssjmult/ssj2mult/ssj3mult e os drenos com a maestria % atual (usados no gating fora da forma e no switch de dreno do buff)
+	if(FutureLineage || Class == "Legendary" || Class == "Legendary Primal Saiyan" || canSSJ) return //essas linhagens NAO usam a escada padrao; canSSJ (bypass) fica com o nerf fixo sem maestria
+	if(!ssjBaseCaptured) //captura 1x a base por-raca/nerf antes de qualquer sobrescrita (valores nerfados 1.35/1.75/2 ficam abaixo das bases normais 2/4/16)
+		ssjBaseCaptured = 1
+		if(ssjmult < 2) ssj1base = ssjmult
+		if(ssj2mult < 4) ssj2base = ssj2mult
+		if(ssj3mult < 16) ssj3base = ssj3mult
+	ssjmult = ssj1_mult()
+	ssj2mult = ssj2_mult()
+	ssj3mult = ssj3_mult()
+	ssjdrain = stepped_mastery_mult(ssj1mastery, list(0.025, 0.015, 0)) //dreno em degraus, zera no 100% (forma sustentavel quando dominada)
+	ssj2drain = stepped_mastery_mult(ssj2mastery, list(0.040, 0.030, 0.020, 0))
+	ssj3drain = stepped_mastery_mult(ssj3mastery, list(0.075, 0))
+
 mob/proc/ssj_effective_mult() //multiplicador EFETIVO do SSJ com piso: nunca cai abaixo de (forma anterior + 2x), ate a forma atual superar naturalmente
 	if(FutureLineage && ssj == 1)
 		return min(2 + futureSSJStage * 2, 20)
 	if(Class == "Legendary Primal Saiyan") //Primal Legendary usa o ladder proprio (Imagem 24)
 		return legprimal_form_mult()
+	var/m1 = canSSJ ? ssjmult : ssj1_mult() //canSSJ (bypass): usa o valor nerfado fixo (sem maestria); demais usam o degrau pela %
+	var/m2 = canSSJ ? ssj2mult : ssj2_mult()
+	var/m3 = canSSJ ? ssj3mult : ssj3_mult()
 	switch(ssj)
-		if(1) . = ssjmult
+		if(1) . = m1
 		if(1.5) . = ultrassjmult //USSJ: valor fixo 3x entre SSJ1 e SSJ2, SEM piso. SSJ1 masterizado (6x) supera (canon: Full Power > Ultra SSJ). So um boost de forca inicial.
-		if(2) . = max(ssj2mult, ssjmult + 2)
-		if(3) . = max(ssj3mult, ssj2mult + 2)
-		if(4) . = max(ssj4_form_mult(), ssj3mult + 2)
+		if(2) . = max(m2, m1 + 2)
+		if(3) . = max(m3, m2 + 2)
+		if(4) . = max(ssj4_form_mult(), m3 + 2)
 		if(5) . = max(ssj4_form_mult(), ssj4maxmult + 2)
 		if(6) . = max(ssj4_form_mult(), ssj4fpmaxmult + 2)
 		else . = 1
