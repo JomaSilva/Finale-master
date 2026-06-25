@@ -3,8 +3,12 @@
 
 mob/proc/stathuman()
 	RaceDescription="Humans are probably the most well rounded race. They're not as strong in any catagory than any other race- but they're also not really the weakest. That makes them powerful and intuitive for new players. Humans hail from Earth, a lush green planet full of food and monsters."
+	if(Class == "None") //let players pick a Human path; bred/admin classes already set are respected
+		Class = input(src,"Choose your class.","Class") in list("Ancient Hermit","Peak Human","Triclops Descendant","Normal")
+		if(!Class) Class = "Normal"
 	if(!genome)
 		genome = new/datum/genetics/Human(/datum/genetics/proto/Human)
+		genome.this_class = Class
 		//genome.racial_protos["[/datum/genetics/proto/Human]"] = 100
 		
 
@@ -45,6 +49,53 @@ mob/proc/stathuman()
 		"Starting BP" = 10,//starting BP
 		"Tech Modifier" = 3)//how naturally good you are at technology
 		//gravity mastered is a product of your home planet's gravity. nothing more, nothing less.
-	Class_Spread = list("Human" = 100)
+	Class_Spread = list("Ancient Hermit" = 5,"Triclops Descendant" = 10,"Peak Human" = 25,"Normal" = 60) //Normal LAST so it absorbs decide_Class's force-last fallback (bred Humans)
 	//format is list("class_name" = weight) //CLASS NAME HERE MUST BE THE SAME AS CLASS NAME BELOW (wont work otherwise.)
-	class_stats = list("None" = list())
+	class_stats = list(
+		"Ancient Hermit" = list( //Master Roshi / Korin: frail old ki & wisdom master
+			"Physical Offense" = 0.7,
+			"Physical Defense" = 0.7,
+			"Ki Offense" = 1.4,
+			"Ki Defense" = 1.4,
+			"Ki Skill" = 2.2,
+			"Technique" = 2,
+			"Speed" = 0.9,
+			"Esoteric Skill" = 2.2,
+			"Skillpoint Mod" = 1.8,
+			"Energy Level" = 1.6,
+			"Med Mod" = 6,
+			"Ki Regeneration" = 4,
+			"Potential" = 4,
+			"Lifespan" = 6,
+			"Starting BP" = 50
+		),
+		"Peak Human" = list( //Tien / Yamcha at their peak: physical specialist, modest ki
+			"Physical Offense" = 1.7,
+			"Physical Defense" = 1.6,
+			"Ki Offense" = 1,
+			"Ki Defense" = 1,
+			"Ki Skill" = 0.9,
+			"Technique" = 1.2,
+			"Speed" = 1.6,
+			"Esoteric Skill" = 0.9,
+			"Skillpoint Mod" = 1.3,
+			"Battle Power" = 1.2,
+			"Spar Mod" = 2.2,
+			"Train Mod" = 1.4,
+			"Starting BP" = 60
+		),
+		"Triclops Descendant" = list( //Tien's three-eyed people: technical, fast, sharp ki control
+			"Physical Offense" = 1.3,
+			"Physical Defense" = 1.2,
+			"Ki Offense" = 1.2,
+			"Ki Defense" = 1.1,
+			"Ki Skill" = 1.7,
+			"Technique" = 2,
+			"Speed" = 1.5,
+			"Esoteric Skill" = 1.4,
+			"Skillpoint Mod" = 1.8,
+			"Zanzoken Mod" = 9,
+			"Ki Regeneration" = 3.5,
+			"Starting BP" = 55
+		)
+	)

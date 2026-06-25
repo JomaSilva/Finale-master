@@ -21,6 +21,12 @@ obj/overlay/effects/chargeaura
 
 obj/overlay/effects/shield
 	icon = 'Shield, Legendary.dmi'
+obj/overlay/effects/ssj4lb_sparks //aura constante do SSJ4 Limit Breaker
+	icon = 'AbsorbSparks.dmi'
+	temporary = 0
+obj/overlay/effects/ssj4lb_lightning
+	icon = 'Lightning - Blue.dmi'
+	temporary = 0
 
 obj/overlay/effects/flickeffects
 	var/icon/flickicon

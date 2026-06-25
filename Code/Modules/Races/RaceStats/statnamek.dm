@@ -1,8 +1,8 @@
 mob/proc/statnamek()
-	RaceDescription="Namekians are a peaceful race. Low in stats, but decent everywhere else, they make for a race that's almost as easy to play as Humans. They have a transformation, and a special variant called a Albino Namekian. They're particularly ferocious and betray the race's peaceful traits. Additionally, all Namekians are very good at regeneration."
+	RaceDescription="Namekians are a peaceful race. Low in stats, but decent everywhere else, they make for a race that's almost as easy to play as Humans. They have a transformation, and are divided into three clans. The Warrior clan are born fighters and the strongest combatants. The Demon clan carry King Piccolo's dark, aggressive lineage and are ferocious casters. The Dragon clan are the healers and creators, masters of regeneration who keep the race's gentle, supportive traditions alive."
 	if(!genome)
 		genome = new/datum/genetics/Namekian(/datum/genetics/proto/Namekian)
-		if(Class=="None") Class=input(usr,"Which class? New Namekian and Namekian have almost no differences aside from the name. Albino Namekians however are a bit more stat-heavy and abandon the boost in skill points others get.","","") in list("Namekian","Albino Namekian","New Namek")
+		if(Class=="None") Class=input(usr,"Choose your clan. Warrior clan are the strongest fighters. Demon clan are aggressive dark casters in King Piccolo's lineage. Dragon clan are the supportive healers and creators with unmatched regeneration.","Clan","") in list("Warrior clan","Demon clan","Dragon clan")
 		genome.this_class = Class
 		see_invisible=1
 		partplant=1
@@ -47,26 +47,70 @@ mob/proc/statnamek()
 		"Starting BP" = 30,//starting BP
 		"Tech Modifier" = 2)//how naturally good you are at technology
 		//gravity mastered is a product of your home planet's gravity. nothing more, nothing less.
-	Class_Spread = list("New Namek" = 25, "Namekian" = 50,"Albino Namekian" = 25)
+	Class_Spread = list("Warrior clan" = 25,"Demon clan" = 25,"Dragon clan" = 50) //Dragon clan LAST so it absorbs decide_Class's force-last fallback (the common, supportive clan)
 	class_stats = list(
-		"Albino Namekian" = list(
-			"Physical Offense" = 1.2,//stats
-			"Physical Defense" = 1.6,
-			"Ki Offense" = 1.3,
-			"Ki Defense" = 1.6,
-			"Ki Skill" = 1,
-			"Speed" = 1.8,
+		"Warrior clan" = list(//Nail/Piccolo fighters: strongest combatant, trades away some regen for raw power
+			"Physical Offense" = 1.8,//stats
+			"Physical Defense" = 1.7,
+			"Ki Offense" = 1.7,
+			"Ki Defense" = 1.8,
+			"Ki Skill" = 1.2,
+			"Technique" = 1.2,
+			"Speed" = 2.4,
 			"Esoteric Skill" = 1,
-			"Energy Level" = 1.4,//KiMod
-			"Battle Power" = 1.2,//BPMod
+			"Skillpoint Mod" = 1.3,
+			"Energy Level" = 1.5,//KiMod
+			"Battle Power" = 1.6,//BPMod
 			"Lifespan" = 6,//to decide if the resultant person has immortality, it has to be 20 or more. otherwise it dictates lifespan.
-			"Space Breath" = 1,//misc stat misc stat, either 0 or 1. limited to only 0 or 1. only does things at 0 and 1. 0 means they die in space.
-			"Starting BP" = 40,//starting BP
-			"Med Mod" = 3,
-			"Spar Mod" = 2,
-			"Gravity Mod" = 0.8,
-			"Anger" = 1.1,
-			"Regeneration" = 15,
-			"Tech Modifier" = 4//how naturally good you are at technology
+			"Potential" = 3,
+			"Regeneration" = 7,//strong but the lowest-regen clan
+			"Spar Mod" = 2.5,
+			"Train Mod" = 1.3,
+			"Gravity Mod" = 1.5,
+			"Anger" = 1.3,
+			"Starting BP" = 50,//starting BP
+			"Tech Modifier" = 2//how naturally good you are at technology
+		),
+		"Demon clan" = list(//King Piccolo lineage: aggressive dark caster, high Ki Offense/Technique/Esoteric/Anger
+			"Physical Offense" = 1.3,//stats
+			"Physical Defense" = 1.6,
+			"Ki Offense" = 2,
+			"Ki Defense" = 1.8,
+			"Ki Skill" = 1.6,
+			"Technique" = 1.8,
+			"Speed" = 2,
+			"Esoteric Skill" = 1.7,
+			"Skillpoint Mod" = 1.4,
+			"Energy Level" = 1.6,//KiMod
+			"Battle Power" = 1.4,//BPMod
+			"Lifespan" = 7,//to decide if the resultant person has immortality, it has to be 20 or more. otherwise it dictates lifespan.
+			"Potential" = 3.5,
+			"Regeneration" = 9,
+			"Med Mod" = 4,
+			"Ki Regeneration" = 2,
+			"Anger" = 2,
+			"Starting BP" = 35,//starting BP
+			"Tech Modifier" = 3//how naturally good you are at technology
+		),
+		"Dragon clan" = list(//Dende/Guru healers & creators: the support clan, highest Regen/Potential/Esoteric/Lifespan, lowest offense (keeps Soul Absorb, see namekian.dm)
+			"Physical Offense" = 0.8,//stats
+			"Physical Defense" = 1.8,
+			"Ki Offense" = 0.9,
+			"Ki Defense" = 2.2,
+			"Ki Skill" = 1.2,
+			"Technique" = 1.2,
+			"Speed" = 1.8,
+			"Esoteric Skill" = 2,
+			"Skillpoint Mod" = 1.6,
+			"Energy Level" = 1.5,//KiMod
+			"Battle Power" = 1.2,//BPMod
+			"Lifespan" = 9,//to decide if the resultant person has immortality, it has to be 20 or more. otherwise it dictates lifespan.
+			"Potential" = 4.5,
+			"Regeneration" = 18,//unmatched healing/regeneration
+			"Med Mod" = 6,
+			"Ki Regeneration" = 2.2,
+			"Anger" = 1,
+			"Starting BP" = 25,//starting BP
+			"Tech Modifier" = 3//how naturally good you are at technology
 		)
 	)

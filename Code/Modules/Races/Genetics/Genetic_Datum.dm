@@ -641,6 +641,9 @@ racial boundaries are still kept intact, if you're a hybrid then you get marked 
 /datum/genetics/Demon
 /datum/genetics/Gray
 /datum/genetics/Half_Saiyan
+	//Half-Saiyan lineages (class_stats themselves live on the Saiyan proto, read per-ancestor in build_stats).
+	//Set on the carrier so BRED Half-Saiyans roll among the three; New Generation is LAST so decide_Class's force-last fallback lands on the standard lineage.
+	Class_Spread = list("Future Lineage" = 15,"Awakened Evolution" = 15,"New Generation" = 70)
 /datum/genetics/Halfbreed
 /datum/genetics/Heran
 /datum/genetics/Human

@@ -3,8 +3,15 @@ mob/proc/statmajin()
 They also have incredible death regeneration, rendering them near-immortal. Their control of Ki comes natural to them.\n
 Another rather important fact is that these beings can absorb people and take on part of their power and appearance.\n
 Often they absorb clothing, which is really just the mimicry they subconsciously use by shaping their body into the form of their victims."}
+	if(Class == "None")
+		Class = input(src,"Choose your class.","Class") in list("Majin","Corrupted Majin")
+		if(!Class) Class = "Majin"
 	if(!genome)
 		genome = new/datum/genetics/Majin(/datum/genetics/proto/Majin)
+		if(Class != "None")
+			genome.this_class = Class //explicit class (prompt/bred/admin) wins
+		else
+			genome.this_class = "Majin"
 		undelayed=1
 
 /datum/genetics/proto/Majin
@@ -43,5 +50,20 @@ Often they absorb clothing, which is really just the mimicry they subconsciously
 		"Starting BP" = 900,//starting BP
 		"Tech Modifier" = 1)//how naturally good you are at technology
 		//gravity mastered is a product of your home planet's gravity. nothing more, nothing less.
-	Class_Spread = list("None" = 100)
+	Class_Spread = list("Corrupted Majin" = 15,"Majin" = 85) //Corrupted Majin rolled FIRST (rarer); Majin is LAST so it absorbs decide_Class's force-last fallback (bred Majins)
 	//format is list("class_name" = weight) //CLASS NAME HERE MUST BE THE SAME AS CLASS NAME BELOW (wont work otherwise.)
+	class_stats = list(
+		"Corrupted Majin" = list(
+			"Physical Offense" = 1.5,
+			"Physical Defense" = 0.9,
+			"Ki Offense" = 1.6,
+			"Ki Defense" = 0.4,
+			"Speed" = 2.6,
+			"Battle Power" = 2.5,
+			"Energy Level" = 1.2,
+			"Regeneration" = 70,
+			"Anger" = 2.4,
+			"Spar Mod" = 2.2,
+			"Starting BP" = 1100
+		)
+	)

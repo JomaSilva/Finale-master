@@ -55,7 +55,10 @@ mob/proc/AgeCheck(var/skipTimeText)
 	if(!skipTimeText) src<<checkthetimeidiot()
 	if(LastYear==Year||Year-LastYear==0) return
 	if(dead && !Planet in list("Heaven","Hell","Afterlife"))returning=1 //And finally, send them to the death checkpoint...
-	hiddenpotential += (BP)*UPMod*(max(Year-LastYear,0.1))
+	if(Class == "Awakened Evolution") //Half-Saiyan Awakened Evolution: potencial oculto se acumula mais rapido (identidade Mystic/Ultimate)
+		hiddenpotential += (BP)*UPMod*(max(Year-LastYear,0.1))*1.5
+	else
+		hiddenpotential += (BP)*UPMod*(max(Year-LastYear,0.1))
 	if(Age<=InclineAge)
 		if(!MSWorthy)
 			var/check
@@ -64,7 +67,10 @@ mob/proc/AgeCheck(var/skipTimeText)
 					check++
 				else break
 			if(prob(1) && prob(check) && hiddenpotential >= BP * 10) MSWorthy = 1
-		hiddenpotential += BP*UPMod*(max(Year-LastYear,0.1)) //bonus extra de jovem, baseado no proprio BP e potencial (sem media do servidor)
+		if(Class == "Awakened Evolution") //Awakened Evolution: bonus de jovem tambem amplificado
+			hiddenpotential += BP*UPMod*(max(Year-LastYear,0.1))*1.5
+		else
+			hiddenpotential += BP*UPMod*(max(Year-LastYear,0.1)) //bonus extra de jovem, baseado no proprio BP e potencial (sem media do servidor)
 		Body=Age
 		AgeStatus="Young"
 	cap_hp()

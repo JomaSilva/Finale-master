@@ -69,7 +69,7 @@ mob/var
 						if((savant.ssjat*2.2)<=savant.BP || prob(savant.SSJInspired))
 							savant.SSj()
 							savant.hasssj=1
-			if(!savant.hasssj2&&savant.ssj&&savant.BP>=((savant.ssj2at/savant.ssjmult)*0.3))
+			if(!savant.FutureLineage&&!savant.hasssj2&&savant.ssj&&savant.BP>=((savant.ssj2at/savant.ssjmult)*0.3))
 				if(savant.ssj2at<=savant.expressedBP)
 					switch(savant.Emotion)
 						if("Very Angry")
@@ -140,6 +140,15 @@ mob/var/ismssj
 	expbarrier=2000
 /datum/skill/forms/ssj/effector()
 	..()
+	if(savant.FutureLineage) //Future Lineage: progride em 10 estagios (cada estagio = +2x, ate 20x) em vez dos niveis de maestria normais; nunca recebe USSJ/SSJ2/SSJ3
+		if(savant.ssj==1 && savant.futureSSJStage < 10)
+			savant.futureSSJExp += 1
+			if(savant.futureSSJExp >= 800)
+				savant.futureSSJExp = 0
+				savant.futureSSJStage += 1
+				savant.ssjBuff = min(2 + savant.futureSSJStage * 2, 20) //atualiza o multiplicador ao vivo enquanto transformado
+				savant << "<font color=#66ccff>Your Future Super Saiyan grows stronger! Stage [savant.futureSSJStage]/10 reached (power x[min(2 + savant.futureSSJStage * 2, 20)])!</font>"
+		return
 	switch(level)
 		if(0)
 			if(levelup == 1)

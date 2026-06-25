@@ -1,8 +1,8 @@
 mob/proc/statfrost()
-	RaceDescription="Frost Demons, or Icers, are a race of lizard-folk who hail from a colder planet. Despite the name, they aren't all actually evil. Rather, in folklore a certain group of Icers made their race be called Frost Demons by fearful aliens. There is generally three types of Frost Demons. Frieza-Types are fast, and hit strong. They're characterized by poor defenses. King Cold types are the opposite. Cooler types are a balanced inbetween."
+	RaceDescription="Frost Demons are a race of lizard-folk who hail from a colder planet. Despite the name, they aren't all actually evil. Rather, in folklore a certain group of Frost Demons made their race be feared by aliens across the cosmos. Most Frost Demons are balanced-strong warriors with naturally high ki power and ascended potential. Every so often, however, a Mutant Frost Demon is born: a rare and monstrously powerful variant whose raw battle power dwarfs that of its kin, the kind of being whole empires are built around."
 	if(!genome)
 		if(Class=="None")
-			Class=alert(src,"Choose an option. Frieza is the offensive type. It excels just attack. Cooler is the strongest in raw power, but suffers in battle power. Cold types are in the middle of Frieza types and Cooler types, basically the most normal of the group.","","Frieza","Cold","Cooler")
+			Class=alert(src,"Choose your class. Frost Demon is the standard, balanced-strong type. Mutant Frost Demon is the rare, monstrously powerful variant born with overwhelming battle power.","","Frost Demon","Mutant Frost Demon")
 		genome = new/datum/genetics/Icer(/datum/genetics/proto/Icer)
 		genome.this_class = Class
 
@@ -15,8 +15,10 @@ mob/proc/statfrost()
 	special_info(var/datum/genetics/invoker,var/prev)
 		..()
 		if(invoker.savant)
-			if(prev > 50 || invoker.majority_genome == "Frost Demon" || invoker.this_class == "Frieza" || invoker.this_class == "Cooler" || invoker.this_class == "King Cold")
+			if(prev > 50 || invoker.majority_genome == "Frost Demon" || invoker.this_class == "Frost Demon" || invoker.this_class == "Mutant Frost Demon")
 				invoker.savant.AscensionAllowed=1//Icers start ascended.
+			if(invoker.this_class == "Mutant Frost Demon") //Mutant: forma final (Golden) reforcada -> equivalente lendario dos Frost Demons (4x -> 7x)
+				invoker.savant.f5mult = 7
 	m_stats = list(
 		"Physical Offense" = 1.5,//stats
 		"Physical Defense" = 1.1,
@@ -47,33 +49,39 @@ mob/proc/statfrost()
 		"Starting BP" = 1000,//starting BP
 		"Tech Modifier" = 3)//how naturally good you are at technology
 		//gravity mastered is a product of your home planet's gravity. nothing more, nothing less.
-	Class_Spread = list("Frieza" = 25,"Cold" = 50,"Cooler" = 25)
+	Class_Spread = list("Mutant Frost Demon" = 1,"Frost Demon" = 99) //Mutant rolled FIRST (true ~1%, rare powerful variant); Frost Demon is LAST so it absorbs decide_Class's force-last fallback (bred/standard)
 	//format is list("class_name" = weight) //CLASS NAME HERE MUST BE THE SAME AS CLASS NAME BELOW (wont work otherwise.)
 	class_stats = list(
-		"Cold" = list(
-			"Physical Offense" = 1.1,
-			"Physical Defense" = 1.5,
-			"Technique" = 1.2,
-			"Ki Offense" = 1.1,
-			"Ki Defense" = 2,
-			"Speed" = 1.1,
-			"Train Mod" = 1.2,
-			"Starting BP" = 110,
-			"Battle Power" = 1.45
-		),
-		"Cooler" = list(
-			"Physical Offense" = 1.5,
-			"Physical Defense" = 1.5,
-			"Technique" = 1.4,
+		"Frost Demon" = list(
+			"Physical Offense" = 1.4,
+			"Physical Defense" = 1.4,
+			"Technique" = 1.3,
 			"Ki Offense" = 1.5,
-			"Ki Defense" = 2,
+			"Ki Defense" = 1.5,
 			"Speed" = 1.4,
 			"Skillpoint Mod" = 1.1,
-			"Battle Power" = 1.4,
-			"Energy Level" = 1.5,
+			"Battle Power" = 1.45,
+			"Energy Level" = 1.4,
 			"Tech Modifier" = 2,
 			"Ki Regeneration" = 1,
-			"Starting BP" = 800,
-			"Potential" = 2.5
+			"Starting BP" = 110,
+			"Potential" = 2.2
+		),
+		"Mutant Frost Demon" = list(
+			"Physical Offense" = 2.2,
+			"Physical Defense" = 1.8,
+			"Technique" = 1.4,
+			"Ki Offense" = 2.4,
+			"Ki Defense" = 1.8,
+			"Ki Skill" = 1.8,
+			"Speed" = 1.7,
+			"Skillpoint Mod" = 1.1,
+			"Battle Power" = 3,
+			"Energy Level" = 2,
+			"Tech Modifier" = 2,
+			"Ki Regeneration" = 1.2,
+			"Starting BP" = 1200,
+			"Potential" = 2.8,
+			"Anger" = 1.5
 		)
 	)

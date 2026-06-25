@@ -131,12 +131,17 @@ obj/buff/SuperSaiyan/Loop()
 		container.removeOverlay(/obj/overlay/effects/electrictyeffects)
 		container.removeOverlay(/obj/overlay/body/saiyan/saiyan4body) //limpa overlays de corpo ao trocar de forma (evita SSJ4/FPLB sobrepostos)
 		container.removeOverlay(/obj/overlay/body/saiyan/saiyan5body)
+		container.removeOverlay(/obj/overlay/effects/ssj4lb_sparks)
+		container.removeOverlay(/obj/overlay/effects/ssj4lb_lightning)
 		container.AddHair()
 		container.MaxKi = container.MaxKi / container.trueKiMod
 		container.trueKiMod = 1
 		switch(container.ssj)
 			if(1)
-				container.ssjBuff=container.ssjmult
+				if(container.FutureLineage) //Future Lineage: SSJ1 escala em 10 estagios (2x no estagio 0 -> 20x no estagio 9+), substituindo o ssjmult normal
+					container.ssjBuff = min(2 + container.futureSSJStage * 2, 20)
+				else
+					container.ssjBuff=container.ssjmult
 				container.trueKiMod = container.ssjenergymod
 				container.MaxKi *= container.trueKiMod
 				//if(container.ssjdrain<=0.010) container.updateOverlay(/obj/overlay/hairs/ssj/ssj1fp)
@@ -166,10 +171,13 @@ obj/buff/SuperSaiyan/Loop()
 				//container.overlayList+='Electric_Yellow.dmi'
 				//SSj4 is just a raw boost in power now. Fuk the other shit.
 				container.ssjBuff=container.ssj4mult
+				if(container.Class == "Legendary Primal Saiyan") container.ssjBuff *= 1.5 //Primal lendario: SSJ4 reforcado (Primal-equivalente do Lendario)
 				container.trueKiMod = container.ssj4energymod
 				container.MaxKi *= container.trueKiMod
 			if(5)
 				container.updateOverlay(/obj/overlay/body/saiyan/saiyan5body)
+				container.updateOverlay(/obj/overlay/effects/ssj4lb_sparks) //aura constante do Limit Breaker
+				container.updateOverlay(/obj/overlay/effects/ssj4lb_lightning)
 				container.ssjBuff=container.ssj4fplbmult
 				container.trueKiMod = container.ssj4energymod
 				container.MaxKi *= container.trueKiMod
@@ -193,6 +201,8 @@ obj/buff/SuperSaiyan/DeBuff()
 	container.overlayList-='Elec.dmi'
 	container.removeOverlay(/obj/overlay/body/saiyan/saiyan4body)
 	container.removeOverlay(/obj/overlay/body/saiyan/saiyan5body)
+	container.removeOverlay(/obj/overlay/effects/ssj4lb_sparks)
+	container.removeOverlay(/obj/overlay/effects/ssj4lb_lightning)
 	container.updateOverlay(/obj/overlay/hairs/hair)
 	container.removeOverlay(/obj/overlay/effects/electrictyeffects)
 	if(container.ssj==1.5)
@@ -280,6 +290,7 @@ mob/proc/Ultra_SSj()
 		spawn(100) overlayList-='SSj Aura.dmi'
 mob/proc/SSj2()
 	if(!transing)
+		if(FutureLineage) return //Future Lineage: forma unica (SSJ1 em estagios), nao acessa SSJ2
 		if(ssj>=3) return
 		transing=1
 		if(godki && godki.usage)
@@ -325,6 +336,7 @@ mob/proc/SSj2()
 
 mob/proc/SSj3()
 	if(!transing)
+		if(FutureLineage) return //Future Lineage: forma unica (SSJ1 em estagios), nao acessa SSJ3
 		if(firsttime==2) Super_Saiyan_Stats()
 		if(ssj>=4) return
 		transing=1

@@ -455,7 +455,7 @@ mob
 			if(client.unstucktimer + (1 HOURS) >= world.time) client.unstucktimer = 0
 			if(client.unstucktimer >= world.time) client.unstucktimer = 0
 			if(client.unstucktimer) return
-			switch(alert(usr,"This will unstuck you depending on the situation! 30 min cooldown! Regeneration Issues will, if you are a species with regeneration or an Icer, will heal or cause you to die.","Unstuck","Okay!","Cancel!","Regeneration Issues!"))
+			switch(alert(usr,"This will unstuck you depending on the situation! 30 min cooldown! Regeneration Issues will, if you are a species with regeneration or a Frost Demon, will heal or cause you to die.","Unstuck","Okay!","Cancel!","Regeneration Issues!"))
 				if("Okay!")
 					client.unstucktimer = world.time
 					usr.Locate()

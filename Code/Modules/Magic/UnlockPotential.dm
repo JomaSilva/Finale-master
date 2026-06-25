@@ -20,10 +20,12 @@ mob/proc/UnlockPotential(rUPMod)
 		emit_Sound('chargeaura.wav')
 		unlockPotential=1
 		var/boost=((BPMod)*UPMod*StatRank*(1/5))
+		var/awaken_mult = 1
+		if(Class == "Awakened Evolution") awaken_mult = 1.8 //Half-Saiyan Awakened Evolution: payoff muito maior ao liberar o potencial
 		if(hiddenpotential)
-			if(BPRank==1) BPadd += capcheck(hiddenpotential*(1/10))
-			else BPadd += capcheck(hiddenpotential * (BPRank/5))
-		BP+=capcheck(hiddenpotential * boost*log(relBPmax)*(1/20))
+			if(BPRank==1) BPadd += capcheck(hiddenpotential*(1/10)*awaken_mult)
+			else BPadd += capcheck(hiddenpotential * (BPRank/5)*awaken_mult)
+		BP+=capcheck(hiddenpotential * boost*log(relBPmax)*(1/20)*awaken_mult)
 		kiskill+= 0.4
 		if(Age>=DeclineAge)
 			Body=25

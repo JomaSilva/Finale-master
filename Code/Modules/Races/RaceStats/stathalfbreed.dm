@@ -58,7 +58,12 @@ mob/proc/statquarter()
 		genome.racial_protos["[/datum/genetics/proto/Saiyan]"] = 25
 mob/proc/stathalf()
 	RaceDescription="Half Saiyans are the product of cross breeding between a Saiyan and a Human. Ascension is generally the same, and with a lot of help may reach SSJ4. Half-Saiyans do also refer to Saiyans and non-Human hybrids but as an actual race it's solely Human-Saiyan hybrids."
+	if(Class == "None") //let players pick a Half-Saiyan lineage; bred/admin classes already set are respected
+		Class = input(src,"Choose your lineage.","Class") in list("New Generation","Future Lineage","Awakened Evolution")
+		if(!Class) Class = "New Generation"
+	if(Class == "Future Lineage") FutureLineage = 1 //convenience flag for the LATER Future Super Saiyan 10-stage phase (transforms NOT wired here)
 	if(!genome)
 		genome = new/datum/genetics/Half_Saiyan(/datum/genetics/proto/Saiyan,/datum/genetics/proto/Human)
 		genome.racial_protos["[/datum/genetics/proto/Human]"] = 50
 		genome.racial_protos["[/datum/genetics/proto/Saiyan]"] = 50
+		genome.this_class = Class //resolve Half-Saiyan class_stats (defined on the Saiyan proto, read by build_stats per ancestor)

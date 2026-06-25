@@ -7,18 +7,17 @@ mob
 			if(r_race=="Frost Demon"||r_race=="Bio-Android") return
 			if(r_race=="Namekian")
 				var/nicon='Namek Young.dmi'
-				if(Class=="Albino Namekian")
-					nicon='Albino Namek.dmi'
-					icon=nicon
-				else
-					switch(input("Choose your skin color","",text) in list("Light Green", "Green", "Dark Green",))
-						if("Light Green")
-							nicon+=rgb(30,30,30)
-							icon=nicon
-						if("Green") icon=nicon
-						if("Dark Green")
-							nicon-=rgb(30,30,30)
-							icon=nicon
+				switch(input("Choose your skin color","",text) in list("Light Green", "Green", "Dark Green", "Albino"))
+					if("Light Green")
+						nicon+=rgb(30,30,30)
+						icon=nicon
+					if("Green") icon=nicon
+					if("Dark Green")
+						nicon-=rgb(30,30,30)
+						icon=nicon
+					if("Albino")
+						nicon='Albino Namek.dmi'
+						icon=nicon
 				return
 			var/list/skin_list = list()
 			//see Genetic_Icons.dm
@@ -107,7 +106,7 @@ mob/proc/racedone_remove()
 
 mob/proc/formchoose(rtype)
 	var/list/skin_list = list()
-	usr << "Choose your form icons. You have a maximum of six forms. (Don't ask about the sixth.). If you're a biodroid, you don't need any more than 3. You start in form 1 if Biodroid, form 4 if Icer."
+	usr << "Choose your form icons. You have a maximum of six forms. (Don't ask about the sixth.). If you're a biodroid, you don't need any more than 3. You start in form 1 if Biodroid, form 4 if Frost Demon."
 	if("Biodroid" == rtype)
 		truehair=null
 		skin_list += 'Bio Android 1.dmi'

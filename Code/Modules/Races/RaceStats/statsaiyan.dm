@@ -2,6 +2,9 @@
 //legend is in this file.
 //halfie is in this file.
 mob/var/SaiyanLineage = "" //"Saiyan" (topo no SSJ3) ou "Primal Saiyan" (caminho Oozaru/SSJ4). Persistido no save.
+mob/var/FutureLineage = 0 //Half-Saiyan "Future Lineage" (Future Gohan) marker. Single-form lineage: SSJ1 escala em 10 estagios (2x->20x), sem SSJ2/SSJ3.
+mob/var/futureSSJStage = 0 //Future Lineage: estagio atual de maestria do Super Saiyajin (0-10). Cada estagio soma +2x ao ssjBuff (2x no estagio 0 -> 20x no estagio 9+).
+mob/var/futureSSJExp = 0 //Future Lineage: progresso (em ticks de SSJ) rumo ao proximo estagio.
 mob/proc/statsaiyan()
 	NoAscension = 1
 	RaceDescription="Saiyans are from the Planet Vegeta, they are a warrior People who have evolved over generations to match the harsh conditions of their Planet and its violent conditions. Due to that they have greatly increased strength and endurance. Due to being a warrior race they pride themselves in how powerful they are, and that helped them to be able to push their battle power higher in large jumps when they go through hard training or tough situations, that is probably their most famous feature and what they are known for most. In fact one of the main reasons they have large power increases at once is because of their high 'Zenkai' rate, which means that the more damaged and close to death they become, the greater their power increases because of it. Also there is Super Saiyan, which is a monstrously strong form by just about anyone's standards, and it helps them to increase their base power even further too, putting them far beyond 'normal' beings. Saiyans come in three classes: Low-Class, named because they are born the weakest, and dont  battle power quite as fast (at first) as the other Saiyan classes. Normal Class, these are middle of the road style Saiyans, they have the highest endurance as well on average, they  battle power in between Low-Class and Elite levels and have higher Zenkai than Low Class Saiyans. Elite, these are born the strongest of all Saiyans, and  power much much much faster in base than the other Saiyan classes. They are the purest of the Saiyan bloodlines and have the highest Zenkai rate by far, (greater than any other race in fact) meaning they get the most from high stress situations, their weakness compared to the other Saiyans is that (for the battle power) they cannot take nearly as much damage, but they can dish out a lot more."
@@ -55,12 +58,16 @@ mob/proc/statsaiyan()
 				if("Low-Class")
 					invoker.savant.ssjat= initial(invoker.savant.ssjat) *rand(9,12)/10
 					invoker.savant.ssj2at= initial(invoker.savant.ssj2at) *rand(11,14)/10
-				if("Legendary","Legendary Primal Saiyan")
+				if("Legendary")
 					invoker.savant.restssjat= initial(invoker.savant.restssjat) *(rand(9,12)/10)
 					invoker.savant.ssjdrain=0.025
 					invoker.savant.ssjmod= initial(invoker.savant.ssjmod) *1
 					invoker.savant.legendary=1
 					invoker.savant.Omult=8
+				if("Legendary Primal Saiyan") //Primal lendario: usa a escada SSJ normal (NAO e LSSJ), porem com Oozaru Dourado mais forte e SSJ4 reforcado
+					invoker.savant.ssjat= initial(invoker.savant.ssjat) *rand(9,11)/10
+					invoker.savant.ssj2at= initial(invoker.savant.ssj2at) *rand(9,12)/10
+					invoker.savant.Omult=10
 				else
 					invoker.savant.ssjat= initial(invoker.savant.ssjat) *rand(10,12)/10
 					invoker.savant.ssj2at= initial(invoker.savant.ssj2at) *rand(9,12)/10
@@ -185,6 +192,59 @@ mob/proc/statsaiyan()
 			"Spar Mod" = 4,
 			"Anger" = 2,
 			"Starting BP" = 12000
+		),
+		//Half-Saiyan classes (selected in stathalf(); read here because the Half-Saiyan genome carries the Saiyan proto in racial_protos).
+		//Pure Saiyans never roll/pick these names, so they only ever apply to Half-Saiyans.
+		"New Generation" = list( //Gohan/Goten: well-rounded modern Half-Saiyan, the standard baseline
+			"Physical Offense" = 1.4,
+			"Physical Defense" = 1.1,
+			"Ki Offense" = 1.7,
+			"Ki Defense" = 1.3,
+			"Ki Skill" = 1.6,
+			"Technique" = 1.1,
+			"Speed" = 1.7,
+			"Skillpoint Mod" = 1.3,
+			"Battle Power" = 1.5,
+			"Energy Level" = 1.3,
+			"Potential" = 3,
+			"Zenkai" = 14,
+			"Starting BP" = 80
+		),
+		"Future Lineage" = list( //Future Gohan: single-form combat lineage; raw physical power + BP + Zenkai to offset a limited transformation line
+			"Physical Offense" = 1.9,
+			"Physical Defense" = 1.5,
+			"Ki Offense" = 1.6,
+			"Ki Defense" = 1.4,
+			"Ki Skill" = 1.4,
+			"Technique" = 1.2,
+			"Speed" = 1.6,
+			"Skillpoint Mod" = 1.1,
+			"Battle Power" = 2,
+			"Energy Level" = 1.3,
+			"Potential" = 2.5,
+			"Zenkai" = 24,
+			"Spar Mod" = 4,
+			"Train Mod" = 1.4,
+			"Anger" = 1.7,
+			"Starting BP" = 120
+		),
+		"Awakened Evolution" = list( //Mystic/Ultimate: huge hidden potential; big Potential + Ascension + Skillpoint identity (Unlock Potential payoff is a LATER phase)
+			"Physical Offense" = 1.2,
+			"Physical Defense" = 1,
+			"Ki Offense" = 1.6,
+			"Ki Defense" = 1.3,
+			"Ki Skill" = 1.9,
+			"Technique" = 1.4,
+			"Speed" = 1.5,
+			"Esoteric Skill" = 1.2,
+			"Skillpoint Mod" = 1.9,
+			"Ascension Mod" = 9,
+			"Battle Power" = 1.4,
+			"Energy Level" = 1.4,
+			"Med Mod" = 3,
+			"Potential" = 5,
+			"Zenkai" = 12,
+			"Starting BP" = 70
 		)
 	)
 

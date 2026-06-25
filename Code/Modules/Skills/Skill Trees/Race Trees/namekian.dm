@@ -6,13 +6,13 @@
 	enabled=1
 	allowedtier=2
 	can_refund = FALSE
-	compatible_races = list("Namekian","Albino Namekian")
+	compatible_races = list("Namekian")
 	constituentskills = list(new/datum/skill/general/Hardened_Body,new/datum/skill/general/LankyLegs,new/datum/skill/general/Willed,\
 	new/datum/skill/namek/bigform,new/datum/skill/demon/soulabsorb,new/datum/skill/general/materialization,new/datum/skill/general/regenerate,\
 	new/datum/skill/namek/fusion,new/datum/skill/namek/SuperNamek,new/datum/skill/namek/Stretchy_Arms)
 mob/var/hassoulabsorb=1
 /datum/skill/tree/namek/effector()
-	if(savant.hassoulabsorb&&savant.Race=="Namekian"&&savant.Class!="Albino Namekian")
+	if(savant.hassoulabsorb&&savant.Race=="Namekian"&&savant.Class!="Dragon clan")
 		disableskill(/datum/skill/demon/soulabsorb)
 		savant.hassoulabsorb = 0
 	..()
