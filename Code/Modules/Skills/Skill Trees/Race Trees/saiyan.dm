@@ -150,6 +150,7 @@ mob/proc/saiyantreeget(var/N)
 	prereqs = list(new/datum/skill/forms/OozarouMastery)
 	tier = 2
 	enabled=0
+	compatible_classes = list("Legendary") //SO o Legendary normal (LSSJ) ve/compra esta skill; Primal LSSJ (Class diferente) e qualquer outra classe/raca NAO
 
 /datum/skill/forms/Wrathful_State/after_learn()
 	savant<<"You've learned Wrathful State!"

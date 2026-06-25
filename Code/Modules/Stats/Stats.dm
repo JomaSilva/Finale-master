@@ -42,6 +42,8 @@ mob/proc/GlobalStats()
 		HealthSync()
 		CheckTime()
 		BuffLoop()
+		if(IsInFight) combatTime = min(combatTime + 1, 720) //bonus de combate das formas Legendary: sobe ate +20% em ~180s de luta continua
+		else combatTime = max(combatTime - 2, 0) //decai 2x mais rapido fora de combate
 		CheckGodki()
 		accrue_friendship()
 		CheckSSj3Learn()

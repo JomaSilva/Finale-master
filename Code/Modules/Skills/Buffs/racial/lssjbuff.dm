@@ -50,6 +50,12 @@ obj/buff/LSSJ/Loop()
 				else
 					container<<"You are too tired to sustain your form."
 					container.Revert()
+		if(container.lssj) //Form Rising: maestria cresce em forma + mantem o ssjBuff vivo (maestria + bonus de combate)
+			switch(container.lssj)
+				if(1) container.lssj1mastery = min(100, container.lssj1mastery + 0.0116)
+				if(2) container.lssj2mastery = min(100, container.lssj2mastery + 0.0116)
+				if(3) container.lssj3mastery = min(100, container.lssj3mastery + 0.0116)
+			container.ssjBuff = container.lssj_form_mult()
 	if(container.lssj!=lastForm)
 		lastForm=container.lssj
 		for(var/obj/overlay/hairs/ssj/X in container.overlayList)
@@ -60,12 +66,12 @@ obj/buff/LSSJ/Loop()
 		container.RemoveHair()
 		switch(container.lssj)
 			if(1)
-				container.ssjBuff=container.restssjmult
+				container.ssjBuff = container.lssj_form_mult()
 				container.trueKiMod = container.rssjenergymod
 				container.Ki *= container.trueKiMod
 				container.updateOverlay(/obj/overlay/hairs/ssj/rlssjhair,container.hair,0,0,100)
 			if(2)
-				container.ssjBuff=container.unrestssjmult
+				container.ssjBuff = container.lssj_form_mult()
 				container.trueKiMod = container.ussjenergymod
 				container.Ki *= container.trueKiMod
 				container.updateOverlay(/obj/overlay/hairs/ssj/ssj1,container.ssjhair)
@@ -81,7 +87,7 @@ obj/buff/LSSJ/Loop()
 				if(container.doexpandicon3)
 					container.icon = container.expandicon3
 				if(container.icon=='White Male Muscular 2.dmi'|container.icon=='White Male.dmi'&&!container.doexpandicon3) container.icon = 'White Male Muscular 3.dmi'
-				container.ssjBuff=container.lssjmult
+				container.ssjBuff = container.lssj_form_mult()
 				container.updateOverlay(/obj/overlay/hairs/ssj/lssjhair,container.ussjhair,0,100,0)
 	if(container.godki && container.trans_min_val)
 		if(container.godki.usage && container.trans_min_val < container.lssj-1)
@@ -122,6 +128,20 @@ mob/var
 	rssjenergymod = 1.3
 	ussjenergymod = 2
 	lssjenergymod = 4
+	lssj1mastery = 0 //Form Rising: maestria por-forma (0-100). Cada forma Legendary escala do multiplicador base ao maximo.
+	lssj2mastery = 0
+	lssj3mastery = 0
+	tmp/combatTime = 0 //ticks de combate continuo (GlobalStats ~4/s); alimenta o bonus de combate +0%..+20% das formas Legendary
+
+mob/proc/lssj_form_mult() //Form Rising: multiplicador EFETIVO = (base->max conforme a maestria da forma) * (1 + bonus de combate ate +20%)
+	switch(lssj)
+		if(1) . = 1.5 + (10 - 1.5) * lssj1mastery / 100 //Wrathful: 1.5x -> 10x
+		if(2) . = 12 + (20 - 12) * lssj2mastery / 100 //Super Saiyan C-Type: 12x -> 20x
+		if(3) . = 25 + (40 - 25) * lssj3mastery / 100 //Super Saiyan Full Power: 25x -> 40x
+		else
+			return 1
+	. *= 1 + min(combatTime / 720, 1) * 0.2 //bonus de combate continuo: +0% a +20% ao longo de ~180s (720 ticks @ ~4/s)
+
 
 mob/proc/Restrained_SSj()
 	if(!transing)
