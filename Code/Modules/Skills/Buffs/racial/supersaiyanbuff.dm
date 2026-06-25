@@ -53,6 +53,8 @@ mob/var
 	ssj4mastery=0 //maestria do SSJ4 (0-100); ao 100% libera o Full Power
 	ssj4fpmastery=0 //maestria do SSJ4 Full Power (0-100); ao 100% libera a COMPRA do Limit Breaker
 	hasSSJ4FP=0 //liberou a forma SSJ4 Full Power (ao masterizar 100% o SSJ4)
+	legp_m2=0 //Primal Legendary: maestria do SSJ2 ("Legendary Super Saiyan"), 6x->9x
+	legp_m3=0 //Primal Legendary: maestria do SSJ3 ("Legendary Super Saiyan 2/3"), 9x->18x
 
 	ssjenergymod = 2 //USSJ doesn't have a energy increase, it uses SSJ's energy mod.
 	//'ussjenergymod' refers therefore to unrestrained super saiyan's mod.
@@ -115,6 +117,14 @@ obj/buff/SuperSaiyan/Loop()
 						container<<"You are too tired to sustain your form."
 					container.stamina -= trans_drain*max(0.001,container.ssj3drain) //max statement ensures you won't be hitting exactly zero if drain changes mid drain.
 				else container.Revert()
+			if(3.5) if(container.ssj3drain) //LSSJ3 (Primal Legendary): dreno estilo SSJ3
+				if(container.stamina>=container.maxstamina*container.ssj3drain||container.dead)
+					container.Ki-=container.MaxKi*container.ssj3drain*TRANS_KI_DRAIN
+					if(container.Ki<=container.MaxKi*container.ssj3drain)
+						container.Revert()
+						container<<"You are too tired to sustain your form."
+					container.stamina -= trans_drain*max(0.001,container.ssj3drain)
+				else container.Revert()
 			//Super Saiyan 4 Tail Check + Energy Gain
 			if(4)
 				if(!container.Tail)
@@ -146,6 +156,9 @@ obj/buff/SuperSaiyan/Loop()
 					view(container) << "[container]'s tail was lost, reverting them from SSJ4 Limit Breaker!"
 					DeBuff()
 				if(prob(15)) container.Ki+=0.002 * container.MaxKi //SSJ4 Limit Breaker: sem dreno de stamina
+		if(container.Class == "Legendary Primal Saiyan") //Primal Legendary: maestria das formas que escalam (SSJ2/SSJ3); SSJ4/FP usam ssj4mastery/ssj4fpmastery
+			if(container.ssj == 2) container.legp_m2 = min(100, container.legp_m2 + 0.0116)
+			else if(container.ssj == 3) container.legp_m3 = min(100, container.legp_m3 + 0.0116)
 		if(container.ssj) container.ssjBuff = container.ssj_effective_mult() //mantem o ssjBuff vivo: reflete a maestria atual + aplica o piso (forma anterior +2x)
 	if(lastForm!=container.ssj)
 		var/_oldTKM = container.trueKiMod //keep Ki% on EVERY form change: remember the old form's ki multiplier before it is reset
@@ -189,6 +202,11 @@ obj/buff/SuperSaiyan/Loop()
 				container.trueKiMod = container.ssj3energymod
 				container.MaxKi *= container.trueKiMod
 				container.updateOverlay(/obj/overlay/effects/electrictyeffects)
+			if(3.5) //LSSJ3 (Primal Legendary)
+				container.ssjBuff = container.ssj_effective_mult()
+				container.trueKiMod = container.ssj3energymod
+				container.MaxKi *= container.trueKiMod
+				container.updateOverlay(/obj/overlay/effects/electrictyeffects)
 			if(4)
 				container.updateOverlay(/obj/overlay/body/saiyan/saiyan4body)
 				container.ssjBuff=container.ssj_effective_mult()
@@ -214,6 +232,7 @@ obj/buff/SuperSaiyan/Loop()
 	..()
 obj/buff/SuperSaiyan/Delevel()
 	if(container.ssj == 1.5) container.ssj = 1
+	else if(container.ssj == 3.5) container.ssj = 3
 	else container.ssj--
 	if(container.ssj < 1) DeBuff()
 obj/buff/SuperSaiyan/DeBuff()
@@ -424,9 +443,45 @@ mob/proc/ssj4_form_mult() //multiplicador atual do tier SSJ4 conforme a forma e 
 		else . = 1
 	if(Class == "Legendary Primal Saiyan" && ssj == 4) . *= 1.5 //Primal lendario: SSJ4 base reforcado
 
+mob/proc/LSSj3_Primal() //Primal Legendary: Legendary Super Saiyan 3 (ssj=3.5, acima do LSSJ2; animacao verde propria)
+	if(Class != "Legendary Primal Saiyan") return
+	if(transing) return
+	if(ssj != 3) return
+	transing=1
+	attackable=0
+	emit_Sound('powerup.wav')
+	createShockwavemisc(loc,3)
+	spawn Quake()
+	view(8)<<"<font color=#2ef548 size=[TextSize]>[src]: HAAAAAAAAAAAHHHHHHH!!!!"
+	animate(src,time=6,color=rgb(46,245,72))
+	spawn(12) color=null
+	sleep(8)
+	createShockwavemisc(loc,2)
+	createCrater(loc,5)
+	ssj=3.5
+	emit_Sound('chargeaura.wav')
+	view(6)<<"<font color=#2ef548>*[src]'s green aura erupts as they ascend to Legendary Super Saiyan 3!*"
+	transing=0
+	attackable=1
+
+mob/proc/legprimal_form_mult() //Imagem 24: ladder do Primal Legendary (Form Rising = maestria base->max * (1 + bonus de combate ate +20%))
+	switch(ssj)
+		if(1) . = 3 //Super Saiyan C-Type (Z)
+		if(2) . = 6 + (9 - 6) * legp_m2 / 100 //Legendary Super Saiyan
+		if(3) . = 9 + (12 - 9) * legp_m3 / 100 //Legendary Super Saiyan 2
+		if(3.5) . = 18 //Legendary Super Saiyan 3
+		if(4) . = 22 + (44 - 22) * ssj4mastery / 100 //Legendary Super Saiyan 4
+		if(5) . = 34 + (52 - 34) * ssj4fpmastery / 100 //Legendary Super Saiyan 4FP
+		if(6) . = 60 //Legendary Super Saiyan 4LB (God Form)
+		else
+			return 1
+	. *= 1 + min(combatTime / 720, 1) * 0.2 //Form Rising: bonus de combate continuo +0%..+20%
+
 mob/proc/ssj_effective_mult() //multiplicador EFETIVO do SSJ com piso: nunca cai abaixo de (forma anterior + 2x), ate a forma atual superar naturalmente
 	if(FutureLineage && ssj == 1)
 		return min(2 + futureSSJStage * 2, 20)
+	if(Class == "Legendary Primal Saiyan") //Primal Legendary usa o ladder proprio (Imagem 24)
+		return legprimal_form_mult()
 	switch(ssj)
 		if(1) . = ssjmult
 		if(1.5) . = ultrassjmult //USSJ: valor fixo 3x entre SSJ1 e SSJ2, SEM piso. SSJ1 masterizado (6x) supera (canon: Full Power > Ultra SSJ). So um boost de forca inicial.

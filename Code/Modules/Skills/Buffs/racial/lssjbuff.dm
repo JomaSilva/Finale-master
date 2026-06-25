@@ -50,6 +50,17 @@ obj/buff/LSSJ/Loop()
 				else
 					container<<"You are too tired to sustain your form."
 					container.Revert()
+		if(container.lssj==4) //Super Saiyan Full Power (Controlled): mesmo comportamento do Full Power (ganha Ki)
+			if(container.lssjdrain)
+				if(container.stamina>=container.maxstamina*container.lssjdrain||container.dead)
+					if(prob(20)) container.Ki+=(container.MaxKi*container.lssjdrain)
+					if(container.Ki<=container.MaxKi*container.lssjdrain)
+						container.Revert()
+						container<<"You are too tired to sustain your form."
+					container.stamina -= trans_drain*max(0.001,container.lssjdrain)/2
+				else
+					container<<"You are too tired to sustain your form."
+					container.Revert()
 		if(container.lssj) //Form Rising: maestria cresce em forma + mantem o ssjBuff vivo (maestria + bonus de combate)
 			switch(container.lssj)
 				if(1) container.lssj1mastery = min(100, container.lssj1mastery + 0.0116)
@@ -89,6 +100,11 @@ obj/buff/LSSJ/Loop()
 				if(container.icon=='White Male Muscular 2.dmi'|container.icon=='White Male.dmi'&&!container.doexpandicon3) container.icon = 'White Male Muscular 3.dmi'
 				container.ssjBuff = container.lssj_form_mult()
 				container.updateOverlay(/obj/overlay/hairs/ssj/lssjhair,container.ussjhair,0,100,0)
+			if(4) //Super Saiyan Full Power (Controlled)
+				container.trueKiMod = container.lssjenergymod
+				container.Ki *= container.trueKiMod
+				container.ssjBuff = container.lssj_form_mult()
+				container.updateOverlay(/obj/overlay/hairs/ssj/lssjhair,container.ussjhair,0,100,0)
 	if(container.godki && container.trans_min_val)
 		if(container.godki.usage && container.trans_min_val < container.lssj-1)
 			container.Revert()
@@ -100,7 +116,7 @@ obj/buff/LSSJ/DeBuff()
 		container.trueKiMod = 1
 		container.ssjBuff=1
 		if(pastAngerMod) container.angerMod = pastAngerMod
-		if(container.lssj==2||container.lssj==3)
+		if(container.lssj==2||container.lssj==3||container.lssj==4)
 			container.icon = container.depandicon
 		container.overlayList-=container.ssjhair
 		container.overlayList-=container.ussjhair
@@ -138,6 +154,7 @@ mob/proc/lssj_form_mult() //Form Rising: multiplicador EFETIVO = (base->max conf
 		if(1) . = 1.5 + (10 - 1.5) * lssj1mastery / 100 //Wrathful: 1.5x -> 10x
 		if(2) . = 12 + (20 - 12) * lssj2mastery / 100 //Super Saiyan C-Type: 12x -> 20x
 		if(3) . = 25 + (40 - 25) * lssj3mastery / 100 //Super Saiyan Full Power: 25x -> 40x
+		if(4) . = 50 //Super Saiyan Full Power (Controlled): 50x fixo
 		else
 			return 1
 	. *= 1 + min(combatTime / 720, 1) * 0.2 //bonus de combate continuo: +0% a +20% ao longo de ~180s (720 ticks @ ~4/s)
@@ -338,6 +355,21 @@ mob/proc/LSSj()
 		spawn Quake()
 		sleep(50)
 		view(6)<<"<font color=[ssjcolor]>*[usr]'s aura spikes upward as their power becomes maximum!*"
+		transing=0
+		attackable=1
+mob/proc/LSSj_Controlled() //Super Saiyan Full Power (Controlled): 50x; so apos masterizar 100% o Full Power (lssj=3)
+	if(!transing)
+		if(lssj!=3) return //precisa estar em Super Saiyan Full Power
+		if(lssj3mastery < 100) return //precisa ter masterizado 100% o Full Power
+		transing=1
+		attackable=0
+		emit_Sound('chargeaura.wav')
+		createShockwavemisc(loc,2)
+		spawn Quake()
+		view(8)<<"<font color=green>*[src] reins in the wild legendary power - now perfectly controlled!*"
+		sleep(8)
+		lssj=4
+		if(!isBuffed(/obj/buff/LSSJ)) startbuff(/obj/buff/LSSJ,'SSJIcon.dmi')
 		transing=0
 		attackable=1
 mob/var

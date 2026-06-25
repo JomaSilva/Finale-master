@@ -33,6 +33,9 @@ mob/proc/Transformations_Activate()
 				//SSJ4 -> Full Power (auto ao masterizar 100% o SSJ4). O Limit Breaker e uma God Form: ativado pelo verb God Ki, nao pela tecla de transformar.
 				if(usr.ssj==4&&usr.hasSSJ4FP)
 					usr.SSj4FP()
+				//LSSJ3 (Primal Legendary): SSJ3 (LSSJ2) -> ssj=3.5 (LSSJ3), forma propria
+				if(usr.ssj==3 && usr.Class=="Legendary Primal Saiyan")
+					usr.LSSj3_Primal()
 				//SUPER Saiyan 3
 				if(usr.ssj==2&&usr.expressedBP>=usr.ssj3at)
 					if(usr.ssj3able)
@@ -60,6 +63,9 @@ mob/proc/Transformations_Activate()
 						usr.SSj()
 		if((usr.Class=="Legendary"))//We don't need to stick usr.Parent_Race=="Saiyan" here, because its already nested lel.
 			if(usr.MysticPcnt==1&&usr.MajinPcnt==1)
+				// Super Saiyan Full Power (Controlled) - 50x, so apos masterizar 100% o Full Power
+				if(usr.lssj==3 && usr.lssj3mastery>=100)
+					usr.LSSj_Controlled()
 				// LSSJ
 				if(usr.lssj==2&&usr.BP>=usr.lssjat) //BP, not expressed. Since LSSJ's expressed BP is fucking insane, it makes more sense to restrict based on raw BP (can't be really faked.)
 					if(usr.hasssj)

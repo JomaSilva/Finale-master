@@ -175,7 +175,7 @@ mob/var/ismssj
 				savant.ssjmult=4 //SSJ1 mastery raises the multiplier (2 -> 4 -> 6)
 				savant.restssjdrain = 0.002
 				savant.unrestssjdrain=0.008
-				if(!savant.hasussj) //USSJ agora libera NATURALMENTE na maestria 2/3 (era a skill comprada 'ussj')
+				if(!savant.hasussj && savant.Class != "Legendary Primal Saiyan") //USSJ na maestria 2/3 - mas o Primal Legendary NAO usa USSJ (escada SSJ1->SSJ2->SSJ3 direta)
 					savant.hasussj=1
 					savant.ultrassjenabled=1
 					savant.assignverb(/mob/keyable/verb/Toggle_USSJ)

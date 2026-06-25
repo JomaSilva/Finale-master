@@ -237,6 +237,7 @@ obj/buff/Oozaru/SuperOozaru
 		container.Ki += container.OozaruBuff * container.MaxKi
 		container.OozaruBuff=(container.Omult + 10)
 		container.ssjBuff=18 //Golden Oozaru = 18x
+		if(container.Class == "Legendary Primal Saiyan") container.ssjBuff=20 //Legendary Great Ape = 20x (Imagem 24)
 		container.giantFormbuff=1 //anula o giantFormbuff(1.5) herdado do Oozaru regular para o total ficar exatamente 18x
 /*
 obj/overlay/g_oozarou_overlay

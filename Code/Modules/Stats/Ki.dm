@@ -23,6 +23,7 @@ mob/proc/KiRegen()
 	else if(ssj==1.5 && ultrassjdrain) formRegenMult = 0.2
 	else if(ssj==2 && ssj2drain) formRegenMult = 0.2
 	else if(ssj==3 && ssj3drain) formRegenMult = 0.2
+	else if(ssj==3.5 && ssj3drain) formRegenMult = 0.2 //LSSJ3 (Primal Legendary) tambem suprime regen p/ o drain valer
 	if(Ki<MaxKi&&stamina>=0&&!KO) //kiregen
 		sub_gdki_energy(2)
 		if(Ki<=MaxKi*0.1&&stamina>=(maxstamina/10))
