@@ -33,6 +33,11 @@ mob/proc/Transformations_Activate()
 				//SSJ4 -> Full Power (auto ao masterizar 100% o SSJ4). O Limit Breaker e uma God Form: ativado pelo verb God Ki, nao pela tecla de transformar.
 				if(usr.ssj==4&&usr.hasSSJ4FP)
 					usr.SSj4FP()
+				//SSJ4 direto no C (sem verb): LSSJ3 (Legendary Primal, ssj=3.5) ou SSJ3 (Primal normal, ssj=3) -> SSJ4
+				if(usr.ssj==3.5 && usr.hasssj4 && !usr.Apeshit && usr.BP>=usr.rawssj4at)
+					usr.SSj4()
+				if(usr.ssj==3 && usr.Class!="Legendary Primal Saiyan" && usr.hasssj4 && !usr.Apeshit && usr.BP>=usr.rawssj4at)
+					usr.SSj4()
 				//LSSJ3 (Primal Legendary): SSJ3 (LSSJ2) -> ssj=3.5 (LSSJ3), forma propria
 				if(usr.ssj==3 && usr.Class=="Legendary Primal Saiyan")
 					usr.LSSj3_Primal()
