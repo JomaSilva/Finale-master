@@ -30,9 +30,9 @@ mob/proc/Transformations_Activate()
 		if(usr.canSSJ) usr.nerfSSJ()
 		if(!(usr.Class=="Legendary"))
 			if(usr.MysticPcnt==1&&usr.MajinPcnt==1)
-				//SUPER Saiyan 4 Full Power Limit Breaker (Primal, exige a skill comprada)
-				if(usr.ssj==4&&usr.hasFPLB)
-					usr.SSj4FPLB()
+				//SSJ4 -> Full Power (auto ao masterizar 100% o SSJ4). O Limit Breaker e uma God Form: ativado pelo verb God Ki, nao pela tecla de transformar.
+				if(usr.ssj==4&&usr.hasSSJ4FP)
+					usr.SSj4FP()
 				//SUPER Saiyan 3
 				if(usr.ssj==2&&usr.expressedBP>=usr.ssj3at)
 					if(usr.ssj3able)

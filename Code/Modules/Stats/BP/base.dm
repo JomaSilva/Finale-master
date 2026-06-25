@@ -135,7 +135,7 @@ mob/proc/powerlevel()
 				var/gfm = god_form_mult()
 				if(gfm) tempBP *= gfm / max(ssjBuff,1) //God forms set the TOTAL form multiplier (SSJG 22x / Blue-Rose 32x / Evolved 56x), replacing the SSJ factor
 				else tempBP *= godki.godki_mult
-			if(godki_give_mult) tempBP *= godki_give_mult
+			if(godki_give_mult && SaiyanLineage != "Primal Saiyan") tempBP *= godki_give_mult //Primal nao recebe o boost de BP do God Ki (o God Ki dele so ativa o SSJ4 Limit Breaker)
 		expressedBP = (round(max((tempBP),1) * nnetBuff * angerBuff) + expressedAdd) * powerMod
 
 	relBPmax = BP * (1 + UPMod) * relcaprate //PERSONAL ceiling from own BP+Potential (no server AverageBP). relcaprate = global growth-speed knob.

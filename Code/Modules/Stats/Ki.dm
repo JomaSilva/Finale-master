@@ -18,23 +18,28 @@ mob/proc/kicapcheck(var/gap)
 
 mob/proc/KiRegen()
 	CHECK_TICK
+	var/formRegenMult = 1 //formas SSJ nao-masterizadas QUEIMAM Ki para se sustentar: regen reduzido p/ o drain ficar liquido-negativo. Ao masterizar (drain=0) volta ao normal.
+	if(ssj==1 && ssjdrain) formRegenMult = 0.2
+	else if(ssj==1.5 && ultrassjdrain) formRegenMult = 0.2
+	else if(ssj==2 && ssj2drain) formRegenMult = 0.2
+	else if(ssj==3 && ssj3drain) formRegenMult = 0.2
 	if(Ki<MaxKi&&stamina>=0&&!KO) //kiregen
 		sub_gdki_energy(2)
 		if(Ki<=MaxKi*0.1&&stamina>=(maxstamina/10))
 			stamina-=(KIregen*staminapercent)/4
 			Ki+=KIregen*3*staminapercent
 		else if(stamina>=(maxstamina/10))
-			Ki+=KIregen*staminapercent/6
+			Ki+=KIregen*staminapercent/6*formRegenMult
 			stamina -= (KIregen*staminapercent/MaxKi)/9
 		if(med&&MeditateGivesKiRegen)
 			Ki+=(KIregen*staminapercent*6 + 0.05) //doubles ki regen, free base value.
 			stamina -= (KIregen*staminapercent/MaxKi)/6 //doesn't take into account the base value.
 			//Also makes meditation useful for regenning Ki even if you're shit at KIregen, to save on stamina.
 		if(IsInFight)
-			Ki+=KIregen*staminapercent/2
+			Ki+=KIregen*staminapercent/2*formRegenMult
 			stamina -= (KIregen*staminapercent/MaxKi)/8
 		else
-			Ki+=KIregen*staminapercent
+			Ki+=KIregen*staminapercent*formRegenMult
 			stamina -= (KIregen*staminapercent/MaxKi)/3
 		Ki+=0.1 //No matter what, you get a tiny amount of ki regen.
 		Ki=min(MaxKi,Ki)

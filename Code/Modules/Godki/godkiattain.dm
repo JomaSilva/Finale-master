@@ -22,7 +22,6 @@ mob/var
 
 mob/proc
 	gain_godki(var/energygain,force = FALSE)
-		if(SaiyanLineage == "Primal Saiyan") return //Primal Saiyans nunca adquirem God Ki
 		if(godki_gt_mode || gt_mode) return
 		godki.energy+=energygain*godki_mod
 		if(BP < godki_at && force == FALSE) return
@@ -34,11 +33,11 @@ mob/proc
 			godki.usage = 0
 			godki.energy = 0
 	get_godki()
-		if(SaiyanLineage == "Primal Saiyan") return //Primal Saiyans nunca adquirem God Ki
 		if(godki.tier == 0 && godki.energy == 100)
 			godki.tier = 1
 			godki.b_efficiency = godki_mod
 			godki_give_mult = godki_boost
+			if(SaiyanLineage == "Primal Saiyan") godki_give_mult = 0 //Primal: God Ki so ativa o SSJ4 Limit Breaker, sem boost de BP base
 			if(Race == "Kai" || Race=="Demon" || Parent_Race=="Demon" || Parent_Race == "Kai" || Father_Race == "Kai" || Father_Race == "Demon")
 				godki.tier = kaiodemon_init_tier
 				godki.naturalization = TRUE

@@ -113,7 +113,7 @@ mob/var/ismssj
 /datum/skill/tree/SuperSaiyanMastery/growbranches()
 	..()
 	if(savant)
-		if(savant.hasssj4 && savant.SaiyanLineage=="Primal Saiyan") //Primal com SSJ4 -> libera a skill do Limit Breaker pra compra
+		if(savant.ssj4fpmastery >= 100 && savant.SaiyanLineage=="Primal Saiyan") //LB compravel so apos masterizar 100% o SSJ4 Full Power
 			enableskill(/datum/skill/forms/ssj4fplb)
 		if(savant.ismssj) //maestria completa (natural) libera a Transformacao Direta para compra
 			enableskill(/datum/skill/forms/ssj/DirectSSJ)
@@ -137,13 +137,13 @@ mob/var/ismssj
 	maxlevel = 3
 	tier = 1
 	enabled=0 //skill auto-concedida ao liberar SSJ (fica fora da loja; nao custa ponto)
-	expbarrier=2000
+	expbarrier=6000
 /datum/skill/forms/ssj/effector()
 	..()
 	if(savant.FutureLineage) //Future Lineage: progride em 10 estagios (cada estagio = +2x, ate 20x) em vez dos niveis de maestria normais; nunca recebe USSJ/SSJ2/SSJ3
 		if(savant.ssj==1 && savant.futureSSJStage < 10)
 			savant.futureSSJExp += 1
-			if(savant.futureSSJExp >= 800)
+			if(savant.futureSSJExp >= 6480)
 				savant.futureSSJExp = 0
 				savant.futureSSJStage += 1
 				savant.ssjBuff = min(2 + savant.futureSSJStage * 2, 20) //atualiza o multiplicador ao vivo enquanto transformado
@@ -159,7 +159,7 @@ mob/var/ismssj
 			if(levelup == 1)
 				levelup=0
 				savant<<"You're getting close to something... Super Saiyan Mastery is now level [level]!"
-				expbarrier=3000
+				expbarrier=9000
 				savant.ssjdrain=0.020
 				savant.restssjdrain = 0.004
 				savant.unrestssjdrain=0.010
@@ -169,7 +169,7 @@ mob/var/ismssj
 			if(levelup == 1)
 				levelup=0
 				savant<<"Your body is getting used to Super Saiyan. Super Saiyan Mastery is now level [level]!"
-				expbarrier=9000
+				expbarrier=27000
 				savant.ssjdrain=0.015
 				savant.ssjmult=4 //SSJ1 mastery raises the multiplier (2 -> 4 -> 6)
 				savant.restssjdrain = 0.002
@@ -510,7 +510,7 @@ mob/var/activatedUSSJ
 /datum/skill/forms/ssj4fplb
 	skilltype = "Super Saiyan Form"
 	name = "Super Saiyan 4 Limit Break"
-	desc = "Break past the limits of Super Saiyan 4. Once learned, transform again while in SSJ4 to ascend to its Full Power Limit Breaker form (Primal Saiyan only)."
+	desc = "Shatter the final limit. Available only after fully mastering Super Saiyan 4 Full Power. Once learned, transform again while in Full Power to ascend to the Super Saiyan 4 Limit Breaker (Primal Saiyan only)."
 	skillcost = 1
 	can_forget = FALSE
 	common_sense = FALSE

@@ -19,6 +19,7 @@ mob/var
 	ssj1_music_played=0 //first-transformation theme flags; persist in saves so each plays only once ever (like ssj3firsttime)
 	ssj2_music_played=0
 	blue_music_played=0
+	ssj4_music_played=0
 	trans=0
 	hastrans=0
 	hastrans2=0
@@ -44,8 +45,14 @@ mob/var
 	rawssj4at = 200000000 //200 mil
 	hasssj4
 	ssj4hair = 'Hair_SSj4.dmi'
-	ssj4mult=22 //igual ao Super Saiyan God (god_form_mult 22)
-	ssj4fplbmult=32 //SSJ4 Full Power Limit Breaker: igual ao Super Saiyan Blue (god_form_mult 32)
+	ssj4mult=20 //SSJ4 base (escala ate ssj4maxmult conforme a maestria do SSJ4)
+	ssj4maxmult=40 //SSJ4 com 100% de maestria
+	ssj4fpmult=32 //SSJ4 Full Power base (estagio acima do SSJ4)
+	ssj4fpmaxmult=50 //SSJ4 Full Power com 100% de maestria
+	ssj4fplbmult=56 //SSJ4 Limit Breaker (God Form, multiplicador fixo)
+	ssj4mastery=0 //maestria do SSJ4 (0-100); ao 100% libera o Full Power
+	ssj4fpmastery=0 //maestria do SSJ4 Full Power (0-100); ao 100% libera a COMPRA do Limit Breaker
+	hasSSJ4FP=0 //liberou a forma SSJ4 Full Power (ao masterizar 100% o SSJ4)
 
 	ssjenergymod = 2 //USSJ doesn't have a energy increase, it uses SSJ's energy mod.
 	//'ussjenergymod' refers therefore to unrestrained super saiyan's mod.
@@ -115,11 +122,30 @@ obj/buff/SuperSaiyan/Loop()
 					DeBuff()
 				if(prob(15)) container.Ki+=0.002 * container.MaxKi //ki gains a bit of energy.
 				//there is no stamina loss from SSJ4.
+				if(container.ssj4mastery < 100) //maestria do SSJ4 cresce na forma; ao 100% libera o Full Power automaticamente
+					container.ssj4mastery = min(100, container.ssj4mastery + 0.0116) //~3h de uso continuo para masterizar (buff Loop ~0.8x/s)
+					container.ssjBuff = container.ssj4_form_mult()
+					if(container.ssj4mastery >= 100 && !container.hasSSJ4FP)
+						container.hasSSJ4FP = 1
+						container.testunlocks()
+						container << "<font color=#ffcc33>You have completely mastered Super Saiyan 4! Super Saiyan 4 Full Power is now available - transform again to ascend.</font>"
 			if(5)
 				if(!container.Tail)
-					view(container) << "[container]'s tail was lost, reverting them from SSJ4 FPLB!"
+					view(container) << "[container]'s tail was lost, reverting them from SSJ4 Full Power!"
 					DeBuff()
-				if(prob(15)) container.Ki+=0.002 * container.MaxKi //SSJ4 FPLB: igual ao SSJ4 (sem dreno de stamina)
+				if(prob(15)) container.Ki+=0.002 * container.MaxKi //SSJ4 Full Power: sem dreno de stamina
+				if(container.ssj4fpmastery < 100) //maestria do Full Power; ao 100% libera a COMPRA do Limit Breaker
+					container.ssj4fpmastery = min(100, container.ssj4fpmastery + 0.0099) //~3.5h de uso continuo (forma mais dificil de dominar)
+					container.ssjBuff = container.ssj4_form_mult()
+					if(container.ssj4fpmastery >= 100)
+						container.testunlocks()
+						if(!container.hasFPLB)
+							container << "<font color=#ff66cc>You have completely mastered Super Saiyan 4 Full Power! You may now learn the Super Saiyan 4 Limit Breaker.</font>"
+			if(6)
+				if(!container.Tail)
+					view(container) << "[container]'s tail was lost, reverting them from SSJ4 Limit Breaker!"
+					DeBuff()
+				if(prob(15)) container.Ki+=0.002 * container.MaxKi //SSJ4 Limit Breaker: sem dreno de stamina
 	if(lastForm!=container.ssj)
 		var/_oldTKM = container.trueKiMod //keep Ki% on EVERY form change: remember the old form's ki multiplier before it is reset
 		lastForm=container.ssj
@@ -166,19 +192,20 @@ obj/buff/SuperSaiyan/Loop()
 				container.MaxKi *= container.trueKiMod
 				container.updateOverlay(/obj/overlay/effects/electrictyeffects)
 			if(4)
-				//container.updateOverlay(/obj/overlay/hairs/ssj/ssj4)
 				container.updateOverlay(/obj/overlay/body/saiyan/saiyan4body)
-				//container.overlayList+='Electric_Yellow.dmi'
-				//SSj4 is just a raw boost in power now. Fuk the other shit.
-				container.ssjBuff=container.ssj4mult
-				if(container.Class == "Legendary Primal Saiyan") container.ssjBuff *= 1.5 //Primal lendario: SSJ4 reforcado (Primal-equivalente do Lendario)
+				container.ssjBuff=container.ssj4_form_mult()
 				container.trueKiMod = container.ssj4energymod
 				container.MaxKi *= container.trueKiMod
-			if(5)
+			if(5) //SSJ4 Full Power
+				container.updateOverlay(/obj/overlay/body/saiyan/saiyan5body)
+				container.ssjBuff=container.ssj4_form_mult()
+				container.trueKiMod = container.ssj4energymod
+				container.MaxKi *= container.trueKiMod
+			if(6) //SSJ4 Limit Breaker (God Form)
 				container.updateOverlay(/obj/overlay/body/saiyan/saiyan5body)
 				container.updateOverlay(/obj/overlay/effects/ssj4lb_sparks) //aura constante do Limit Breaker
 				container.updateOverlay(/obj/overlay/effects/ssj4lb_lightning)
-				container.ssjBuff=container.ssj4fplbmult
+				container.ssjBuff=container.ssj4_form_mult()
 				container.trueKiMod = container.ssj4energymod
 				container.MaxKi *= container.trueKiMod
 		if(_oldTKM) //keep the SAME Ki% across the form change (up OR down) by scaling Ki with the MaxKi/trueKiMod change
@@ -230,6 +257,7 @@ mob/proc/SSj()
 		attackable=0
 		var/ssjcolor = "yellow"
 		if(godki && godki.usage) ssjcolor = "blue"
+		if(godki && godki.usage) view(8)<<"<font color=#33ccff>[src]: We Saiyans have no limits!</font>" //fala ao virar Blue (Super Saiyajin em modo God Ki)
 		poweruprunning=1
 		if(!firsttime)
 			SSJCinematic()
@@ -390,6 +418,14 @@ mob/proc/SSj3()
 		poweruprunning=0
 		transing=0
 		attackable=1
+mob/proc/ssj4_form_mult() //multiplicador atual do tier SSJ4 conforme a forma e a maestria acumulada
+	switch(ssj)
+		if(4) . = ssj4mult + (ssj4maxmult - ssj4mult) * ssj4mastery / 100
+		if(5) . = ssj4fpmult + (ssj4fpmaxmult - ssj4fpmult) * ssj4fpmastery / 100
+		if(6) . = ssj4fplbmult
+		else . = 1
+	if(Class == "Legendary Primal Saiyan" && ssj == 4) . *= 1.5 //Primal lendario: SSJ4 base reforcado
+
 mob/proc/SSj4()
 	if(SaiyanLineage != "Primal Saiyan") return //SSJ4 e exclusivo da linhagem Primal Saiyan
 	//if(legendary)//no more ssj4 for legendary, they've been rebalanced
@@ -400,6 +436,9 @@ mob/proc/SSj4()
 			godki.usage = 0
 			return
 		transing=1
+		if(!ssj4_music_played) //primeira transformacao em SSJ4: tema do GT desde o inicio (toca so uma vez, persiste no save)
+			ssj4_music_played=1
+			emit_Sound('Dragon Ball GT   Super Saiyan 4 Theme (Gladius & Akihito Tokunaga)   By Gladius.mp3')
 		attackable=0
 		sleep(0)
 		usr.Revert()
@@ -444,18 +483,43 @@ mob/proc/SSj4()
 		sleep(10)
 		ssj=4
 		hasssj4=1
-		testunlocks() //libera a skill do Limit Breaker pra compra ao alcancar o SSJ4
+		testunlocks() //reavalia desbloqueios (o Limit Breaker agora depende de masterizar 100% o Full Power)
 		if(!isBuffed(/obj/buff/SuperSaiyan))
 			startbuff(/obj/buff/SuperSaiyan,'SSJIcon.dmi')
 		emit_Sound('chargeaura.wav')
-		ssjBuff=ssj4mult
+		ssjBuff=ssj4_form_mult()
 		transing=0
 		attackable=1
 
-mob/proc/SSj4FPLB() //Super Saiyan 4 Full Power Limit Breaker (estagio acima do SSJ4, multiplicador do Blue)
+mob/proc/SSj4FP() //Super Saiyan 4 Full Power (estagio acima do SSJ4; liberado ao masterizar 100% o SSJ4)
 	if(SaiyanLineage != "Primal Saiyan") return
 	if(transing) return
-	if(ssj != 4) return //precisa estar em SSJ4 primeiro
+	if(ssj != 4) return //precisa estar em SSJ4
+	if(!hasSSJ4FP) return //precisa ter masterizado 100% o SSJ4
+	if(!Tail) return
+	transing=1
+	attackable=0
+	view(8)<<"<font color=#ffcc33 size=[TextSize]>[src]: HAAAAAAAAAAAAAAAHHHHHHHHHH!!!!"
+	emit_Sound('powerup.wav')
+	createShockwavemisc(loc,3)
+	spawn Quake()
+	animate(src,time=6,color=rgb(255,200,40))
+	spawn(12) color=null
+	sleep(8)
+	createShockwavemisc(loc,2)
+	createCrater(loc,5)
+	ssj=5
+	ssjBuff=ssj4_form_mult()
+	emit_Sound('chargeaura.wav')
+	view(6)<<"<font color=#ffcc33>*A surge of golden power explodes around [src] as they reach Full Power!*"
+	transing=0
+	attackable=1
+
+mob/proc/SSj4FPLB() //Super Saiyan 4 Limit Breaker (God Form: estagio acima do Full Power, multiplicador 56)
+	if(SaiyanLineage != "Primal Saiyan") return
+	if(transing) return
+	if(ssj != 5) return //precisa estar em SSJ4 Full Power
+	if(!hasFPLB) return //precisa ter comprado a skill do Limit Breaker
 	if(!Tail) return
 	transing=1
 	attackable=0
@@ -468,7 +532,7 @@ mob/proc/SSj4FPLB() //Super Saiyan 4 Full Power Limit Breaker (estagio acima do 
 	sleep(8)
 	createShockwavemisc(loc,2)
 	createCrater(loc,5)
-	ssj=5
+	ssj=6
 	ssjBuff=ssj4fplbmult
 	emit_Sound('chargeaura.wav')
 	view(6)<<"<font color=red>*A blinding crimson aura erupts around [src] as they shatter their limit!*"

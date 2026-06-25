@@ -172,7 +172,9 @@ mob/proc/AddHair()
 		if(4)
 			updateOverlay(/obj/overlay/hairs/ssj/ssj4)
 		if(5)
-			updateOverlay(/obj/overlay/hairs/ssj/ssj4) //SSJ4 FPLB usa o cabelo do SSJ4 (nao fica careca)
+			updateOverlay(/obj/overlay/hairs/ssj/ssj4) //SSJ4 Full Power usa o cabelo do SSJ4
+		if(6)
+			updateOverlay(/obj/overlay/hairs/ssj/ssj4) //SSJ4 Limit Breaker usa o cabelo do SSJ4
 	switch(lssj)
 		if(1)
 			updateOverlay(/obj/overlay/hairs/ssj/rlssjhair,hair,0,0,100)

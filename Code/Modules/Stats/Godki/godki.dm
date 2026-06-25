@@ -163,8 +163,11 @@ mob/proc
 mob/keyable/verb
 	God_Ki()
 		set category = "Skills"
-		if(SaiyanLineage == "Primal Saiyan")
-			usr << "Your primal bloodline is incompatible with God Ki."
+		if(SaiyanLineage == "Primal Saiyan") //Primal nao acessa SSG/Blue; o God Ki canaliza o Limit Breaker a partir do SSJ4 Full Power masterizado
+			if(ssj==5 && ssj4fpmastery>=100 && hasFPLB)
+				SSj4FPLB()
+			else
+				usr << "Your primal blood rejects God Ki - you can only break your limit from a fully mastered Super Saiyan 4 Full Power."
 			return
 		if(godki)
 			if(!godki.usage)
