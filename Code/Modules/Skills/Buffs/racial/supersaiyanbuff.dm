@@ -96,7 +96,7 @@ obj/buff/SuperSaiyan/Loop()
 					if(container.Ki<=container.MaxKi*container.ssjdrain)
 						container.tooTiredRevert()
 					container.stamina -= trans_drain*max(0.001,container.ssjdrain) //max statement ensures you won't be hitting exactly zero if drain changes mid drain.
-				else container.Revert()
+				else container.Revert(0)
 			//Ultra Super Saiyan Drain
 			if(1.5) if(container.ultrassjdrain)
 				if(container.stamina>=container.maxstamina*container.ultrassjdrain||container.dead)
@@ -104,7 +104,7 @@ obj/buff/SuperSaiyan/Loop()
 					if(container.Ki<=container.MaxKi*container.ultrassjdrain)
 						container.tooTiredRevert()
 					container.stamina -= trans_drain*max(0.001,container.ultrassjdrain) //max statement ensures you won't be hitting exactly zero if drain changes mid drain.
-				else container.Revert()
+				else container.Revert(0)
 			//Super Saiyan 2 Drain
 			if(2) if(container.ssj2drain)
 				if(container.stamina>=container.maxstamina*container.ssj2drain||container.dead)
@@ -112,7 +112,7 @@ obj/buff/SuperSaiyan/Loop()
 					if(container.Ki<=container.MaxKi*container.ssj2drain)
 						container.tooTiredRevert()
 					container.stamina -= trans_drain*max(0.001,container.ssj2drain) //max statement ensures you won't be hitting exactly zero if drain changes mid drain.
-				else container.Revert()
+				else container.Revert(0)
 			//Super Saiyan 3 Drain
 			if(3) if(container.ssj3drain)
 				if(container.stamina>=container.maxstamina*container.ssj3drain||container.dead)
@@ -120,14 +120,14 @@ obj/buff/SuperSaiyan/Loop()
 					if(container.Ki<=container.MaxKi*container.ssj3drain)
 						container.tooTiredRevert()
 					container.stamina -= trans_drain*max(0.001,container.ssj3drain) //max statement ensures you won't be hitting exactly zero if drain changes mid drain.
-				else container.Revert()
+				else container.Revert(0)
 			if(3.5) if(container.ssj3drain) //LSSJ3 (Primal Legendary): dreno estilo SSJ3
 				if(container.stamina>=container.maxstamina*container.ssj3drain||container.dead)
 					container.Ki-=container.MaxKi*container.ssj3drain*TRANS_KI_DRAIN
 					if(container.Ki<=container.MaxKi*container.ssj3drain)
 						container.tooTiredRevert()
 					container.stamina -= trans_drain*max(0.001,container.ssj3drain)
-				else container.Revert()
+				else container.Revert(0)
 			//Super Saiyan 4 Tail Check + Energy Gain
 			if(4)
 				if(!container.Tail)
@@ -138,10 +138,10 @@ obj/buff/SuperSaiyan/Loop()
 				if(container.ssj4mastery < 100) //maestria do SSJ4 cresce na forma; ao 100% libera o Full Power automaticamente
 					container.ssj4mastery = min(100, container.ssj4mastery + 0.0116) //~3h de uso continuo para masterizar (buff Loop ~0.8x/s)
 					container.ssjBuff = container.ssj_effective_mult()
-					if(container.ssj4mastery >= 100 && !container.hasSSJ4FP)
-						container.hasSSJ4FP = 1
-						container.testunlocks()
-						container << "<font color=#ffcc33>You have completely mastered Super Saiyan 4! Super Saiyan 4 Full Power is now available - transform again to ascend.</font>"
+				if(container.ssj4mastery >= 100 && !container.hasSSJ4FP) //FORA do <100: libera o Full Power sempre que estiver 100% (mesmo se ja entrou em 100%, ex.: save antigo)
+					container.hasSSJ4FP = 1
+					container.testunlocks()
+					container << "<font color=#ffcc33>You have completely mastered Super Saiyan 4! Super Saiyan 4 Full Power is now available - transform again to ascend.</font>"
 			if(5)
 				if(!container.Tail)
 					view(container) << "[container]'s tail was lost, reverting them from SSJ4 Full Power!"
@@ -159,6 +159,8 @@ obj/buff/SuperSaiyan/Loop()
 					view(container) << "[container]'s tail was lost, reverting them from SSJ4 Limit Breaker!"
 					DeBuff()
 				if(prob(15)) container.Ki+=0.002 * container.MaxKi //SSJ4 Limit Breaker: sem dreno de stamina
+		if(container.ssj >= 1 && container.ssj <= 3.5 && container.Ki <= container.MaxKi*0.02) //Ki esgotado: reverte qualquer SSJ1-3.5, INCLUSIVE masterizada (que tem dreno 0 e nao roda o bloco de dreno acima)
+			container.tooTiredRevert()
 		if(container.Class != "Legendary Primal Saiyan" && !container.FutureLineage && !container.canSSJ) //SSJ1/2/3 padrao: a maestria (%) cresce na forma; os degraus de multiplicador/dreno sobem pela %, igual ao SSJ4
 			switch(container.ssj)
 				if(1)
@@ -198,6 +200,7 @@ obj/buff/SuperSaiyan/Loop()
 		container.RemoveHair()
 		container.overlayList-='Elec.dmi'
 		container.overlayList-='Electric_Blue.dmi'
+		container.overlayList-='ElecAura1.dmi'
 		container.overlayList-='SSj4_Body.dmi'
 		container.overlayList-='Electric_Yellow.dmi'
 		container.removeOverlay(/obj/overlay/effects/electrictyeffects)
@@ -234,6 +237,10 @@ obj/buff/SuperSaiyan/Loop()
 				container.trueKiMod = container.ssj3energymod
 				container.MaxKi *= container.trueKiMod
 				container.updateOverlay(/obj/overlay/effects/electrictyeffects)
+				container.overlayList-='ElecAura1.dmi'
+				container.overlayList+='ElecAura1.dmi' //eletricidade visivel do SSJ3 (pedido do user), como o SSJ2 tem
+				container.overlayList-='Electric_Blue.dmi'
+				container.overlayList+='Electric_Blue.dmi'
 			if(3.5) //LSSJ3 (Primal Legendary)
 				container.ssjBuff = container.ssj_effective_mult()
 				container.trueKiMod = container.ssj3energymod
@@ -515,14 +522,14 @@ mob/proc/legprimal_form_mult() //Imagem 24: ladder do Primal Legendary (Form Ris
 
 mob/var/tmp/tooTiredMsg = 0 //rate-limit do aviso "too tired" (evita spam quando o Ki acaba)
 mob/proc/tooTiredRevert() //reverte por falta de Ki e mostra o aviso no maximo 1x a cada ~5s (evita o spam de chat)
-	Revert()
+	Revert(0) //arg explicito 0 = reversao TOTAL (nao depender de null==0)
 	if(!tooTiredMsg)
 		tooTiredMsg = 1
 		src << "You are too tired to sustain your form."
 		spawn(50) tooTiredMsg = 0
 
-mob/proc/cantSustainForm(drain) //TRUE se falta Ki pra sustentar uma forma com este dreno; avisa (rate-limited). Evita transformar-e-reverter em loop (ex.: meditar com Ki baixo).
-	if(drain && Ki <= MaxKi*drain)
+mob/proc/cantSustainForm(drain) //TRUE se falta Ki pra sustentar uma forma; avisa (rate-limited). Evita transformar-e-reverter em loop. Bloqueia tambem com Ki <2% mesmo em forma masterizada (dreno 0).
+	if(Ki <= MaxKi*max(drain, 0.02))
 		if(!tooTiredMsg)
 			tooTiredMsg = 1
 			src << "You don't have enough Ki to sustain that form right now."

@@ -228,5 +228,5 @@ obj/overlay/effects/electrictyeffects
 	reg_elec
 		name = "Electricty effect (sparks off of SSJ2/3/4, Perfect Cell, and etc.)"
 		ID = 9
-		icon = 'Elec.dmi'
+		icon = 'USSjElectricTobiUchiha.dmi' //USSJ usa seu proprio icone de eletricidade (sem os raios azuis Elec.dmi)
 		changeme = 0

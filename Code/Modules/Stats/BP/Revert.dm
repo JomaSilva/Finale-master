@@ -3,6 +3,7 @@ mob/proc/Revert(var/DontRevertSSJ)
 		overlayList-='SSj Aura.dmi'
 		overlayList-='Elec.dmi'
 		overlayList-='Electric_Blue.dmi'
+		overlayList-='ElecAura1.dmi'
 		overlayList-='Electric_Yellow.dmi'
 		overlayList-='Electric_Red.dmi'
 		overlayList-='SSj4_Body.dmi'
