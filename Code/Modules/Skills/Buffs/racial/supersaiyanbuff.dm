@@ -72,8 +72,8 @@ obj/buff/SuperSaiyan/Buff()
 	lastForm=0
 	..()
 //Dreno de Ki das formas SSJ: fracao do MaxKi consumida por ciclo do BuffLoop (~4x/seg), multiplicada pelo drain da forma (ssjdrain/ssj2drain/ssj3drain...).
-//Ex.: SSJ3 nao-masterizado ssj3drain=0.075 -> 0.075*0.1 = 0.75% do MaxKi por ciclo (~3%/seg, idle ~30s). Aumente para drenar mais rapido.
-#define TRANS_KI_DRAIN 0.1
+//Ex.: SSJ3 nao-masterizado ssj3drain=0.075 -> 0.075*0.4 = 3% do MaxKi por ciclo do BuffLoop (~0.8x/seg) -> ~2.4%/seg, idle ~25s. Aumente TRANS_KI_DRAIN para drenar mais rapido.
+#define TRANS_KI_DRAIN 0.4
 obj/buff/SuperSaiyan/Loop()
 	if(!container.transing)
 		switch(container.ssj)
@@ -124,7 +124,7 @@ obj/buff/SuperSaiyan/Loop()
 				//there is no stamina loss from SSJ4.
 				if(container.ssj4mastery < 100) //maestria do SSJ4 cresce na forma; ao 100% libera o Full Power automaticamente
 					container.ssj4mastery = min(100, container.ssj4mastery + 0.0116) //~3h de uso continuo para masterizar (buff Loop ~0.8x/s)
-					container.ssjBuff = container.ssj4_form_mult()
+					container.ssjBuff = container.ssj_effective_mult()
 					if(container.ssj4mastery >= 100 && !container.hasSSJ4FP)
 						container.hasSSJ4FP = 1
 						container.testunlocks()
@@ -136,7 +136,7 @@ obj/buff/SuperSaiyan/Loop()
 				if(prob(15)) container.Ki+=0.002 * container.MaxKi //SSJ4 Full Power: sem dreno de stamina
 				if(container.ssj4fpmastery < 100) //maestria do Full Power; ao 100% libera a COMPRA do Limit Breaker
 					container.ssj4fpmastery = min(100, container.ssj4fpmastery + 0.0099) //~3.5h de uso continuo (forma mais dificil de dominar)
-					container.ssjBuff = container.ssj4_form_mult()
+					container.ssjBuff = container.ssj_effective_mult()
 					if(container.ssj4fpmastery >= 100)
 						container.testunlocks()
 						if(!container.hasFPLB)
@@ -146,6 +146,7 @@ obj/buff/SuperSaiyan/Loop()
 					view(container) << "[container]'s tail was lost, reverting them from SSJ4 Limit Breaker!"
 					DeBuff()
 				if(prob(15)) container.Ki+=0.002 * container.MaxKi //SSJ4 Limit Breaker: sem dreno de stamina
+		if(container.ssj) container.ssjBuff = container.ssj_effective_mult() //mantem o ssjBuff vivo: reflete a maestria atual + aplica o piso (forma anterior +2x)
 	if(lastForm!=container.ssj)
 		var/_oldTKM = container.trueKiMod //keep Ki% on EVERY form change: remember the old form's ki multiplier before it is reset
 		lastForm=container.ssj
@@ -164,10 +165,7 @@ obj/buff/SuperSaiyan/Loop()
 		container.trueKiMod = 1
 		switch(container.ssj)
 			if(1)
-				if(container.FutureLineage) //Future Lineage: SSJ1 escala em 10 estagios (2x no estagio 0 -> 20x no estagio 9+), substituindo o ssjmult normal
-					container.ssjBuff = min(2 + container.futureSSJStage * 2, 20)
-				else
-					container.ssjBuff=container.ssjmult
+				container.ssjBuff = container.ssj_effective_mult()
 				container.trueKiMod = container.ssjenergymod
 				container.MaxKi *= container.trueKiMod
 				//if(container.ssjdrain<=0.010) container.updateOverlay(/obj/overlay/hairs/ssj/ssj1fp)
@@ -177,35 +175,35 @@ obj/buff/SuperSaiyan/Loop()
 				//else container.updateOverlay(/obj/overlay/hairs/ssj/ussj)
 				container.trueKiMod = container.ssjenergymod
 				container.MaxKi *= container.trueKiMod
-				container.ssjBuff=container.ultrassjmult
+				container.ssjBuff = container.ssj_effective_mult()
 				container.updateOverlay(/obj/overlay/effects/electrictyeffects/reg_elec)
 			if(2)
 				//container.updateOverlay(/obj/overlay/hairs/ssj/ssj2)
-				container.ssjBuff=container.ssj2mult
+				container.ssjBuff = container.ssj_effective_mult()
 				container.trueKiMod = container.ssj2energymod
 				container.MaxKi *= container.trueKiMod
 				container.updateOverlay(/obj/overlay/effects/electrictyeffects)
 			if(3)
 				//container.updateOverlay(/obj/overlay/hairs/ssj/ssj3)
-				container.ssjBuff=container.ssj3mult
+				container.ssjBuff = container.ssj_effective_mult()
 				container.trueKiMod = container.ssj3energymod
 				container.MaxKi *= container.trueKiMod
 				container.updateOverlay(/obj/overlay/effects/electrictyeffects)
 			if(4)
 				container.updateOverlay(/obj/overlay/body/saiyan/saiyan4body)
-				container.ssjBuff=container.ssj4_form_mult()
+				container.ssjBuff=container.ssj_effective_mult()
 				container.trueKiMod = container.ssj4energymod
 				container.MaxKi *= container.trueKiMod
 			if(5) //SSJ4 Full Power
 				container.updateOverlay(/obj/overlay/body/saiyan/saiyan5body)
-				container.ssjBuff=container.ssj4_form_mult()
+				container.ssjBuff=container.ssj_effective_mult()
 				container.trueKiMod = container.ssj4energymod
 				container.MaxKi *= container.trueKiMod
 			if(6) //SSJ4 Limit Breaker (God Form)
 				container.updateOverlay(/obj/overlay/body/saiyan/saiyan5body)
 				container.updateOverlay(/obj/overlay/effects/ssj4lb_sparks) //aura constante do Limit Breaker
 				container.updateOverlay(/obj/overlay/effects/ssj4lb_lightning)
-				container.ssjBuff=container.ssj4_form_mult()
+				container.ssjBuff=container.ssj_effective_mult()
 				container.trueKiMod = container.ssj4energymod
 				container.MaxKi *= container.trueKiMod
 		if(_oldTKM) //keep the SAME Ki% across the form change (up OR down) by scaling Ki with the MaxKi/trueKiMod change
@@ -426,6 +424,19 @@ mob/proc/ssj4_form_mult() //multiplicador atual do tier SSJ4 conforme a forma e 
 		else . = 1
 	if(Class == "Legendary Primal Saiyan" && ssj == 4) . *= 1.5 //Primal lendario: SSJ4 base reforcado
 
+mob/proc/ssj_effective_mult() //multiplicador EFETIVO do SSJ com piso: nunca cai abaixo de (forma anterior + 2x), ate a forma atual superar naturalmente
+	if(FutureLineage && ssj == 1)
+		return min(2 + futureSSJStage * 2, 20)
+	switch(ssj)
+		if(1) . = ssjmult
+		if(1.5) . = ultrassjmult //USSJ: valor fixo 3x entre SSJ1 e SSJ2, SEM piso. SSJ1 masterizado (6x) supera (canon: Full Power > Ultra SSJ). So um boost de forca inicial.
+		if(2) . = max(ssj2mult, ssjmult + 2)
+		if(3) . = max(ssj3mult, ssj2mult + 2)
+		if(4) . = max(ssj4_form_mult(), ssj3mult + 2)
+		if(5) . = max(ssj4_form_mult(), ssj4maxmult + 2)
+		if(6) . = max(ssj4_form_mult(), ssj4fpmaxmult + 2)
+		else . = 1
+
 mob/proc/SSj4()
 	if(SaiyanLineage != "Primal Saiyan") return //SSJ4 e exclusivo da linhagem Primal Saiyan
 	//if(legendary)//no more ssj4 for legendary, they've been rebalanced
@@ -487,7 +498,7 @@ mob/proc/SSj4()
 		if(!isBuffed(/obj/buff/SuperSaiyan))
 			startbuff(/obj/buff/SuperSaiyan,'SSJIcon.dmi')
 		emit_Sound('chargeaura.wav')
-		ssjBuff=ssj4_form_mult()
+		ssjBuff=ssj_effective_mult()
 		transing=0
 		attackable=1
 
@@ -509,7 +520,7 @@ mob/proc/SSj4FP() //Super Saiyan 4 Full Power (estagio acima do SSJ4; liberado a
 	createShockwavemisc(loc,2)
 	createCrater(loc,5)
 	ssj=5
-	ssjBuff=ssj4_form_mult()
+	ssjBuff=ssj_effective_mult()
 	emit_Sound('chargeaura.wav')
 	view(6)<<"<font color=#ffcc33>*A surge of golden power explodes around [src] as they reach Full Power!*"
 	transing=0
@@ -533,7 +544,7 @@ mob/proc/SSj4FPLB() //Super Saiyan 4 Limit Breaker (God Form: estagio acima do F
 	createShockwavemisc(loc,2)
 	createCrater(loc,5)
 	ssj=6
-	ssjBuff=ssj4fplbmult
+	ssjBuff=ssj_effective_mult()
 	emit_Sound('chargeaura.wav')
 	view(6)<<"<font color=red>*A blinding crimson aura erupts around [src] as they shatter their limit!*"
 	transing=0

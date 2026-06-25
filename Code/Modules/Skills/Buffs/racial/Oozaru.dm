@@ -127,7 +127,7 @@ obj/buff/Oozaru/Buff()
 	container.Tphysoff+=1.2
 	container.Tspeed-=1.5
 	container.Ttechnique-=1.5
-	container.giantFormbuff = 2
+	container.giantFormbuff = 1.5 //Oozaru regular = 1.5x
 	container.bigform=1
 	container.Ki += container.OozaruBuff * container.MaxKi
 	container.train=0
@@ -215,6 +215,7 @@ obj/buff/Oozaru/DeBuff()
 	container.Ki /= container.OozaruBuff
 	container.OozaruBuff = 1
 	container.giantFormbuff = 1
+	container.ssjBuff = 1 //reset do multiplicador de forma ao sair do Oozaru (o Golden setava ssjBuff e ele nao era resetado)
 	container.bigform=0
 	container.Tphysoff-=1.2
 	container.Tspeed+=1.5
@@ -235,7 +236,8 @@ obj/buff/Oozaru/SuperOozaru
 		..()
 		container.Ki += container.OozaruBuff * container.MaxKi
 		container.OozaruBuff=(container.Omult + 10)
-		container.ssjBuff=container.ssjmult
+		container.ssjBuff=18 //Golden Oozaru = 18x
+		container.giantFormbuff=1 //anula o giantFormbuff(1.5) herdado do Oozaru regular para o total ficar exatamente 18x
 /*
 obj/overlay/g_oozarou_overlay
 	name = "G Oozaru"

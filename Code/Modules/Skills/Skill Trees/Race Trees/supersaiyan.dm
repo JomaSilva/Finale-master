@@ -25,6 +25,15 @@ mob/var
 		if(savant.hasssj && !savant.HasSkill(/datum/skill/forms/ssj)) //SSJ liberado -> comeca a Maestria Super Saiyajin automaticamente (sem gastar ponto), inclusive em personagens antigos
 			savant.learnSkill(new/datum/skill/forms/ssj, 0)
 			savant << "You begin to feel your body adapt to the Super Saiyan form... your mastery will now grow as you use it."
+		if(savant.hasssj2 && !savant.HasSkill(/datum/skill/forms/mssj2)) //SSJ2 liberado -> Maestria do SSJ2 automatica (antes era compra manual)
+			savant.learnSkill(new/datum/skill/forms/mssj2, 0)
+			savant << "Your body begins to adapt to Super Saiyan 2... its mastery will now grow as you use it."
+		var/datum/skill/forms/mssj2/_m2 = locate(/datum/skill/forms/mssj2) in savant.learned_skills
+		if(_m2 && _m2.level == 3 && !savant.HasSkill(/datum/skill/forms/ssj3)) //SSJ2 masterizado -> libera o SSJ3 automaticamente
+			savant.learnSkill(new/datum/skill/forms/ssj3, 0)
+		var/datum/skill/forms/ssj3/_s3 = locate(/datum/skill/forms/ssj3) in savant.learned_skills
+		if(_s3 && _s3.level == 3 && !savant.HasSkill(/datum/skill/forms/ssj3m)) //SSJ3 dominado -> maestria completa automatica
+			savant.learnSkill(new/datum/skill/forms/ssj3m, 0)
 		if(prob(5) && savant.ssj && !savant.transing && !savant.isBuffed(/obj/buff/SuperSaiyan) && !savant.isBuffed(/obj/buff/Werewolf))
 			savant.ssj = 0
 		if(savant.Class=="Legendary" && savant.anger_ssj) if(!TurnOffAscension||savant.AscensionAllowed)
@@ -69,7 +78,7 @@ mob/var
 						if((savant.ssjat*2.2)<=savant.BP || prob(savant.SSJInspired))
 							savant.SSj()
 							savant.hasssj=1
-			if(!savant.FutureLineage&&!savant.hasssj2&&savant.ssj&&savant.BP>=((savant.ssj2at/savant.ssjmult)*0.3))
+			if(!savant.FutureLineage&&!savant.hasssj2&&savant.ismssj&&savant.ssj&&savant.BP>=((savant.ssj2at/savant.ssjmult)*0.3))
 				if(savant.ssj2at<=savant.expressedBP)
 					switch(savant.Emotion)
 						if("Very Angry")
@@ -117,15 +126,7 @@ mob/var/ismssj
 			enableskill(/datum/skill/forms/ssj4fplb)
 		if(savant.ismssj) //maestria completa (natural) libera a Transformacao Direta para compra
 			enableskill(/datum/skill/forms/ssj/DirectSSJ)
-		if(savant.hasssj2&&savant.ismssj)
-			if(!savant.HasSkill(/datum/skill/forms/mssj2))
-				enableskill(/datum/skill/forms/mssj2)
-			var/datum/skill/forms/ssj3/twF = locate(/datum/skill/forms/ssj3) in savant.learned_skills
-			if(twF && twF.level==3)
-				enableskill(/datum/skill/forms/ssj3m)
-			var/datum/skill/forms/mssj2/thF = locate(/datum/skill/forms/mssj2) in savant.learned_skills
-			if(thF && thF.level==3)
-				enableskill(/datum/skill/forms/ssj3)
+		//SSJ2/SSJ3 e suas maestrias agora sao concedidas automaticamente (ver SaiyanFormMastery effector); nao sao mais compradas
 
 /datum/skill/forms/ssj
 	skilltype = "Super Saiyan Form"
@@ -202,7 +203,7 @@ mob/var/ismssj
 						savant<<"In addition, your Super Saiyan 2 form will improve faster."
 					savant.testunlocks()
 				else
-					savant.ssjdrain=0.005
+					savant.ssjdrain=0
 					savant.ssjmult=6 //SSJ1 fully mastered: x6
 					savant.restssjdrain = 0.001
 					savant.unrestssjdrain=0.005
@@ -355,7 +356,7 @@ mob/var/activatedUSSJ
 			if(levelup)
 				usr<<"You just mastered USSJ!"
 				levelup = 0
-				savant.ultrassjdrain = 0.027
+				savant.ultrassjdrain = 0.027 //USSJ sempre drena: forma insustentavel (boost temporario), NUNCA fica 0
 
 /datum/skill/forms/mssj
 	skilltype = "Super Saiyan Form"
@@ -430,7 +431,7 @@ mob/var/activatedUSSJ
 				savant<<"You have become aware of another evolution."
 				savant<<"You've almost mastered Super Saiyan 2!"
 				savant.ssj2mult=6
-				savant.ssj2drain=0.30
+				savant.ssj2drain=0.030
 			expbarrier=100000
 			if(savant.kiratio>1&&(savant.ssj==2||savant.ssj==1))
 				exp+=1+(savant.kiratio/2)
@@ -440,7 +441,7 @@ mob/var/activatedUSSJ
 				savant<<"It's within your grasp! The next evolution of Super Saiyan!"
 				savant<<"You've mastered Super Saiyan 2! It's drain is that of a newly born Super Saiyan."
 				savant.ssj2mult=8
-				savant.ssj2drain=0.25
+				savant.ssj2drain=0.020
 			if(savant.kiratio>1&&(savant.ssj==2||savant.ssj==1))
 				exp+=1*savant.kiratio
 		if(3)
@@ -448,6 +449,7 @@ mob/var/activatedUSSJ
 				levelup = 0
 				savant<<"You've done it! You've unlocked something beyond an Ascended Super Saiyan."
 				savant.ssj2mult=10 //SSJ2 fully mastered: x10
+				savant.ssj2drain=0 //masterizado: sem dreno
 
 /datum/skill/forms/ssj3
 	skilltype = "Super Saiyan Form"
@@ -505,7 +507,7 @@ mob/var/activatedUSSJ
 /datum/skill/forms/ssj3m/after_learn()
 	savant << "You just mastered Super Saiyan 3!"
 	savant.ssj3mult=20
-	savant.ssj3drain=0.50
+	savant.ssj3drain=0
 
 /datum/skill/forms/ssj4fplb
 	skilltype = "Super Saiyan Form"
