@@ -125,6 +125,7 @@ obj/overlay/hairs/tails/saiyantail
 				EffectStart()
 		..()
 		if(!container.Tail) alpha = 0
+		else if(container.ssj >= 4) alpha = 0 //SSJ4/FPLB: o corpo ja tem rabo proprio; esconde o overlay do rabo
 		else alpha = 255
 
 

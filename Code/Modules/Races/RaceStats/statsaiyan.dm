@@ -1,23 +1,31 @@
 //quarter saiyan is in this file.
 //legend is in this file.
 //halfie is in this file.
+mob/var/SaiyanLineage = "" //"Saiyan" (topo no SSJ3) ou "Primal Saiyan" (caminho Oozaru/SSJ4). Persistido no save.
 mob/proc/statsaiyan()
 	NoAscension = 1
 	RaceDescription="Saiyans are from the Planet Vegeta, they are a warrior People who have evolved over generations to match the harsh conditions of their Planet and its violent conditions. Due to that they have greatly increased strength and endurance. Due to being a warrior race they pride themselves in how powerful they are, and that helped them to be able to push their battle power higher in large jumps when they go through hard training or tough situations, that is probably their most famous feature and what they are known for most. In fact one of the main reasons they have large power increases at once is because of their high 'Zenkai' rate, which means that the more damaged and close to death they become, the greater their power increases because of it. Also there is Super Saiyan, which is a monstrously strong form by just about anyone's standards, and it helps them to increase their base power even further too, putting them far beyond 'normal' beings. Saiyans come in three classes: Low-Class, named because they are born the weakest, and dont  battle power quite as fast (at first) as the other Saiyan classes. Normal Class, these are middle of the road style Saiyans, they have the highest endurance as well on average, they  battle power in between Low-Class and Elite levels and have higher Zenkai than Low Class Saiyans. Elite, these are born the strongest of all Saiyans, and  power much much much faster in base than the other Saiyan classes. They are the purest of the Saiyan bloodlines and have the highest Zenkai rate by far, (greater than any other race in fact) meaning they get the most from high stress situations, their weakness compared to the other Saiyans is that (for the battle power) they cannot take nearly as much damage, but they can dish out a lot more."
 	if(Class == "Legendary")
 		RaceDescription="Legendary Saiyans are a mutated variety of the latter, and are known for their tendencies to have uncontrollable anger, and they transform MUCH earlier than the normal Saiyans. The downfall to this is that all Legendary Saiyans, at some point in time, will either go insane from the transformation, or sometime before that. Regardless of that problem, they are -always- out of control and insane during the transformation, though it can be controlled during the Restrained transformation."
 	GravMastered=10 //Saiyans are native to Vegeta (10x gravity); start acclimated so they aren't crushed/frozen on their own homeworld.
+	if(SaiyanLineage == "") //escolha a linhagem antes da classe (Primal abre o SSJ4; Saiyan normal para no SSJ3)
+		SaiyanLineage = input(src,"Escolha sua linhagem Saiyajin. (Primal = caminho do Oozaru/SSJ4)","Linhagem") in list("Saiyan","Primal Saiyan")
+		if(!SaiyanLineage) SaiyanLineage = "Saiyan"
 	if(!genome)
 		genome = new/datum/genetics/Saiyan(/datum/genetics/proto/Saiyan)
 		if(Class != "None")
 			genome.this_class = Class //explicit class (bred/egg/admin) wins
 		else
-			//random Saiyan birth class: ~1% Legendary, ~4% Elite, ~45% Low-Class, ~50% Normal
-			var/roll = rand(1,1000)
-			if(roll <= 10) Class = "Legendary"
-			else if(roll <= 50) Class = "Elite"
-			else if(roll <= 500) Class = "Low-Class"
-			else Class = "Normal"
+			if(SaiyanLineage == "Primal Saiyan") //Primal: caminho do Oozaru/SSJ4; raro Legendary Primal, senao Normal Primal
+				if(rand(1,1000) <= 20) Class = "Legendary Primal Saiyan"
+				else Class = "Normal Primal Saiyan"
+			else
+				//random Saiyan birth class: ~1% Legendary, ~4% Elite, ~45% Low-Class, ~50% Normal
+				var/roll = rand(1,1000)
+				if(roll <= 10) Class = "Legendary"
+				else if(roll <= 50) Class = "Elite"
+				else if(roll <= 500) Class = "Low-Class"
+				else Class = "Normal"
 			genome.this_class = Class
 
 /datum/genetics/proto/Saiyan
@@ -47,7 +55,7 @@ mob/proc/statsaiyan()
 				if("Low-Class")
 					invoker.savant.ssjat= initial(invoker.savant.ssjat) *rand(9,12)/10
 					invoker.savant.ssj2at= initial(invoker.savant.ssj2at) *rand(11,14)/10
-				if("Legendary")
+				if("Legendary","Legendary Primal Saiyan")
 					invoker.savant.restssjat= initial(invoker.savant.restssjat) *(rand(9,12)/10)
 					invoker.savant.ssjdrain=0.025
 					invoker.savant.ssjmod= initial(invoker.savant.ssjmod) *1
@@ -154,6 +162,29 @@ mob/proc/statsaiyan()
 			"Zenkai" = 15,
 			"Spar Mod" = 4,
 			"Anger" = 2
+		),
+		"Normal Primal Saiyan" = list(
+			"Physical Offense" = 1.6,
+			"Physical Defense" = 1.2,
+			"Speed" = 1.7,
+			"Battle Power" = 1.7,
+			"Zenkai" = 18,
+			"Starting BP" = 150
+		),
+		"Legendary Primal Saiyan" = list(
+			"Physical Offense" = 1.7,
+			"Physical Defense" = 2.4,
+			"Technique" = 0.5,
+			"Ki Offense" = 1.6,
+			"Ki Defense" = 2.4,
+			"Ki Skill" = 0.5,
+			"Speed" = 1.1,
+			"Battle Power" = 3.2,
+			"Potential" = 2,
+			"Zenkai" = 15,
+			"Spar Mod" = 4,
+			"Anger" = 2,
+			"Starting BP" = 12000
 		)
 	)
 

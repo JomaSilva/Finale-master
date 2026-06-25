@@ -1,6 +1,7 @@
 mob/var
 	canSSJ = 0 //This is a 'bypass' var that allows any race to use SSJ. If this is ticked to 1, SSJ is weaker.
 	canRSSJ = 1 //This is for Legendaries and their specialization- ticking it to 0 means they 'skip' RSSJ.
+	hasFPLB = 0 //comprou a skill do SSJ4 Full Power Limit Breaker (Primal)
 mob/proc/Transformations_Activate()
 	usr.Frost_Demon_Forms()
 	if(TurnOffAscension&&!AscensionAllowed) return
@@ -29,6 +30,9 @@ mob/proc/Transformations_Activate()
 		if(usr.canSSJ) usr.nerfSSJ()
 		if(!(usr.Class=="Legendary"))
 			if(usr.MysticPcnt==1&&usr.MajinPcnt==1)
+				//SUPER Saiyan 4 Full Power Limit Breaker (Primal, exige a skill comprada)
+				if(usr.ssj==4&&usr.hasFPLB)
+					usr.SSj4FPLB()
 				//SUPER Saiyan 3
 				if(usr.ssj==2&&usr.expressedBP>=usr.ssj3at)
 					if(usr.ssj3able)

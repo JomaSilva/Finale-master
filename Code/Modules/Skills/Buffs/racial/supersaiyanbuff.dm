@@ -44,7 +44,8 @@ mob/var
 	rawssj4at = 200000000 //200 mil
 	hasssj4
 	ssj4hair = 'Hair_SSj4.dmi'
-	ssj4mult=48 //SSj2 mult is 100x, SSj3 mult is 400x.
+	ssj4mult=22 //igual ao Super Saiyan God (god_form_mult 22)
+	ssj4fplbmult=32 //SSJ4 Full Power Limit Breaker: igual ao Super Saiyan Blue (god_form_mult 32)
 
 	ssjenergymod = 2 //USSJ doesn't have a energy increase, it uses SSJ's energy mod.
 	//'ussjenergymod' refers therefore to unrestrained super saiyan's mod.
@@ -114,6 +115,11 @@ obj/buff/SuperSaiyan/Loop()
 					DeBuff()
 				if(prob(15)) container.Ki+=0.002 * container.MaxKi //ki gains a bit of energy.
 				//there is no stamina loss from SSJ4.
+			if(5)
+				if(!container.Tail)
+					view(container) << "[container]'s tail was lost, reverting them from SSJ4 FPLB!"
+					DeBuff()
+				if(prob(15)) container.Ki+=0.002 * container.MaxKi //SSJ4 FPLB: igual ao SSJ4 (sem dreno de stamina)
 	if(lastForm!=container.ssj)
 		var/_oldTKM = container.trueKiMod //keep Ki% on EVERY form change: remember the old form's ki multiplier before it is reset
 		lastForm=container.ssj
@@ -123,6 +129,8 @@ obj/buff/SuperSaiyan/Loop()
 		container.overlayList-='SSj4_Body.dmi'
 		container.overlayList-='Electric_Yellow.dmi'
 		container.removeOverlay(/obj/overlay/effects/electrictyeffects)
+		container.removeOverlay(/obj/overlay/body/saiyan/saiyan4body) //limpa overlays de corpo ao trocar de forma (evita SSJ4/FPLB sobrepostos)
+		container.removeOverlay(/obj/overlay/body/saiyan/saiyan5body)
 		container.AddHair()
 		container.MaxKi = container.MaxKi / container.trueKiMod
 		container.trueKiMod = 1
@@ -160,6 +168,11 @@ obj/buff/SuperSaiyan/Loop()
 				container.ssjBuff=container.ssj4mult
 				container.trueKiMod = container.ssj4energymod
 				container.MaxKi *= container.trueKiMod
+			if(5)
+				container.updateOverlay(/obj/overlay/body/saiyan/saiyan5body)
+				container.ssjBuff=container.ssj4fplbmult
+				container.trueKiMod = container.ssj4energymod
+				container.MaxKi *= container.trueKiMod
 		if(_oldTKM) //keep the SAME Ki% across the form change (up OR down) by scaling Ki with the MaxKi/trueKiMod change
 			container.Ki = container.Ki * container.trueKiMod / _oldTKM
 	if(container.godki && container.trans_min_val)
@@ -179,6 +192,7 @@ obj/buff/SuperSaiyan/DeBuff()
 	container.overlayList-='Electric_Yellow.dmi'
 	container.overlayList-='Elec.dmi'
 	container.removeOverlay(/obj/overlay/body/saiyan/saiyan4body)
+	container.removeOverlay(/obj/overlay/body/saiyan/saiyan5body)
 	container.updateOverlay(/obj/overlay/hairs/hair)
 	container.removeOverlay(/obj/overlay/effects/electrictyeffects)
 	if(container.ssj==1.5)
@@ -214,9 +228,6 @@ mob/proc/SSj()
 		if(!Apeshit)
 			if(!hasssj)
 				ssjat/=2
-				if(!HasSkill(/datum/skill/forms/ssj)) //primeira transformacao -> comeca a Maestria Super Saiyajin de forma natural (sem gastar ponto)
-					learnSkill(new/datum/skill/forms/ssj, 0)
-					src << "You begin to feel your body adapt to the Super Saiyan form... (Super Saiyan Mastery begun)"
 			poweruprunning=0
 			hasssj=1
 			emit_Sound('powerup.wav')
@@ -368,6 +379,7 @@ mob/proc/SSj3()
 		transing=0
 		attackable=1
 mob/proc/SSj4()
+	if(SaiyanLineage != "Primal Saiyan") return //SSJ4 e exclusivo da linhagem Primal Saiyan
 	//if(legendary)//no more ssj4 for legendary, they've been rebalanced
 	//	return actually lssj < ssj4 still, if lssj gets anger rework and doesn't die with fucktons of energy then it'd work.
 	if(!transing)
@@ -420,9 +432,33 @@ mob/proc/SSj4()
 		sleep(10)
 		ssj=4
 		hasssj4=1
+		testunlocks() //libera a skill do Limit Breaker pra compra ao alcancar o SSJ4
 		if(!isBuffed(/obj/buff/SuperSaiyan))
 			startbuff(/obj/buff/SuperSaiyan,'SSJIcon.dmi')
 		emit_Sound('chargeaura.wav')
 		ssjBuff=ssj4mult
 		transing=0
 		attackable=1
+
+mob/proc/SSj4FPLB() //Super Saiyan 4 Full Power Limit Breaker (estagio acima do SSJ4, multiplicador do Blue)
+	if(SaiyanLineage != "Primal Saiyan") return
+	if(transing) return
+	if(ssj != 4) return //precisa estar em SSJ4 primeiro
+	if(!Tail) return
+	transing=1
+	attackable=0
+	view(8)<<"<font color=red size=[TextSize]>[src]: HAAAAAAAAAAAAAAAAAHHHHHHHHHHHHHHH!!!!"
+	emit_Sound('powerup.wav')
+	createShockwavemisc(loc,3)
+	spawn Quake()
+	animate(src,time=6,color=rgb(255,40,40))
+	spawn(12) color=null
+	sleep(8)
+	createShockwavemisc(loc,2)
+	createCrater(loc,5)
+	ssj=5
+	ssjBuff=ssj4fplbmult
+	emit_Sound('chargeaura.wav')
+	view(6)<<"<font color=red>*A blinding crimson aura erupts around [src] as they shatter their limit!*"
+	transing=0
+	attackable=1

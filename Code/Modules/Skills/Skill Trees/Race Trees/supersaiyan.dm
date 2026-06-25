@@ -22,6 +22,9 @@ mob/var
 	//If U6 Saiyans ever get added: their power up req would be 1.2x complete ascension beepee. (U6 Saiyans would be like DU saiyans- low SSJ mults, but high base BP.)
 	..()
 	if(savant)
+		if(savant.hasssj && !savant.HasSkill(/datum/skill/forms/ssj)) //SSJ liberado -> comeca a Maestria Super Saiyajin automaticamente (sem gastar ponto), inclusive em personagens antigos
+			savant.learnSkill(new/datum/skill/forms/ssj, 0)
+			savant << "You begin to feel your body adapt to the Super Saiyan form... your mastery will now grow as you use it."
 		if(prob(5) && savant.ssj && !savant.transing && !savant.isBuffed(/obj/buff/SuperSaiyan) && !savant.isBuffed(/obj/buff/Werewolf))
 			savant.ssj = 0
 		if(savant.Class=="Legendary" && savant.anger_ssj) if(!TurnOffAscension||savant.AscensionAllowed)
@@ -97,12 +100,12 @@ mob/var
 
 
 /datum/skill/tree/SuperSaiyanMastery
-	name = "Super Saiyan Mastery"
-	desc = "Master Super Saiyan, gaining new forms in the process."
+	name = "Super Saiyan Forms"
+	desc = "O Super Saiyajin base agora e dominado automaticamente. Aqui voce desbloqueia as formas superiores (SSJ2, SSJ3 e suas maestrias)."
 	maxtier =6
 	tier=2
 	enabled=0
-	constituentskills = list(new/datum/skill/forms/ssj,new/datum/skill/forms/ssj/DirectSSJ,new/datum/skill/forms/ussj,new/datum/skill/forms/mssj,new/datum/skill/forms/mssj2,new/datum/skill/forms/ssj3,new/datum/skill/forms/ssj3m)
+	constituentskills = list(new/datum/skill/forms/ssj,new/datum/skill/forms/ssj/DirectSSJ,new/datum/skill/forms/ussj,new/datum/skill/forms/mssj,new/datum/skill/forms/mssj2,new/datum/skill/forms/ssj3,new/datum/skill/forms/ssj3m,new/datum/skill/forms/ssj4fplb)
 	can_refund = FALSE
 	allowedtier=6
 
@@ -110,6 +113,8 @@ mob/var/ismssj
 /datum/skill/tree/SuperSaiyanMastery/growbranches()
 	..()
 	if(savant)
+		if(savant.hasssj4 && savant.SaiyanLineage=="Primal Saiyan") //Primal com SSJ4 -> libera a skill do Limit Breaker pra compra
+			enableskill(/datum/skill/forms/ssj4fplb)
 		if(savant.ismssj) //maestria completa (natural) libera a Transformacao Direta para compra
 			enableskill(/datum/skill/forms/ssj/DirectSSJ)
 		if(savant.hasssj2&&savant.ismssj)
@@ -131,7 +136,7 @@ mob/var/ismssj
 	common_sense = FALSE
 	maxlevel = 3
 	tier = 1
-	enabled=1
+	enabled=0 //skill auto-concedida ao liberar SSJ (fica fora da loja; nao custa ponto)
 	expbarrier=2000
 /datum/skill/forms/ssj/effector()
 	..()
@@ -492,3 +497,21 @@ mob/var/activatedUSSJ
 	savant << "You just mastered Super Saiyan 3!"
 	savant.ssj3mult=20
 	savant.ssj3drain=0.50
+
+/datum/skill/forms/ssj4fplb
+	skilltype = "Super Saiyan Form"
+	name = "Super Saiyan 4 Limit Break"
+	desc = "Break past the limits of Super Saiyan 4. Once learned, transform again while in SSJ4 to ascend to its Full Power Limit Breaker form (Primal Saiyan only)."
+	skillcost = 1
+	can_forget = FALSE
+	common_sense = FALSE
+	maxlevel = 1
+	tier = 3
+	enabled=0
+	after_learn()
+		savant << "You feel you can shatter the very limits of Super Saiyan 4!"
+		savant.hasFPLB=1
+	before_forget()
+		savant.hasFPLB=0
+	effector()
+		return

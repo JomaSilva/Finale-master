@@ -163,6 +163,9 @@ mob/proc
 mob/keyable/verb
 	God_Ki()
 		set category = "Skills"
+		if(SaiyanLineage == "Primal Saiyan")
+			usr << "Your primal bloodline is incompatible with God Ki."
+			return
 		if(godki)
 			if(!godki.usage)
 				if(buffoutput[1] != "None") animate(src,time=8,color=rgb(14, 130, 238))

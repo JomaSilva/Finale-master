@@ -79,6 +79,9 @@ mob
 	slot=sFORM
 	Buff()
 		..()
+		if(container.SaiyanLineage == "Primal Saiyan") //Primal nao recebe poder divino do ritual
+			DeBuff()
+			return
 		container.emit_Sound('ssg.wav')
 		container << "Your godly power shimmers around you... Check your stats tab, this will last as long as you have God Ki energy!!"
 		container.gain_godki(100)

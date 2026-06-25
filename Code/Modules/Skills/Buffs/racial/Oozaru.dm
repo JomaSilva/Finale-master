@@ -26,7 +26,7 @@ mob
 
 		GoldenApeshit()
 			if(transing) return
-			if(Race=="Saiyan"&&hasssj&&!transing)
+			if(SaiyanLineage=="Primal Saiyan"&&hasssj&&!transing)
 				if(!Apeshit&&Tail&&!KO)
 					if(ssj) Revert()
 					src<<"You look at the moon and turn into a giant monkey!"

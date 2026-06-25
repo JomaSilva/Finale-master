@@ -22,6 +22,7 @@ mob/var
 
 mob/proc
 	gain_godki(var/energygain,force = FALSE)
+		if(SaiyanLineage == "Primal Saiyan") return //Primal Saiyans nunca adquirem God Ki
 		if(godki_gt_mode || gt_mode) return
 		godki.energy+=energygain*godki_mod
 		if(BP < godki_at && force == FALSE) return
@@ -33,6 +34,7 @@ mob/proc
 			godki.usage = 0
 			godki.energy = 0
 	get_godki()
+		if(SaiyanLineage == "Primal Saiyan") return //Primal Saiyans nunca adquirem God Ki
 		if(godki.tier == 0 && godki.energy == 100)
 			godki.tier = 1
 			godki.b_efficiency = godki_mod
