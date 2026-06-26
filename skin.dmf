@@ -1684,14 +1684,13 @@ window "HealthWindow"
 		can-close = false
 		can-minimize = false
 		can-resize = false
-		transparent-color = #ffffff
 	elem "HPText"
 		type = LABEL
 		pos = 7,4
 		size = 24x12
 		anchor1 = none
 		anchor2 = none
-		background-color = #ffffff
+		background-color = #16181d
 		text-color = #ff5d6c
 		font-family = "Segoe UI Semibold"
 		font-size = 8
@@ -1704,7 +1703,7 @@ window "HealthWindow"
 		size = 24x12
 		anchor1 = none
 		anchor2 = none
-		background-color = #ffffff
+		background-color = #16181d
 		text-color = #4aa8ff
 		font-family = "Segoe UI Semibold"
 		font-size = 8
@@ -1717,7 +1716,7 @@ window "HealthWindow"
 		size = 24x12
 		anchor1 = none
 		anchor2 = none
-		background-color = #ffffff
+		background-color = #16181d
 		text-color = #ffd23f
 		font-family = "Segoe UI Semibold"
 		font-size = 8
@@ -1730,7 +1729,7 @@ window "HealthWindow"
 		size = 188x18
 		anchor1 = none
 		anchor2 = none
-		background-color = #ffffff
+		background-color = #16181d
 		saved-params = ""
 		text = ""
 	elem "HPNum"
@@ -1739,7 +1738,7 @@ window "HealthWindow"
 		size = 110x11
 		anchor1 = none
 		anchor2 = none
-		background-color = #ffffff
+		background-color = #16181d
 		text-color = #cfd4dc
 		font-family = "Segoe UI Semibold"
 		font-size = 7
@@ -1751,7 +1750,7 @@ window "HealthWindow"
 		size = 32x12
 		anchor1 = none
 		anchor2 = none
-		background-color = #ffffff
+		background-color = #16181d
 		text-color = #f2f4f8
 		font-family = "Segoe UI Semibold"
 		font-size = 8
@@ -1764,7 +1763,7 @@ window "HealthWindow"
 		size = 110x11
 		anchor1 = none
 		anchor2 = none
-		background-color = #ffffff
+		background-color = #16181d
 		text-color = #cfd4dc
 		font-family = "Segoe UI Semibold"
 		font-size = 7
@@ -1776,7 +1775,7 @@ window "HealthWindow"
 		size = 32x12
 		anchor1 = none
 		anchor2 = none
-		background-color = #ffffff
+		background-color = #16181d
 		text-color = #f2f4f8
 		font-family = "Segoe UI Semibold"
 		font-size = 8
@@ -1789,7 +1788,7 @@ window "HealthWindow"
 		size = 24x14
 		anchor1 = none
 		anchor2 = none
-		background-color = #ffffff
+		background-color = #16181d
 		text-color = #b69cff
 		font-family = "Segoe UI Semibold"
 		font-size = 8
@@ -1802,7 +1801,7 @@ window "HealthWindow"
 		size = 112x13
 		anchor1 = none
 		anchor2 = none
-		background-color = #ffffff
+		background-color = #16181d
 		text-color = #f2f4f8
 		font-family = "Segoe UI Semibold"
 		font-size = 8
@@ -1814,7 +1813,7 @@ window "HealthWindow"
 		size = 32x13
 		anchor1 = none
 		anchor2 = none
-		background-color = #ffffff
+		background-color = #16181d
 		text-color = #f2f4f8
 		font-family = "Segoe UI Semibold"
 		font-size = 8
