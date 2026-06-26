@@ -74,13 +74,13 @@ proc/Build_Vegeta_Structures()
 	// ---- a research laboratory (13 x 10): benches, computers, filing cabinets, bookshelves ----
 	var/list/lab = list(
 		"WWWWOWWWOWWWW",
-		"WL..m...m..LW",
+		"W..L.m.m.L..W",
 		"W...........W",
 		"WF.........FW",
 		"O...........O",
 		"Wk.........kW",
 		"W...........W",
-		"WL..m...m..LW",
+		"W..L.m.m.L..W",
 		"W...........W",
 		"WWWWW+WWWWWWW",
 	)
