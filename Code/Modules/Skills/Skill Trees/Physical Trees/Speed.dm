@@ -28,6 +28,7 @@
 	maxlevel = 1
 	prereqs = list(new/datum/skill/flow)
 	tier = 3
+	skillcost = 5
 	after_learn()
 		savant<<"You can now burst your speed!"
 		savant.kiskillBuff+=0.15
@@ -61,7 +62,7 @@ mob/keyable/verb/Extreme_Burst()
 		container.initbuff = 5
 		container.DrainMod*=container.initdrain
 		container.Tspeed+=container.initbuff
-		container.buffsBuff= 3
+		container.buffsBuff= 2
 	DeBuff()
 		container.DrainMod/=container.initdrain
 		container.Tspeed-=container.initbuff

@@ -311,8 +311,8 @@ obj/overlay/goblue
 mob/proc/god_form_mult()
 	// Flat BP multiplier for an active God form, or 0 when not in one.
 	// Mirrors the form chart: Super Saiyan God 22x, Super Saiyan Blue/Rose 32x,
-	// Super Saiyan Blue Evolved / Rose 2 (Angel tier) 56x.
+	// Super Saiyan Blue Evolved / Rose 2 56x.
 	if(!godki || !godki.usage || !godki.tier) return 0
 	if(ssj == 0 && lssj == 0) return 22          // Super Saiyan God (no regular SSJ stacked)
-	if(godki.tier >= godki_cap) return 56         // Blue Evolved / Rose 2
+	if(max(ssj,lssj) >= godki_ssj_cap) return 56 // Blue Evolved / Rose 2 (SSJ at the God Ki cap - Blue Evolution at SSJ 1.5, unlocked from God Ki tier 2; tier 4/Angel not required)
 	return 32                                     // Super Saiyan Blue / Rose
