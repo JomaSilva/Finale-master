@@ -110,6 +110,9 @@ proc/Initialize()
 	AreaLoad()
 	sleep(1)
 	world<<"Loading ATMOSPHERE"
+	Build_Vegeta_Structures()
+	sleep(1)
+	world<<"The cities of Vegeta rise from the red soil."
 	LoadMobs()
 	sleep(1)
 	Cleaner()
