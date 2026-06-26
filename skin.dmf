@@ -1704,6 +1704,7 @@ window "HealthWindow"
 		anchor1 = 70,80
 		anchor2 = 100,98
 		background-color = #22252c
+		text-color = #ffffff
 		saved-params = ""
 		text = "(100%)"
 	elem "HPPercent"
@@ -1713,6 +1714,7 @@ window "HealthWindow"
 		anchor1 = 70,80
 		anchor2 = 100,98
 		background-color = #22252c
+		text-color = #ff8a8a
 		saved-params = ""
 		text = "(100%)"
 	elem "KINum"
@@ -1722,6 +1724,7 @@ window "HealthWindow"
 		anchor1 = 70,80
 		anchor2 = 100,98
 		background-color = #22252c
+		text-color = #ffffff
 		saved-params = ""
 		text = "(100%)"
 	elem "KIPercent"
@@ -1731,6 +1734,7 @@ window "HealthWindow"
 		anchor1 = 70,80
 		anchor2 = 100,98
 		background-color = #22252c
+		text-color = #8ec5ff
 		saved-params = ""
 		text = "(100%)"
 	elem "BP"
@@ -1740,6 +1744,7 @@ window "HealthWindow"
 		anchor1 = 59,80
 		anchor2 = 70,98
 		background-color = #22252c
+		text-color = #ffd23f
 		saved-params = ""
 		text = "BP"
 	elem "BPPercent"
@@ -1749,6 +1754,7 @@ window "HealthWindow"
 		anchor1 = 70,80
 		anchor2 = 100,98
 		background-color = #22252c
+		text-color = #ffd23f
 		saved-params = ""
 		text = "(100%)"
 	elem "BPNum"
@@ -1758,6 +1764,7 @@ window "HealthWindow"
 		anchor1 = 0,80
 		anchor2 = 59,98
 		background-color = #22252c
+		text-color = #ffffff
 		saved-params = ""
 		text = "1"
 	elem "STBar"
@@ -1768,7 +1775,7 @@ window "HealthWindow"
 		anchor2 = 94,19
 		background-color = #15171c
 		saved-params = ""
-		bar-color = #e8e800
+		bar-color = #ffd23f
 		is-slider = false
 		dir = east
 	elem "KIbar"
@@ -1779,7 +1786,7 @@ window "HealthWindow"
 		anchor2 = 94,19
 		background-color = #15171c
 		saved-params = ""
-		bar-color = #005ebb
+		bar-color = #2e9bff
 		is-slider = false
 		dir = east
 	elem "HPbar"
@@ -1790,7 +1797,7 @@ window "HealthWindow"
 		anchor2 = 94,19
 		background-color = #15171c
 		saved-params = ""
-		bar-color = #b30000
+		bar-color = #e63946
 		is-slider = false
 		dir = east
 

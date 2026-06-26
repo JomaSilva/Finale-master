@@ -68,7 +68,7 @@ mob
 					for(var/obj/items/Equipment/E in src.contents)
 						if(!E.equipped)
 							call(E,"Wear")(src)
-					if(isBoss||sim||istype(src,/mob/npc/Splitform))src.chaseState()
+					if(isBoss||sim||istype(src,/mob/npc/Splitform)||monster) src.chaseState() //hostile mobs ENGAGE directly instead of passively wandering off
 					else src.wanderState()
 			initialState()
 				spawn NPCTicker() //do a initial tick when starting chase
@@ -212,7 +212,7 @@ mob
 							if(totalTime >= OMEGA_RATE)
 								if(totalTime > MAXIMUM_TIME) totalTime = MAXIMUM_TIME
 								totalTime -= OMEGA_RATE
-								. = step(src,get_dir(target,src))
+								. = step(src,get_dir(src,target)) //close in on the target instead of backing toward the map edge
 								if(!.)
 									step_rand(src)
 					sleep(chase_speed)
@@ -247,7 +247,7 @@ mob
 					if(isBlaster && prob(4))
 						strafeState()
 						return
-					if(HP <= HP - e_behavior_vals[1])
+					if(HP <= 25 && e_behavior_vals[1] < 35) //flee only when genuinely low HP AND low courage (old "HP <= HP - courage" was always false)
 						runawayState()
 						return
 					if(e_behavior_vals[3]>=75 && target.HP <= 40)
@@ -472,7 +472,7 @@ mob
 					if(prob(60)) behavior_check()
 					if(!bhv_set)
 						for(var/a=1, a<= behavior_vals.len,a++)
-							behavior_vals[a] *= (rand(1,10) / max(1,rand(1,10)))
+							behavior_vals[a] *= (rand(8,13) / 10) //mild personality variation (~0.8x-1.3x); was 0.1x-10x which turned ~half the mobs into cowards that flee to the corner
 						bhv_set = 1
 					for(var/a=1, a<= behavior_vals.len,a++)
 						behavior_vals_t[a] = clamp(behavior_vals_t[a],0,100)
