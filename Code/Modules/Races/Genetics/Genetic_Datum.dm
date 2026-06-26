@@ -284,6 +284,9 @@ datum/genetics
 			savant.techmod = misc_stats["Tech Modifier"]
 		
 		assign_starting_BP()
+			if(this_class == "Mutant Frost Demon") //rare powerful variant: always starts at a huge, per-player-random BP
+				savant.BP = rand(200000, 700000)
+				return
 			var/sbp = misc_stats["Starting BP"]
 			if(sbp <= 0) sbp = 1 //guard against divide-by-zero / missing seed
 			savant.BP = (sbp/10) + (rand((1 / sbp)*100,200*sbp)/100)

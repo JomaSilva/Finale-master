@@ -202,7 +202,9 @@ mob/proc/HealthSync()
 		for(var/datum/Body/S in body)
 			S.health = max(-5,S.health)//bottoming out at 0 often makes a regen source tick before it lops
 			if(S.maxhealth!=100*healthmod*S.maxhpmod)
+				var/wasfull = S.health >= S.maxhealth //a healthy limb should stay full when its max changes
 				S.maxhealth = 100*healthmod*S.maxhpmod
+				if(wasfull) S.health = S.maxhealth //fixes the whole body showing "Slightly Injured" on every login (max grew but health didn't follow)
 			if(!S.lopped&&!isnull(S.health))
 				if(S.health<=0)
 					spawn S.LopLimb()

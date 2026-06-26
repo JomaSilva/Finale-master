@@ -192,7 +192,7 @@ mob/proc
 			for(var/datum/Body/b in src.body)
 				if(b.status!="Missing")
 					if(b.targetable)
-						b.suffix = "[b.limbstatus]"
+						b.suffix = "[b.limbstatus] <font color=#9aa0ab>([round(b.health)]/[round(b.maxhealth)])</font>"
 						if(b.artificial)
 							stat("Capacity: [b.capacity] <font color=gray>Type: Artificial</font>", b)
 						else
