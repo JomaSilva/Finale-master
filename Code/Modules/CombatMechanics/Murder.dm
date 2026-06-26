@@ -47,8 +47,11 @@ mob/verb/Finish()
 	for(var/mob/M in get_step(src,dir)) if(M.attackable&&!med&&!train&&M.KO&&move)
 		MurderTheFollowing(0,M)
 
+mob/var/tmp/zenkaiReady = 0 //world.time when Zenkai may next trigger (1 hour cooldown)
 mob/proc/death_stuff(inputPl)
-	if(inputPl > BP && !dead) zenkaiStore += capcheck(0.2*inputPl*ZenkaiMod*(inputPl/TopBP)) //overwrites KO & timer because dying is significant
+	if(inputPl > BP && !dead && world.time >= zenkaiReady) //Zenkai scales off the ENEMY's BP, but only once per hour
+		zenkaiStore += capcheck(min(0.1*inputPl, BP*2)) //gain 10% of the foe's BP, capped so it never exceeds 2x your own current BP
+		zenkaiReady = world.time + 36000 //1 hour cooldown (deciseconds)
 	//Onlooker ANGRY
 	for(var/mob/A in view()) //A being the friend looking...
 		var/DyerIsGood=0
@@ -76,6 +79,7 @@ mob/proc/killer_stuff(var/mob/M)
 					nP.get_pissed()
 					spawn nP.chaseState()
 		M.death_stuff(BP)
+		M.friend_harmed_by(usr, ENMITY_FRIEND_KILL) //a rival killing you embitters your nearby friends
 		if(!dead) if(King_of_Vegeta==M.key)
 			if(Race=="Saiyan")
 				usr<<"By killing the former King Vegeta, you have become the new King Vegeta!"
@@ -98,6 +102,8 @@ mob/proc/killer_stuff(var/mob/M)
 		view(6)<<output("[M] was just killed by [usr]!","Chatpane.Chat")
 		M.Death()
 
+mob/var/tmp/rageExpire = 0 //world.time at which the current rage spike ends (rage lasts at most 2 minutes)
 mob/proc/Do_Anger_Stuff()
-	Anger+=MaxAnger
+	Anger = max(Anger, MaxAnger) //take the HIGHER of current/new rage — never stack, sum, or multiply (kills the 20x anomaly)
+	rageExpire = world.time + 1200 //(re)start the 2-minute rage timer (1200 deciseconds)
 	StoredAnger=100

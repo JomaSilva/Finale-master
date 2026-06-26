@@ -2,7 +2,7 @@ mob/proc/StyleWindowOpen()
 	if(currentStyle)
 	else return FALSE
 	if(totalskillpoints<allocatedpoints)
-		alert("You have more allocated points than you do skillpoints. You will be unable to edit this style until you regain what was lost.")
+		alert("You have more allocated points than you do Milestones. You will be unable to edit this style until you regain what was lost.")
 		return FALSE
 	if(currentStyle.allocatedpoints > currentStyle.learncost)
 		switch(input(usr,"There is a difference between the allocated points [currentStyle.allocatedpoints] and the actual learn cost [currentStyle.learncost]. Pay it to edit the style.")in list("Yes","No"))
@@ -75,8 +75,8 @@ mob/proc/StyleConfigRefreshDisplay()
 	winset(usr,"stylewindow.kiregenlabel","text=\"Ki Regen:[currentStyle.kiregen]\"")
 	winset(usr,"stylewindow.staminalabel","text=\"Stamina:[currentStyle.staminamod]\"")
 	//allocated stat labels
-	winset(usr,"stylewindow.unallocatedlabel","text=\"Unallocated Skillpoints:[availablepoints]\"")
-	winset(usr,"stylewindow.allocatedlabel","text=\"Allocated Skillpoints:[currentStyle.allocatedpoints]\"")
+	winset(usr,"stylewindow.unallocatedlabel","text=\"Unallocated Milestones:[availablepoints]\"")
+	winset(usr,"stylewindow.allocatedlabel","text=\"Allocated Milestones:[currentStyle.allocatedpoints]\"")
 	//outputline (to show stuff like errors)
 	if(winget(usr,"stylewindow.outputline","text")!=""&&!clearedline)
 		clearedline = 1

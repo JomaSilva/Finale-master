@@ -47,6 +47,7 @@ mob/proc/HasSkill(datum/skill/S)
 
 mob/proc/canLearnSkill(datum/skill/S)
 	if(HasSkill(S)) return FALSE
+	if(S.villainonly && !src.isVillain) return FALSE //villain-only skills require admin-assigned Villain status
 	if(S.common_sense == TRUE) return TRUE
 	if(S.enabled == 0) return FALSE
 	for(var/allowedrace in S.compatible_races)
@@ -56,6 +57,7 @@ mob/proc/canLearnSkill(datum/skill/S)
 	return FALSE
 
 mob/proc/skillUnlockOK(datum/skill/S) //pode este mob desbloquear S por classe/raca? (sem restricao = sim). Usado pelo testskillprereqs das arvores.
+	if(S.villainonly && !src.isVillain) return FALSE //villain-only skills require admin-assigned Villain status
 	if(!S.compatible_races.len && !S.compatible_classes.len) return TRUE
 	for(var/allowedrace in S.compatible_races)
 		if(src.Race in allowedrace) return TRUE

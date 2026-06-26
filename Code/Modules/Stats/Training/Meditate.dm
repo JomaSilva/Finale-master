@@ -21,10 +21,24 @@ mob/default/verb/Meditate()
 		if(train)
 			Train()
 		if(!med)
-			usr<<"You begin meditating."
-			if(!train&&alert(usr,"Deep meditation? You'll be interrupted by noise but you'll get more gains. This will also consume a little stamina.","","Sure","No.")=="Sure")
-				deepmeditation = 1
-				train=0
+			//Meditating immediately clears any rage, returning you to a calm 1x.
+			if(Anger > 100 || rageExpire)
+				Anger = 100
+				rageExpire = 0
+				src << "<font color=#88aacc>You center yourself; your rage melts away.</font>"
+			//First choice: study technology (gain tech) or meditate normally.
+			var/mode = alert(usr,"What would you like to do?","Meditate","Study","Meditate","Cancel")
+			if(mode == "Cancel") return
+			if(mode == "Study")
+				studytech = 1
+				deepmeditation = 0
+				usr << "You sit and study, turning your mind toward technology."
+			else
+				studytech = 0
+				usr<<"You begin meditating."
+				if(!train&&alert(usr,"Deep meditation? You'll be interrupted by noise but you'll get more gains. This will also consume a little stamina.","","Sure","No.")=="Sure")
+					deepmeditation = 1
+					train=0
 			train=0
 			dir=SOUTH
 			//canfight=0
@@ -34,6 +48,7 @@ mob/default/verb/Meditate()
 			usr<<"You stop meditating."
 			med=0
 			deepmeditation = 0
+			studytech = 0
 			//canfight=1
 			icon_state=""
 
@@ -56,6 +71,13 @@ mob/proc/medproc() if(client)
 				studyenchant=""
 				studyenchanttimer=0
 				AddExp(src,/datum/mastery/Crafting/Enchanting,1000)
+		if(studytech)
+			if(techskill < 99) techxp += (0.5 + techskill/20) * max(techmod,1) //channel your focus into technological research
+			if(Ki<MaxKi) Ki+=KIregen
+			if(HP<100)
+				SpreadHeal(0.5*HPregen)
+				HP=min(HP,100)
+			return //studying yields tech instead of BP — skip the meditation gain/balance logic
 		medbal -= 0.01//should take approximately 10 minutes to decay now
 		medbal = min(medbal,100)
 		medbal = max(medbal,0)
@@ -135,6 +157,7 @@ mob/var
 		medruincount = 0
 		is_drawing=0
 		started_draw
+		studytech = 0 //meditate "Study" mode flag: gain tech instead of BP
 
 mob/default/verb/Draw_Energy()
 	set category = "Skills"

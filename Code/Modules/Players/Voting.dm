@@ -47,7 +47,7 @@ mob/
 						return
 				if("Very Angry")
 					if(StoredAnger == 100)
-						Anger=MaxAnger+=100
+						Anger=max(Anger,MaxAnger) //was "Anger=MaxAnger+=100" — a bug that permanently inflated MaxAnger every use
 						Emotion="Very Angry"
 						angercooldown = 1000
 						StoredAnger = max(StoredAnger - 50,0)
@@ -56,6 +56,7 @@ mob/
 						usr << "Anger not equal to 100!"
 						return
 
+			rageExpire = world.time + 1200 //voluntary rage also expires after 2 minutes
 			WriteToLog("rplog","[usr] used the Anger Me verb, at level [Emotion] with the reasoning: [reason]   ([time2text(world.realtime,"Day DD hh:mm")])")
 			for(var/mob/M in range(screenx,src))
 				if(M.client)

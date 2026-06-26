@@ -2215,7 +2215,7 @@ window "SkillTreeWindow"
 		text-color = #d6d9df
 		background-color = #1b1d23
 		saved-params = ""
-		text = "Skillpoints:"
+		text = "Milestones:"
 		text-wrap = true
 	elem "SkillTreeTier0Label"
 		type = LABEL
@@ -2485,7 +2485,7 @@ window "SkillsListWindow"
 		text-color = #d6d9df
 		background-color = #1b1d23
 		saved-params = ""
-		text = "Skillpoints:"
+		text = "Milestones:"
 		text-wrap = true
 	elem "SkillTreeTier0Label"
 		type = LABEL
@@ -4224,7 +4224,7 @@ window "stylewindow"
 		text-color = #d6d9df
 		background-color = #1b1d23
 		saved-params = ""
-		text = "Add Skillpoints"
+		text = "Add Milestones"
 	elem "label4"
 		type = LABEL
 		pos = 0,72
@@ -4234,7 +4234,7 @@ window "stylewindow"
 		text-color = #d6d9df
 		background-color = #1b1d23
 		saved-params = ""
-		text = "Subtract Skillpoints"
+		text = "Subtract Milestones"
 	elem "button11"
 		type = BUTTON
 		pos = 304,0
@@ -4309,7 +4309,7 @@ window "stylewindow"
 		text-color = #d6d9df
 		background-color = #1b1d23
 		saved-params = ""
-		text = "Allocated Skillpoints:"
+		text = "Allocated Milestones:"
 	elem "PickStyle"
 		type = BUTTON
 		pos = 356,460
@@ -4352,7 +4352,7 @@ window "stylewindow"
 		text-color = #d6d9df
 		background-color = #1b1d23
 		saved-params = ""
-		text = "Unallocated Skillpoints:"
+		text = "Unallocated Milestones:"
 	elem "ResetButton"
 		type = BUTTON
 		pos = 178,51

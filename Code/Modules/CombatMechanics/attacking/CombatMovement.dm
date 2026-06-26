@@ -209,6 +209,8 @@ mob/proc/hitProc(var/mob/M,dmg,var/iscrit,var/customFlavor,var/forcehit,type)
 			GenerateAttackFlavorText("Attack",M,customFlavor)
 			Damage(M,dmg,type)
 			Leech(M)
+			M.lastDamager = src
+			M.add_enmity(src, ENMITY_HIT) //a declared rival hitting you breeds enmity
 			M.combo_count = 0
 			M.buildStun += 10 + round(log(1.3,Etechnique))
 			if(M.dashing)
@@ -223,6 +225,8 @@ mob/proc/hitProc(var/mob/M,dmg,var/iscrit,var/customFlavor,var/forcehit,type)
 			GenerateAttackFlavorText("Attack",M,customFlavor)
 			Damage(M,dmg,type)
 			Leech(M)
+			M.lastDamager = src
+			M.add_enmity(src, ENMITY_HIT) //a declared rival hitting you breeds enmity
 			M.combo_count = 0
 			M.buildStun += 1 + round(log(1.3,Etechnique))
 			if(M.dashing)

@@ -310,6 +310,7 @@ mob/proc
 		AgeCheck()
 		CheckGodki()
 		CheckTime()
+		RefreshHair() //re-apply the saved hairstyle so SSJ/SSJ2 hair-icon changes in code reach already-created characters on load (runs before the transformed-hair restore below)
 		if(ssj && !isBuffed(/obj/buff/SuperSaiyan)) //relog while transformed: persistent buff was destroyed at logout, recreate it so the form (stats + hair) is restored instead of coming back bald
 			startbuff(/obj/buff/SuperSaiyan,'SSJIcon.dmi')
 		if(lssj && !isBuffed(/obj/buff/LSSJ))

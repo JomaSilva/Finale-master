@@ -10,6 +10,7 @@
 
 mob/var
 	isHV=0
+	isVillain=0 //admin-assigned Villain role; required to learn/use Planet Destroy and other villain-only abilities
 
 	//gainsboost
 	BoostActive=0 //admin configurable
@@ -40,6 +41,22 @@ mob/verb
 		HVAlign = input(usr,"What is your alignment? If neutral, 0, otherwise make it a unique number per faction.") as num
 		HVAlign = round(HVAlign)
 		HVcooldown = 432000
+
+mob/Admin2/verb/Set_Villain()
+	set category = "Admin"
+	set name = "Set Villain"
+	var/mob/M = input(usr,"Toggle a player's Villain status (required for Planet Destroy and villain-only skills).") as null|mob in player_list
+	if(isnull(M)) return
+	M.isVillain = !M.isVillain
+	if(M.isVillain)
+		M.HVAlign = 2
+		if(M.HVAlignName == "Neutral" || !M.HVAlignName) M.HVAlignName = "Villain"
+		usr << "[M] is now a Villain."
+		M << "<font color=red><b>You have been designated a Villain. Dark powers such as Planet Destroy are now within your reach.</b></font>"
+	else
+		usr << "[M] is no longer a Villain."
+		M << "<font color=yellow>Your Villain designation has been revoked.</font>"
+		M.unassignverb(/mob/keyable/verb/Planet_Destroy) //strip the verb if they had it
 
 mob/proc
 	HVBPBoost()

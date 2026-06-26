@@ -52,6 +52,8 @@ mob
 			notSpawned = 1
 
 			tmp/next_attack = 0
+			tmp/ai_powered_up = 0
+			tmp/ai_next_chat = 0
 
 
 		//helper functions
@@ -136,6 +138,21 @@ mob
 				walk(A,dir,2)
 				spawn A.Burnout()
 				next_attack = world.time + 3
+
+			npc_combat_chat(var/msg)
+				if(world.time < ai_next_chat) return
+				var/cooldown = isBoss ? 30 : 50
+				ai_next_chat = world.time + cooldown
+				view(src) << output("<font color=#FFCC00>[src.name]: [msg]","Chat")
+
+			npc_power_up()
+				if(ai_powered_up) return
+				ai_powered_up = 1
+				behavior_vals_t[2] = min(behavior_vals_t[2] + 50, 100)
+				behavior_vals_t[1] = min(behavior_vals_t[1] + 40, 100)
+				NPCAscension()
+				view(src) << output("<font color=#FF8800>[src.name] powers up!","Chat")
+				ai_next_chat = world.time + 20
 
 			NPCStats()
 				set waitfor = 0
@@ -231,6 +248,10 @@ mob
 					if(e_behavior_vals[3]>=75 && target.HP <= 40)
 						resetState()//no longer fight if kind and target is damaged sufficiently
 						return
+					// Power-up when losing badly or clearly outmatched
+					if(!ai_powered_up)
+						if(HP <= 35 || (expressedBP > 0 && target.expressedBP >= expressedBP * 1.8))
+							npc_power_up()
 					//if the Target is too close, avoid
 					if(totalTime >= OMEGA_RATE && !grabParalysis)
 						if(totalTime > MAXIMUM_TIME) totalTime = MAXIMUM_TIME
@@ -244,10 +265,22 @@ mob
 						if(attacking)
 							next_attack++
 						if(world.time>=next_attack)
-							attack()
+							// Smart action: blast when Ki is sufficient and at range/outmatched; else melee
+							var/ki_ratio = MaxKi > 0 ? (Ki / MaxKi) : 0
+							var/power_ratio = (expressedBP > 0 && target.expressedBP > 0) ? (target.expressedBP / expressedBP) : 1
+							if(isBlaster && ki_ratio > 0.2 && d >= 2 && (power_ratio >= 1.2 || prob(25)))
+								dir = get_dir(src,target)
+								blast()
+							else
+								attack()
+								if(prob(isBoss ? 30 : 15))
+									npc_combat_chat(pick("HIYAH!","Take that!","Is that all?!","Pathetic!","You call that fighting?!"))
 					sleep(chase_speed)
 
 				//when the loop is done, we've lost the Target
+				if(target && (target.KO || target.HP <= 0) && IsInFight)
+					if(prob(isBoss ? 70 : 40))
+						npc_combat_chat(pick("Too easy.","As expected.","You never stood a chance.","Know your place!","Don't waste my time."))
 				src.lostTarget()
 			strafeState()
 				set waitfor=0
@@ -376,6 +409,7 @@ mob
 				grabberSTR=null
 				AIRunning=0
 				grabParalysis = 0
+				ai_powered_up = 0
 				for(var/a, a<= behavior_vals.len,a++)//reset behavior pools
 					behavior_vals_t[a] = 0
 					e_behavior_vals[a] = 0
@@ -397,6 +431,8 @@ mob
 					if(M.KO && e_behavior_vals[3] > 55) //increase anger if kindness is sufficient enough
 						behavior_vals_t[3]-- //decrease kindness as a result
 						behavior_vals_t[2]++
+						if(IsInFight && prob(isBoss ? 60 : 30))
+							npc_combat_chat(pick("You'll pay for that!","No!!","That was my comrade!","I'll make you regret this!"))
 				if(expressedBP && target) keep_track_relation = target.expressedBP / expressedBP
 				if(!keep_track_dmg)
 					keep_track_dmg = HP
@@ -408,6 +444,11 @@ mob
 						flow = min(flow,-1)
 						behavior_vals_t[1]+=flow + keep_track_allies*(e_behavior_vals[1]/50) //tick fear and rage
 						behavior_vals_t[2]+=2*(-1/flow) //rage is limited by the flow var.
+						if(IsInFight && flow < -5 && prob(isBoss ? 50 : 25))
+							if(HP <= 30)
+								npc_combat_chat(pick("I won't fall here!","Gah... you're stronger than I thought!","Is this... the end?!"))
+							else
+								npc_combat_chat(pick("Tch!","That hurt...","You'll regret that!","Not bad."))
 					else
 						flow = max(flow,1)
 						behavior_vals_t[1]+=flow

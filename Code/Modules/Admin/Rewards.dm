@@ -11,7 +11,7 @@ mob/Admin1/verb
 		set category="Admin"
 		var/list/rewardList = list()
 		rewardList.Add("Cancel")
-		rewardList.Add("Heal","Youth", "Power","Tech Skill", "Zenni", "Skill Points","Energy","Anger","Anger Greatly")
+		rewardList.Add("Heal","Youth", "Power","Tech Skill", "Zenni", "Milestones","Energy","Anger","Anger Greatly")
 		if(usr.Admin>=2) rewardList.Add("SSJ", "SSJ2", "SSJ3", "SSJ4","USSJ","Full Power","True Full Power","Super Namek","Heal","Unseal")
 		if(usr.Admin>=3) rewardList.Add("Immortality", "Ascension", "Revive",/*, "RP Reward",*/"Give Ritual God")
 		switch(input("Give RP Bonus", "", text) in rewardList)
@@ -36,14 +36,14 @@ mob/Admin1/verb
 				var/amount=input("Add how much tech xp?") as num
 				M.techxp+=amount
 				WriteToLog("admin","[usr]([key]) gave [M.name]([M.key]) [amount] tech xp at [time2text(world.realtime,"Day DD hh:mm")]")
-			if("Skill Points")
-				var/REWARD=input("How much?","This will give free skill points to [M]!")as num
+			if("Milestones")
+				var/REWARD=input("How much?","This will give free Milestones to [M]!")as num
 				if(REWARD<0||REWARD>10000)
 					src<<"You cant do that!"
 				else
 					M.totalskillpoints+=REWARD
 					M.admingibbedpoints+=REWARD
-					M<<"You have been rewarded [REWARD] Skill Points by [usr]!"
+					M<<"You have been rewarded [REWARD] Milestones by [usr]!"
 			if("Energy")
 				var/REWARD=input("How much?","Multiply [M.BP] x ??(Base BP = True Power x BP Mod")as num
 				if(REWARD<0)

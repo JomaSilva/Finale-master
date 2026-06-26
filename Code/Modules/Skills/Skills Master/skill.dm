@@ -18,6 +18,8 @@
 	var/prereqthreshold = 0 //the higher this is, the fewer prereqs you need
 	var/skillcost = 1 //for new trees system- how much did you pay?
 	var/tier = 1 //for new trees system- how high up the ladder is it?
+	var/fixedcost = 0 //if 1, skillcost is NOT auto-normalized to tier (for specially-priced skills like Planet Destroy)
+	var/villainonly = 0 //if 1, only an admin-designated Villain (mob.isVillain) may learn/use it
 	var/list/prereqs = list() //in case of prereq
 	var/list/clearlist = list()//for deletion of verbs where necessary
 	var/list/copylist = list("tree","skillcost","level","exp","savant","enabled")//this is the vars that sweeping will copy, self explanatory.
@@ -26,6 +28,9 @@
 	var/tmp/effect_started = 0 
 	//ex: if you max fly a if(levelup) toggles the enabled value of "Base Jumping" to 1 and gives the player a messages
 
+/datum/skill/New()
+	..()
+	if(!fixedcost) skillcost = tier //house rule: a skill's Milestone cost equals its tier
 /datum/skill/proc/learn(var/mob/trainee, var/baselevel)
 	trainee.learned_skills.Add(src)
 	src.savant = trainee

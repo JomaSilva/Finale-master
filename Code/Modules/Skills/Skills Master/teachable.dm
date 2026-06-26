@@ -45,7 +45,7 @@ mob/proc/Study(var/datum/skill/S, var/mob/Teacher)
 	else teachingcost = S.teachCost
 	if(canLearnSkill(S) || S.teacher == TRUE)
 		if(skillpoints>=teachingcost)
-			var/Choice=input("Do you want to learn [S.name]? It costs [teachingcost] and you have [src.skillpoints]. Learning won't remove skillpoints, however.\n[S.desc]") in Options
+			var/Choice=input("Do you want to learn [S.name]? It costs [teachingcost] and you have [src.skillpoints]. Learning won't remove Milestones, however.\n[S.desc]") in Options
 			if(Choice=="Yes")
 				Teacher << "[src] learned [S.name]!"
 				src << "You learned [S.name]!"
@@ -78,7 +78,7 @@ mob/proc/SStudy(var/datum/skill/S, var/mob/Teacher)
 	else teachingcost = S.teachCost
 	if(canLearnSkill(S) || S.teacher == TRUE)
 		if(skillpoints>=teachingcost)
-			var/Choice=input("Do you want to learn [S.name]? It costs [teachingcost] and you have [src.skillpoints]. Learning won't remove skillpoints, however.\n[S.desc]") in Options
+			var/Choice=input("Do you want to learn [S.name]? It costs [teachingcost] and you have [src.skillpoints]. Learning won't remove Milestones, however.\n[S.desc]") in Options
 			if(Choice=="Yes")
 				view(src) << "[src] learned [S.name]!"
 				var/datum/skill/nS = new S.type

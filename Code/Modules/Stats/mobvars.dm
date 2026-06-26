@@ -16,6 +16,7 @@ mob
 		image/ussjhair
 		image/ssj2hair
 		image/ssj3hair
+		hairtypeSaved //remembers the chosen hairstyle name so RefreshHair() can re-apply SetHair on load, letting hair-icon changes in code reach already-created characters
 		AuraR=0
 		AuraG=0
 		AuraB=0

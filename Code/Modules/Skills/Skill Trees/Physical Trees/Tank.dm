@@ -27,6 +27,7 @@
 	prereqs = list(new/datum/skill/stalwart)
 	maxlevel = 1
 	tier = 3
+	skillcost = 5
 	after_learn()
 		savant<<"You start making your body even more dense."
 		savant.physdefBuff+=2
@@ -58,7 +59,7 @@ mob/keyable/verb/Ultradense_Body()
 		container.initbuff = 5
 		container.DrainMod*=container.initdrain
 		container.Tphysdef+=container.initbuff
-		container.buffsBuff= 3
+		container.buffsBuff= 2
 	DeBuff()
 		container.DrainMod/=container.initdrain
 		container.Tphysdef-=container.initbuff

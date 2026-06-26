@@ -14,13 +14,13 @@ mob/proc/HandleLevel()
 	total+=skillpoints
 	if(total<totalskillpoints)
 		skillpoints+=1
-		usr<<"You've gained a skill point!"
+		usr<<"You've gained a Milestone!"
 	if(total>totalskillpoints&&skillpoints>0)
 		for(var/i = 0 to (total-(totalskillpoints-1)))
 			if(skillpoints>0)
 				i+=1
 				skillpoints-=1
-				usr<<"You've lost a skillpoint due to losing raw power."
+				usr<<"You've lost a Milestone due to losing raw power."
 			else i+=1
 
 /mob/proc/getTree(datum/skill/tree/T)

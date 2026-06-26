@@ -28,6 +28,7 @@
 	maxlevel = 1
 	prereqs = list(new/datum/skill/Blow)
 	tier = 3
+	skillcost = 5
 	after_learn()
 		savant<<"You can now increase your fighting power!"
 		savant.physoffBuff+=2
@@ -59,7 +60,7 @@ mob/keyable/verb/Fighting_Power()
 		container.initbuff = 5
 		container.DrainMod*=container.initdrain
 		container.Tphysoff+=container.initbuff
-		container.buffsBuff= 3
+		container.buffsBuff= 2
 	DeBuff()
 		container.DrainMod/=container.initdrain
 		container.Tphysoff-=container.initbuff

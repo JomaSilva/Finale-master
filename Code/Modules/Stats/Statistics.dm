@@ -134,7 +134,7 @@ mob/proc
 		stat("--------- PROGRESS ---------")
 		stat("Gravity","[Planetgrav+gravmult]   ([round(GravMastered)] mastered)")
 		stat("Nutrition","[round((currentNutrition/maxNutrition)*100)]%")
-		stat("Skillpoints","[skillpoints] / [totalskillpoints]")
+		stat("Milestones","[skillpoints] / [totalskillpoints]")
 		stat("Inventory","[inven_min] / [inven_max]")
 		stat("")
 		stat("---------- WORLD ----------")

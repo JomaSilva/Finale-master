@@ -72,14 +72,14 @@
 				if("Cancel")
 				if("Choose")
 					var/storeddamage = basedamage
-					basedamage = input(savant,"Choose the damage. Every single increase in damage equates to 0.5 CP. Increasing will subtract skillpoints. Decreasing will add skillpoints. Minimum is 1, maximum is 5. This variable is rounded.","Damage.",basedamage) as num
+					basedamage = input(savant,"Choose the damage. Every single increase in damage equates to 0.5 CP. Increasing will subtract Milestones. Decreasing will add Milestones. Minimum is 1, maximum is 5. This variable is rounded.","Damage.",basedamage) as num
 					basedamage = round(basedamage)
 					basedamage = min(max(basedamage,1),5)
 					if(storeddamage > basedamage)
 						UndoPoints(((storeddamage - basedamage)/2))
 					else if(storeddamage < basedamage)
 						if(!(EnoughPoints((basedamage - storeddamage)/2)))
-							savant<<"You do not have enough unallocated skillpoints (You gain skillpoints through raw BP increases or other means.)"
+							savant<<"You do not have enough unallocated Milestones (You gain Milestones through raw BP increases or other means.)"
 							basedamage = storeddamage
 						else
 							SubtractPoints((basedamage - storeddamage)/2)
@@ -93,14 +93,14 @@
 				if("Cancel")
 				if("Choose")
 					var/storedspeed = MoveDelay
-					MoveDelay = input(savant,"Choose the speed. Every single decrease in move delay equates to 0.5 allocated skillpoints. Decreasing this value will subtract skillpoints. Increasing will add skillpoints. Minimum is 0.5, maximum is 2. This variable is rounded to 0.5.","Speed.",MoveDelay) as num
+					MoveDelay = input(savant,"Choose the speed. Every single decrease in move delay equates to 0.5 allocated Milestones. Decreasing this value will subtract Milestones. Increasing will add Milestones. Minimum is 0.5, maximum is 2. This variable is rounded to 0.5.","Speed.",MoveDelay) as num
 					MoveDelay = round(MoveDelay,0.5)
 					MoveDelay = min(max(MoveDelay,0.5),2)
 					if(storedspeed < MoveDelay)
 						UndoPoints((storedspeed - MoveDelay)/2)
 					else if(storedspeed < MoveDelay)
 						if(EnoughPoints((MoveDelay - storedspeed)/2))
-							savant<<"You do not have enough unallocated skillpoints (You gain skillpoints through raw BP increases or other means.)"
+							savant<<"You do not have enough unallocated Milestones (You gain Milestones through raw BP increases or other means.)"
 							MoveDelay = storedspeed
 						else
 							SubtractPoints((MoveDelay - storedspeed)/2)
@@ -110,7 +110,7 @@
 					if(storedspeed > MoveDelay)
 						UndoPoints((storedspeed - MoveDelay)/2)
 		if("Piercing")
-			switch(alert(savant,"Piercing or no piercing? This will cost 1 skillpoint, and knockback will be minimal.","","Cancel","Yes","No"))
+			switch(alert(savant,"Piercing or no piercing? This will cost 1 Milestone, and knockback will be minimal.","","Cancel","Yes","No"))
 				if("Cancel")
 				if("Yes")
 					if(!Piercer)

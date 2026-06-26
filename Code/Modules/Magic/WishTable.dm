@@ -17,7 +17,7 @@ obj/DB
 			WishList+="Cancel"
 			if(TrueWishPower>=2)
 				WishList+="Cash"
-				WishList+="Skillpoints"
+				WishList+="Milestones"
 				WishList+="Technology"
 			if(TrueWishPower>=3)
 				WishList+="Revive"
@@ -211,16 +211,16 @@ proc/Wish(var/wish,mob/originator,E_G,TrueWishPower)
 			else
 				view(originator)<<"[originator] wishes for panties!"
 				new/obj/items/Panties(locate(originator.x,originator.y,originator.z))
-		if("Skillpoints")
+		if("Milestones")
 			if(originator.wishedpoints)
-				originator<<"You already have wished skillpoints!"
+				originator<<"You already have wished Milestones!"
 				view(originator)<<"[originator] cancels [originator]'s wish."
 
 			else
-				originator<<"You wish for skillpoints!!"
+				originator<<"You wish for Milestones!!"
 				originator.wishedpoints += 2
 				originator.totalskillpoints += 2
-				view(originator)<<"[originator] wishes for skillpoints!"
+				view(originator)<<"[originator] wishes for Milestones!"
 		if("Intelligence")
 			view(originator)<<"[originator] wishes for intelligence!!"
 			originator.genome.add_to_stat("Tech Modifier",2)

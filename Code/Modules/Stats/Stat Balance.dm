@@ -9,9 +9,9 @@ proc/statCap(var/stattocap)
 mob/Admin1
 	verb
 		Global_Points()
-			set name = "Global - Give all skill points."
+			set name = "Global - Give all Milestones."
 			set category = "Admin"
-			var/REWARD=input("How much?","This will give skill points to everyone!")as num
+			var/REWARD=input("How much?","This will give Milestones to everyone!")as num
 			if(REWARD<0||REWARD>10000)
 				src<<"You cant do that!"
 			else

@@ -31,7 +31,7 @@
 				savant<<"You now can now master specializations of God Ki. Remember, you have 37 * God Ki Tier levels to distribute between the two. Choose which one to focus on wisely."
 				savant<<"The first God Ki Specialization is one of fortitude. Maximize efficiency and reduce drain to prolong your ability to use God Ki. At level 50, as long as you're at 100% Ki, you'll gain God Ki energy while using it."
 				savant<<"The second God Ki Specialization is one of power. Maximize your multiplier and maximum energy to ensure victory. At level 50, you can start using temporarily using the God of Destruction mode."
-				savant<<"The third God Ki Specialization is one of body. Increasing God Ki will improve your body itself, increasing all stats even further than what they are. At level 50, gain four extra skillpoints."
+				savant<<"The third God Ki Specialization is one of body. Increasing God Ki will improve your body itself, increasing all stats even further than what they are. At level 50, gain four extra Milestones."
 				savant<<"As a reminder, fighting other players will increase your God Ki tier."
 				make_visible(/datum/mastery/fortitude)
 				make_visible(/datum/mastery/power)
@@ -95,8 +95,8 @@
 			else return
 	body
 		name = "God Body"
-		desc = "Increasing God Ki will improve your body itself, increasing all stats even further than what they are. At level 50, gain four extra skillpoints."
-		lvltxt = "Every 10 levels: All stats +1%, Maximum Energy +1%, Efficiency Buff +1%, Multiplier Mod +1%. \nLevel 50: Gain 4 skillpoints."
+		desc = "Increasing God Ki will improve your body itself, increasing all stats even further than what they are. At level 50, gain four extra Milestones."
+		lvltxt = "Every 10 levels: All stats +1%, Maximum Energy +1%, Efficiency Buff +1%, Multiplier Mod +1%. \nLevel 50: Gain 4 Milestones."
 		reqtxt = "You must reach Level 45 God Ki to become proficient in God Body."
 		visible = 0 //Hidden masteries aren't visible dummy
 		hidden = 1 //So that its invisible from mastery lists

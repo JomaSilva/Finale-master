@@ -1,6 +1,6 @@
 /datum/skill/tree/alien
 	name="Alien Racials"
-	desc="Given to all Aliens at the start. After 4 skillpoints invested into the tree, all consitituant skills are locked. (These skills will only be obtainable outside of learning.)"
+	desc="Given to all Aliens at the start. After 4 Milestones invested into the tree, all consitituant skills are locked. (These skills will only be obtainable outside of learning.)"
 	maxtier=2
 	tier=0
 	allowedtier=2

@@ -1,3 +1,43 @@
+mob/var/tmp/inZanzoClash = 0
+// Dynamic combat animation: when two fighters who both know Zanzoken (lvl>=1) trade blows at the
+// same instant, there's a chance they blur into a flurry of teleports around each other, each blink
+// tearing up the ground with shockwaves/craters. Built on the existing simultaneous-strike effects.
+mob/proc/ZanzoClash(var/mob/M)
+	set waitfor = 0
+	set background = 1
+	if(!M || inZanzoClash || M.inZanzoClash) return
+	if(!haszanzo || !M.haszanzo || KO || M.KO || !move || !M.move || dead || M.dead) return
+	inZanzoClash = 1
+	M.inZanzoClash = 1
+	var/range = max(2, min(haszanzo, M.haszanzo) + 2) //higher Zanzoken level = wider blinks
+	var/blinks = rand(4, 7)
+	view(src) << output("<font color=#aaeeff>[src] and [M] vanish into a storm of afterimages!</font>","Chatpane.Chat")
+	for(var/i = 1 to blinks)
+		if(KO || M.KO || !move || !M.move || dead || M.dead) break
+		if(Ki < MaxKi*0.02 || M.Ki < M.MaxKi*0.02) break //out of Ki -> the clash ends
+		Ki = max(Ki - MaxKi*0.02, 0)
+		M.Ki = max(M.Ki - M.MaxKi*0.02, 0)
+		flick('Zanzoken.dmi',src)
+		flick('Zanzoken.dmi',M)
+		emit_Sound('teleport.wav')
+		Move(tele_rand_turf_at_range(src,range))
+		M.Move(tele_rand_turf_at_range(M,range))
+		dir = get_dir(src,M)
+		M.dir = get_dir(M,src)
+		createShockwavemisc(loc,rand(2,4))
+		createShockwavemisc(M.loc,rand(2,4))
+		if(prob(50)) Quake()
+		for(var/turf/T in view(1,src)) //tear up the ground where they reappear
+			if(prob(40) && !T.isSpecial && !T.proprietor && T.Resistance <= max(expressedBP,M.expressedBP))
+				if(prob(60)) createDust(T,1)
+				T.Destroy()
+		if(prob(35)) createCrater(loc,rand(1,2))
+		sleep(rand(2,4))
+	inZanzoClash = 0
+	M.inZanzoClash = 0
+	if(!KO && !M.KO)
+		view(src) << output("<font color=#aaeeff>[src] and [M] flicker back into view, the ground shattered around them!</font>","Chatpane.Chat")
+
 mob/proc/doAttack(mob/M,addeddamage,iscrit,vampdamage,customFlavor,isBarrage,Type,kboverride,multd)
 	var/dmg=1
 	if(!Type) Type = 1
@@ -78,6 +118,8 @@ mob/proc/commonAttackProcs(var/mob/M,testactspeed,barrage)
 			emit_Sound('teleport.wav')
 			rand_step_cool += 50
 			M.rand_step_cool += 50
+			if(haszanzo >= 1 && M.haszanzo >= 1 && !inZanzoClash && !M.inZanzoClash && prob(25))
+				spawn ZanzoClash(M) //chance to erupt into a full teleport clash
 			var/token_strength
 			if(M.expressedBP >= 10000 && expressedBP >= 10000 && M.knockbackon)
 				token_strength++

@@ -344,3 +344,190 @@ obj/items/clothes
 				usr.overlayList-=icon
 				usr.overlaychanged=1
 				usr<<"You take off the [src]."
+
+// =====================================================
+// PLAYER BASES AND BUILDABLE SPACEPOD
+// Three new obj/Creatables entries appear in the tech
+// window automatically (filtered by neededtech).
+// Bases provide item storage and HP/Ki rest bonuses.
+// Personal Spacepod reuses /obj/Spacepod travel verbs.
+// =====================================================
+
+obj/Creatables
+	Base_Camp
+		name = "Base Camp"
+		icon = 'Lab.dmi'
+		icon_state = "Files"
+		desc = "A personal field base. The owner can store items here and rest to recover HP and Ki. Only the owner can dismantle it."
+		cost = 75000
+		neededtech = 25
+		create_type = /obj/PlayerBase
+		Click()
+			var/obj/A = ..()
+			if(istype(A, /obj/PlayerBase))
+				var/obj/PlayerBase/B = A
+				B.owner_ckey = usr.ckey
+
+	Player_Fortress
+		name = "Fortress"
+		icon = 'Lab.dmi'
+		icon_state = "Computer 1"
+		desc = "A fortified personal stronghold. Sturdier than a Base Camp and provides faster HP and Ki recovery for the owner."
+		cost = 300000
+		neededtech = 45
+		create_type = /obj/PlayerFortress
+		Click()
+			var/obj/A = ..()
+			if(istype(A, /obj/PlayerFortress))
+				var/obj/PlayerFortress/F = A
+				F.owner_ckey = usr.ckey
+
+	Personal_Spacepod
+		name = "Personal Spacepod"
+		icon = 'Spacepod.dmi'
+		desc = "A personal spacepod for interplanetary travel. Use the Launch verb to fly to your selected destination planet."
+		cost = 150000
+		neededtech = 35
+		create_type = /obj/Spacepod
+
+
+// ---- Placed Structure: Base Camp ----
+
+obj/PlayerBase
+	name = "Base Camp"
+	desc = "A personal field base. The owner can rest here to recover HP and Ki, and store items for safekeeping."
+	icon = 'Lab.dmi'
+	icon_state = "Files"
+	density = 1
+	SaveItem = 1
+	IsntAItem = 1
+	var/owner_ckey = ""
+
+	Click()
+		if(!usr || !src) return
+		if(get_dist(usr, src) > 1) return
+		if(!owner_ckey)
+			usr << "This base camp has no owner."
+			return
+		var/choice = input(usr, "What would you like to do?", name) as null|anything in list("Rest", "Store Item", "Retrieve Item", "Cancel")
+		if(!choice || choice == "Cancel") return
+
+		if(choice == "Rest")
+			usr.SpreadHeal(5, 1, 0)
+			if(usr.Ki < usr.MaxKi)
+				usr.Ki = min(usr.Ki + usr.MaxKi * 0.05, usr.MaxKi)
+			usr << "<font color=green>You rest at the base camp, recovering some energy.</font>"
+
+		if(choice == "Store Item")
+			var/list/carryable = list()
+			for(var/obj/items/I in usr.contents)
+				if(!I.equipped) carryable += I
+			if(!carryable.len)
+				usr << "You have nothing to store."
+				return
+			var/picked = input(usr, "Store which item?", "", null) as null|anything in carryable
+			if(!picked) return
+			var/obj/items/stored_item = picked
+			usr.contents -= stored_item
+			src.contents += stored_item
+			usr << "You store [stored_item.name] in the base camp."
+
+		if(choice == "Retrieve Item")
+			if(!src.contents.len)
+				usr << "The base camp is empty."
+				return
+			if(usr.ckey != owner_ckey)
+				usr << "Only the owner can retrieve items from this base camp."
+				return
+			if(usr.inven_min >= usr.inven_max)
+				usr << "You have no room in your inventory."
+				return
+			var/picked = input(usr, "Retrieve which item?", "", null) as null|anything in src.contents
+			if(!picked) return
+			var/obj/items/retrieved = picked
+			src.contents -= retrieved
+			usr.contents += retrieved
+			usr.InvenSet()
+			usr << "You retrieve [retrieved.name] from the base camp."
+
+	verb/Dismantle()
+		set category = null
+		set src in oview(1)
+		if(usr.ckey != owner_ckey)
+			usr << "Only the owner can dismantle this base camp."
+			return
+		for(var/obj/items/I in src.contents)
+			I.loc = locate(src.x, src.y, src.z)
+		usr << "You dismantle the base camp. Stored items have been dropped."
+		del(src)
+
+
+// ---- Placed Structure: Fortress ----
+
+obj/PlayerFortress
+	name = "Fortress"
+	desc = "A fortified personal stronghold. Provides better storage and faster HP/Ki recovery than a Base Camp."
+	icon = 'Lab.dmi'
+	icon_state = "Computer 1"
+	density = 1
+	SaveItem = 1
+	IsntAItem = 1
+	var/owner_ckey = ""
+
+	Click()
+		if(!usr || !src) return
+		if(get_dist(usr, src) > 1) return
+		if(!owner_ckey)
+			usr << "This fortress has no owner."
+			return
+		var/choice = input(usr, "What would you like to do?", name) as null|anything in list("Rest", "Store Item", "Retrieve Item", "Cancel")
+		if(!choice || choice == "Cancel") return
+
+		if(choice == "Rest")
+			usr.SpreadHeal(15, 1, 0)
+			if(usr.Ki < usr.MaxKi)
+				usr.Ki = min(usr.Ki + usr.MaxKi * 0.15, usr.MaxKi)
+			usr << "<font color=green>You rest at the fortress, recovering significant energy.</font>"
+
+		if(choice == "Store Item")
+			var/list/carryable = list()
+			for(var/obj/items/I in usr.contents)
+				if(!I.equipped) carryable += I
+			if(!carryable.len)
+				usr << "You have nothing to store."
+				return
+			var/picked = input(usr, "Store which item?", "", null) as null|anything in carryable
+			if(!picked) return
+			var/obj/items/stored_item = picked
+			usr.contents -= stored_item
+			src.contents += stored_item
+			usr << "You store [stored_item.name] in the fortress."
+
+		if(choice == "Retrieve Item")
+			if(!src.contents.len)
+				usr << "The fortress is empty."
+				return
+			if(usr.ckey != owner_ckey)
+				usr << "Only the owner can retrieve items from this fortress."
+				return
+			if(usr.inven_min >= usr.inven_max)
+				usr << "You have no room in your inventory."
+				return
+			var/picked = input(usr, "Retrieve which item?", "", null) as null|anything in src.contents
+			if(!picked) return
+			var/obj/items/retrieved = picked
+			src.contents -= retrieved
+			usr.contents += retrieved
+			usr.InvenSet()
+			usr << "You retrieve [retrieved.name] from the fortress."
+
+	verb/Dismantle()
+		set category = null
+		set src in oview(1)
+		if(usr.ckey != owner_ckey)
+			usr << "Only the owner can dismantle this fortress."
+			return
+		for(var/obj/items/I in src.contents)
+			I.loc = locate(src.x, src.y, src.z)
+		usr << "You dismantle the fortress. Stored items have been dropped."
+		del(src)

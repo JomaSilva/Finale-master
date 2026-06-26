@@ -23,7 +23,7 @@ var/Guide={"
 <p>4. Progression? SSJ? Whaaaat?</p>
     <p>Ki is grinding 101. You grind Ki by using it, or its abilities. SSJ is midgame, around 1-3 million. You can get it off of death anger. Admins may be upset on RP servers if you abuse anger :)</p>
     <p>At 1-3 million, ascension hits. It's not instant, and it scales with your progression past 1 million. The classic cap for the first level of ascension for all races except Saiyans is 15x mult (modified further by your ascension mod)</p>
-    <p>SKILLPOINTS ARE GAINED VIA RAW BP. EXPRESSED BP DOES NOT AFFECT GAINS. Be careful, your raw BP is generally what affects most points of progression and requirements.</p>
+    <p>MILESTONES ARE GAINED VIA RAW BP. EXPRESSED BP DOES NOT AFFECT GAINS. Be careful, your raw BP is generally what affects most points of progression and requirements.</p>
     <p>Tech skill is capped based on averages. The higher your intelligence is, the higher your cap is and the faster you gain it.</p>
     <p>The cap for Techskill in general is 100. If you go higher for some reason, you will not find new tech.</p>
     <p><font color=red size=2>YOU INCREASE STATS BY GOING INTO THE LEARNING TAB, AND PRESSING LEARN SKILL, IT OPENS UP THE SKILL/TREE WINDOW. Explore it.</font></p>
@@ -31,7 +31,7 @@ var/Guide={"
     <p>First of all, quick disclaimer. The races descriptions are not completely accurate. This game aims to be more like a game based on the show, not a game with the show's elements.</p>
     <p>There are some non-canon elements, some extensions to races, and stat modifications and frankly incorrect descriptions.</p>
     <p>Races all have different things they're good at, but building is not end-all-be-all with these different things.</p>
-    <p>More powerful races have lower skillpoint gains, lower stats, so on as expected. </p>
+    <p>More powerful races have lower Milestone gains, lower stats, so on as expected. </p>
 <p>6. Do I get anything special for reading this guide?</p>
     <p>Yes! Dungeons exist, and they have valuable loot. You get the special knowledge that they are incredibly good places to train and fight- but they are temporary. Do not dwaddle in them. Get a dungeon needle to find one.</p>
 <p>7. Rules? Anything else?</p>
@@ -57,7 +57,7 @@ in the Learning tab, and slowly at that. You get around 50 or so stat points ove
 <p>Esoteric skill:  Magic skill. Affects anything else not listed here, but only affects Magic right now.</p>
 <p>Intelligence: How much your Tech cap is, how effective your upgrading is, and how much Techskill you can gain.</p>
 <p>Gravity: All it does is increase BP by a small amount, and lets you withstand higher gravities. Training in high gravity gives you more gains.</p>
-<p>Skillpoints: Used for buying skills. Can be 'allocated' (no need to save skillpoints, you can spend and allocate the same point) into Styles for customized stat increases.</p>
+<p>Milestones: Used for buying skills. Can be 'allocated' (no need to save Milestones, you can spend and allocate the same point) into Styles for customized stat increases.</p>
 <p>Buff/Aura/Form: You have limited buff slots. One for each type. Stack 'em wisely.</p>
 <p>Inventory Space: Can be increased by rare items, there are containers you can build.</p>
 </body></html>"}

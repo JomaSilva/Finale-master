@@ -24,11 +24,11 @@ mob/proc/KO(var/KOtimer, var/ForceKO)
 	if(Player&&!KO/*&&ForceKO*/)
 		for(var/mob/M in oview())
 			if(M.check_relation(src,list("Very Good","Love")) == TRUE || M.is_friend(src))
-				M.Anger+=M.MaxAnger-80
-				M.StoredAnger=80
+				M.Do_Anger_Stuff() //capped, non-stacking, 2-minute rage (was M.Anger+=... which stacked)
 				view(M)<<output("<font color=red>[M] has become very angry!!!","Chatpane.Chat")
 				WriteToLog("rplog","[M] has become very angry    ([time2text(world.realtime,"Day DD hh:mm")])")
 			if(M.check_relation(src,list("Good","Rival/Good")) == TRUE) M.StoredAnger+=20
+		if(lastDamager) friend_harmed_by(lastDamager, ENMITY_FRIEND_KO) //a rival KO'd you in view of your friends -> their hatred grows
 		//---
 		if(Savable) icon_state="KO"
 		emit_Sound('groundhit2.wav')
@@ -98,14 +98,14 @@ mob/proc/KO(var/KOtimer, var/ForceKO)
 			spawn(10*KOtimer*KOMult)
 			Un_KO()
 		else if(!KOtimer)
-			spawn(rand(400,500)*KOMult)
+			spawn(rand(2000,2500)*KOMult) //~5x longer KO recovery to match the slower natural healing
 			Un_KO()
 	else if(isNPC)
 		KO=1
 		move=0
 		emit_Sound('groundhit2.wav')
 		view(src)<<output("[src] is knocked out!","Chatpane.Chat")
-		spawn(rand(600,1000))
+		spawn(rand(3000,5000)) //~5x longer NPC KO recovery
 		Un_KO()
 mob/proc/Un_KO(var/angery)
 	if(Player&&KO)

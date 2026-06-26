@@ -64,7 +64,7 @@ mob/proc/SkillWindowRefreshDisplay()
 	//outputline (to show stuff like errors)
 	if(!updateWindow)
 		if(WhichSkillWindow==2)
-			winset(usr,"SkillsListWindow.skillpoints","text=\"Skillpoints: [usr.skillpoints]\"")
+			winset(usr,"SkillsListWindow.skillpoints","text=\"Milestones: [usr.skillpoints]\"")
 			spawn PopulateSkillWindow(CurrentTree)
 			if(!LearnSkillMode)
 				winset(usr,"SkillsListWindow.amirefunding","text=\"Learning Mode\"")
@@ -76,7 +76,7 @@ mob/proc/SkillWindowRefreshDisplay()
 					clearedline = 0
 					winset(usr,"SkillsListWindow.loglabel","text=")
 		if(WhichSkillWindow==1)
-			winset(usr,"SkillTreeWindow.skillpoints","text=\"Skillpoints: [usr.skillpoints]\"")
+			winset(usr,"SkillTreeWindow.skillpoints","text=\"Milestones: [usr.skillpoints]\"")
 			spawn PopulateTreeWindow()
 			if(GetTreeMode==1)
 				winset(usr,"SkillTreeWindow.switchtreelabel","text=\"Mode: Get Tree\"")
@@ -321,9 +321,9 @@ mob/proc/testunlocks()
 	var/list/Selection=new/list
 	if(savant.skillpoints >= S.skillcost) Selection.Add("Learn this Skill")
 	//world << "[S], [savant], [S.skillcost]"
-	if(savant.skillpoints < S.skillcost) Selection.Add("You don't have enough skill points.")
+	if(savant.skillpoints < S.skillcost) Selection.Add("You don't have enough Milestones.")
 	Selection.Add("Cancel")
-	var/Choice=input("[S.name] costs [S.skillcost] point(s).\nYou have [savant.skillpoints] point(s) remaining.\n [showcase_forgetable(S)] \n[S.desc]") in Selection
+	var/Choice=input("[S.name] costs [S.skillcost] Milestone(s).\nYou have [savant.skillpoints] Milestone(s) remaining.\n [showcase_forgetable(S)] \n[S.desc]") in Selection
 	if(Choice=="Learn this Skill")
 		//world << "Learned?"
 		fund(S)
@@ -331,13 +331,13 @@ mob/proc/testunlocks()
 		treegrow()
 		//world << "Learned..."
 		return
-	if(Choice=="Cancel"|| Choice == "You don't have enough skill points.") return
+	if(Choice=="Cancel"|| Choice == "You don't have enough Milestones.") return
 
 /datum/skill/tree/proc/attemptforget(var/datum/skill/S)
 	var/list/Selection=new/list
 	Selection.Add("Forget this Skill")
 	Selection.Add("Cancel")
-	var/Choice=input("[S.name] costed [S.skillcost] point(s).\nYou have [savant.skillpoints] point(s).\n[S.desc]") in Selection
+	var/Choice=input("[S.name] costed [S.skillcost] Milestone(s).\nYou have [savant.skillpoints] Milestone(s).\n[S.desc]") in Selection
 	if(Choice=="Forget this Skill")
 		refund(S)
 		return

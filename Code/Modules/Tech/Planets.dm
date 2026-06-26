@@ -285,6 +285,9 @@ mob/keyable/verb/Planet_Destroy()
 	set category="Skills"
 	set waitfor =0
 	set background = 1
+	if(!usr.isVillain)
+		usr << "<font color=red>Only a Villain has the will to raze a planet.</font>"
+		return
 	if(usr.Ki>=1000*BaseDrain&&usr.expressedBP>=10000*usr.Planetgrav)
 		var/obj/Planets/currentP
 		for(var/obj/Planets/P in planet_list)
@@ -339,6 +342,9 @@ mob/keyable/verb/Planet_Destroy()
 	can_forget = TRUE
 	common_sense = FALSE
 	tier = 2
+	skillcost = 10 //expensive, villain-exclusive ability
+	fixedcost = 1 //keep the flat 10 cost (exempt from the cost = tier normalization)
+	villainonly = 1 //only an admin-designated Villain can learn it
 	after_learn()
 		savant<<"Your body molds into it's utter peak."
 		assignverb(/mob/keyable/verb/Planet_Destroy)

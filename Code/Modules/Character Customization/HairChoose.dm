@@ -294,6 +294,7 @@ mob/proc/HairChoice()
 		sleep(5)
 mob/proc/selecthair()
 	//usr << "Debug: Done (If you see this message, everything is working fine! Report it if next time this doesn't show!)"
+	if(istext(hair)) hairtypeSaved = hair //remember the menu choice so the hairstyle can be re-applied on load (RefreshHair) when SSJ/SSJ2 hair icons change in code
 	switch(hair)
 		if("Goten")
 			SetHair('Hair_Goten.dmi','Hair_GokuSSj.dmi','Hair_GokuUSSj.dmi','Hair_GokuSSj.dmi','Hair_GokuSSj3.dmi')
@@ -320,7 +321,7 @@ mob/proc/selecthair()
 		if("Yamcha")
 			SetHair('Hair_Yamcha.dmi','Hair_FutureGohanSSj.dmi','Hair_GohanUSSj.dmi','Hair_FutureGohanSSj.dmi','Hair_GokuSSj3.dmi')
 		if("Kid Gohan")
-			SetHair('Hair_KidGohan.dmi','Hair_KidGohanSSj.dmi','Hair_KidGohanUSSj.dmi','Hair_KidGohanSSj.dmi','Hair_GokuSSj3.dmi')
+			SetHair('Hair_KidGohan.dmi','Hair_KidGohanSSj.dmi','Hair_KidGohanUSSj.dmi','Hair_KidGohanSSj2.dmi','Hair_GokuSSj3.dmi')
 		if("Lan")
 			SetHair('Hair Lan.dmi','Hair_KidGohanSSj.dmi','Hair_KidGohanUSSj.dmi','Hair_KidGohanSSj.dmi','Hair_GokuSSj3.dmi')
 		if("Goku")
@@ -332,7 +333,7 @@ mob/proc/selecthair()
 		if("Future Gohan")
 			SetHair('Hair_FutureGohan.dmi','Hair_FutureGohanSSj.dmi','Hair_GohanUSSj.dmi','Hair_FutureGohanSSj.dmi','Hair_GokuSSj3.dmi')
 		if("Teen Gohan")
-			SetHair('Hair_Gohan.dmi','Hair_GohanSSj.dmi','Hair_GohanUSSj.dmi','Hair_GohanUSSj.dmi','Hair_GokuSSj3.dmi')
+			SetHair('Hair_Gohan.dmi','Hair_GohanSSj.dmi','Hair_GohanUSSj.dmi','Hair_GohanSSj.dmi','Hair_GokuSSj3.dmi')
 		if("Long")
 			SetHair('Hair_Long.dmi','Hair_LongSSj.dmi','Hair_LongSSj.dmi','Hair_GokuSSj.dmi','Hair_GokuSSj3.dmi')
 		if("Caulifla")
@@ -442,3 +443,82 @@ mob/proc/SetHair(var/icon/Hair1,var/icon/SSJhair1,var/icon/USSJhair1,var/icon/SS
 	ssj3hair=SSJ3hair
 	if(pgender=="male") ssj4hair=pick('Hair_SSj4.dmi','Hair_SSJ4Gogeta.dmi','Hair VegetaSSJ4.dmi')//more SSJ4 hairs here
 	if(pgender=="female") ssj4hair=pick('Hair_SSj4.dmi','Hair_SSJ4Female.dmi','Hair VegetaSSJ4.dmi')//
+
+//Maps a stored base-hair icon (its text form, e.g. "Hair_KidGohan.dmi") back to the menu choice handled by selecthair().
+//RefreshHair() uses this to recover the hairstyle of characters created before hairtypeSaved existed, so SSJ/SSJ2 hair fixes reach them too. Keep in sync with selecthair().
+var/list/hairBaseToChoice = list(\
+	"Hair_Goten.dmi" = "Goten",\
+	"Hair Alucard.dmi" = "Alucard",\
+	"Hair_KidGohan2.dmi" = "Cell Gohan",\
+	"Hair_FemaleLong.dmi" = "Female Long",\
+	"Hair_FemaleLong2.dmi" = "Female Long 2",\
+	"Hair_GTTrunks.dmi" = "GT Trunks",\
+	"Hair_GTVegeta.dmi" = "GT Vegeta",\
+	"Hair_Mohawk.dmi" = "Mohawk",\
+	"Hair_Raditz.dmi" = "Raditz",\
+	"Hair_Spike.dmi" = "Spike",\
+	"Hair_Yamcha.dmi" = "Yamcha",\
+	"Hair_KidGohan.dmi" = "Kid Gohan",\
+	"Hair Lan.dmi" = "Lan",\
+	"Hair_Goku.dmi" = "Goku",\
+	"Hair_Vegeta.dmi" = "Vegeta",\
+	"Hair Vegeta Junior.dmi" = "Vegeta Junior",\
+	"Hair_FutureGohan.dmi" = "Future Gohan",\
+	"Hair_Gohan.dmi" = "Teen Gohan",\
+	"Hair_Long.dmi" = "Long",\
+	"Hair_Caulifla.dmi" = "Caulifla",\
+	"HairBroly.dmi" = "Broly",\
+	"Hair_FemBroly.dmi" = "FemBroly",\
+	"Hair_Kale.dmi" = "Kale",\
+	"VegitoHairPVP.dmi" = "Vegito",\
+	"BlackSSJhair.dmi" = "Super",\
+	"Hair Afro.dmi" = "Afro",\
+	"Hair Hitsugaya.dmi" = "Hitsugaya",\
+	"Hair Super 17.dmi" = "S17",\
+	"Hair Headband.dmi" = "Headband",\
+	"Hair Bushy.dmi" = "Bushy",\
+	"Hair Bedhead.dmi" = "Bedhead",\
+	"Hair_Cloud.dmi" = "Cloud",\
+	"Hair_Cloud2.dmi" = "Also Cloud",\
+	"Hair_Lyndis.dmi" = "Lyndis",\
+	"Hair_Messy.dmi" = "Messy",\
+	"Hair_Ponytail.dmi" = "Ponytail",\
+	"Hair_Raim.dmi" = "Raim",\
+	"Hair_Raphtalia.dmi" = "Raphtalia",\
+	"Hair_Ronin.dmi" = "Ronin",\
+	"Hair_Roxas.dmi" = "Roxas",\
+	"Hair_Spiked2right.dmi" = "Spiked2",\
+	"Hair_Stylish.dmi" = "Stylish",\
+	"Hair_Toushiro.dmi" = "Toushiro",\
+	"Hair_Trump.dmi" = "Trump",\
+	"Hair_Wavy.dmi" = "Wavy",\
+	"Hair_Zelos.dmi" = "Zelos",\
+	"HairBlueMale.dmi" = "Blue",\
+	"HairFemalePonyTail.dmi" = "Female Ponytail",\
+	"HairKidd.dmi" = "Kidd",\
+	"HairKylin1.dmi" = "Kylin",\
+	"HairKylin2.dmi" = "Side-tail",\
+	"HairKylin3.dmi" = "Bangless",\
+	"HairMuse.dmi" = "Muse",\
+	"HairPonytail.dmi" = "Anime",\
+	"HairRen.dmi" = "Ren",\
+	"HairShaggy.dmi" = "Shaggy",\
+	"HairShortFemale.dmi" = "Chie",\
+	"Hope FFXIII Hair.dmi" = "Hope",\
+	"Inferno Hair.dmi" = "Inferno",\
+	"Mezu Hair.dmi" = "Mezu")
+
+mob/proc/RefreshHair()
+	//Re-apply the player's saved hairstyle so code-side changes to the SSJ/USSJ/SSJ2 hair icons reach already-created characters on load.
+	var/choice = hairtypeSaved
+	if(!choice) choice = hairBaseToChoice["[hair]"] //legacy save (no stored choice): recover the menu choice from the base hair icon
+	if(!choice) return //bald, custom or unrecognized hair -> leave it untouched
+	var/oldhair = hair //snapshot in case the stored choice turns out to be invalid
+	var/savedssj4 = ssj4hair //don't let SetHair's pick() re-randomize the SSJ4 hair on every load
+	hair = choice
+	selecthair() //re-runs SetHair with the current code mappings (and records hairtypeSaved)
+	if(hair == choice) //selecthair found no matching case -> the stored choice was invalid, roll back
+		hair = oldhair
+		if(hairtypeSaved == choice) hairtypeSaved = null
+		return
+	if(savedssj4) ssj4hair = savedssj4 //keep the character's existing SSJ4 hair instead of re-rolling it

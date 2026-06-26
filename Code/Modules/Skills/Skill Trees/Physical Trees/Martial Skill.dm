@@ -216,6 +216,7 @@
 	maxlevel = 1
 	prereqs = list(new/datum/skill/clarity)
 	tier = 3
+	skillcost = 5
 	after_learn()
 		savant<<"You start circulating your Ki."
 		savant.techniqueBuff+=2
@@ -248,7 +249,7 @@ mob/keyable/verb/Brutal_Clarity()
 		container.initbuff = 5
 		container.DrainMod*=container.initdrain
 		container.Ttechnique+=container.initbuff
-		container.buffsBuff= 3
+		container.buffsBuff= 2
 	DeBuff()
 		container.DrainMod/=container.initdrain
 		container.Ttechnique-=container.initbuff

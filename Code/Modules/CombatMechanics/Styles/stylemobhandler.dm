@@ -41,7 +41,7 @@ mob/proc/StyleUpdate()
 		personalmentalchangevalue = mentalchangevalue
 		personalabstractchangevalue = abstractchangevalue
 	if(personalchangedstyles!=changedstyles|personalphysicalchangevalue!=physicalchangevalue|personalmentalchangevalue!=mentalchangevalue|personalabstractchangevalue!=abstractchangevalue)
-		usr<<"Styles reset due to update. Check your unallocated skillpoints and current styles for more info."
+		usr<<"Styles reset due to update. Check your unallocated Milestones and current styles for more info."
 		personalchangedstyles = changedstyles
 		personalphysicalchangevalue = physicalchangevalue
 		personalmentalchangevalue = mentalchangevalue

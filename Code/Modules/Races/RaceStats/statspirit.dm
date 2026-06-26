@@ -1,5 +1,5 @@
 mob/proc/statspirit()
-	RaceDescription="Spirit Dolls are almost human. Emphasis on almost. A race of artifical lifeforms, they closely resemble humans, except pale as porcelain. Because, that's what they were- porcelain. Luckily, when they came to life they are almost indistinguishable from humans. Gameplaywise, they're not. Low stats, high speed, high energy, low power, decent ascension, and high a skillpoint modifier. This makes them a fast but furious fighter- one that specializes in Ki specifically. Their Ki regeneration is pretty darn good too. Additionally, Spirit Dolls do have the ability to leave children."
+	RaceDescription="Spirit Dolls are almost human. Emphasis on almost. A race of artifical lifeforms, they closely resemble humans, except pale as porcelain. Because, that's what they were- porcelain. Luckily, when they came to life they are almost indistinguishable from humans. Gameplaywise, they're not. Low stats, high speed, high energy, low power, decent ascension, and high a Milestone modifier. This makes them a fast but furious fighter- one that specializes in Ki specifically. Their Ki regeneration is pretty darn good too. Additionally, Spirit Dolls do have the ability to leave children."
 	if(!genome)
 		genome = new/datum/genetics/SpiritDoll(/datum/genetics/proto/SpiritDoll)
 		see_invisible = 1

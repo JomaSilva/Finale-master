@@ -411,7 +411,11 @@ mob/proc/Stats()
 					var/turf/rT = pick(randTurfs)
 					src.loc = locate(rT.x,rT.y,rT.z)
 		//Anger Decline
-		if(Anger>MaxAnger*10) Anger=MaxAnger*10
+		if(rageExpire && world.time >= rageExpire) //rage lasts at most 2 minutes, then snaps back to calm (1x)
+			rageExpire = 0
+			Anger = 100
+			if(client) src << "<font color=#888888>Your rage fades and you feel calm again.</font>"
+		if(Anger>MaxAnger) Anger=MaxAnger //hard cap at MaxAnger (was MaxAnger*10 — that, plus stacking, caused the 12x/20x buffs)
 		if(Anger>100) Anger-=((MaxAnger-100)/8000)
 		if(Anger<100) Anger=100
 		if(Anger<(((MaxAnger-100)/5)+100)) Emotion="Calm"

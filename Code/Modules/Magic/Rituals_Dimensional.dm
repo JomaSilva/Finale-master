@@ -428,7 +428,7 @@ obj/Ritual
 			WishList+="Cancel"
 			if(TrueWishPower>=2)
 				WishList+="Cash"
-				WishList+="Skillpoints"
+				WishList+="Milestones"
 				WishList+="Technology"
 			if(TrueWishPower>=3)
 				WishList+="Revive"

@@ -35,6 +35,12 @@ proc/ArmorCalc(var/damage, var/armor, var/truearmor)
 		if(FALSE)
 			if(damage>armor) return damage
 			else return 0
+// Tunable clamp on how much a BP difference swings combat (damage, hit chance, knockback).
+// Was a piecewise linear-then-exponential curve with an UNBOUNDED strong side (a 10x stronger
+// fighter dealt 10x, etc.) plus a weird >2x-weaker "floor of 1.0" cliff. Now a single linear
+// ratio clamped both ends, so the BP gap maps to combat power smoothly and predictably.
+var/bpmod_min = 0.2 //floor: even a far weaker attacker still lands ~20% (no zero-damage)
+var/bpmod_max = 5   //ceiling: a far stronger attacker tops out at 5x (prevents one-shot blowouts)
 proc/BPModulus(var/yourBP, var/theirBP)
 	if(ismob(yourBP))
 		var/mob/nM  = yourBP
@@ -45,10 +51,7 @@ proc/BPModulus(var/yourBP, var/theirBP)
 	if(!yourBP||!theirBP) return 1
 	if(theirBP==0) return 999
 	if(yourBP==0) return 0
-	if((theirBP/yourBP)<=2) return max(round((yourBP/theirBP),0.05),0.05)
-	else
-		var/val = 2 ** (sqrt(theirBP/yourBP)/4) + 2 - 2 ** (sqrt(theirBP/yourBP)) //equation time (again, until it breaks again.)
-		return max(round(val,0.01),1)
+	return max(min(round((yourBP/theirBP),0.05),bpmod_max),bpmod_min) //linear, clamped both ends
 
 mob/var
 	deflection = 0
@@ -128,17 +131,19 @@ mob/proc/AccuracyCalc(var/mob/M)
 			//	return 1 //countered
 			//else
 			return 0 //miss
+var/leechSelfCap = 0.01 //per-hit leech is capped to this fraction of YOUR OWN BP (not the victim's). Tunable.
 mob/proc/Leech(var/mob/M)
 	if(client)
 		if(M.client)
-			if(M.BP>BP*1.2&&!M.BP_Unleechable&&BP<relBPmax)
-				BP+=capcheck(log(UPMod*SparMod)*(M.BP/7000)*(rand(1,10)/4))
+			if(M.BP>BP*1.2&&!M.BP_Unleechable&&BP<relBPmax) //gate: only leech while the foe is still >20% stronger (the gap "earns" it); once you close the gap it stops
+				var/lgain = capcheck(log(UPMod*SparMod)*(M.BP/7000)*(rand(1,10)/4))
 				if(isHV && BoostActive && BoostMult) //essentially, if H/V system active, and conditions are met, at least double gains.
 					if(isnull(BoostTarget))
-						if(HVAlign && BoostTargMultiple) if(HVAlign != M.HVAlign) src.BP+=capcheck(BoostMult*(M.BP/550)*(rand(1,10)/3))
-						else src.BP+=capcheck(BoostMult*(M.BP/550)*(rand(1,10)/3))
+						if(HVAlign && BoostTargMultiple) if(HVAlign != M.HVAlign) lgain+=capcheck(BoostMult*(M.BP/550)*(rand(1,10)/3))
+						else lgain+=capcheck(BoostMult*(M.BP/550)*(rand(1,10)/3))
 					else if(BoostTarget == M.signature)
-						src.BP+=capcheck(BoostMult*(M.BP/550)*(rand(1,10)/3))
+						lgain+=capcheck(BoostMult*(M.BP/550)*(rand(1,10)/3))
+				BP += min(lgain, BP*leechSelfCap) //CAP: a single leech hit can never exceed leechSelfCap of your own BP, so it scales off you, not the (much stronger) victim
 			if(M.GravMastered>GravMastered&&!M.BP_Unleechable&&GravMastered<gravitycap)
 				GravMastered+=(M.GravMastered-GravMastered)*(1-(GravMastered/M.GravMastered))*0.05*GlobalGravGain
 			if(M.godki && godki && M.godki.tier >= godki.tier)

@@ -37,7 +37,7 @@ mob/var/KiSpecialty=0
 /datum/skill/Ki_Specialty
 	skilltype = "Mind Buff"
 	name = "Ki Specialty"
-	desc = "When you invest into this, you're allowing your body to go beyond 50 mastery in any given Ki department. Also, you'll gain boosts to Ki level based on BP, similar to skillpoints. KiSkill+"
+	desc = "When you invest into this, you're allowing your body to go beyond 50 mastery in any given Ki department. Also, you'll gain boosts to Ki level based on BP, similar to Milestones. KiSkill+"
 	can_forget = TRUE
 	common_sense = TRUE
 	skillcost = 2
