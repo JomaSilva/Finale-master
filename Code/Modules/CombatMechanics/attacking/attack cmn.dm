@@ -9,19 +9,21 @@ mob/proc/ZanzoClash(var/mob/M)
 	if(!haszanzo || !M.haszanzo || KO || M.KO || !move || !M.move || dead || M.dead) return
 	inZanzoClash = 1
 	M.inZanzoClash = 1
-	var/range = max(2, min(haszanzo, M.haszanzo) + 2) //higher Zanzoken level = wider blinks
-	var/blinks = rand(4, 7)
+	var/range = max(5, min(haszanzo, M.haszanzo) * 2 + 4) //higher Zanzoken level = much wider blinks across the field
+	var/blinks = rand(6, 9)
 	view(src) << output("<font color=#aaeeff>[src] and [M] vanish into a storm of afterimages!</font>","Chatpane.Chat")
 	for(var/i = 1 to blinks)
 		if(KO || M.KO || !move || !M.move || dead || M.dead) break
-		if(Ki < MaxKi*0.02 || M.Ki < M.MaxKi*0.02) break //out of Ki -> the clash ends
-		Ki = max(Ki - MaxKi*0.02, 0)
-		M.Ki = max(M.Ki - M.MaxKi*0.02, 0)
+		if(Ki < MaxKi*0.015 || M.Ki < M.MaxKi*0.015) break //out of Ki -> the clash ends
+		Ki = max(Ki - MaxKi*0.015, 0)
+		M.Ki = max(M.Ki - M.MaxKi*0.015, 0)
 		flick('Zanzoken.dmi',src)
 		flick('Zanzoken.dmi',M)
 		emit_Sound('teleport.wav')
-		Move(tele_rand_turf_at_range(src,range))
-		M.Move(tele_rand_turf_at_range(M,range))
+		var/turf/dest1 = tele_rand_turf_at_range(src,range) //only ever a non-dense, in-sight turf -> never inside a wall
+		if(dest1) Move(dest1)
+		var/turf/dest2 = tele_rand_turf_at_range(M,range)
+		if(dest2) M.Move(dest2)
 		dir = get_dir(src,M)
 		M.dir = get_dir(M,src)
 		createShockwavemisc(loc,rand(2,4))
@@ -32,11 +34,39 @@ mob/proc/ZanzoClash(var/mob/M)
 				if(prob(60)) createDust(T,1)
 				T.Destroy()
 		if(prob(35)) createCrater(loc,rand(1,2))
-		sleep(rand(2,4))
+		sleep(rand(5,7)) //slower, more dramatic teleports (~2x the previous duration)
+	zanzo_settle(M, range) //end face-to-face, one empty tile apart, never inside a wall
 	inZanzoClash = 0
 	M.inZanzoClash = 0
 	if(!KO && !M.KO)
 		view(src) << output("<font color=#aaeeff>[src] and [M] flicker back into view, the ground shattered around them!</font>","Chatpane.Chat")
+
+// Place src and M one EMPTY tile apart facing each other (src - empty - M), choosing a direction
+// whose middle and far tiles are BOTH walkable, so neither fighter ends up inside a wall.
+mob/proc/zanzo_settle(var/mob/M, var/range)
+	var/turf/anchor = loc
+	if(!isturf(anchor) || anchor.density) //make sure src is on solid ground first
+		var/turf/safe = tele_rand_turf_in_view(src, max(range,3))
+		if(safe) Move(safe)
+		anchor = loc
+	if(!isturf(anchor)) return
+	for(var/D in list(get_dir(anchor,M.loc), EAST, WEST, NORTH, SOUTH, NORTHEAST, NORTHWEST, SOUTHEAST, SOUTHWEST))
+		if(!D) continue
+		var/turf/mid = get_step(anchor, D)
+		if(!mid || mid.density) continue //the middle must stay an empty gap between them
+		var/turf/far = get_step(mid, D)
+		if(!far || far.density) continue
+		if(!M.Move(far)) continue //blocked (wall or another fighter) -> try another lane
+		dir = D
+		M.dir = turn(D, 180)
+		flick('Zanzoken.dmi',src)
+		flick('Zanzoken.dmi',M)
+		emit_Sound('teleport.wav')
+		createShockwavemisc(loc,3)
+		return
+	//Fallback: no clear lane found -> at least face each other where they stand.
+	dir = get_dir(src, M)
+	M.dir = get_dir(M, src)
 
 mob/proc/doAttack(mob/M,addeddamage,iscrit,vampdamage,customFlavor,isBarrage,Type,kboverride,multd)
 	var/dmg=1
