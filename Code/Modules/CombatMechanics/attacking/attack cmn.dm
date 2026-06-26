@@ -22,10 +22,18 @@ mob/proc/ZanzoClash(var/mob/M)
 		emit_Sound('teleport.wav')
 		var/turf/dest1 = tele_rand_turf_at_range(src,range) //only ever a non-dense, in-sight turf -> never inside a wall
 		if(dest1) Move(dest1)
-		var/turf/dest2 = tele_rand_turf_at_range(M,range)
-		if(dest2) M.Move(dest2)
-		dir = get_dir(src,M)
-		M.dir = get_dir(M,src)
+		//During the clash they stay LOCKED TOGETHER (adjacent, facing off) as if trading blows; they only separate at the end.
+		var/clung = 0
+		for(var/Dd in list(pick(EAST,WEST,NORTH,SOUTH), NORTHEAST, NORTHWEST, SOUTHEAST, SOUTHWEST, EAST, WEST, NORTH, SOUTH))
+			var/turf/adj = get_step(loc, Dd)
+			if(adj && !adj.density && M.Move(adj))
+				dir = Dd
+				M.dir = turn(Dd, 180)
+				clung = 1
+				break
+		if(!clung)
+			dir = get_dir(src,M)
+			M.dir = get_dir(M,src)
 		createShockwavemisc(loc,rand(2,4))
 		createShockwavemisc(M.loc,rand(2,4))
 		if(prob(50)) Quake()

@@ -12,16 +12,15 @@ mob/proc/sayType(var/msg,var/typeversion)
 		if(1)
 			if(OOC)
 				if(!Mutes.Find(key))
-					for(var/mob/M in lobby_list)
+					for(var/client/C) //reach every CONNECTED player's CURRENT mob directly (robust vs a stale/empty player_list)
+						var/mob/M = C.mob
+						if(!M) continue
+						if(M.Ignore && M.Ignore.Find(key)) continue //they're ignoring you
+						if(!(M.OOCon || M.name==src.name)) continue //they have OOC text turned off
+						if(M.OOCchannel != OOCchannel) continue //different OOC channel
+						typing = 0
 						if(OOC_anon) M<<output("<font size=[M.TextSize]><[OOCColor]>([displaykey]): <font color=white>[html_encode(msg)]</font></font>","Chatpane.Chat")
 						else M<<output("<font size=[M.TextSize]><[OOCColor]>[name]([displaykey]): <font color=white>[html_encode(msg)]</font></font>","Chatpane.Chat")
-					for(var/mob/M in player_list)
-						if(M.Ignore.Find(key)==0)
-							if(M.OOCon||M.name==src.name)
-								if(M.OOCchannel==OOCchannel)
-									typing = 0
-									if(OOC_anon) M<<output("<font size=[M.TextSize]><[OOCColor]>([displaykey]): <font color=white>[html_encode(msg)]</font></font>","Chatpane.Chat")
-									else M<<output("<font size=[M.TextSize]><[OOCColor]>[name]([displaykey]): <font color=white>[html_encode(msg)]</font></font>","Chatpane.Chat")
 			else src<<"OOC is disabled currently."
 		if(2)
 			var/introduceflag=rand(1,30)

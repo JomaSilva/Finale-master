@@ -60,14 +60,18 @@ client
 	proc/HPtoggle()
 		set background = 1
 		set waitfor = 0
+		if(!HPWindowToggle) HPWindowToggle = 2 //default new players to the cinematic floating HUD (HealthWindow)
+		//Apply (do NOT flip) the saved/default HUD mode on login, so the cinematic window is the standard.
 		if(HPWindowToggle==1)
-			HPWindowToggle=2
-			winset(src, "lpane.lpanechild", "left=")
-			winshow(src, "HealthWindow", 1)
-		else if(HPWindowToggle==2)
-			HPWindowToggle=1
 			winset(src, "lpane.lpanechild", "left=hppane")
 			winshow(src, "HealthWindow", 0)
+		else if(HPWindowToggle==3)
+			winset(src, "lpane.lpanechild", "left=")
+			winshow(src, "HealthWindow", 0)
+		else
+			HPWindowToggle = 2
+			winset(src, "lpane.lpanechild", "left=")
+			winshow(src, "HealthWindow", 1)
 	proc
 		client_var_restore()
 			if(client_save_list.len)
