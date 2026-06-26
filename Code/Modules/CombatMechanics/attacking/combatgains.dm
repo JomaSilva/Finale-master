@@ -1,5 +1,15 @@
 mob/var/zenkaiStore = 0
 mob/var/zenkaiTimer = 0
+// Zenkai is a passive EXCLUSIVE to Saiyan DNA (Saiyan, Half-Saiyan, Primal/Legendary lineages, Saiyan-blooded)
+// plus Cell-type Bio-Androids who carry Saiyan cells. Every other race has NO Zenkai whatsoever.
+mob/proc/has_zenkai()
+	if(Race=="Bio-Android" || Parent_Race=="Bio-Android") return TRUE
+	if(Race=="Saiyan" || Parent_Race=="Saiyan") return TRUE
+	if(Race=="Half-Saiyan" || Parent_Race=="Half-Saiyan") return TRUE
+	if(canSSJ) return TRUE //gained Saiyan power (Baby absorb, etc.)
+	if(SaiyanLineage) return TRUE //Primal Saiyan and other Saiyan lineages
+	if(genome && genome.race_percent("Saiyan") >= 25) return TRUE
+	return FALSE
 mob/proc/Add_Anger(mult)
 	if(!mult)
 		mult=1

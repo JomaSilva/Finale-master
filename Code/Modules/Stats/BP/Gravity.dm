@@ -42,17 +42,17 @@ mob/proc/Grav_Handler(var/Gravity)
 			SpreadDamage((0.1*(Gravity/GravMastered))/(1+(Ephysdef*Ekidef)))
 			stamina-=(0.1*(maxstamina/100))/(1+(Ephysdef*Ekidef))
 			gravParalysis=1 //you're in above your head, this stops you from moving.
-			zenkaiStore += (0.003*ZenkaiMod)*(Gravity/GravMastered)
+			if(has_zenkai()) zenkaiStore += (0.003*ZenkaiMod)*(Gravity/GravMastered)
 			return 3
 		else if(Gravity>=(GravMastered*2))
 			SpreadDamage((0.07*(Gravity/GravMastered))/(2+(Ephysdef*Ekidef)))
 			stamina-=(0.1*(maxstamina/100))/(1+(Ephysdef*Ekidef))
-			zenkaiStore += (0.001*ZenkaiMod)*(Gravity/GravMastered)
+			if(has_zenkai()) zenkaiStore += (0.001*ZenkaiMod)*(Gravity/GravMastered)
 			//movement delays already handled by movement handler.dm
 			return 2
 		else if(Gravity>=(GravMastered*1.5))
 			SpreadDamage((0.03*(Gravity/GravMastered))/(5+(Ephysdef*Ekidef)))
-			zenkaiStore += (0.001*ZenkaiMod)
+			if(has_zenkai()) zenkaiStore += (0.001*ZenkaiMod)
 			stamina-=(0.1*(maxstamina/100))/(2+(Ephysdef*Ekidef))
 			//basically no stamina drain whatsoever.
 			return 2

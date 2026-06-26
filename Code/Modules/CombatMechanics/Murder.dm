@@ -49,7 +49,7 @@ mob/verb/Finish()
 
 mob/var/tmp/zenkaiReady = 0 //world.time when Zenkai may next trigger (1 hour cooldown)
 mob/proc/death_stuff(inputPl)
-	if(inputPl > BP && !dead && world.time >= zenkaiReady) //Zenkai scales off the ENEMY's BP, but only once per hour
+	if(inputPl > BP && !dead && world.time >= zenkaiReady && has_zenkai()) //Zenkai scales off the ENEMY's BP, once/hour, and ONLY for Saiyan DNA
 		zenkaiStore += capcheck(min(0.1*inputPl, BP*2)) //gain 10% of the foe's BP, capped so it never exceeds 2x your own current BP
 		zenkaiReady = world.time + 36000 //1 hour cooldown (deciseconds)
 	//Onlooker ANGRY

@@ -143,7 +143,7 @@ mob
 				if(world.time < ai_next_chat) return
 				var/cooldown = isBoss ? 30 : 50
 				ai_next_chat = world.time + cooldown
-				view(src) << output("<font color=#FFCC00>[src.name]: [msg]","Chat")
+				view(src) << output("<font color=#FFCC00>[src.name]: [msg]","Chatpane.Chat")
 
 			npc_power_up()
 				if(ai_powered_up) return
@@ -151,7 +151,12 @@ mob
 				behavior_vals_t[2] = min(behavior_vals_t[2] + 50, 100)
 				behavior_vals_t[1] = min(behavior_vals_t[1] + 40, 100)
 				NPCAscension()
-				view(src) << output("<font color=#FF8800>[src.name] powers up!","Chat")
+				BP = round(BP * 1.4) //a real, immediate power spike felt even on low-BP mobs
+				expressedBP = round(expressedBP * 1.4)
+				createDustmisc(loc,3)
+				createShockwavemisc(loc,2)
+				emit_Sound('powerup.wav')
+				view(src) << output("<font color=#FF8800><b>[src.name] powers up!</b></font>","Chatpane.Chat")
 				ai_next_chat = world.time + 20
 
 			NPCStats()
@@ -250,7 +255,7 @@ mob
 						return
 					// Power-up when losing badly or clearly outmatched
 					if(!ai_powered_up)
-						if(HP <= 35 || (expressedBP > 0 && target.expressedBP >= expressedBP * 1.8))
+						if(HP <= 45 || (expressedBP > 0 && target.expressedBP >= expressedBP * 1.5))
 							npc_power_up()
 					//if the Target is too close, avoid
 					if(totalTime >= OMEGA_RATE && !grabParalysis)
@@ -273,7 +278,7 @@ mob
 								blast()
 							else
 								attack()
-								if(prob(isBoss ? 30 : 15))
+								if(prob(isBoss ? 45 : 25))
 									npc_combat_chat(pick("HIYAH!","Take that!","Is that all?!","Pathetic!","You call that fighting?!"))
 					sleep(chase_speed)
 
