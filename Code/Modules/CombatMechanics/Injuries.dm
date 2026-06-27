@@ -1,3 +1,4 @@
+mob/var/tmp/fastRegen = 0 //set in assign_regen(): 1 for races with a true accelerated-regen passive (keeps healing while In Battle)
 mob/verb/Injure(var/mob/targetmob in view(1))
 	set category = "Skills"
 	if(usr.KO)
@@ -238,7 +239,7 @@ mob/proc/HealthSync()
 						else if(S.health<0.2*S.maxhealth)
 							S.limbstatus = "<font color=purple>Broken"
 						S.status = "Damaged [S.health]"
-					if(!S.artificial&&S.regenerationrate)
+					if(!S.artificial&&S.regenerationrate&&(!combatTag||fastRegen))
 						if(prob(10)||(prob(20)&&S.vital))
 							S.health += 0.1 * S.regenerationrate
 				else if(S.health>=S.maxhealth)
@@ -279,7 +280,7 @@ mob/proc/HealthSync()
 								V.RegrowLimb()
 		else if(vitalkill>=1)
 			Death()
-		if(prob(5))
+		if(prob(5)&&(!combatTag||fastRegen)) //no passive trickle-heal while In Battle, unless a true regen-passive race
 			if(prob(1))
 				SpreadHeal(1)
 		if(vitalKO>=1&&vitalKOd==0&&!KO)
@@ -292,7 +293,7 @@ mob/proc/HealthSync()
 			src<<"You are no longer in a coma."
 		else if(vitalKO==0&&vitalKOd==1&&!KO)
 			vitalKOd = 0
-		if(passiveRegen)
+		if(passiveRegen && (!combatTag || fastRegen)) //no passive healing while In Battle, UNLESS your race has a true regen passive
 			if(prob(75) && HP < 99.99) SpreadHeal(0.1 * passiveRegen)
 			if(canheallopped&&(prob(5*activeRegen)||prob(2*DeathRegen)))
 				limbregenbuffer += 1

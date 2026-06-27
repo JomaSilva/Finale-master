@@ -307,13 +307,13 @@ mob/proc/Unrestrained_SSj()
 		overlaychanged=1
 		var/ssjcolor = "yellow"
 		if(godki && godki.usage) ssjcolor = "blue"
-		view(6)<<"<font color=[ssjcolor]>*A great wave of power emanates from [usr] as a [ssjcolor] aura bursts around them!*"
+		view(6)<<"<font color=[ssjcolor]>*A great wave of power emanates from [src] as a [ssjcolor] aura bursts around them!*"
 		emit_Sound('chargeaura.wav')
 		createShockwavemisc(loc,1)
 		createCrater(loc,5)
 		spawn if(ssj2drain<250) Quake()
 		sleep(50)
-		view(6)<<"<font color=[ssjcolor]>*Blue sparks begin to burst around [usr]!*"
+		view(6)<<"<font color=[ssjcolor]>*Blue sparks begin to burst around [src]!*"
 		transing=0
 		attackable=1
 mob/proc/LSSj()
@@ -340,12 +340,12 @@ mob/proc/LSSj()
 		if(!isBuffed(/obj/buff/LSSJ)) startbuff(/obj/buff/LSSJ,'SSJIcon.dmi')
 		var/ssjcolor = "yellow"
 		if(godki && godki.usage) ssjcolor = "blue"
-		view(6)<<"<font color=[ssjcolor]>*[usr]'s hair spikes even further and turns green!*"
+		view(6)<<"<font color=[ssjcolor]>*[src]'s hair spikes even further and turns green!*"
 		overlayList-='Elec.dmi'
 		overlayList-='Electric_Blue.dmi'
 		overlayList+='Electric_Blue.dmi'
 		overlaychanged=1
-		view(6)<<"<font color=[ssjcolor]>*A great wave of power emanates from [usr] as a green aura bursts around them!*"
+		view(6)<<"<font color=[ssjcolor]>*A great wave of power emanates from [src] as a green aura bursts around them!*"
 		emit_Sound('chargeaura.wav')
 		createShockwavemisc(loc,2)
 		createCrater(loc,5)
@@ -354,7 +354,7 @@ mob/proc/LSSj()
 		Quake()
 		spawn Quake()
 		sleep(50)
-		view(6)<<"<font color=[ssjcolor]>*[usr]'s aura spikes upward as their power becomes maximum!*"
+		view(6)<<"<font color=[ssjcolor]>*[src]'s aura spikes upward as their power becomes maximum!*"
 		transing=0
 		attackable=1
 mob/proc/LSSj_Controlled() //Super Saiyan Full Power (Controlled): 50x; so apos masterizar 100% o Full Power (lssj=3)

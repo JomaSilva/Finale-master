@@ -57,6 +57,4 @@ mob/proc/setcombatspeed()
 	set background = 1
 	if(highestebp)
 		speedDIFF = highestebp / expressedBP
-		if(speedDIFF > 1) speedDIFF = max(log(speedDIFF),1)
-		if(speedDIFF < 1) speedDIFF = 1 / (1.03 ** (expressedBP / highestebp))
-		speedDIFF = min(max(speedDIFF,0.25),3)
+		speedDIFF = min(max(speedDIFF,0.1),5) //LINEAR brutal BP gap (was log-dampened + capped at 3x); bounded [0.1x,5x] — brutal but still playable

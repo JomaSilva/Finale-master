@@ -3,9 +3,10 @@ mob/proc/statmajin()
 They also have incredible death regeneration, rendering them near-immortal. Their control of Ki comes natural to them.\n
 Another rather important fact is that these beings can absorb people and take on part of their power and appearance.\n
 Often they absorb clothing, which is really just the mimicry they subconsciously use by shaping their body into the form of their victims."}
-	if(Class == "None")
-		Class = input(src,"Choose your class.","Class") in list("Majin","Corrupted Majin")
-		if(!Class) Class = "Majin"
+	if(Class == "None") //class is RANDOM at birth (like the Saiyan class), not chosen
+		if(rand(1,100) <= 15) Class = "Corrupted Majin" //Class_Spread: Corrupted 15 / Majin 85
+		else Class = "Majin"
+		src << "<font color=#cda434><b>You were born a [Class].</b></font>"
 	if(!genome)
 		genome = new/datum/genetics/Majin(/datum/genetics/proto/Majin)
 		if(Class != "None")

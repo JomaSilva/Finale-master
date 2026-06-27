@@ -3,9 +3,13 @@
 
 mob/proc/stathuman()
 	RaceDescription="Humans are probably the most well rounded race. They're not as strong in any catagory than any other race- but they're also not really the weakest. That makes them powerful and intuitive for new players. Humans hail from Earth, a lush green planet full of food and monsters."
-	if(Class == "None") //let players pick a Human path; bred/admin classes already set are respected
-		Class = input(src,"Choose your class.","Class") in list("Ancient Hermit","Peak Human","Triclops Descendant","Normal")
-		if(!Class) Class = "Normal"
+	if(Class == "None") //class is RANDOM at birth (like the Saiyan class); only lineage is chosen
+		var/hroll = rand(1,100) //Class_Spread: Hermit 5 / Triclops 10 / Peak 25 / Normal 60
+		if(hroll <= 5) Class = "Ancient Hermit"
+		else if(hroll <= 15) Class = "Triclops Descendant"
+		else if(hroll <= 40) Class = "Peak Human"
+		else Class = "Normal"
+		src << "<font color=#cda434><b>You were born a [Class].</b></font>"
 	if(!genome)
 		genome = new/datum/genetics/Human(/datum/genetics/proto/Human)
 		genome.this_class = Class

@@ -76,7 +76,7 @@ mob/proc/powerlevel()
 	kiratio = max((Ki/MaxKi),0.6)
 	var/kiratiobuff = 0
 	if(kiratio > 1)
-		kiratiobuff =  kiratio ** powerMult
+		kiratiobuff =  min(kiratio ** powerMult, 2) //cap the 'Ki above 100%' overcharge at 2x (was unbounded; with Brutal Clarity / Extreme Burst it ballooned BP ~10x)
 	hpratio = max((HP/100),0.6)
 	CHECK_TICK
 	staminaratio = max((staminadeBuff/100),0.3)

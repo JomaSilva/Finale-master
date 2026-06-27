@@ -39,8 +39,8 @@ proc/ArmorCalc(var/damage, var/armor, var/truearmor)
 // Was a piecewise linear-then-exponential curve with an UNBOUNDED strong side (a 10x stronger
 // fighter dealt 10x, etc.) plus a weird >2x-weaker "floor of 1.0" cliff. Now a single linear
 // ratio clamped both ends, so the BP gap maps to combat power smoothly and predictably.
-var/bpmod_min = 0.2 //floor: even a far weaker attacker still lands ~20% (no zero-damage)
-var/bpmod_max = 5   //ceiling: a far stronger attacker tops out at 5x (prevents one-shot blowouts)
+var/bpmod_min = 0.01 //floor: a far weaker attacker barely scratches a far stronger one — brutal gap
+var/bpmod_max = 100  //ceiling: damage scales LINEARLY with the BP ratio up to 100x (2x BP = 2x damage, 100x BP = 100x)
 proc/BPModulus(var/yourBP, var/theirBP)
 	if(ismob(yourBP))
 		var/mob/nM  = yourBP

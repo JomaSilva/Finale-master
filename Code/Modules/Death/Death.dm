@@ -6,6 +6,7 @@ mob
 mob/proc/Death()
 	if(isdying) return
 	isdying = 1
+	var/mob/deathKiller = (combatTag || IsInFight) ? lastDamager : null //capture the killer NOW, before StopFightingStatus clears combat state (no stale lastDamager raging on a later environmental death)
 	Revert()
 	if(last_attkd_sig && IsInFight)
 		for(var/mob/M in player_list)
@@ -63,10 +64,12 @@ mob/proc/Death()
 			KO(-1)
 			sleep(20)
 			if(!dead)
+				var/mob/killer = deathKiller //combat-validated killer captured at Death() start (null unless killed in active combat)
+				var/killedByEnemy = killer && !is_friend(killer) && !check_relation(killer, list("Very Good","Love","Good","Rival/Good")) //no rage for friendly duels or environmental death
 				for(var/mob/M in view())
 					var/deathanger=0
 					if(M.check_relation(src,list("Good","Very Good","Love","Rival/Good")) || M.is_friend(src)) deathanger=1
-					if(deathanger==1)
+					if(deathanger==1 && killedByEnemy)
 						M.Do_Anger_Stuff()
 						view(M)<<output("<font color=red>You notice [M] has become EXTREMELY enraged!!!","Chatpane.Chat")
 						WriteToLog("rplog","[M] has become EXTREMELY angry    ([time2text(world.realtime,"Day DD hh:mm")])")

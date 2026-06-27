@@ -238,6 +238,7 @@ datum/genetics
 			savant.UPMod = misc_stats["Potential"]
 		assign_regen()
 			savant.canheallopped = 0
+			savant.fastRegen = (misc_stats["Regeneration"] >= 5) //true accelerated-regen passive (Namekian/Majin/Bio-Android/Frost) -> still heals mid-combat
 			if(misc_stats["Regeneration"] >= 5) //races with naturally accelerated regen (Namekian/Majin/Bio-Android/Frost Demon) keep their fast natural healing
 				savant.passiveRegen = 0.2 + (misc_stats["Regeneration"] / 50)
 			else //normal races (Human/Saiyan/etc.) heal ~5x slower
@@ -530,6 +531,7 @@ datum/genetics
 			var/o_l = list()
 			o_l  =old_stats[2]
 			savant.canheallopped = 0
+			savant.fastRegen = (misc_stats["Regeneration"] >= 5) //true accelerated-regen passive (Namekian/Majin/Bio-Android/Frost) -> still heals mid-combat
 			savant.passiveRegen = (savant.passiveRegen - o_l["Regeneration"]) + (misc_stats["Regeneration"] / 50)
 			savant.activeRegen = (savant.activeRegen - o_l["Regeneration"]) + (1 + (misc_stats["Regeneration"] / 25))
 			savant.DeathRegen = (savant.DeathRegen - o_l["Regeneration"]) + round((misc_stats["Regeneration"] / 10))

@@ -1,8 +1,10 @@
 mob/proc/statfrost()
 	RaceDescription="Frost Demons are a race of lizard-folk who hail from a colder planet. Despite the name, they aren't all actually evil. Rather, in folklore a certain group of Frost Demons made their race be feared by aliens across the cosmos. Most Frost Demons are balanced-strong warriors with naturally high ki power and ascended potential. Every so often, however, a Mutant Frost Demon is born: a rare and monstrously powerful variant whose raw battle power dwarfs that of its kin, the kind of being whole empires are built around."
 	if(!genome)
-		if(Class=="None")
-			Class=alert(src,"Choose your class. Frost Demon is the standard, balanced-strong type. Mutant Frost Demon is the rare, monstrously powerful variant born with overwhelming battle power.","","Frost Demon","Mutant Frost Demon")
+		if(Class=="None") //class is RANDOM at birth (like the Saiyan class), not chosen — Mutant is the rare ~1% variant
+			if(rand(1,100) <= 1) Class = "Mutant Frost Demon"
+			else Class = "Frost Demon"
+			src << "<font color=#cda434><b>You were born a [Class].</b></font>"
 		genome = new/datum/genetics/Icer(/datum/genetics/proto/Icer)
 		genome.this_class = Class
 

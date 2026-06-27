@@ -43,6 +43,8 @@ mob/var/tmp
 	obj/PlayerShip/current_ship = null //the ship whose interior you're standing in (null when outside or piloting)
 	pilot_old_invis = 0
 	pilot_old_spacesuit = 0
+	pilot_old_flight = 0
+	turf/pilot_return_loc = null //the exact helm-computer tile to drop the body back on when you stop piloting
 
 // ---- the buildable (auto-appears in the tech window, filtered by neededtech) ----
 obj/Creatables
@@ -86,7 +88,7 @@ obj/PlayerShip
 	// --- clicking the ship: if you're piloting/observing IT, return to your character inside; else board (with password) ---
 	Click()
 		if(!usr || !usr.client || !ismob(usr)) return ..()
-		if(usr.piloting_ship == src || (usr.observingnow && usr.client.eye == src))
+		if((usr.piloting_ship && usr.piloted_ship == src) || (usr.observingnow && usr.client.eye == src))
 			return_to_interior(usr) //click the ship while at the helm/observing -> back to your body on the bridge
 			return
 		if(get_dist(usr, src) <= 6) //the sprite is many tiles but only one is dense, so clicking it is the reliable way to board
@@ -98,6 +100,8 @@ obj/PlayerShip
 	proc/board(mob/M)
 		set waitfor = 0 //don't block the Bump caller while the interior is (lazily) built
 		if(!M || !M.client) return
+		if(M.piloting_ship && M.piloted_ship == src) return //already at this ship's helm -> never board it into its own interior
+		if(M.current_ship == src) return //already standing inside this ship
 		if(M.ckey != owner_ckey && ship_pass && ship_pass != "") //owner is exempt; others must know the password
 			var/entered = input(M, "[name] is locked. Enter the password:", "Ship Password") as text|null
 			if(entered != ship_pass)
@@ -117,9 +121,12 @@ obj/PlayerShip
 	// --- return from observe/pilot to your character, standing on the bridge ---
 	proc/return_to_interior(mob/M)
 		if(!M) return
-		if(M.piloting_ship == src)
-			end_pilot(M) //restores invisibility/spacesuit/view
-			place_in_interior(M) //they were riding the exterior ship -> bring them back inside
+		if(M.piloting_ship && M.piloted_ship == src) //piloting_ship is a 0/1 flag; the ship object is piloted_ship
+			var/turf/ret = M.pilot_return_loc //the exact helm tile saved when they took control
+			end_pilot(M) //restores invisibility/spacesuit/flight/view AND stops pilot_follow (so it can't re-grab the camera)
+			if(ret && (ret.z in ship_interior_zs)) M.loc = ret //put the body back EXACTLY where it left the computer (not the entrance)
+			else place_in_interior(M) //fallback (helm tile gone) -> central pad
+			M.pilot_return_loc = null
 		else if(M.client) //was observing -> they're already inside, just reset the camera (don't move them)
 			M.client.eye = M
 			M.client.perspective = MOB_PERSPECTIVE
@@ -203,6 +210,8 @@ obj/PlayerShip
 		M.piloted_ship = null
 		M.invisibility = M.pilot_old_invis
 		M.spacesuit = M.pilot_old_spacesuit
+		M.flight = M.pilot_old_flight //restore pre-pilot flight state
+		M.isflying = M.pilot_old_flight
 		if(M.client)
 			M.client.eye = M
 			M.client.perspective = MOB_PERSPECTIVE
@@ -295,8 +304,12 @@ obj/ShipControl
 			return
 		usr.pilot_old_invis = usr.invisibility
 		usr.pilot_old_spacesuit = usr.spacesuit
+		usr.pilot_old_flight = usr.flight
+		usr.pilot_return_loc = usr.loc //remember the exact helm spot so the body returns HERE, not the entrance pad
 		usr.invisibility = 101 //you become an invisible passenger riding the ship
 		usr.spacesuit = 1 //survive space while at the helm
+		usr.flight = 1 //count as flying so the ship crosses water (turf testWaters() lets flyers pass)
+		usr.isflying = 1
 		usr.piloting_ship = 1
 		usr.piloted_ship = ship_ref
 		usr.current_ship = null //they leave the interior to ride/steer the exterior ship

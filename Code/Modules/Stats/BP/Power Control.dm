@@ -24,9 +24,9 @@ mob/proc/AuraCheck()
 		updateOverlay(/obj/overlay/auras/aura)
 	else if(src.kiratio<=1 && FlashPoint==1) //without the if() statement, this would run every tick.
 		FlashPoint = 0
-		usr.overlayList-='snamek Elec.dmi'
-		usr.overlayList-='SSj Aura.dmi'
-		usr.overlayList-='Sparks LSSj.dmi'
+		src.overlayList-='snamek Elec.dmi'
+		src.overlayList-='SSj Aura.dmi'
+		src.overlayList-='Sparks LSSj.dmi'
 		overlaychanged=1
 		removeOverlay(/obj/overlay/auras/aura)
 

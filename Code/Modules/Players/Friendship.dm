@@ -33,6 +33,7 @@ mob/proc/accrue_friendship()
 	friend_tick = 0
 	for(var/mob/M in view(FRIEND_RANGE, src))
 		if(M == src || !M.client || M.isNPC || !M.signature) continue
+		if(M.signature in rivals) continue //a declared rival never breeds friendship from proximity — only enmity grows
 		var/cur = friendship["[M.signature]"]
 		if(cur >= FRIEND_REQ)
 			friendship["[M.signature]"] = min(cur + FRIEND_RATE, 200) //already friends: closeness keeps growing toward 'Bonded'

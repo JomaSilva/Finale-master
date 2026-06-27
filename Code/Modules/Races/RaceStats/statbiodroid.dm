@@ -1,7 +1,13 @@
 mob/proc/statbio()
 	if(!genome)
 		genome = new/datum/genetics/BioAndroid(/datum/genetics/proto/BioAndroid)
-		if(!Class) Class=alert(src,"You are a bio-android. By default, you are a Cell type bioandroid. This comes with: Zenkai, Regeneration, Absorb, and Forms 2/3/4 (4 is Super Saiyan + Perfect.) Do you want to change to a Majin type bioandroid? (less Zenkai, Higher Regen, Absorb, one lategame form (already 3), higher BP mod.)","","Majin-Type","None")
+		if(!Class) //type is RANDOM (like the Saiyan class), not chosen: ~20% Majin-type, else Cell-type
+			if(rand(1,100) <= 20)
+				Class = "Majin-Type"
+				src << "<font color=#cda434><b>Your Bio-Android core formed as Majin-type.</b></font>"
+			else
+				Class = "None"
+				src << "<font color=#cda434><b>Your Bio-Android core formed as Cell-type.</b></font>"
 		genome.this_class = Class
 	RaceDescription={"Bio Androids are a rather odd race, as they are a combination of several races.
 They can have the ability to regenerate, so long as they have a single cell remaining that wasn't obliterated.

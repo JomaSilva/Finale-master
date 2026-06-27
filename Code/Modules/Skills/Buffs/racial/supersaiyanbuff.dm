@@ -404,7 +404,7 @@ mob/proc/SSj2()
 			emit_Sound('powerup.wav')
 			spawn Quake()
 			createShockwavemisc(loc,3)
-			view(6)<<"<font color=[ssjcolor]>*A great wave of power emanates from [usr] as a [ssjcolor] aura bursts around them!*"
+			view(6)<<"<font color=[ssjcolor]>*A great wave of power emanates from [src] as a [ssjcolor] aura bursts around them!*"
 			spawn if(ssj2drain==0.025) Quake()
 			sleep(600 * ssj2drain)
 			emit_Sound('chargeaura.wav')
@@ -413,7 +413,7 @@ mob/proc/SSj2()
 			createCrater(loc,5)
 			if(!isBuffed(/obj/buff/SuperSaiyan))
 				startbuff(/obj/buff/SuperSaiyan,'SSJIcon.dmi')
-			view(6)<<"<font color=[ssjcolor]>*Blue sparks begin to burst around [usr]!*"
+			view(6)<<"<font color=[ssjcolor]>*Blue sparks begin to burst around [src]!*"
 		transing=0
 		attackable=1
 /obj/overlay/auras/transform_aura
@@ -450,17 +450,17 @@ mob/proc/SSj3()
 		if(!ismastered3)
 			updateOverlay(/obj/overlay/auras/transform_aura)
 			sleep(100)
-			if(!ssj3firsttime) view(6)<<"<font color=[ssjcolor]>*A great wave of power emanates from [usr] as a [ssjcolor] aura bursts around them!*"
+			if(!ssj3firsttime) view(6)<<"<font color=[ssjcolor]>*A great wave of power emanates from [src] as a [ssjcolor] aura bursts around them!*"
 			spawn for(var/mob/M in player_list)
-				if(M.Planet == usr.Planet)
+				if(M.Planet == src.Planet)
 					M.Quake()
 			sleep(100)
-			if(!ssj3firsttime) view(8)<<"<font size=[TextSize]><[SayColor]>[usr]: AAAAAAAAAAAAAAAAAHHHHHHHHHHHHHHH!!!!"
+			if(!ssj3firsttime) view(8)<<"<font size=[TextSize]><[SayColor]>[src]: AAAAAAAAAAAAAAAAAHHHHHHHHHHHHHHH!!!!"
 			spawn for(var/mob/M in player_list)
-				if(M.Planet == usr.Planet)
+				if(M.Planet == src.Planet)
 					M.Quake()
 			spawn Quake()
-			view(8)<<"<font color=[ssjcolor]>*[usr]'s screams die down!!*"
+			view(8)<<"<font color=[ssjcolor]>*[src]'s screams die down!!*"
 			if(!ssj3firsttime) sleep(2000*ssj3drain)
 			if(powerMod<=1) removeOverlay(/obj/overlay/auras/aura)
 		createShockwavemisc(loc,4)
@@ -471,7 +471,7 @@ mob/proc/SSj3()
 		if(!isBuffed(/obj/buff/SuperSaiyan))
 			startbuff(/obj/buff/SuperSaiyan,'SSJIcon.dmi')
 		ssj=3
-		view(6)<<"<font color=[ssjcolor]>*[usr]'s aura spikes upward as their hair grows longer!*"
+		view(6)<<"<font color=[ssjcolor]>*[src]'s aura spikes upward as their hair grows longer!*"
 		emit_Sound('chargeaura.wav')
 		if(ssj3firsttime)
 			ssj3firsttime=0
@@ -597,8 +597,8 @@ mob/proc/SSj4()
 			emit_TransformMusic('Dragon Ball GT   Super Saiyan 4 Theme (Gladius & Akihito Tokunaga)   By Gladius.mp3', 2935) //SSJ4 theme (~4.9min)
 		attackable=0
 		sleep(0)
-		usr.Revert()
-		usr.canRevert=0
+		src.Revert()
+		src.canRevert=0
 		emit_Sound('powerup.wav')
 		createShockwavemisc(loc,3)
 		if(firsttime<=3)

@@ -41,7 +41,7 @@ mob/proc/SSJCinematic()
 			A.dir=max(kiamount,1)
 			A.BP=expressedBP
 			A.mods=Ekioff*Ekiskill
-			A.murderToggle=usr.murderToggle
+			A.murderToggle=src.murderToggle
 			spawn A.Burnout()
 			spawn walk(A,A.dir,2)
 			if(prob(80)&&!kiamount) kiamount=8

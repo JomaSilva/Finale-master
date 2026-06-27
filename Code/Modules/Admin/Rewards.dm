@@ -146,10 +146,11 @@ mob/Admin1/verb
 						if("Cancel" != Choice) M.contents+=new Choice*/
 			if("Give Ritual God")
 				var/list/L = list()
-				for(var/mob/R in range(5,R))
+				for(var/mob/R in range(5, M)) //witnesses around the RECIPIENT (was range(5,R) with R undefined)
+					if(R == M) continue
 					if(L.len >= 5) break
 					L += R
-				INITIALIZEGODPROTOCOL(L)
+				M.INITIALIZEGODPROTOCOL(L) //run on the TARGET so M becomes the god (was a bare call -> src=admin received it)
 
 mob/Admin3/verb/Give(mob/M in world)
 	set category="Admin"

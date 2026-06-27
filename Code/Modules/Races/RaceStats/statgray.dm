@@ -1,8 +1,13 @@
 mob/proc/statgray()
 	var/Choice
 	RaceDescription="Grays are a mysterious race that originated from another universe, but somehow a few have found their way here. Most Grays are very studious and reserved and have a deep motivation to obtain total power. The race is able to harness most of their power through deep meditation, and have the best meditation gains in the universe. Grays can also expand their muscles to access even more power. Grays are also incredibly sturdy and can take most attacks thrown at them. In return, however, they have poor reflexes and have a much harder time avoiding attacks. In terms of Battle Power, they are on the higher end of the spectrum in comparison to other races. There exists a special subclass of Grays known only as Hermano. Unlike their counterparts, Hermanos are very scientifically advanced and have incredibly large craniums. The smarter they get, the stronger Hermanos become. Although their IQ is mighty, Hermanos lack the same resilience and accuracy as other grays, but they have better Defense and punching power."
-	if(Class=="None")
-		Choice=alert(src,"Choose Option","","Gray - Jiren Type","Gray - Smarts Type (El Hermano Jokito)")
+	if(Class=="None") //subclass is RANDOM (like the Saiyan class), not chosen; Hermano is the rare ~5% variant
+		if(rand(1,100) <= 5)
+			Choice = "Gray - Smarts Type (El Hermano Jokito)"
+			src << "<font color=#cda434><b>You were born a Hermano.</b></font>"
+		else
+			Choice = "Gray - Jiren Type"
+			src << "<font color=#cda434><b>You were born a Gray.</b></font>"
 	switch(Choice)
 		if("Gray - Jiren Type")
 			RaceDescription="Grays are a mysterious race that originated from another universe, but somehow a few have found their way here. Most Grays are very studious and reserved and have a deep motivation to obtain total power. The race is able to harness most of their power through deep meditation, and have the best meditation gains in the universe. Grays can also expand their muscles to access even more power. Grays are also incredibly sturdy and can take most attacks thrown at them. In return, however, they have poor reflexes and have a much harder time avoiding attacks. In terms of Battle Power, they are on the higher end of the spectrum in comparison to other races. There exists a special subclass of Grays known only as Hermano. Unlike their counterparts, Hermanos are very scientifically advanced and have incredibly large craniums. The smarter they get, the stronger Hermanos become. Although their IQ is mighty, Hermanos lack the same resilience and accuracy as other grays, but they have better Defense and punching power."
