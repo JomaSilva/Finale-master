@@ -3,7 +3,7 @@ var/trainmult = 1
 mob/Admin2/verb/Balance_Settings()
 	set category = "Admin"
 	switch(input(usr,"Which settings? Most are NOT toggled. They will tell you what their default is.","Balanced Settings", "Cancel") in list("Cancel","Train","Ki Attack Damage","Ki Drain", \
-		"Melee Damage", "Melee Speed","Melee Anti-Speed","Stamina Drain","Grav Gain","Food Stamina Gain","Ki Exp Rate","Resource Gains","grav Balance","power Mult","globalkiarmormod","Tech Gains Mult","Net Cap",\
+		"Melee Damage", "Melee Speed","Melee Anti-Speed","Stamina Drain","Grav Gain","Grav Gain Div","Grav Accustom","Food Stamina Gain","Ki Exp Rate","Resource Gains","grav Balance","power Mult","globalkiarmormod","Tech Gains Mult","Net Cap",\
 		"Spar Gains","Train Gains","Med Gains","Blast Gains","Train Meditation To Hidden Potential","NPC Sparring","Legends Pre-Ascension","Legends Override"))
 		if("Train") trainmult = input(usr,"Set the current train mult. Normally 1x.","",trainmult) as num
 		if("Ki Attack Damage") globalKiDamage = input("Put in the Ki attack mult. 5x is default.","",globalKiDamage) as num
@@ -13,6 +13,8 @@ mob/Admin2/verb/Balance_Settings()
 		if("Melee Anti-Speed") globalmeleeantispeed = input(usr,"Set the global melee-anti speed. (Normally 1x)","", globalmeleeantispeed) as num
 		if("Stamina Drain") globalstamdrain = input(usr,"Set the global stamina drain. (Normally 1x)","", globalstamdrain) as num
 		if("Grav Gain") GlobalGravGain = input("Gravity gains multiplier? It's normally 1x.","",GlobalGravGain) as num
+		if("Grav Gain Div") gravGainDiv = input(usr,"Gravity BP-gain divisor. HIGHER = slower gains. Normally [initial(gravGainDiv)].","",gravGainDiv) as num
+		if("Grav Accustom") gravAccustomWeight = input(usr,"Acclimation buff weight for training BELOW your mastery (0 = none, 1 = full). Normally [initial(gravAccustomWeight)].","",gravAccustomWeight) as num
 		if("Food Stamina Gain") globalfoodmod = input(usr,"Set the global food mod. (Normally 1x)","", globalfoodmod) as num
 		if("Ki Exp Rate")
 			var/kirate = input("What do you want to change the rate to? The current rate is [GlobalKiExpRate].","",GlobalKiExpRate) as num

@@ -43,6 +43,8 @@ mob/Admin1/verb
 				else
 					M.totalskillpoints+=REWARD
 					M.admingibbedpoints+=REWARD
+					M.skillpoints+=REWARD //grant the SPENDABLE pool right away so the gift is usable immediately (skill trees check skillpoints, not totalskillpoints)
+					M.availablepoints+=REWARD //and the style-allocatable pool
 					M<<"You have been rewarded [REWARD] Milestones by [usr]!"
 			if("Energy")
 				var/REWARD=input("How much?","Multiply [M.BP] x ??(Base BP = True Power x BP Mod")as num

@@ -34,6 +34,9 @@ mob/proc/GlobalStats()
 		CheckOverlays()
 		RelaxCheck()//
 		statify()
+		if(client && world.time >= nextMilestoneTick) //idle milestone accrual: HandleLevel otherwise only runs on movement ticks, so a player powering up in place never converted BP->milestones until they moved
+			nextMilestoneTick = world.time + 10 //~1s throttle (world.time is deciseconds)
+			HandleLevel()
 		OverlayLoop()//
 		AreYaBeamingKid()
 		powerlevel()

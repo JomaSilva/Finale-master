@@ -220,6 +220,8 @@ proc/Wish(var/wish,mob/originator,E_G,TrueWishPower)
 				originator<<"You wish for Milestones!!"
 				originator.wishedpoints += 2
 				originator.totalskillpoints += 2
+				originator.skillpoints += 2 //grant the spendable pool immediately (matches the admin Reward fix)
+				originator.availablepoints += 2
 				view(originator)<<"[originator] wishes for Milestones!"
 		if("Intelligence")
 			view(originator)<<"[originator] wishes for intelligence!!"

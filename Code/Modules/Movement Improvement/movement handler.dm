@@ -204,7 +204,7 @@ mob/proc
 			CHECK_TICK
 			while(totalTime >= OMEGA_RATE) //switched back to while, under pixel movement it works better.
 				DOESEXIST
-				usr.HandleLevel()//moderate performance boost- only handle level when people are ticking
+				src.HandleLevel()//moderate performance boost- only handle level when people are ticking (src not usr: usr can be null in BYOND 516 engine-driven contexts, which would runtime-error and silently kill movement-driven milestone gain)
 				totalTime -= OMEGA_RATE
 				if(totalTime > MAXIMUM_TIME) totalTime = MAXIMUM_TIME //wipes out excessive fastboys speed buffer
 				if(curdir)

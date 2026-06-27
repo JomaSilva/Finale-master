@@ -10,30 +10,29 @@ mob/var
 mob/proc/Grav_Gain()
 	set waitfor = 0
 	var/gravity = gravmult+Planetgrav
-	var/testgrav = Grav_Handler(gravity)
-	switch(testgrav)
-		if(1)
-			GravMastered+=0.001 + BPTick*(gravity)*GravMod*2*GlobalGravGain * 0.01
-			GravMastered= min((gravmult+Planetgrav),GravMastered, gravitycap)
-			BP+=capcheck(relBPmax*BPTick*TrainMod*Egains*(1/55))
-			gravParalysis=0
-		if(2)
-			GravMastered+=0.001 + BPTick*(gravity)*GravMod*3*GlobalGravGain * 0.01
-			BP+=capcheck(relBPmax*BPTick*TrainMod*Egains*(1/35))
-			GravMastered= min((gravmult+Planetgrav),GravMastered, gravitycap)
-			gravParalysis=0
-		if(3)
-			GravMastered+=0.001 + BPTick*(gravity)*GravMod*GlobalGravGain/1.1 * 0.01
-			BP+=capcheck(relBPmax*BPTick*TrainMod*Egains*(1/45))
-			GravMastered= min((gravity+Planetgrav),GravMastered, gravitycap)
-		if(4)//equal gravity, mastered gravity is above normal limits.
-			GravMastered+=BPTick*(gravity)*GravMod*GlobalGravGain * 0.001
-			GravMastered= min((gravmult+Planetgrav),GravMastered, gravitycap)
-			BP+=capcheck(relBPmax*BPTick*TrainMod*Egains*(1/60))
-			gravParalysis=0
-//so basically: grav is fucking retarded and so are you
-//grav training in both the show and reality (reality it's more like weight training) is very destructive and dangerous
-//why the fuck the last system encouraged you to step into a room of 100x your own mastery is fucking stupid.
+	var/testgrav = Grav_Handler(gravity) //still applies the danger: damage/stamina/zenkai/paralysis when you're ABOVE your mastery
+	if(testgrav != 3) gravParalysis = 0 //only being WAY over your head (tier 3, >4x mastery) keeps you pinned; otherwise you can move
+
+	//--- BP GAIN now tracks the ABSOLUTE current gravity, NOT the ratio to your mastery. ---
+	//100x gravity trains hard whether or not you've already mastered it. (The old tier system zeroed
+	//gains the moment GravMastered caught up, which is why it shoved people into rooms way over their head.)
+	var/effgrav = gravity
+
+	//--- ACCUSTOMIZATION BUFF: in gravity BELOW your mastery your body is acclimated to heavier loads, so
+	//lighter gravity still trains you. The bonus grows with the gap (mastered - current) but at a fraction
+	//(gravAccustomWeight), so actually standing in high gravity is always the stronger grind. ---
+	if(GravMastered > gravity)
+		effgrav += (GravMastered - gravity) * gravAccustomWeight
+
+	if(effgrav > 0 && gravity >= 1) //need at least Earth-like gravity (or a field) to train; true zero-g space gives nothing
+		BP += capcheck(relBPmax*BPTick*TrainMod*Egains*GlobalGravGain*(effgrav/gravGainDiv))
+
+	//--- MASTERY ACCUMULATION: you only raise your acclimation ceiling by training ABOVE it. ---
+	if(gravity > GravMastered)
+		GravMastered += 0.001 + BPTick*gravity*GravMod*GlobalGravGain*0.02
+		GravMastered = min(gravity,GravMastered,gravitycap)
+//Grav training (in the show and as weight training) is destructive: pushing far above your mastery still
+//hurts (see Grav_Handler tiers 2/3), but the PAYOFF now tracks the gravity you can actually withstand.
 
 mob/proc/Grav_Handler(var/Gravity)
 	set waitfor = 0
@@ -324,6 +323,8 @@ obj/items/Gravity
 turf/var/gravity=0 //1x the normal Planet grav, which varies.
 
 var/gravitycap = 500
+var/gravGainDiv = 1500 //higher = slower gravity BP gain. per-tick gain factor = effective_gravity / gravGainDiv (so gravity ~50x ≈ the old best rate, and the 500x cap trains ~12x faster)
+var/gravAccustomWeight = 0.2 //fraction of (GravMastered - currentGravity) that becomes BONUS gain when training BELOW your mastery (0 = no acclimation buff, 1 = trains as if fully at your mastered gravity). 0.2 keeps it a meaningful, gap-scaling reward (a 500-master on Earth trains like ~100x) without letting risk-free low-gravity farming rival actually standing in high gravity. Raise toward 0.5 for a stronger buff.
 
 mob/Admin3/verb/Gravity_Cap()
 	set category = "Admin"

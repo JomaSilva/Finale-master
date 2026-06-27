@@ -13,15 +13,13 @@ mob/proc/HandleLevel()
 	DOESEXIST
 	total+=skillpoints
 	if(total<totalskillpoints)
-		skillpoints+=1
-		usr<<"You've gained a Milestone!"
-	if(total>totalskillpoints&&skillpoints>0)
-		for(var/i = 0 to (total-(totalskillpoints-1)))
-			if(skillpoints>0)
-				i+=1
-				skillpoints-=1
-				usr<<"You've lost a Milestone due to losing raw power."
-			else i+=1
+		var/gained = totalskillpoints - total //catch up FULLY in one call so admin/global/wish gifts and big BP jumps register at once (was +1 per call, which made gifts trickle in only while moving)
+		skillpoints += gained
+		src<<"You've gained [gained] Milestone[gained>1?"s":""]!"
+	else if(total>totalskillpoints&&skillpoints>0)
+		var/lost = min(skillpoints, total-totalskillpoints) //only happens if the cap genuinely dropped (e.g. skillpointMod fell); never below 0
+		skillpoints -= lost
+		src<<"You've lost [lost] Milestone[lost>1?"s":""] due to losing raw power."
 
 /mob/proc/getTree(datum/skill/tree/T)
 	var/datum/skill/tree/nT = new T.type
