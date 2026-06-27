@@ -172,7 +172,7 @@ mob/keyable/verb/Power_Control()
 	numb /= 100
 	while(!is_drawing && usr.powerMod > numb && usr.powerMod > 0)
 		usr.powerMod -= 0.01 * (Ekiskill+(kicontrolskill+kigatheringskill)/25)
-		usr.powerMod = max(1,usr.powerMod)
+		usr.powerMod = max(numb,usr.powerMod) //floor at the TARGET. Was max(1,..), which pinned powerMod at full power so "powerMod > numb" never went false -> infinite loop (no sleep) -> freeze/crash for any input below 100.
 	usr.powerMod = numb
 
 mob/default/verb/Start_Draw_Energy()
