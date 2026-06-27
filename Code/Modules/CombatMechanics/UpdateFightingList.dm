@@ -3,6 +3,15 @@ mob/var/tmp/IsInFight
 mob/var/tmp/list/LocalFighterList = list()
 mob/var/tmp/highestebp = 0
 mob/var/tmp/highestbp = 0
+mob/var/tmp/combatTag = 0 //"In Battle" DISPLAY + battle-music flag ONLY (separate from the IsInFight mechanics flag); lasts combat_tag_duration after the last hit
+mob/var/tmp/combatTagExpire = 0 //world.time when combatTag expires; refreshed on every hit dealt or received
+var/combat_tag_duration = 900 //how long the combat tag lasts after the last hit, in deciseconds (900 = 1 min 30 s)
+mob/proc/refresh_combat_tag() //(re)start the 90s display/music combat tag on ANY hit dealt or received. Deliberately does NOT set IsInFight, so the long tag never drags combat-speed / Ki-regen / stun / skill-gain mechanics along with it.
+	combatTag = 1
+	combatTagExpire = world.time + combat_tag_duration
+mob/proc/clear_combat_tag() //end the display/music combat tag now (on 90s expiry, or KO/death/logout)
+	combatTag = 0
+	stop_battle_music()
 mob/proc/UpdateFightingStatus()
 	if(IsInFight)
 		setcombatspeed()
@@ -33,7 +42,7 @@ mob/proc/StopFightingStatus()
 	last_attkd_sig = 0
 	last_attk_sig = 0
 	IsInFight=0
-	stop_battle_music() //combat over -> stop the local battle-music playlist
+	clear_combat_tag() //also end the display/music "In Battle" tag (KO/death/logout end it at once)
 	highestebp = 0
 	highestbp = 0
 	speedDIFF = 1

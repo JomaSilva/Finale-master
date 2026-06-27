@@ -136,9 +136,11 @@ mob/proc/commonAttackProcs(var/mob/M,testactspeed,barrage)
 	var/defendingNPC = FALSE
 	if(isNPC||!src.client)
 		defendingNPC=TRUE
-	M.IsInFight=1
+	M.IsInFight=1 //target took a hit -> mechanics combat state (short, ~10s as before)
+	M.refresh_combat_tag() //...and the 90s display/music "In Battle" tag
 	M.StartFightingStatus()
-	IsInFight=1
+	IsInFight=1 //attacker dealt a hit -> mechanics combat state (short)
+	refresh_combat_tag() //...and the 90s display/music tag
 	StartFightingStatus()
 	dir = get_dir(loc,M.loc)
 	if(Ki>=1&&!KO&&!Apeshit)

@@ -280,7 +280,10 @@ obj/attack/blast
 							attack_list-=Z
 							Z.loc=null
 					if(M.attackable)
-						if(istype(proprietor, /mob) && proprietor != M) M.lastDamager = proprietor //credit the firer so ranged/blast defeats also grant the victim Zenkai (KO.dm + death_stuff read lastDamager)
+						if(istype(proprietor, /mob) && proprietor != M)
+							M.lastDamager = proprietor //credit the firer so ranged/blast defeats also grant the victim Zenkai (KO.dm + death_stuff read lastDamager)
+							M.refresh_combat_tag() //blast hit -> the victim is in combat (took a hit), 90s tag
+							proprietor.refresh_combat_tag() //and the firer (dealt a hit)
 						if(M.isNPC&&!M.KO)
 							if(proprietor)
 								proprietor.Blast_Gain(3,1)//blast gain was nerfed, but here if you're hitting someone, you get yo gains back.

@@ -47,7 +47,7 @@ mob/proc/GlobalStats()
 		BuffLoop()
 		if(IsInFight) combatTime = min(combatTime + 1, 720) //bonus de combate das formas Legendary: sobe ate +20% em ~180s de luta continua
 		else combatTime = max(combatTime - 2, 0) //decai 2x mais rapido fora de combate
-		if(IsInFight && client && !battle_music_on) start_battle_music() //"In Battle": start the local battle-music playlist whenever IsInFight is set (incl. on being hit); the loop self-stops when IsInFight clears
+		if(combatTag && client && !battle_music_on) start_battle_music() //start the local battle-music playlist whenever the combat tag is up (incl. on being hit/blasted); the loop self-stops when the tag clears
 		CheckGodki()
 		accrue_friendship()
 		CheckSSj3Learn()
@@ -139,6 +139,7 @@ mob/proc/Stats()
 		current_area = GetArea()
 
 		if(!attacking && !minuteshot && prob(1)) IsInFight = 0
+		if(client && combatTag && world.time >= combatTagExpire) clear_combat_tag() //the display/music "In Battle" tag lasts combat_tag_duration (90s) past the last hit dealt or received
 		//Gains Buffer
 		if(!Gaintimer||minuteshot)
 			if(Buffertimer<=3000)

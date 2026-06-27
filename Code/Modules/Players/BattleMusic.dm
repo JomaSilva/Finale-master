@@ -89,11 +89,11 @@ mob/proc/battle_music_loop()
 	if(!L || !L.len)
 		battle_music_on = 0
 		return
-	while(IsInFight && client)
+	while(combatTag && client)
 		//ducked for a transformation theme? go silent and wait out the duck window before resuming.
 		if(world.time < battle_music_suspend_until)
 			client << sound(null, channel = BATTLE_MUSIC_CHANNEL)
-			while(world.time < battle_music_suspend_until && IsInFight && client)
+			while(world.time < battle_music_suspend_until && combatTag && client)
 				sleep(10)
 			continue
 		//pick a random track, avoiding an immediate repeat
@@ -112,7 +112,7 @@ mob/proc/battle_music_loop()
 		var/dur = battle_ost_durations[track]
 		if(!dur) dur = BATTLE_MUSIC_DEFAULT_DUR
 		var/waited = 0
-		while(waited < dur && IsInFight && client && world.time >= battle_music_suspend_until)
+		while(waited < dur && combatTag && client && world.time >= battle_music_suspend_until)
 			sleep(10)
 			waited += 10
 	//fight over (or client gone): silence the channel and let the loop end

@@ -83,7 +83,7 @@ mob/proc
 	StatsTab()
 		if(!statpanel("Stats")) return //if the user is not even on the Stats tab, then dont run any of this code, because theyre not even looking at it
 		stat(src)
-		stat("Status", IsInFight ? "In Battle" : "Out of Danger") //combat indicator right below the character
+		stat("Status", combatTag ? "In Battle" : "Out of Danger") //combat indicator right below the character (lasts 90s past the last hit)
 		if(Ekiskill >= 6) stat("Ki Signature","[signature]")
 		stat("")
 		stat("---------- VITALS ----------")
