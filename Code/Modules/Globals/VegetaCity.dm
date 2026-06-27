@@ -37,19 +37,28 @@ proc/veg_stamp(list/rows, ox, oy, oz, floortype)
 			var/ch = copytext(row, cc, cc + 1)
 			if(ch == " ") continue
 			var/xx = ox + (cc - 1)
-			if(!locate(xx, yy, oz)) continue
+			var/turf/cur = locate(xx, yy, oz)
+			if(!cur) continue
 			if(VEG_WALL[ch])
+				if(istype(cur, /turf/CastleWall)) continue // already a wall here -> don't stack another
 				var/wt = VEG_WALL[ch]
-				var/turf/W = new wt(locate(xx, yy, oz))
+				var/turf/W = new wt(cur)
 				if(W) W.opacity = 1 // <- blocks vision so you can't see the interior from outside
 				continue
 			if(ch == "+")
-				new /turf/Door/Door2(locate(xx, yy, oz))
+				if(istype(cur, /turf/Door)) continue // door already here
+				new /turf/Door/Door2(cur)
 				continue
-			// floor for everything else (and under furniture)
-			new floortype(locate(xx, yy, oz))
 			var/ft = VEG_FURN[ch]
-			if(ft) new ft(locate(xx, yy, oz))
+			if(ft)
+				var/exists = 0
+				for(var/obj/o in cur)
+					if(istype(o, ft)) { exists = 1; break }
+				if(exists) continue // the furniture (e.g. a Research Station) is already here -> skip so it never stacks
+				if(!istype(cur, floortype)) new floortype(cur) // lay floor under the furniture only if needed
+				new ft(cur)
+			else if(!istype(cur, floortype))
+				new floortype(cur) // plain floor, only if it isn't already that floor
 
 proc/Build_Vegeta_Structures()
 	set waitfor = 0
@@ -92,3 +101,12 @@ proc/Build_Vegeta_Structures()
 	for(var/hx in list(78, 92, 106))
 		veg_stamp(house, hx, 338, oz, carpet)
 		veg_stamp(house, hx, 320, oz, carpet)
+
+	// one-time cleanup: collapse any pre-existing stacks of research benches that share a tile
+	// (left over from boots before veg_stamp checked, or baked into the saved map) -> keep one per tile
+	var/list/seen_bench = list()
+	for(var/obj/Technology/Research_Station/RS in world)
+		if(RS.z != oz) continue
+		var/k = "[RS.x]_[RS.y]"
+		if(seen_bench[k]) del(RS) // a bench already kept on this tile -> remove the duplicate
+		else seen_bench[k] = 1

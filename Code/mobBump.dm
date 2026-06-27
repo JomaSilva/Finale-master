@@ -38,6 +38,11 @@ obj/proc/ShootingStar()
 mob/var/destroyable
 mob/Bump(mob/A)
 	testPlanetbump(A)
+	if(istype(A, /obj/PlayerShip)) //walk into a Capital Ship's hull to board it
+		if(client)
+			var/obj/PlayerShip/S = A
+			S.board(src)
+		return
 	if(isturf(A))
 		var/turf/T = A
 		if(T.Water)

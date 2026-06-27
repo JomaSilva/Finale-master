@@ -15,6 +15,9 @@ mob/keyable/verb/Observe(mob/M in player_list)
 
 mob/verb/Reset_View()
 	set category="Other"
+	if(usr.piloting_ship && usr.piloted_ship) //piloting a ship -> return to your character on the bridge (not just reset the camera)
+		usr.piloted_ship.return_to_interior(usr)
+		return
 	usr.client.perspective=MOB_PERSPECTIVE
 	usr.client.eye=src
 	usr.observingnow=0

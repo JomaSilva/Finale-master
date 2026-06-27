@@ -448,9 +448,7 @@ turf
 	CastleWall
 		density=1
 		Enter(mob/M)
-			if(istype(M,/mob))
-				if(M.flight) return 1
-				else return
+			if(istype(M,/mob)) return 0 //walls block walking AND flight (was: flyers passed straight over them)
 			else return 1
 		Bottom
 			icon='castle_wall.dmi'

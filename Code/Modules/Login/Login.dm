@@ -173,6 +173,10 @@ mob/proc/OnLogout()
 		return
 	if(LoggingOut) return
 	LoggingOut = 1
+	if(piloted_ship) piloted_ship.end_pilot(src) //restore invisibility/view BEFORE saving, or logging out while piloting would persist invisibility=101
+	if(z in ship_interior_zs) //logging out inside a ship interior -> save at the ship's exterior (the interior z is volatile/regenerated), not on a stale z
+		var/turf/t = current_ship ? ship_free_turf_around(current_ship) : null
+		loc = t || (current_ship ? locate(current_ship.x, current_ship.y, current_ship.z) : locate(rand(240,260),rand(240,260),1))
 	DoLogoutStuff()
 	loggedin=0
 	OfflineSave()
