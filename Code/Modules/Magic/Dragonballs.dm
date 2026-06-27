@@ -60,7 +60,7 @@ obj/DragonStatue
 		set src in view(1)
 		if(Creator == usr)
 			view()<<"[usr] is reconfiguring the [src]!"
-			view()<<"[src] upgraded to [usr.BP]!"
+			view()<<"[src] upgraded to [usr.scouteron ? "[usr.BP]" : "???"]!" //don't broadcast the creator's BP unless they can actually read it (scouter)
 			Wishs = max(min((input(usr,"Set the number of wishes, from 1 to 3.","",1) as num),3),1)
 			WishPower = usr.BP
 			dragonname = input(usr,"Set the dragon's name. Dragons usually speak in uppercase.","","SHENRON") as text

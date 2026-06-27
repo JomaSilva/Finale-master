@@ -306,11 +306,11 @@ mob/proc/SSj()
 		if(godki && godki.usage)
 			if(!blue_music_played) //SSJ1 while in God Ki = Super Saiyan Blue: Blue theme from the START (first time only)
 				blue_music_played=1
-				emit_Sound('Dragon Ball Z Dokkan Battle AGL LR Super Saiyan Blue Goku & Vegeta Intro OST (Extended).mp3')
+				emit_TransformMusic('Dragon Ball Z Dokkan Battle AGL LR Super Saiyan Blue Goku & Vegeta Intro OST (Extended).mp3', 6236) //Blue theme: plays to everyone nearby + ducks listeners' battle music for the track (~10.4min)
 		else
 			if(!ssj1_music_played) //first regular Super Saiyan: SSJ1 theme from the START
 				ssj1_music_played=1
-				emit_Sound('Dragon Ball Z Dokkan Battle TEQ LR SSJ Goku Revival OST (Extended).mp3')
+				emit_TransformMusic('Dragon Ball Z Dokkan Battle TEQ LR SSJ Goku Revival OST (Extended).mp3', 6107) //SSJ1 theme (~10.2min)
 		attackable=0
 		var/ssjcolor = "yellow"
 		if(godki && godki.usage) ssjcolor = "blue"
@@ -383,11 +383,11 @@ mob/proc/SSj2()
 		if(godki && godki.usage)
 			if(!blue_music_played) //SSJ2 while in God Ki = Super Saiyan Blue: Blue theme from the START (first time only)
 				blue_music_played=1
-				emit_Sound('Dragon Ball Z Dokkan Battle AGL LR Super Saiyan Blue Goku & Vegeta Intro OST (Extended).mp3')
+				emit_TransformMusic('Dragon Ball Z Dokkan Battle AGL LR Super Saiyan Blue Goku & Vegeta Intro OST (Extended).mp3', 6236) //Blue theme: plays to everyone nearby + ducks listeners' battle music for the track (~10.4min)
 		else
 			if(!ssj2_music_played) //first regular Super Saiyan 2: SSJ2 theme from the START
 				ssj2_music_played=1
-				emit_Sound('Dragon Ball Z   Day Of Fate Unmei No Hi (Hironobu Kageyama)   By Gladius.mp3')
+				emit_TransformMusic('Dragon Ball Z   Day Of Fate Unmei No Hi (Hironobu Kageyama)   By Gladius.mp3', 2623) //SSJ2 theme (~4.4min)
 		attackable=0
 		var/ssjcolor = "yellow"
 		if(godki?.usage) ssjcolor = "blue"
@@ -594,7 +594,7 @@ mob/proc/SSj4()
 		transing=1
 		if(!ssj4_music_played) //primeira transformacao em SSJ4: tema do GT desde o inicio (toca so uma vez, persiste no save)
 			ssj4_music_played=1
-			emit_Sound('Dragon Ball GT   Super Saiyan 4 Theme (Gladius & Akihito Tokunaga)   By Gladius.mp3')
+			emit_TransformMusic('Dragon Ball GT   Super Saiyan 4 Theme (Gladius & Akihito Tokunaga)   By Gladius.mp3', 2935) //SSJ4 theme (~4.9min)
 		attackable=0
 		sleep(0)
 		usr.Revert()

@@ -1,5 +1,6 @@
 mob/var/zenkaiStore = 0
 mob/var/zenkaiTimer = 0
+var/zenkaiInjuryFraction = 0.45 //share of body parts that must be Broken/lopped to count as "extremely injured" (bumps a defeat's Zenkai to 15% of the foe's BP and a 3x-base-BP ceiling)
 // Zenkai is a passive EXCLUSIVE to Saiyan DNA (Saiyan, Half-Saiyan, Primal/Legendary lineages, Saiyan-blooded)
 // plus Cell-type Bio-Androids who carry Saiyan cells. Every other race has NO Zenkai whatsoever.
 mob/proc/has_zenkai()
@@ -10,6 +11,24 @@ mob/proc/has_zenkai()
 	if(SaiyanLineage) return TRUE //Primal Saiyan and other Saiyan lineages
 	if(genome && genome.race_percent("Saiyan") >= 25) return TRUE
 	return FALSE
+
+//Zenkai grant for being DEFEATED (knocked out OR killed) by a STRONGER foe. Shared by the KO proc (KO.dm) and
+//death_stuff (Murder.dm) so both routes obey the same reward: 10% of the foe's BP, capped at 2x your own (base) BP,
+//once per hour, Saiyan-DNA only. If your body is extremely injured at that moment (large part Broken or ripped off),
+//the brush with death squeezes out more: 15% of the foe's BP and a higher 3x-base-BP ceiling.
+mob/proc/gain_zenkai(enemyBP)
+	if(!enemyBP || enemyBP <= BP) return //only a stronger enemy triggers Zenkai
+	if(dead) return
+	if(world.realtime < zenkaiReady) return //1-hour cooldown still ticking (realtime = wall-clock, so it survives logout AND world reboots)
+	if(!has_zenkai()) return //Saiyan DNA only
+	var/pcnt = 0.1 //10% of the foe's BP...
+	var/capmult = 2 //...capped so one Zenkai never banks more than 2x your own base BP
+	if(extremely_injured())
+		pcnt = 0.15 //battered to the brink -> 15% of the foe's BP...
+		capmult = 3 //...and a higher 3x base-BP ceiling
+	zenkaiStore += min(pcnt*enemyBP, BP*capmult) //bank the RAW amount; the relBPmax-respecting cap is applied later when zenkaiStore drips into BP (Stats.dm). The 2x/3x base-BP ceiling is already enforced by the min(). (Do NOT wrap in capcheck — that throttle zeroes the reward for anyone at their BP cap and eats BPBuffer.)
+	zenkaiReady = world.realtime + 36000 //1-hour cooldown (deciseconds of wall-clock time)
+
 mob/proc/Add_Anger(mult)
 	if(!mult)
 		mult=1

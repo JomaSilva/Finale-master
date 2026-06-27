@@ -29,6 +29,8 @@ mob/proc/KO(var/KOtimer, var/ForceKO)
 				WriteToLog("rplog","[M] has become very angry    ([time2text(world.realtime,"Day DD hh:mm")])")
 			if(M.check_relation(src,list("Good","Rival/Good")) == TRUE) M.StoredAnger+=20
 		if(lastDamager) friend_harmed_by(lastDamager, ENMITY_FRIEND_KO) //a rival KO'd you in view of your friends -> their hatred grows
+		var/mob/koFoe = lastDamager //typed handle: lastDamager is declared typeless, so read its BP through a mob ref
+		if(koFoe) gain_zenkai(koFoe.BP) //Zenkai ALSO triggers on being KNOCKED OUT by a stronger foe (not only on death); the 1h cooldown stops a follow-up finishing blow from granting it twice
 		//---
 		if(Savable) icon_state="KO"
 		emit_Sound('groundhit2.wav')

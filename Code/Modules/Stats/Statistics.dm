@@ -83,10 +83,12 @@ mob/proc
 	StatsTab()
 		if(!statpanel("Stats")) return //if the user is not even on the Stats tab, then dont run any of this code, because theyre not even looking at it
 		stat(src)
+		stat("Status", IsInFight ? "In Battle" : "Out of Danger") //combat indicator right below the character
 		if(Ekiskill >= 6) stat("Ki Signature","[signature]")
 		stat("")
 		stat("---------- VITALS ----------")
-		stat("Battle Power","[FullNum(round(expressedBP,1),100)]   (base [FullNum(round(BP,1),100)])")
+		if(scouteron) stat("Battle Power","[FullNum(round(expressedBP,1),100)]   (base [FullNum(round(BP,1),100)])")
+		else stat("Battle Power","???   (base ???)") //no scouter equipped = you cannot read your own power level
 		var/finalmult = round(expressedBP/max(BP,1),0.01)
 		stat("---------- BP MULTIPLIERS (x[finalmult] total) ----------")
 		if(round(ssjBuff,0.01) != 1) stat("  Form (SSJ / SSJ4 ladder)","[round(ssjBuff,0.01)]x")
@@ -99,7 +101,7 @@ mob/proc
 		if(round(angerBuff,0.01) != 1) stat("  Anger","[round(angerBuff,0.01)]x")
 		if(round(nnetBuff,0.01) != 1) stat("  Net (status / debuffs)","[round(nnetBuff,0.01)]x")
 		if(round(powerMod,0.01) != 1) stat("  Power Control","[round(powerMod,0.01)]x")
-		stat("BP Output / Cap","[round(netBuff,0.01) * 100]%   /   [FullNum(relBPmax)]")
+		stat("BP Output / Cap","[round(netBuff,0.01) * 100]%   /   [scouteron ? "[FullNum(relBPmax)]" : "???"]")
 		if(powerMod>1) stat("Health","[FullNum(round(HP))]%   (Power Up target [round(powerMod * 100,0.01)]%)")
 		else if(powerMod<1) stat("Health","[FullNum(round(HP))]%   (Power Ctrl [round(powerMod * 100,0.01)]%)")
 		else stat("Health","[FullNum(round(HP))]%")

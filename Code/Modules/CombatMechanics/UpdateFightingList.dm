@@ -33,6 +33,7 @@ mob/proc/StopFightingStatus()
 	last_attkd_sig = 0
 	last_attk_sig = 0
 	IsInFight=0
+	stop_battle_music() //combat over -> stop the local battle-music playlist
 	highestebp = 0
 	highestbp = 0
 	speedDIFF = 1

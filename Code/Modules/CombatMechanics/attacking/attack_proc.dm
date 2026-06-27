@@ -87,7 +87,7 @@ mob/proc/MeleeAttack(addeddamage,iscrit,vampdamage,customFlavor,Type)//default b
 						else
 							phystechcalc = log(3,(Ephysoff**2)*Etechnique)+2
 						dmg=DamageCalc((phystechcalc),1,base)
-						view(src)<<"<font size=2><font color=green>[src]: Punch damage: [dmg], Punch Lift Calculation: [log(10,usr.expressedBP) * (usr.expressedBP*usr.Ephysoff*5)]</font>"
+						view(src)<<"<font size=2><font color=green>[src]: Punch damage: [dmg], Punch Lift Calculation: [usr.scouteron ? "[log(10,usr.expressedBP) * (usr.expressedBP*usr.Ephysoff*5)]" : "???"]</font>" //lift reading needs a scouter, like your own BP
 						if(B:pbagHP<=0)
 							flick("machdes",B)
 							B.icon_state = "Destroyed"

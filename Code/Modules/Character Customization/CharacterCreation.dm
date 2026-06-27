@@ -238,6 +238,7 @@ mob/proc/NewCharacterStuff()
 	spawn(5) TryStats()
 	CheckIncarnate()
 	race_genome_post_init()
+	spawn(10) class_hint() //tell the new player, indirectly, what class/power tier they were born into (their BP is hidden without a scouter)
 
 mob/proc/CustomizeFurther()
 	if(Race == "Frost Demon" || (Parent_Race == "Frost Demon"))

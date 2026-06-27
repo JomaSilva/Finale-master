@@ -21,15 +21,17 @@ mob/proc
 			var/beepee=usr.expressedBP
 			if(!usr.expressedBP)
 				beepee=1
+			var/bptext = "[FullNum(round(beepee,1),100)]"
+			if(!usr.scouteron) bptext = "???" //no scouter equipped = your own power level reads as ??? in the HUD
 			var/percentKI = usr.Ki/max(nonzeroki,1)
 			var/percentSTA = usr.staminapercent
 			if(client&&client.HPWindowToggle==2)
 				if(client)//both of these are fuckhuge monstrosities for a reason: every time winset() is used, it resends the ENTIRE SKIN FILE to the client. Minimize winset, save lives.
 					winset(usr,null,\
-						"HealthWindow.HPNum.text=[echpee];HealthWindow.KINum.text=[kee];HealthWindow.BPNum.text=[FullNum(round(beepee,1),100)];HealthWindow.HPPercent.text=[round(usr.HP)]%;HealthWindow.KIPercent.text=[round(percentKI*100)]%;HealthWindow.BPPercent.text=[round(usr.netBuff*100)]%")
+						"HealthWindow.HPNum.text=[echpee];HealthWindow.KINum.text=[kee];HealthWindow.BPNum.text=[bptext];HealthWindow.HPPercent.text=[round(usr.HP)]%;HealthWindow.KIPercent.text=[round(percentKI*100)]%;HealthWindow.BPPercent.text=[round(usr.netBuff*100)]%")
 			if(client&&client.HPWindowToggle==1)
 				if(client) winset(usr, null,\
-						"hppane.kinum.text=[round(kee)];hppane.bpnumpane.text=\"[FullNum(round(beepee,1),100)] BP\";hppane.hppercpane.text=[round(usr.HP)]%;hppane.kipercpane.text=[round(percentKI*100)]%;hppane.powerpcntpane.text=\"[round(usr.netBuff*100)]% BP\";hppane.stpercpane.text=[round(percentSTA*100)]%;hppane.currentnutid.text=[round((currentNutrition/maxNutrition)*100)]%;hppane.NameNFile.text=\"Name: [name]   File [save_path]\"")
+						"hppane.kinum.text=[round(kee)];hppane.bpnumpane.text=\"[bptext] BP\";hppane.hppercpane.text=[round(usr.HP)]%;hppane.kipercpane.text=[round(percentKI*100)]%;hppane.powerpcntpane.text=\"[round(usr.netBuff*100)]% BP\";hppane.stpercpane.text=[round(percentSTA*100)]%;hppane.currentnutid.text=[round((currentNutrition/maxNutrition)*100)]%;hppane.NameNFile.text=\"Name: [name]   File [save_path]\"")
 	HudUpdateBars()
 		set waitfor = 0
 		set background = 1

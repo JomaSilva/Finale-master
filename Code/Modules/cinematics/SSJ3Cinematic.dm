@@ -17,7 +17,7 @@ mob/proc/SSJ3Cinematic()
 		updateOverlay(/obj/overlay/auras/aura)
 		emit_Sound('chargeaura.wav')
 		view(8)<<"<font size=[TextSize]><[SayColor]>[usr]: This is a Super Saiyan."
-		emit_Sound('ssj3theme.ogg')
+		emit_TransformMusic('ssj3theme.ogg', 1682) //SSJ3 theme (~2.8min): plays to everyone nearby + ducks listeners' battle music
 		sleep(50)
 		removeOverlay(/obj/overlay/hairs/ssj/ssj1)
 		updateOverlay(/obj/overlay/hairs/ssj/ssj2)
@@ -139,7 +139,7 @@ mob/proc/SSJ3Cinematic()
 		emit_Sound('rockmoving.wav')
 		move=0
 		//Flashy stuff
-		emit_Sound('BF - Super Saiyan 3 Transformation.mp3')
+		emit_TransformMusic('BF - Super Saiyan 3 Transformation.mp3', 568) //SSJ3 transformation theme (~57s)
 		view(8)<<"<font size=[TextSize]><[SayColor]>[usr]: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA!!!"
 		sleep(30)
 		view(6)<<"<font color=yellow>*A great wave of power emanates from [usr] as a yellow aura bursts around them!*"

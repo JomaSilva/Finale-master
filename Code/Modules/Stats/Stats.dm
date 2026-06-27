@@ -47,6 +47,7 @@ mob/proc/GlobalStats()
 		BuffLoop()
 		if(IsInFight) combatTime = min(combatTime + 1, 720) //bonus de combate das formas Legendary: sobe ate +20% em ~180s de luta continua
 		else combatTime = max(combatTime - 2, 0) //decai 2x mais rapido fora de combate
+		if(IsInFight && client && !battle_music_on) start_battle_music() //"In Battle": start the local battle-music playlist whenever IsInFight is set (incl. on being hit); the loop self-stops when IsInFight clears
 		CheckGodki()
 		accrue_friendship()
 		CheckSSj3Learn()

@@ -173,6 +173,23 @@ mob/proc/Check_Damage() //return 0 if 100%, 1 if injured, 2 if critical, 3 if su
 
 
 
+//TRUE when a large share of the body is BROKEN (<20% limb HP, the "Broken" state) or RIPPED OFF (lopped). Used by
+//gain_zenkai() to grant the stronger 15% / 3x-base-BP Zenkai when you're defeated while extremely injured.
+mob/proc/extremely_injured()
+	var/total = 0
+	var/wrecked = 0
+	var/lopcount = 0
+	for(var/datum/Body/S in body)
+		total++
+		if(S.lopped)
+			wrecked++
+			lopcount++
+		else if(S.maxhealth > 0 && S.health < 0.2*S.maxhealth)
+			wrecked++
+	if(!total) return FALSE
+	if(lopcount >= 2) return TRUE //two or more limbs ripped clean off is brutal enough on its own
+	return (wrecked / total) >= zenkaiInjuryFraction
+
 mob/var/tmp
 	limbregenbuffer = 0
 

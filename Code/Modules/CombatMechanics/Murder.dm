@@ -47,11 +47,9 @@ mob/verb/Finish()
 	for(var/mob/M in get_step(src,dir)) if(M.attackable&&!med&&!train&&M.KO&&move)
 		MurderTheFollowing(0,M)
 
-mob/var/tmp/zenkaiReady = 0 //world.time when Zenkai may next trigger (1 hour cooldown)
+mob/var/zenkaiReady = 0 //world.realtime when Zenkai may next trigger (1 hour cooldown). PERSISTENT (not tmp) + realtime so a logout/login can't reset it and a world reboot can't wrongly block it.
 mob/proc/death_stuff(inputPl)
-	if(inputPl > BP && !dead && world.time >= zenkaiReady && has_zenkai()) //Zenkai scales off the ENEMY's BP, once/hour, and ONLY for Saiyan DNA
-		zenkaiStore += capcheck(min(0.1*inputPl, BP*2)) //gain 10% of the foe's BP, capped so it never exceeds 2x your own current BP
-		zenkaiReady = world.time + 36000 //1 hour cooldown (deciseconds)
+	gain_zenkai(inputPl) //Zenkai from being KILLED by a stronger foe (inputPl = killer's BP). KO defeats are handled in KO().
 	//Onlooker ANGRY
 	for(var/mob/A in view()) //A being the friend looking...
 		var/DyerIsGood=0

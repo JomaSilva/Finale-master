@@ -578,7 +578,7 @@ mob/keyable/verb/Scattering_Bullet()
 			A.BP=expressedBP
 			A.mods=Ekioff*Ekiskill
 			A.murderToggle=usr.murderToggle
-			A.proprietor=usr.name
+			A.proprietor=usr //was usr.name (a STRING) — the only blast in the game that did this; use the firing mob like every other blast so objects.dm Bump's proprietor.Blast_Gain/Leech don't crash on a string AND ranged-defeat Zenkai can credit the firer (KO.dm/death_stuff read lastDamager)
 			A.ownkey=usr.displaykey
 			spawn(600) if(A) del(A)
 			var/distance=rand(1,maxdistance)
@@ -596,7 +596,7 @@ mob/keyable/verb/Scattering_Bullet()
 					if(randomdirection==7) step(A,SOUTHWEST)
 					if(randomdirection==8) step(A,SOUTHEAST)
 		sleep(round(20/Ekiskill,0.1))
-		for(var/obj/attack/blast/C) if(C.z==usr.z&&C.proprietor==usr.name)
+		for(var/obj/attack/blast/C) if(C.z==usr.z&&C.proprietor==usr) //match by mob now that proprietor is the firing mob (was usr.name)
 			C.density=1
 			if(C.target) spawn walk_towards(C,C.target)
 		sleep(reload)

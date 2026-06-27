@@ -6,7 +6,7 @@ mob/proc/statheran()
 		if(canomega && rand(1,8) == 5) options.Add("Omega")
 		var/Choice = Class
 		if(Class=="None")Choice=input(src,"Choose Class: Epsilon is normal- middle of the road. Low-Class has special benefits and higher growth, but lower stats. If you're lucky enough to get Omega, that's a class with higher stats and decent growth, but worse benefits than either class.","","Low-Class") in options
-		genome.this_class = Class
+		genome.this_class = Choice //was = Class, which stays "None" for a new Heran -> they never got their chosen class (wrong stats + the class hint fell through). Use the selection.
 
 
 /datum/genetics/proto/Heran
