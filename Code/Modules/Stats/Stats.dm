@@ -66,6 +66,7 @@ mob/proc/onceStats()
 		spawn HudUpdate()
 		spawn HudUpdateBars()
 		spawn HudHtmlLoop()
+		spawn(20) OpenChatUI()
 		spawn(3) soundUpdate() //small delay, optimization shit essentially.
 		spawn Check_Masteries()
 		sense_hud_init()

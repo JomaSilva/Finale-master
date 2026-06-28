@@ -144,6 +144,7 @@ mob
 				var/cooldown = isBoss ? 30 : 50
 				ai_next_chat = world.time + cooldown
 				view(src) << output("<font color=#FFCC00>[src.name]: [msg]","Chatpane.Chat")
+				chatcast(view(src), "<font color=#FFCC00>[src.name]: [msg]", "say")
 
 			npc_power_up()
 				if(ai_powered_up) return
@@ -157,6 +158,7 @@ mob
 				createShockwavemisc(loc,2)
 				emit_Sound('powerup.wav')
 				view(src) << output("<font color=#FF8800><b>[src.name] powers up!</b></font>","Chatpane.Chat")
+				chatcast(view(src), "<font color=#FF8800><b>[src.name] powers up!</b></font>", "say")
 				ai_next_chat = world.time + 20
 
 			NPCStats()

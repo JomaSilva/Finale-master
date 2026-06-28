@@ -357,6 +357,7 @@ mob/Admin1/verb
 	Announce(msg as text)
 		set category="Admin"
 		world<<"<center><font color=silver>____________________<br>[usr] announces:<br>[msg]<br>____________________</center>"
+		chatcast(world, "<font color=#e0a030><b>[usr] announces:</b> [msg]</font>", "announce")
 mob/Admin2/verb
 	KO_Someone(mob/M in world)
 		set category="Admin"

@@ -69,3 +69,4 @@ mob/proc/GenerateAttackFlavorText(var/attacktype,var/mob/M as mob,var/customflav
 mob/proc/OutputAttack(var/S as text, var/C)
 	if(usr.attack_flavor) view(usr)<<output("<font size=1 color=[C]>[S]!</font>","Chatpane.Chat")
 	else view(usr)<<output("<font size=1 color=[C]>[S]!</font>","Attackpane.Chat")
+	chatcast(view(usr), "<font color=[C]>[S]!</font>", "combat")

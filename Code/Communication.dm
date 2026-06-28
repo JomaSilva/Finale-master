@@ -53,6 +53,7 @@ mob/keyable/verb/Telepathy(mob/M in player_list)
 		var/message=input("Say what in telepathy?") as text
 		if(M) M<<output("<font size=[M.TextSize]><font face=Old English Text MT><font color=red>[usr] says in telepathy, '[html_encode(message)]'","Chatpane.Chat")
 		usr<<output("<font face=Old English Text MT><font color=red>[usr] says in telepathy, '[html_encode(message)]'","Chatpane.Chat")
+		chatcast(usr, "<font face=Old English Text MT><font color=red>[usr] says in telepathy, '[html_encode(message)]'", "system")
 		WriteToLog("rplog","(Telepathy to [M])[src]: [message]   ([time2text(world.realtime,"Day DD hh:mm")])")
 	else usr<<"They have their telepathy turned off."
 mob/var/Who={"<html>

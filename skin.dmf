@@ -810,6 +810,14 @@ window "Chatpane"
 		is-default = true
 		border = line
 		saved-params = "max-lines"
+	elem "chatbrowser"
+		type = BROWSER
+		pos = 0,0
+		size = 372x236
+		anchor1 = 0,0
+		anchor2 = 100,100
+		background-color = #15171c
+		saved-params = ""
 
 window "Chatswitch"
 	elem "Chatswitch"

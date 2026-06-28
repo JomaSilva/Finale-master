@@ -6,11 +6,13 @@ mob/proc/MurderTheFollowing(var/isFinishing,var/mob/M as mob) //isFinishing mean
 		finishing=1
 		emit_Sound('groundhit2.wav')
 		view(6)<<output("[M] was just killed by [usr]!","Chatpane.Chat")
+		chatcast(view(6), "[M] was just killed by [usr]!", "combat")
 		if(istype(M,/mob/npc/pet))
 			for(var/mob/A in oview()) //A being the friend looking...
 				if(M:relation[A.signature] > 60)
 					A.Do_Anger_Stuff()
 					view(A)<<output("<font color=red>You notice [A] has become enraged!!!","Chatpane.Chat")
+					chatcast(view(A), "<font color=red>You notice [A] has become enraged!!!", "combat")
 					WriteToLog("rplog","[A] has become angry   	([time2text(world.realtime,"Day DD hh:mm")])")
 					continue
 		M.mobDeath()
@@ -26,6 +28,7 @@ mob/proc/MurderTheFollowing(var/isFinishing,var/mob/M as mob) //isFinishing mean
 			if(DyerIsGood)
 				A.Do_Anger_Stuff()
 				view(A)<<output("<font color=red>You notice [A] has become enraged!!!","Chatpane.Chat")
+				chatcast(view(A), "<font color=red>You notice [A] has become enraged!!!", "combat")
 				WriteToLog("rplog","[A] has become angry   	([time2text(world.realtime,"Day DD hh:mm")])")
 				continue
 		sleep(100)
@@ -58,6 +61,7 @@ mob/proc/death_stuff(inputPl)
 			if((DyerIsGood))
 				A.Do_Anger_Stuff()
 				view(A)<<output("<font color=red>You notice [A] has become EXTREMELY enraged!!!","Chatpane.Chat")
+				chatcast(view(A), "<font color=red>You notice [A] has become EXTREMELY enraged!!!", "combat")
 				WriteToLog("rplog","[A] has become EXTREMELY angry    ([time2text(world.realtime,"Day DD hh:mm")])")
 	emit_Sound('groundhit2.wav')
 	buudead=0
@@ -66,6 +70,7 @@ mob/proc/death_stuff(inputPl)
 mob/proc/killer_stuff(var/mob/M)
 	if(M.Player)
 		view(6,M)<<output("[M] was just killed by [usr]([displaykey])!","Chatpane.Chat")
+		chatcast(view(6,M), "[M] was just killed by [usr]([displaykey])!", "combat")
 		WriteToLog("rplog","[M] was just killed by [usr]([displaykey])    ([time2text(world.realtime,"Day DD hh:mm")])")
 		for(var/mob/A in view()) //A being the friend looking...
 			if(A.isNPC && istype(A,/mob/npc/pet))
@@ -98,6 +103,7 @@ mob/proc/killer_stuff(var/mob/M)
 	else if(M) if(isNPC)
 		emit_Sound('groundhit2.wav')
 		view(6)<<output("[M] was just killed by [usr]!","Chatpane.Chat")
+		chatcast(view(6), "[M] was just killed by [usr]!", "combat")
 		M.Death()
 
 mob/var/tmp/rageExpire = 0 //world.time at which the current rage spike ends (rage lasts at most 2 minutes)

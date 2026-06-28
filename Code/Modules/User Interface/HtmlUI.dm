@@ -164,11 +164,18 @@ mob/proc/ui_tab_items()
 			continue
 		found++
 		var/list/btns = list()
-		if(istype(o, /obj/items/Equipment))
-			var/obj/items/Equipment/e = o
-			if(e.equipped) btns += "<a class='ibtn ion' href='byond://?src=\ref[src];itemact=unequip;iref=\ref[o]'>Unequip</a>"
-			else btns += "<a class='ibtn' href='byond://?src=\ref[src];itemact=equip;iref=\ref[o]'>Equip</a>"
-		btns += "<a class='ibtn' href='byond://?src=\ref[src];itemact=drop;iref=\ref[o]'>Drop</a>"
+		var/has_drop = 0
+		for(var/V in o.verbs) //expose ALL of the item's own verbs as buttons (Equip, Upgrade, Icon, ...)
+			var/vpath = "[V]"
+			var/vname = copytext(vpath, findlasttext(vpath, "/") + 1) //the verb's proc name, e.g. "Upgrade"
+			if(vname == "Drop") has_drop = 1
+			var/cls = "ibtn"
+			var/label = replacetext(vname, "_", " ")
+			if(vname == "Equip" && o.equipped) //the Equip verb toggles; reflect the current state
+				cls = "ibtn ion"
+				label = "Unequip"
+			btns += "<a class='[cls]' href='byond://?src=\ref[src];itemverb=[vname];iref=\ref[o]'>[html_encode(label)]</a>"
+		if(!has_drop) btns += "<a class='ibtn' href='byond://?src=\ref[src];itemact=drop;iref=\ref[o]'>Drop</a>"
 		btns += "<a class='ibtn ides' href='byond://?src=\ref[src];itemact=destroy;iref=\ref[o]'>Destroy</a>"
 		h += "<div class='irow'><span class='iname'>[html_encode(o.name)]</span><span class='ibtns'>[jointext(btns, "")]</span></div>"
 	if(!found) h += "<div class='row'><span class='mut'>Your pockets are empty.</span></div>"
@@ -363,16 +370,21 @@ mob/var/tmp/last_tree_html = ""
 mob/proc/BuildTreeHTML()
 	// replicate PopulateTreeWindow()'s per-mode listing, but as HTML cards
 	var/list/TreeList = list()
-	if(GetTreeMode == 1) //Get: allowed trees you don't already own
+	if(GetTreeMode == 1) //Get: allowed trees you don't already own — dedup + skip BY TYPE (like PopulateTreeWindow)
 		for(var/datum/skill/tree/A in allowed_trees)
 			if(A in possessed_trees) continue
-			if(A.enabled == 0 || A.override == 1) continue
-			TreeList |= A
-	else //Enter (0) / Refund (2): trees you own
+			var/flag = 0
+			if(locate(A.type) in TreeList) flag = 1       //already listed this type
+			if(locate(A.type) in possessed_trees) flag = 1 //you already own this type
+			if(A.enabled == 0 || A.override == 1) flag = 1
+			if(!flag) TreeList += A
+	else //Enter (0) / Refund (2): trees you own (deduped by type)
 		for(var/datum/skill/tree/A in possessed_trees)
-			if(A.enabled == 0 || A.override == 1) continue
-			if(GetTreeMode == 2 && A.can_refund == FALSE) continue
-			TreeList |= A
+			var/flag = 0
+			if(locate(A.type) in TreeList) flag = 1
+			if(A.enabled == 0 || A.override == 1) flag = 1
+			if(GetTreeMode == 2 && A.can_refund == FALSE) flag = 1
+			if(!flag) TreeList += A
 	var/list/byTier = list()
 	for(var/t in list(6,5,4,3,2,1,0)) byTier["[t]"] = list()
 	for(var/datum/skill/tree/A in TreeList)
@@ -403,17 +415,19 @@ mob/proc/BuildSkillHTML()
 	var/datum/skill/tree/T = CurrentTree
 	if(!T) return "<html><head>[UI_CSS]</head><body><div class='wrap'><div class='tnone'>No tree open.</div></div></body></html>"
 	var/list/SkillList = list()
-	if(!LearnSkillMode) //LEARN: tree skills you don't have yet (mirrors PopulateSkillWindow)
+	if(!LearnSkillMode) //LEARN: tree skills you don't have yet (mirrors PopulateSkillWindow, deduped by type)
 		for(var/datum/skill/A in T.constituentskills)
 			if(locate(A.type) in learned_skills) continue
 			if(A.enabled == 0 || A.override == 1) continue
 			if(A.tier > T.allowedtier) continue
-			SkillList |= A
+			if(locate(A.type) in SkillList) continue
+			SkillList += A
 	else //FORGET: learned skills you can refund
 		for(var/datum/skill/A in T.investedskills)
 			if(!(locate(A.type) in learned_skills)) continue
 			if(A.can_forget == FALSE) continue
-			SkillList |= A
+			if(locate(A.type) in SkillList) continue
+			SkillList += A
 	var/list/byTier = list()
 	for(var/t in list(6,5,4,3,2,1,0)) byTier["[t]"] = list()
 	for(var/datum/skill/A in SkillList)
@@ -448,16 +462,23 @@ mob/Topic(href, list/href_list)
 		var/cmd = replacetext(href_list["runverb"], " ", "-") //BYOND's command form hyphenates spaces ("Learn Skill" -> "Learn-Skill"); passing the spaced name made it read word 2 as a bad arg
 		winset(src, null, "command=[cmd]")
 		return
-	if(href_list["itemact"]) //Items-tab action buttons
+	if(href_list["itemverb"]) //run one of the item's OWN verbs (Equip/Upgrade/Icon/...)
+		var/obj/O = locate(href_list["iref"])
+		var/vn = href_list["itemverb"]
+		if(O && (O in contents) && hascall(O, vn))
+			call(O, vn)() //invoke the verb directly on the item (set src in usr is bypassed; usr=player)
+			last_stats_html = "" //the item may have changed (equipped/upgraded) -> re-render
+			RefreshStatsUI()
+		return
+	if(href_list["itemact"]) //generic Drop / Destroy fallbacks
 		var/obj/O = locate(href_list["iref"])
 		if(O && (O in contents))
 			switch(href_list["itemact"])
-				if("equip", "unequip")
-					if(istype(O, /obj/items/Equipment))
-						var/obj/items/Equipment/e = O
-						e.Wear(src) //Wear() toggles equip/unequip
+				if("equip") //the item's own Equip verb toggles equip/unequip (Equipment->Wear, Weights, etc.)
+					if(hascall(O, "Equip")) call(O, "Equip")()
 				if("drop")
 					if(O.equipped) src << "Unequip [O] first."
+					else if(hascall(O, "Drop")) call(O, "Drop")() //some items (Trees/Zenni) have special Drop logic
 					else
 						O.loc = loc
 						step(O, dir)

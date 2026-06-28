@@ -12,6 +12,7 @@ mob/proc/ZanzoClash(var/mob/M)
 	var/range = max(5, min(haszanzo, M.haszanzo) * 2 + 4) //higher Zanzoken level = much wider blinks across the field
 	var/blinks = rand(6, 9)
 	view(src) << output("<font color=#aaeeff>[src] and [M] vanish into a storm of afterimages!</font>","Chatpane.Chat")
+	chatcast(view(src), "<font color=#aaeeff>[src] and [M] vanish into a storm of afterimages!</font>", "combat")
 	for(var/i = 1 to blinks)
 		if(KO || M.KO || !move || !M.move || dead || M.dead) break
 		if(Ki < MaxKi*0.015 || M.Ki < M.MaxKi*0.015) break //out of Ki -> the clash ends
@@ -48,6 +49,7 @@ mob/proc/ZanzoClash(var/mob/M)
 	M.inZanzoClash = 0
 	if(!KO && !M.KO)
 		view(src) << output("<font color=#aaeeff>[src] and [M] flicker back into view, the ground shattered around them!</font>","Chatpane.Chat")
+		chatcast(view(src), "<font color=#aaeeff>[src] and [M] flicker back into view, the ground shattered around them!</font>", "combat")
 
 // Place src and M one EMPTY tile apart facing each other (src - empty - M), choosing a direction
 // whose middle and far tiles are BOTH walkable, so neither fighter ends up inside a wall.

@@ -15,6 +15,7 @@ mob/proc/KO(var/KOtimer, var/ForceKO)
 		//return
 	/*else if(!ForceKO&&!LastKO&&move==1||prob((1*Anger)/(LastKO+1))&&move==1)
 		view(src)<<output("<font color=red>[src] has become angry, and has attained second wind!!","Chatpane.Chat")
+		chatcast(view(src), "<font color=red>[src] has become angry, and has attained second wind!!", "combat")
 		HP=100
 		Anger=(((MaxAnger-100)/1.11)+100)
 		LastKO=1600
@@ -31,6 +32,7 @@ mob/proc/KO(var/KOtimer, var/ForceKO)
 			if(koByEnemy && (M.check_relation(src,list("Very Good","Love")) == TRUE || M.is_friend(src)))
 				M.Do_Anger_Stuff() //capped, non-stacking, 2-minute rage (was M.Anger+=... which stacked)
 				view(M)<<output("<font color=red>[M] has become very angry!!!","Chatpane.Chat")
+				chatcast(view(M), "<font color=red>[M] has become very angry!!!", "combat")
 				WriteToLog("rplog","[M] has become very angry    ([time2text(world.realtime,"Day DD hh:mm")])")
 			if(koByEnemy && M.check_relation(src,list("Good","Rival/Good")) == TRUE) M.StoredAnger+=20
 		if(koFoe) friend_harmed_by(koFoe, ENMITY_FRIEND_KO) //a rival KO'd you in view of your friends -> their hatred grows (already rival-gated inside)
@@ -39,6 +41,7 @@ mob/proc/KO(var/KOtimer, var/ForceKO)
 		if(Savable) icon_state="KO"
 		emit_Sound('groundhit2.wav')
 		view(src)<<output("[src] is knocked out!","Chatpane.Chat")
+		chatcast(view(src), "[src] is knocked out!", "combat")
 		WriteToLog("rplog","[src] is knocked out!    ([time2text(world.realtime,"Day DD hh:mm")])")
 		KO=1
 		LastKO=10000/Anger
@@ -111,6 +114,7 @@ mob/proc/KO(var/KOtimer, var/ForceKO)
 		move=0
 		emit_Sound('groundhit2.wav')
 		view(src)<<output("[src] is knocked out!","Chatpane.Chat")
+		chatcast(view(src), "[src] is knocked out!", "combat")
 		spawn(rand(3000,5000)) //~5x longer NPC KO recovery
 		Un_KO()
 mob/proc/Un_KO(var/angery)
@@ -125,6 +129,7 @@ mob/proc/Un_KO(var/angery)
 			Anger-=0.5*MaxAnger
 		else
 			view(src)<<output("[src] regains consciousness.","Chatpane.Chat")
+			chatcast(view(src), "[src] regains consciousness.", "combat")
 			if(KOTimer>1)
 				if(prob(5))
 					StoredAnger+=10
@@ -144,4 +149,5 @@ mob/proc/Un_KO(var/angery)
 		SpreadHeal(25,1,1)
 		move=1
 		view(src)<<output("[src] regains consciousness.","Chatpane.Chat")
+		chatcast(view(src), "[src] regains consciousness.", "combat")
 		step_rand(src)

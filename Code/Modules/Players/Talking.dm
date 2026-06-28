@@ -1,4 +1,9 @@
 mob/proc/sayType(var/msg,var/typeversion)
+	switch(typeversion) //categorize for the HTML chat tabs
+		if(1) last_chat_cat = "ooc"
+		if(6) last_chat_cat = "looc"
+		if(4,5) last_chat_cat = "rp"
+		else last_chat_cat = "say"
 	if(Apeshit&&Apeshitskill<10&&typeversion!=1&&typeversion<=3)
 		for(var/mob/M in oview())
 			M.TestListeners("\icon[usr]<font size=[M.TextSize] color=green face=\"Old English Text MT\">-Apeshit yells, 'RAWR!'</font>","Chatpane.Chat")
@@ -19,8 +24,12 @@ mob/proc/sayType(var/msg,var/typeversion)
 						if(!(M.OOCon || M.name==src.name)) continue //they have OOC text turned off
 						if(M.OOCchannel != OOCchannel) continue //different OOC channel
 						typing = 0
-						if(OOC_anon) M<<output("<font size=[M.TextSize]><[OOCColor]>([displaykey]): <font color=white>[html_encode(msg)]</font></font>","Chatpane.Chat")
-						else M<<output("<font size=[M.TextSize]><[OOCColor]>[name]([displaykey]): <font color=white>[html_encode(msg)]</font></font>","Chatpane.Chat")
+						if(OOC_anon)
+							M<<output("<font size=[M.TextSize]><[OOCColor]>([displaykey]): <font color=white>[html_encode(msg)]</font></font>","Chatpane.Chat")
+							M.to_chat_html("<font size=[M.TextSize]><[OOCColor]>([displaykey]): <font color=white>[html_encode(msg)]</font></font>", "ooc")
+						else
+							M<<output("<font size=[M.TextSize]><[OOCColor]>[name]([displaykey]): <font color=white>[html_encode(msg)]</font></font>","Chatpane.Chat")
+							M.to_chat_html("<font size=[M.TextSize]><[OOCColor]>[name]([displaykey]): <font color=white>[html_encode(msg)]</font></font>", "ooc")
 			else src<<"OOC is disabled currently."
 		if(2)
 			var/introduceflag=rand(1,30)
@@ -36,6 +45,7 @@ mob/proc/sayType(var/msg,var/typeversion)
 				M<<output("\icon[usr]<font size=[M.TextSize]>-[name] whispers something...","Chatpane.Chat")
 			for(var/mob/M in range(2))
 				M.TestListeners("\icon[usr]<font size=[M.TextSize]><[SayColor]>*[name] whispers: [html_encode(msg)]</font></font>","Chatpane.Chat")
+			chatcast(range(2), "<[SayColor]>*[name] whispers: [html_encode(msg)]*</font>", "say")
 			if(!is_silenced) power_Test(msg)
 		if(3)
 			var/introduceflag=rand(1,30)
@@ -53,6 +63,7 @@ mob/proc/sayType(var/msg,var/typeversion)
 					M.TestListeners("\icon[usr]<font size=[M.TextSize]><[Fusee.SayColor]>[Fusee.name] [typsay], '[html_encode(msg)]'</font></font>")
 			for(var/mob/M in view(screenx+rng,src))
 				M.TestListeners("\icon[usr]<font size=[M.TextSize]><[SayColor]>[name] [typsay], '[html_encode(msg)]'</font></font>")
+			chatcast(view(screenx+rng,src), "<[SayColor]>[name] [typsay], '[html_encode(msg)]'</font>", "say")
 			if(!is_silenced) power_Test(msg)
 		if(4)
 			var/introduceflag=rand(1,30)
@@ -64,6 +75,7 @@ mob/proc/sayType(var/msg,var/typeversion)
 					M.TestListeners("\icon[usr]<font size=[M.TextSize]><[Fusee.SayColor]>[Fusee.name] thinks to themselves, '[html_encode(msg)]'</font></font>",1)
 			for(var/mob/M in view(screenx,src))
 				M.TestListeners("\icon[usr]<font size=[M.TextSize]><[SayColor]>[name] thinks to themselves, '[html_encode(msg)]'</font></font>",1)
+			chatcast(view(screenx,src), "<[SayColor]>[name] thinks to themselves, '[html_encode(msg)]'</font>", "rp")
 		if(5)
 			var/introduceflag=rand(1,30)
 			if(introduceflag==30)
@@ -74,6 +86,7 @@ mob/proc/sayType(var/msg,var/typeversion)
 					M.TestListeners("<font size=[M.TextSize]><font color=yellow>*[Fusee.name] [html_encode(msg)]*</font></font>",1)
 			for(var/mob/M in view(screenx,src))
 				M.TestListeners("<font size=[M.TextSize]><font color=yellow>*[name] [html_encode(msg)]*</font></font>",1)
+			chatcast(view(screenx,src), "<font color=yellow>*[name] [html_encode(msg)]*</font>", "rp")
 			for(var/mob/C in mob_list)
 				if(C.Admin&&C.key!=src.key&&C.Spying)
 					C<<output("<font size=[C.TextSize]><font color=yellow>(RP Spy)*[name] [html_encode(msg)]*(RP Spy)</font></font>","Chatpane.Chat")
@@ -84,6 +97,7 @@ mob/proc/sayType(var/msg,var/typeversion)
 					M.TestListeners("<font size=3><[OOCColor]>[src]([src.key])(LOOC): [msg]</font></font>",1)
 			for(var/mob/M in view(screenx,src))
 				M.TestListeners("<font size=3><[OOCColor]>[src]([src.key])(LOOC): [msg]</font></font>",1)
+			chatcast(view(screenx,src), "<[OOCColor]>[name]([key])(LOOC): [html_encode(msg)]</font>", "looc")
 
 mob/verb
 	OOC(var/msg as text)
