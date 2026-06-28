@@ -65,6 +65,7 @@ mob/proc/onceStats()
 		spawn TabDeciderLoop()
 		spawn HudUpdate()
 		spawn HudUpdateBars()
+		spawn HudHtmlLoop()
 		spawn(3) soundUpdate() //small delay, optimization shit essentially.
 		spawn Check_Masteries()
 		sense_hud_init()

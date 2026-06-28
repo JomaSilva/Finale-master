@@ -60,13 +60,16 @@ client
 	proc/HPtoggle()
 		set background = 1
 		set waitfor = 0
-		if(!HPWindowToggle) HPWindowToggle = 2 //default new players to the cinematic floating HUD (HealthWindow)
-		//Apply (do NOT flip) the saved/default HUD mode on login, so the cinematic window is the standard.
+		if(!HPWindowToggle || HPWindowToggle == 2) HPWindowToggle = 4 //new default: the embedded HTML HUD (migrates the old floating-window default)
+		//Apply (do NOT flip) the saved/default HUD mode on login.
 		if(HPWindowToggle==1)
 			winset(src, "lpane.lpanechild", "left=hppane")
 			winshow(src, "HealthWindow", 0)
 		else if(HPWindowToggle==3)
 			winset(src, "lpane.lpanechild", "left=")
+			winshow(src, "HealthWindow", 0)
+		else if(HPWindowToggle==4)
+			winset(src, "lpane.lpanechild", "left=hppane") //show the top-left strip; HtmlUI renders the HUD into its embedded browser (hppane.hudbrowser)
 			winshow(src, "HealthWindow", 0)
 		else
 			HPWindowToggle = 2

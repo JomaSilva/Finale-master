@@ -216,7 +216,7 @@ mob/keyable
 									usr.ssj = 2
 						if(3)
 							if((usr.expressedBP*usr.ssj2mult)>=usr.ssj3at)
-								if(usr.ssj3able)
+								if(usr.ssj3able && usr.ssj2mastery >= 50)
 									ssj = 3
 						if(4)
 							if(!usr.goingssj4)
@@ -239,7 +239,7 @@ mob/keyable
 								usr.SSj2()
 					if(3)
 						if((usr.expressedBP*usr.ssj2mult)>=usr.ssj3at)
-							if(usr.ssj3able)
+							if(usr.ssj3able && usr.ssj2mastery >= 50)
 								usr.startbuff(/obj/buff/SuperSaiyan,'SSJIcon.dmi')
 								usr.SSj3()
 					if(4)

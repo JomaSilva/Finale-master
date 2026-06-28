@@ -123,14 +123,20 @@ obj/treewindow/verb
 		set hidden = 1
 		usr.GetTreeMode = 1
 		usr.updateWindow = 0
+		usr.last_tree_html = ""
+		usr.RenderTreeBrowser()
 	selecttrees()
 		set hidden = 1
 		usr.GetTreeMode = 0
 		usr.updateWindow = 0
+		usr.last_tree_html = ""
+		usr.RenderTreeBrowser()
 	refundtree()
 		set hidden = 1
 		usr.GetTreeMode = 2
 		usr.updateWindow = 0
+		usr.last_tree_html = ""
+		usr.RenderTreeBrowser()
 
 mob/proc/PopulateSkillWindow(var/datum/skill/tree/specifedTree)
 	var/amount=6
@@ -259,6 +265,7 @@ mob/proc/TreeWindowOpen()
 	updateWindow = 0
 	SkillWindowRefreshDisplay()
 	usr.IsLearning = 0
+	RenderTreeBrowser()
 
 mob/proc/SkillWindowOpen()
 	winshow(usr, "SkillTreeWindow",0)

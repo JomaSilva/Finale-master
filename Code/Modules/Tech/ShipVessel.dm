@@ -165,7 +165,9 @@ obj/PlayerShip
 		for(var/yy = ry to sz)
 			new /turf/ShipWall(locate(14, yy, iz)) //room's right wall
 		for(var/xx = 1 to 14)
-			if(xx == 8) continue //doorway south into the main deck
+			if(xx == 8)
+				new /turf/Door/Door2(locate(xx, ry, iz)) //a real door at the control-room entrance (was just an open gap)
+				continue
 			new /turf/ShipWall(locate(xx, ry, iz)) //room's bottom wall
 		var/obj/ShipControl/ctrl = new(locate(5, sz - 5, iz)) //the bridge computer, inside the room
 		ctrl.ship_ref = src

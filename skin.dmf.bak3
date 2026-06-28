@@ -1869,7 +1869,7 @@ window "Infopane"
 		can-resize = false
 		is-pane = true
 	elem "Info"
-		type = BROWSER
+		type = INFO
 		pos = -1,1
 		size = 518x375
 		anchor1 = 0,0
@@ -2519,15 +2519,6 @@ window "SkillTreeWindow"
 		line-color = #408080
 		highlight-color = #000000
 		is-list = true
-
-	elem "treebrowser"
-		type = BROWSER
-		pos = 0,71
-		size = 640x442
-		anchor1 = 0,13
-		anchor2 = 100,93
-		background-color = #15171c
-		saved-params = ""
 
 window "SkillsListWindow"
 	elem "SkillsListWindow"
@@ -3539,14 +3530,6 @@ window "hppane"
 		background-color = #15171c
 		saved-params = ""
 		text = "HP"
-	elem "hudbrowser"
-		type = BROWSER
-		pos = 0,0
-		size = 662x60
-		anchor1 = 0,0
-		anchor2 = 100,100
-		background-color = #15171c
-		saved-params = ""
 
 window "lpane"
 	elem "lpane"

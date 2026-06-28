@@ -9,12 +9,12 @@ mob/proc/Transformations_Activate()
 	if(usr.Race=="Heran"||usr.Parent_Race=="Heran")
 		if(!usr.ssj&&!usr.hasssj&&usr.BP>=usr.ssjat&&usr.Emotion=="Very Angry")
 			if(usr.godki && usr.godki.usage)
-				if(trans_min_val < 1) return
+				if(usr.godki.tier < 2) return //SSJ Blue requires God Ki tier 2
 			hasssj = 1
 			usr.Max_Power()
 		if(!usr.ssj&&usr.hasssj&&usr.expressedBP>=usr.ssjat)
 			if(usr.godki && usr.godki.usage)
-				if(trans_min_val < 1) return
+				if(usr.godki.tier < 2) return //SSJ Blue requires God Ki tier 2
 			usr.Max_Power()
 		if(usr.ssj==1&&usr.expressedBP>=usr.ssj2at)
 			if(usr.hasssj2&&usr.expressedBP>=usr.ssj2at)
@@ -43,7 +43,7 @@ mob/proc/Transformations_Activate()
 					usr.LSSj3_Primal()
 				//SUPER Saiyan 3
 				if(usr.ssj==2&&usr.expressedBP>=usr.ssj3at)
-					if(usr.ssj3able)
+					if(usr.ssj3able && usr.ssj2mastery >= 50)
 						if(usr.godki && usr.godki.usage)
 							if(trans_min_val < 3) return
 						usr.SSj3()
@@ -57,13 +57,13 @@ mob/proc/Transformations_Activate()
 				if(usr.ssj==1&&usr.expressedBP>=usr.ultrassjat&&usr.BP>=usr.ssj2at/50)
 					if(usr.hasussj&&usr.ultrassjenabled)
 						if(usr.godki && usr.godki.usage)
-							if(trans_min_val < 1.5) return
+							if(usr.godki.tier < 3) return //SSJ Blue Evolution requires God Ki tier 3
 						usr.Ultra_SSj()
 				//SUPER Saiyan 1
 				if(usr.ssj==0&&usr.expressedBP>=usr.ssjat)
 					if(usr.hasssj&&usr.expressedBP>=usr.ssjat)
 						if(usr.godki && usr.godki.usage)
-							if(trans_min_val < 1) return
+							if(usr.godki.tier < 2) return //SSJ Blue requires God Ki tier 2
 						usr.ExpandRevert()
 						usr.SSj()
 		if((usr.Class=="Legendary"))//We don't need to stick usr.Parent_Race=="Saiyan" here, because its already nested lel.
@@ -81,7 +81,7 @@ mob/proc/Transformations_Activate()
 				if((usr.lssj==1 || !canRSSJ)&&usr.BP>=usr.unrestssjat)
 					if(usr.hasssj)
 						if(usr.godki && usr.godki.usage)
-							if(trans_min_val < 1) return
+							if(usr.godki.tier < 2) return //SSJ Blue requires God Ki tier 2
 						usr.Unrestrained_SSj()
 				// restrained SSJ
 				if(usr.lssj==0 && canRSSJ)

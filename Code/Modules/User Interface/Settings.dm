@@ -475,28 +475,32 @@ mob/var
 //
 client
 	var
-		HPWindowToggle = 2 // 1 == HP window outlet, 2 == HP window inlet.
+		HPWindowToggle = 4 // HUD modes: 1=strip 2=float 3=off 4=embedded HTML (default)
 		unstucktimer = 0
 	verb
 		HPToggle()
 			set category = null
 			set hidden = 1
-			if(HPWindowToggle==1)
+			if(HPWindowToggle==4)
+				HPWindowToggle=1
+				winset(src, "lpane.lpanechild", "left=hppane")
+				winshow(src, "HealthWindow", 0)
+			else if(HPWindowToggle==1)
 				HPWindowToggle=2
 				winset(src, "lpane.lpanechild", "left=")
 				winshow(src, "HealthWindow", 1)
-			else if(HPWindowToggle==2)
-				HPWindowToggle=1
+			else
+				HPWindowToggle=4
 				winset(src, "lpane.lpanechild", "left=hppane")
 				winshow(src, "HealthWindow", 0)
 		HPWinOff()
 			set category = null
 			set hidden = 1
-			if(HPWindowToggle==1||HPWindowToggle==2)
+			if(HPWindowToggle==3)
+				HPWindowToggle=4
+				winshow(src, "HealthWindow", 0)
+				winset(src, "lpane.lpanechild", "left=hppane")
+			else
 				HPWindowToggle=3
 				winshow(src, "HealthWindow", 0)
-				winset(src, "lpane.lpanechild", "left=")
-			else if(HPWindowToggle==3)
-				HPWindowToggle=2
-				winshow(src, "HealthWindow", 1)
 				winset(src, "lpane.lpanechild", "left=")
