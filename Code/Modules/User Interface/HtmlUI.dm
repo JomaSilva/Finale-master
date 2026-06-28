@@ -31,6 +31,8 @@ var/UI_CSS = {"
  .verbs{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
  .verb{background:#1b1e25;color:#d6d9df;padding:7px 11px;border-radius:6px;text-decoration:none;font-size:12px}
  .verb:hover{background:#33a0e0;color:#fff}
+ .vsearch{width:100%;background:#1b1e25;color:#f2f4f8;border:1px solid #2b303a;border-radius:6px;padding:7px 10px;font-size:12px;margin:2px 0 6px;outline:none;display:block}
+ .vsearch:focus{border-color:#33a0e0}
  .hud{padding:5px 7px}
  .hr{display:flex;align-items:center;gap:7px;margin:3px 0}
  .hl{width:22px;font-weight:bold;font-size:11px}
@@ -315,15 +317,33 @@ mob/proc/ui_tab_world()
 mob/proc/ui_tab_verbs(category)
 	var/list/h = list()
 	h += ui_sec(uppertext(category))
-	h += "<div class='verbs'>"
 	var/found = 0
+	var/list/vh = list()
 	for(var/V in verbs)
 		if(V:category != category) continue
 		found++
 		var/vname = "[V:name]"
-		h += "<a class='verb' href='byond://?src=\ref[src];runverb=[url_encode(vname)]'>[html_encode(vname)]</a>"
-	h += "</div>"
-	if(!found) h += "<div class='row'><span class='mut'>No actions here.</span></div>"
+		vh += "<a class='verb' href='byond://?src=\ref[src];runverb=[url_encode(vname)]'>[html_encode(vname)]</a>"
+	if(!found)
+		h += "<div class='row'><span class='mut'>No actions here.</span></div>"
+		return jointext(h, "")
+	//live client-side filter — type to narrow the verb list (the panel only re-browses when content
+	//changes, and the verb list is static, so the box keeps its text/focus while you type).
+	h += "<input id='vsearch' class='vsearch' type='text' autocomplete='off' placeholder='Filtrar [found] verbs...' oninput='vflt()' onkeyup='vflt()'>"
+	h += "<div id='vlist' class='verbs'>[jointext(vh, "")]</div>"
+	h += "<div id='vnone' class='tnone' style='display:none'>Nenhum verb encontrado.</div>"
+	h += {"<script>
+function vflt(){
+ var b=document.getElementById('vsearch'); var list=document.getElementById('vlist');
+ if(!b||!list){return;}
+ var q=b.value.toLowerCase(); var a=list.getElementsByTagName('a'); var n=0;
+ for(var i=0;i<a.length;i++){
+  var el=a.item(i); var t=(el.innerText||el.textContent||'').toLowerCase();
+  var show=(t.indexOf(q)>=0); el.style.display=show?'':'none'; if(show){n++;}
+ }
+ var none=document.getElementById('vnone'); if(none){none.style.display=(n==0)?'':'none';}
+}
+</script>"}
 	return jointext(h, "")
 
 // ---- render loop (into the embedded browser) -------------------------------
