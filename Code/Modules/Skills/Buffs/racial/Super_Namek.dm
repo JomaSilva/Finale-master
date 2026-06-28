@@ -7,7 +7,7 @@ mob/var
 
 mob/proc/snamek()
 	if(Race=="Namekian")
-		if(snamek&&expressedBP>=snamekat)
+		if(snamek&&BP>=snamekat)
 			emit_Sound('chargeaura.wav')
 			animate(src,time=7,color=rgb(255,255,255))
 			color = null

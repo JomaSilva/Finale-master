@@ -78,7 +78,7 @@ obj/ApeshitRevert/verb/ApeshitRevert()
 			usr.Apeshit_Revert()
 			usr.SSj4()
 		else
-			if(usr.expressedBP>=usr.ssj4at&&usr.BP>=usr.rawssj4at&&!usr.canRevert)
+			if(usr.BP>=usr.rawssj4at&&!usr.canRevert)
 				sleep(5)
 				to_chat(usr, "You feel something coming from within you!")
 				sleep(1)

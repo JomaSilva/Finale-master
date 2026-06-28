@@ -13,8 +13,9 @@ mob
 		transform = matrix()
 
 /obj/screen/damage_indct/proc/update_icon(mob/source)
-	set waitfor = 0
-	set background = 1
+	//Run synchronously: the old `set waitfor = 0` + `set background = 1` let the 0.3s HudUpdate loop fire
+	//overlapping, deprioritized rebuilds that raced on overlays.Cut()/overlays= and left the paperdoll
+	//showing stale wounds that didn't match the live Body tab. It's cheap (~15 overlays); just do it inline.
 	var/mob/savant = null
 	if(source)
 		savant = source

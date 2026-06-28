@@ -173,11 +173,32 @@ mob/proc/ui_tab_items()
 	h += ui_row("Zenni", "[FullNum(zenni)]", "")
 	h += ui_row("Space", "[inven_min] / [inven_max]", "")
 	h += ui_sec("CARRIED")
-	var/found = 0
+	//GROUP identical items so stacks show as one row with a count. Stackable items (food, etc.) merge
+	//into a single obj carrying `amount` (the stack size); plain duplicates are separate objs of the same
+	//type. Either way we collapse them to "Name &times;N". Equipped items stay a separate group.
+	var/list/reps = list()   //group key -> representative obj (buttons act on it)
+	var/list/counts = list() //group key -> total quantity
+	var/list/order = list()  //first-seen order so the list is stable
 	for(var/obj/o in src)
 		if(!(istype(o, /obj/items) || istype(o, /obj/Trees) || istype(o, /obj/Artifacts) || istype(o, /obj/DB) || istype(o, /obj/Spacepod) || istype(o, /obj/Boat) || istype(o, /obj/bodyparts)))
 			continue
-		found++
+		var/qty = 1
+		if(istype(o, /obj/items))
+			var/obj/items/it = o
+			if(it.amount > 1) qty = it.amount //a merged stackable stack
+		var/key = "[o.type]|[o.name]|[o.equipped]"
+		if(key in reps)
+			counts[key] += qty
+		else
+			reps[key] = o
+			counts[key] = qty
+			order += key
+	if(!order.len)
+		h += "<div class='row'><span class='mut'>Your pockets are empty.</span></div>"
+		return jointext(h, "")
+	for(var/key in order)
+		var/obj/o = reps[key]
+		var/qty = counts[key]
 		var/list/btns = list()
 		var/has_drop = 0
 		for(var/V in o.verbs) //expose ALL of the item's own verbs as buttons (Equip, Upgrade, Icon, ...)
@@ -192,8 +213,9 @@ mob/proc/ui_tab_items()
 			btns += "<a class='[cls]' href='byond://?src=\ref[src];itemverb=[vname];iref=\ref[o]'>[html_encode(label)]</a>"
 		if(!has_drop) btns += "<a class='ibtn' href='byond://?src=\ref[src];itemact=drop;iref=\ref[o]'>Drop</a>"
 		btns += "<a class='ibtn ides' href='byond://?src=\ref[src];itemact=destroy;iref=\ref[o]'>Destroy</a>"
-		h += "<div class='irow'><span class='iname'>[html_encode(o.name)]</span><span class='ibtns'>[jointext(btns, "")]</span></div>"
-	if(!found) h += "<div class='row'><span class='mut'>Your pockets are empty.</span></div>"
+		var/nm = html_encode(o.name)
+		if(qty > 1) nm += " <span class='mut'>&times;[qty]</span>"
+		h += "<div class='irow'><span class='iname'>[nm]</span><span class='ibtns'>[jointext(btns, "")]</span></div>"
 	return jointext(h, "")
 
 // ---- EQUIPMENT -------------------------------------------------------------

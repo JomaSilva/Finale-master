@@ -9,12 +9,12 @@ mob/var
 
 mob/proc/Alien_Trans()
 	if(hasayyform)
-		if(ssj==1&&expressedBP>=ayyform2at&&hasayyform==2)
+		if(ssj==1&&BP>=ayyform2at/ayyform1mult&&hasayyform==2)
 			ssj=2
 			emit_Sound('chargeaura.wav')
 			createShockwavemisc(loc,2)
 			createCrater(loc,5)
-		if(!ssj&&expressedBP>=ayyform1at)
+		if(!ssj&&BP>=ayyform1at)
 			ssj=1
 			createShockwavemisc(loc,1)
 			createCrater(loc,5)

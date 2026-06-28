@@ -197,6 +197,7 @@ obj/buff/SuperSaiyan/Loop()
 	if(lastForm!=container.ssj)
 		var/_oldTKM = container.trueKiMod //keep Ki% on EVERY form change: remember the old form's ki multiplier before it is reset
 		lastForm=container.ssj
+		container.remove_ussj_body() //changed form: drop the USSJ muscular body back to the saved base icon (no-op if not swapped)
 		container.RemoveHair()
 		container.overlayList-='Elec.dmi'
 		container.overlayList-='Electric_Blue.dmi'
@@ -225,6 +226,7 @@ obj/buff/SuperSaiyan/Loop()
 				container.MaxKi *= container.trueKiMod
 				container.ssjBuff = container.ssj_effective_mult()
 				container.updateOverlay(/obj/overlay/effects/electrictyeffects/reg_elec)
+				container.apply_ussj_body() //USSJ: bulk the body to its muscular skin (by skin tone)
 			if(2)
 				//container.updateOverlay(/obj/overlay/hairs/ssj/ssj2)
 				container.ssjBuff = container.ssj_effective_mult()
@@ -288,6 +290,7 @@ obj/buff/SuperSaiyan/DeBuff()
 	container.removeOverlay(/obj/overlay/effects/ssj4lb_lightning)
 	container.updateOverlay(/obj/overlay/hairs/hair)
 	container.removeOverlay(/obj/overlay/effects/electrictyeffects)
+	container.remove_ussj_body() //fully reverted: restore the pre-USSJ base body icon
 	if(container.ssj==1.5)
 		if(container.expandlevelussj>0)
 			sleep(0)
@@ -344,6 +347,24 @@ mob/proc/SSj()
 		transing=0
 		attackable=1
 		poweruprunning=0
+mob/var/ussj_saved_icon = null //base body icon stashed while USSJ swaps it for the muscular skin (so revert restores it); persistent so a relog mid-USSJ still reverts right
+
+//USSJ bulks the body up: swap the standard male skin to its muscular variant, picked by skin tone (white/pale, tan, black).
+mob/proc/apply_ussj_body()
+	if(ussj_saved_icon) return //already swapped this transformation
+	var/musc = null
+	if(icon == 'White Male.dmi' || icon == 'BaseWhiteMale.dmi') musc = 'White Male Muscular 3.dmi'
+	else if(icon == 'Tan Male.dmi' || icon == 'BaseTanMale.dmi') musc = 'Tan Male Muscular.dmi'
+	else if(icon == 'Black Male.dmi' || icon == 'BaseBlackMale.dmi') musc = 'BlackMaleMuscular3.dmi'
+	if(musc)
+		ussj_saved_icon = icon
+		icon = musc
+
+mob/proc/remove_ussj_body()
+	if(!ussj_saved_icon) return
+	icon = ussj_saved_icon
+	ussj_saved_icon = null
+
 mob/proc/Ultra_SSj()
 	if(!transing)
 		if(ssj>=2) return

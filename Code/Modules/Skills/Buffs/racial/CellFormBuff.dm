@@ -70,7 +70,7 @@ obj/overlay/hairs/SuperPerfect/sp1
 obj/overlay/effects/electrictyeffects/spc
 	icon = 'snamek Elec.dmi'
 mob/proc/Cell4()
-	if(!ssj&&cell3==1&&(expressedBP>=cell4at||hastrans)&&form3cantrevert)
+	if(!ssj&&cell3==1&&(BP>=cell4at/cell3mult||hastrans)&&form3cantrevert)
 		ssj=1
 		hastrans=1
 		emit_Sound('chargeaura.wav')

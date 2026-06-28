@@ -12,6 +12,9 @@ mob/proc
 		client.screen+=zone_sel
 		while(client)
 			sleep(3)
+			if(!damage_indct) //self-heal: if the paperdoll obj was ever deleted/nulled, recreate it instead of
+				damage_indct = new /obj/screen/damage_indct() //crashing this loop on a null ref (which froze the
+				client.screen += damage_indct                 //indicator -> wounds stopped matching the Body tab)
 			damage_indct.update_icon(src) //was update_icon() with no arg, which hit the `if(source) else return` guard and never refreshed -> the limb paperdoll froze on its initial (often pre-body-init) state, showing healthy arms/legs as purple/Broken
 			var/nonzeroki=usr.MaxKi
 			if(nonzeroki<=0)

@@ -146,8 +146,8 @@ mob/proc/CheckSSj3Learn()
 	if(ssj3able) return
 	if(Class == "Legendary") return // Legendary Saiyans follow the LSSJ path instead
 	if(!(Race == "Saiyan" || Parent_Race == "Saiyan" || canSSJ || (genome && genome.race_percent("Saiyan") >= 25))) return
-	if(!ssj3LearnReq) ssj3LearnReq = ssj3at * (rand(200,300)/100) // random 2.0x - 3.0x per character
-	if(expressedBP >= ssj3LearnReq && kiratio >= 1) // reached the power AND holding full ki = mastery of control
+	if(!ssj3LearnReq) ssj3LearnReq = (ssj3at/10) * (rand(200,300)/100) // random 2.0x - 3.0x per character
+	if(BP >= ssj3LearnReq && kiratio >= 1) // reached the power AND holding full ki = mastery of control
 		ssj3able = 1
 		to_chat(src, "<font color=yellow><b>Through relentless training and flawless ki control, a new power stirs within you — Super Saiyan 3 is finally within your grasp!</b></font>")
 		emit_Sound('powerup.wav')

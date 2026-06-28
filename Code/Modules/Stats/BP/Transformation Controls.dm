@@ -12,16 +12,16 @@ mob/proc/Transformations_Activate()
 				if(usr.godki.tier < 2) return //SSJ Blue requires God Ki tier 2
 			hasssj = 1
 			usr.Max_Power()
-		if(!usr.ssj&&usr.hasssj&&usr.expressedBP>=usr.ssjat)
+		if(!usr.ssj&&usr.hasssj&&usr.BP>=usr.ssjat)
 			if(usr.godki && usr.godki.usage)
 				if(usr.godki.tier < 2) return //SSJ Blue requires God Ki tier 2
 			usr.Max_Power()
-		if(usr.ssj==1&&usr.expressedBP>=usr.ssj2at)
-			if(usr.hasssj2&&usr.expressedBP>=usr.ssj2at)
+		if(usr.ssj==1&&usr.BP>=usr.ssj2at/6)
+			if(usr.hasssj2&&usr.BP>=usr.ssj2at/6)
 				if(usr.godki && usr.godki.usage)
 					if(trans_min_val < 2) return
 				usr.True_Max_Power()
-			else if(usr.Emotion=="Very Angry"&&usr.BP>=usr.ssj2at)
+			else if(usr.Emotion=="Very Angry"&&usr.BP>=usr.ssj2at/6)
 				if(usr.godki && usr.godki.usage)
 					if(trans_min_val < 2) return
 				hasssj2 = 1
@@ -42,26 +42,26 @@ mob/proc/Transformations_Activate()
 				if(usr.ssj==3 && usr.Class=="Legendary Primal Saiyan")
 					usr.LSSj3_Primal()
 				//SUPER Saiyan 3
-				if(usr.ssj==2&&usr.expressedBP>=usr.ssj3at)
+				if(usr.ssj==2&&usr.BP>=usr.ssj3at/10)
 					if(usr.ssj3able && usr.ssj2mastery >= 50)
 						if(usr.godki && usr.godki.usage)
 							if(trans_min_val < 3) return
 						usr.SSj3()
 				//SUPER Saiyan 2
-				if(usr.ssj==1&&usr.expressedBP>=usr.ssj2at&&!usr.ultrassjenabled)
-					if(usr.hasssj2&&usr.expressedBP>=usr.ssj2at)
+				if(usr.ssj==1&&usr.BP>=usr.ssj2at/6&&!usr.ultrassjenabled)
+					if(usr.hasssj2&&usr.BP>=usr.ssj2at/6)
 						if(usr.godki && usr.godki.usage)
 							if(trans_min_val < 2) return
 						usr.SSj2()
 				//ULTRA SUPER Saiyan
-				if(usr.ssj==1&&usr.expressedBP>=usr.ultrassjat&&usr.BP>=usr.ssj2at/50)
+				if(usr.ssj==1&&usr.BP>=usr.ultrassjat/6)
 					if(usr.hasussj&&usr.ultrassjenabled)
 						if(usr.godki && usr.godki.usage)
 							if(usr.godki.tier < 3) return //SSJ Blue Evolution requires God Ki tier 3
 						usr.Ultra_SSj()
 				//SUPER Saiyan 1
-				if(usr.ssj==0&&usr.expressedBP>=usr.ssjat)
-					if(usr.hasssj&&usr.expressedBP>=usr.ssjat)
+				if(usr.ssj==0&&usr.BP>=usr.ssjat)
+					if(usr.hasssj&&usr.BP>=usr.ssjat)
 						if(usr.godki && usr.godki.usage)
 							if(usr.godki.tier < 2) return //SSJ Blue requires God Ki tier 2
 						usr.ExpandRevert()
@@ -85,7 +85,7 @@ mob/proc/Transformations_Activate()
 						usr.Unrestrained_SSj()
 				// restrained SSJ
 				if(usr.lssj==0 && canRSSJ)
-					if(usr.expressedBP>=usr.restssjat)
+					if(usr.BP>=usr.restssjat)
 						if(usr.hasssj)
 							usr.Restrained_SSj()
 	usr.Cell4()
