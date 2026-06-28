@@ -103,8 +103,8 @@ datum/Body
 		if(!lopped)
 			if(!savant) return FALSE
 			if(nestedlop) //if the lopping was because of a parent limb being removed.
-				to_chat(view(savant), "[savant]'s [src] goes with it!")
-			else to_chat(view(savant), "[savant]'s [src] was lopped off!")
+				to_chat(view(savant), "<font color=red><b>[savant]'s [src] is torn off along with it!</b></font>", "combat")
+			else to_chat(view(savant), "<font color=red><b>[savant]'s [src] was torn off!</b></font>", "combat")
 			SpawnLop()
 			lopped = 1
 			health = 0
@@ -130,7 +130,7 @@ datum/Body
 				return
 			if(Z.status == "Missing"&&Z.isnested==1&&src==Z.parentlimb)
 				Z.RegrowLimb()
-		to_chat(view(savant), "[savant]'s [src] regrew!")
+		to_chat(view(savant), "<font color=#55ff55><b>[savant]'s [src] regrew!</b></font>", "combat")
 		lopped = 0
 		health = 0.7*maxhealth
 		status = "Damaged [health]"

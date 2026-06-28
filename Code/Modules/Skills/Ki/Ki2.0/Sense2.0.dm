@@ -23,6 +23,7 @@ mob/var/gotsense3=0
 		to_chat(savant, "You feel a faint presence with a feeling familiar to your own energy. You focus and pickup similar traces of this sensation as you start to understand how to sense ki.")
 		assignverb(/mob/keyable/verb/Sense)
 		savant.gotsense=1
+	if(savant.gotsense) savant.register_html_tab("Sense") //surface the Sense panel as an HTML tab (its location read used to vanish in the new UI)
 	if(savant.kiawarenessskill>=20&&!savant.gotsense2)
 		to_chat(savant, "After training your ability to sense and measure ki, you begin to feel traces of energy coming from all across the very planet!")
 		assignverb(/mob/keyable/verb/Sense_Planet)
@@ -38,6 +39,7 @@ mob/var/gotsense3=0
 	..()
 	if(savant.gotsense)
 		assignverb(/mob/keyable/verb/Sense)
+		savant.register_html_tab("Sense") //existing sensers get the HTML tab back on login
 	if(savant.gotsense2)
 		assignverb(/mob/keyable/verb/Sense_Planet)
 	if(savant.gotsense3)

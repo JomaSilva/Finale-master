@@ -87,10 +87,11 @@
 				stamina -= stamreq
 				SpreadHeal(5 * (activeRegen+1))
 				HealLimb(5 * (activeRegen+1),selectzone)
-				for(var/datum/Body/V in contents)
-					if(V.lopped&&V.targettype==selectzone)
-						V.RegrowLimb()
-						break
+				if(canheallopped) //body parts live in `body`, not `contents` (the old loop scanned the wrong list and never regrew anything); and only innate regenerators (Majins/regen-skin races) can regrow a SEVERED limb
+					for(var/datum/Body/V in body)
+						if(V.lopped&&V.targettype==selectzone)
+							V.RegrowLimb()
+							break
 				sleep(35)
 			to_chat(usr, "You stop regenerating.")
 			oldloc = null

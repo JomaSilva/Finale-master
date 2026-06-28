@@ -13,11 +13,19 @@
 	var/atom/movable/container = null
 	New(loc,list/L[2],cont)
 		..()
+		//Expand the box to its FULL size BEFORE scanning occupants. set_bounds() runs async (waitfor=0), so the old
+		//`return set_bounds(L)` scanned bounds() while the box was still the default 1 tile -> a mob already STANDING
+		//in a gravity field when it switched on never got BBCross, so it got no gravmult and the field did nothing
+		//(walked normal, no damage) while a high-gravity planet still crushed them. Size first, then scan.
+		if(!isnull(L[1])) bound_width = 32 * L[1]
+		if(!isnull(L[2])) bound_height = 32 * L[2]
+		if(bound_width != 32) bound_x = round((32 - bound_width) / 2, 1)
+		if(bound_height != 32) bound_y = round((32 - bound_height) / 2, 1)
 		if(cont)
 			container = cont
 			for(var/atom/movable/O in bounds(src))
 				container.BBCross(src,O)
-		return set_bounds(L)
+		return src
 	Del()
 		if(container)
 			for(var/atom/movable/O in bounds(src))

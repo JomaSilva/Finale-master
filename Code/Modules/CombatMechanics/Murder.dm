@@ -107,7 +107,57 @@ mob/proc/killer_stuff(var/mob/M)
 		M.Death()
 
 mob/var/tmp/rageExpire = 0 //world.time at which the current rage spike ends (rage lasts at most 2 minutes)
+mob/var/tmp/rageCinematicCD = 0 //world.time gate so the rage cinematic + theme never replay back-to-back
 mob/proc/Do_Anger_Stuff()
+	var/wasRaging = (rageExpire > world.time) //already mid-rage? then this is just a refresh, not a fresh eruption
 	Anger = max(Anger, MaxAnger) //take the HIGHER of current/new rage — never stack, sum, or multiply (kills the 20x anomaly)
 	rageExpire = world.time + 1200 //(re)start the 2-minute rage timer (1200 deciseconds)
 	StoredAnger=100
+	//ENTERING the rage (extremely angry) -> shockwave burst + Gohan's anger theme. BUT if this rage can power them
+	//UP a form (SSJ/SSJ2), the transformation owns the moment: skip the anger cinematic and let the transform
+	//cinematic + theme play instead (the rage cinematic is ONLY for when the anger unlocks nothing).
+	if(!wasRaging && client && !anger_will_transform()) AngerCinematic()
+
+//Would this rage let the character ascend a form right now (so the transformation should own the cinematic)?
+//Called right after Do_Anger_Stuff set Anger=MaxAnger, i.e. the character IS "Very Angry", so the Emotion-gated
+//first-unlock (Heran) AND an already-unlocked ascension both count. Covers the SSJ/SSJ2 tiers the user named.
+mob/proc/anger_will_transform()
+	if(TurnOffAscension && !AscensionAllowed) return FALSE
+	var/heran = (Race=="Heran" || Parent_Race=="Heran") //Heran RAGE-UNLOCKS its first SSJ/SSJ2 (Transformation Controls.dm)
+	var/saiyanish = (Race=="Saiyan" || Parent_Race=="Saiyan" || canSSJ || heran || (genome && genome.race_percent("Saiyan") >= 25))
+	if(!saiyanish) return FALSE
+	if(ssj==0 && BP>=ssjat && (hasssj || heran)) return TRUE   //-> Super Saiyan (already unlocked, or rage-unlocks it)
+	if(ssj==1 && BP>=ssj2at/6 && (hasssj2 || heran)) return TRUE //-> SSJ2 / Ultra SSJ
+	return FALSE
+
+//Rage cinematic: a storm of shockwaves erupting AROUND the enraged character + a red aura flash, and the
+//Gohan anger theme starts playing (ducks battle music for the track). Fired when a player first becomes
+//extremely angry (Do_Anger_Stuff). Non-blocking so it never freezes the player mid-fight.
+mob/proc/AngerCinematic()
+	set waitfor = 0
+	if(!client) return //players only
+	if(rageCinematicCD > world.time) return
+	rageCinematicCD = world.time + 600
+	emit_Sound('chargeaura.wav')
+	//file()+full path: a RUNTIME filename does NOT resolve via FILE_DIR, and the apostrophe in "Gohan's" can't live in a 'literal'.
+	//emit_RageMusic plays on the dedicated rage channel so a later transformation theme silences it (transform wins).
+	emit_RageMusic(file("Sounds/Music/Dragon Ball Z - Gohan's Anger Theme   Epic Rock Cover.mp3"), 2451) //~245s rage theme; ducks battle music
+	to_chat(view(src), "<font color=red><b>*[src]'s fury erupts, blasting shockwaves out in every direction!*</b></font>", "combat")
+	var/image/I = image(icon='Aurabigcombined.dmi') //a red rage aura flash
+	I.plane = 7
+	I.color = "#ff2a2a"
+	overlayList += I
+	overlaychanged = 1
+	for(var/cyc = 1 to 6) //waves of shockwaves radiating AROUND them, ground tremors, dust
+		createShockwavemisc(loc, rand(2,4))
+		spawn for(var/turf/T in view(rand(2,4), src))
+			if(prob(18)) createShockwavemisc(T, rand(1,2))
+		createDustmisc(loc, rand(1,3))
+		if(cyc % 2 == 0) spawn Quake()
+		sleep(5)
+	createCrater(loc, 2)
+	Quake()
+	emit_Sound('powerup.wav')
+	sleep(20)
+	overlayList -= I
+	overlaychanged = 1

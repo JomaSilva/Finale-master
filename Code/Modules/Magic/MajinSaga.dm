@@ -9,7 +9,7 @@
 // pocket OR the Majin is KO'd, that person ESCAPES and the Majin loses those gains.
 // =============================================================================
 
-#define MAJIN_POCKET_SIZE 11
+#define MAJIN_POCKET_SIZE 100
 
 mob/var
 	// --- saga form (persist across logout) ---
@@ -37,22 +37,43 @@ datum/MajinAbsorbed
 	var/bp_bonus = 0         // 10% of their BP we granted
 	var/list/added_verbs = list() // skill verbs we copied onto the Majin
 	var/list/clothes = list()     // clothes overlays we copied
+	var/mob/guardian = null  // the in-pocket clone of the Majin this prisoner must beat to escape (1 per prisoner)
 
 mob/proc/is_corrupted_majin()
 	return (Race == "Majin" || Parent_Race == "Majin") && Class == "Corrupted Majin"
 
 // ---- pocket dimension --------------------------------------------------------
+//Inside-the-Majin turfs: the floor is the "a 1" tile of Tiles 1.21.2011.dmi (NOTE: the state name has a SPACE,
+//it is "a 1", not "a1"), and the surrounding wall is the SAME tile but solid + indestructible (mobs can't pass it
+//walking OR flying, and it can't be destroyed).
+turf/MajinPocketFloor
+	name = "flesh"
+	icon = 'Tiles 1.21.2011.dmi'
+	icon_state = "a 1"
+	destroyable = 0 //can't be dug/destroyed (turf/proc/Destroy gates on this)
+
+turf/MajinPocketWall
+	name = "wall of flesh"
+	desc = "An indestructible wall of living flesh."
+	icon = 'Tiles 1.21.2011.dmi'
+	icon_state = "a 1"
+	density = 1
+	destroyable = 0
+	Enter(atom/movable/A) //indestructible enclosure: blocks ALL mobs (a plain density wall would let flyers pass)
+		if(ismob(A)) return 0
+		return ..()
+
 mob/proc/build_majin_pocket()
 	if(majin_pocket_z && majin_pocket_z <= world.maxz) return majin_pocket_z
 	var/iz = world.maxz + 1
 	world.maxz = iz
 	majin_interior_zs |= iz
-	var/sz = min(MAJIN_POCKET_SIZE, world.maxx, world.maxy)
+	var/sz = min(MAJIN_POCKET_SIZE, world.maxx, world.maxy) //100x100, capped to the world's x/y bounds
 	for(var/xx = 1 to sz)
 		for(var/yy = 1 to sz)
 			CHECK_TICK
-			if(xx == 1 || yy == 1 || xx == sz || yy == sz) new /turf/ShipWall(locate(xx, yy, iz))
-			else new /turf/ShipFloor(locate(xx, yy, iz))
+			if(xx == 1 || yy == 1 || xx == sz || yy == sz) new /turf/MajinPocketWall(locate(xx, yy, iz))
+			else new /turf/MajinPocketFloor(locate(xx, yy, iz))
 	majin_pocket_z = iz
 	return iz
 
@@ -89,17 +110,29 @@ mob/proc/majin_absorb(mob/M)
 	rec.clothes = HasOverlays(M, /obj/overlay/clothes)
 	duplicateOverlays(rec.clothes)
 	majin_absorbed += rec
-	// stuff them into the pocket dimension, alive
+	// a friend who watches you get absorbed reacts as if they watched you DIE -> extreme anger (done BEFORE the move, while M is still in the world so view(M) catches the onlookers)
+	for(var/mob/A in view(M))
+		if(A == M || A == src || A.isNPC) continue
+		if(A.check_relation(M, list("Good","Very Good")) == TRUE || A.is_friend(M))
+			A.Do_Anger_Stuff()
+			chatcast(view(A), "<font color=red>You notice [A] has become EXTREMELY enraged!!!", "combat")
+			WriteToLog("rplog","[A] has become EXTREMELY angry (saw [M] get absorbed)    ([time2text(world.realtime,"Day DD hh:mm")])")
+	// stuff them into the pocket dimension, alive, at a random interior spot (so multiple prisoners don't stack)
 	var/iz = build_majin_pocket()
+	var/psz = min(MAJIN_POCKET_SIZE, world.maxx, world.maxy)
+	var/px = rand(8, psz - 8)
+	var/py = rand(8, psz - 8)
 	M.absorbed_into = src
-	M.loc = locate(round(MAJIN_POCKET_SIZE/2), round(MAJIN_POCKET_SIZE/2), iz)
+	M.loc = locate(px, py, iz)
 	M.KO = 0 // alive and conscious inside the pocket, free to act and to die here
 	M.icon_state = ""
+	// spawn a fightable clone of ME beside them: beat it and you ESCAPE; lose and you stay absorbed. One clone per prisoner.
+	rec.guardian = majin_spawn_guardian(M, iz, min(px + 3, psz - 2), py)
 	emit_Sound('absorb.wav')
 	SpreadHeal(100, 1, 0)
 	Ki = MaxKi
 	overcharge = 1
-	to_chat(M, "<font color=#d050c0>[src] absorbs you! You are trapped inside them, alive — escape by being freed, by their defeat, or by dying here.</font>", "system")
+	to_chat(M, "<font color=#d050c0>[src] absorbs you! Trapped inside them, you face a copy of [src] — DEFEAT it to escape. Lose, and you remain absorbed.</font>", "system")
 	to_chat(src, "<font color=#d050c0>You absorb [M] — their power, their skills and their garb are yours while they remain inside you.</font>", "system")
 	to_chat(oview(src), "<font color=#d050c0>[src] absorbs [M]!</font>", "combat")
 	// --- saga advancement on absorb ---
@@ -112,22 +145,42 @@ mob/proc/majin_absorb(mob/M)
 			to_chat(src, "<font color=#d050c0>Players consumed in this form: [majin_form3_players]/3.</font>", "system")
 			if(majin_form3_players >= 3) majin_advance_form(4, "super 2 transformation")
 
+mob/proc/majin_safe_release_turf()
+	//Where to spit an absorbed player back out: next to me when I'm on a real overworld turf, otherwise a
+	//hard overworld fallback. NEVER a pocket z — it's volatile and vanishes on relog/reboot.
+	if(isturf(loc) && z <= world.maxz && !(z in majin_interior_zs)) return locate(x,y,z)
+	return locate(rand(240,260), rand(240,260), 1)
+
+mob/proc/majin_restore_appearance()
+	//Rebuild the released player's own look so they don't come back wearing a default body (wrong eyes, no hair, no tail).
+	RefreshEyes()
+	RefreshHair()
+	var/datum/Body/Tail/_T = get_Tail()
+	if(_T) //re-activate the tail EXACTLY like TestMobParts does: login() sets mob.Tail=1 + the tail vars, THEN Refresh_Overlay re-adds the visible overlay (Refresh_Overlay alone wasn't bringing a Saiyan's tail back after release)
+		_T.login(src)
+		_T.Refresh_Overlay()
+	overlaychanged = 1
+
 mob/proc/majin_release(datum/MajinAbsorbed/rec, escaped)
 	if(!rec) return
+	if(rec.guardian) del(rec.guardian) //remove this prisoner's in-pocket clone (Majin-KO / logout / death paths; on a clone-defeat escape it's already del'd -> null here)
 	majin_absorb_bp = max(majin_absorb_bp - rec.bp_bonus, 0)
 	for(var/V in rec.added_verbs)
 		verbs -= V
 		Keyableverbs -= V
-	if(rec.clothes.len) removeOverlays(rec.clothes)
+	if(rec.clothes && rec.clothes.len) removeOverlays(rec.clothes)
 	var/mob/M = rec.who
-	if(!M) for(var/mob/P in player_list) if(P.signature == rec.sig) { M = P; break }
+	if(!M) for(var/mob/P in player_list) if(P != src && P.signature == rec.sig) { M = P; break }
 	if(M)
 		M.absorbed_into = null
-		if(M.z == majin_pocket_z) // they're inside MY pocket -> spill them out next to me
-			M.loc = locate(src.x, src.y, src.z)
-			step(M, dir)
-			spawn M.KO()
-			to_chat(M, "<font color=#d050c0>You spill back out into the world.</font>", "system")
+		//ALWAYS spill them out. The old `if(M.z == majin_pocket_z)` gate silently failed after a relog
+		//(majin_pocket_z is tmp -> 0), so the real player stayed trapped while only their copied power/clothes
+		//were dropped ("expelled the icon but not the player"). Being in this rec means they ARE held.
+		M.loc = majin_safe_release_turf()
+		M.icon_state = ""
+		M.majin_restore_appearance()
+		spawn if(M && !M.KO) M.KO()
+		to_chat(M, "<font color=#d050c0>You spill back out into the world.</font>", "system")
 	if(majin_absorbed) majin_absorbed -= rec
 
 mob/proc/majin_release_by_mob(mob/M) // an absorbed player died inside -> free them, Majin loses their gains
@@ -136,6 +189,65 @@ mob/proc/majin_release_by_mob(mob/M) // an absorbed player died inside -> free t
 		if(rec.who == M || rec.sig == M.signature)
 			majin_release(rec, 1)
 			return
+
+mob/proc/majin_release_by_sig(sig) // a prisoner beat their guardian clone -> free that one (by signature, robust if they relogged)
+	if(!majin_absorbed) return
+	for(var/datum/MajinAbsorbed/rec in majin_absorbed.Copy())
+		if(rec.sig == sig)
+			to_chat(src, "<font color=#d050c0>A prisoner has overpowered your image and torn free!</font>", "system")
+			majin_release(rec, 1)
+			return
+
+// ---- the in-pocket guardian clone (1 per absorbed prisoner) ------------------
+mob/npc/AbsorbGuardian //a fightable copy of the Majin guarding one prisoner; beat it (HP<=15) and that prisoner escapes
+	hasAI = 1
+	AIAlwaysActive = 1
+	monster = 1
+	Player = 0
+	attackable = 1
+	var
+		tmp/mob/guard_master = null //the Majin holding the prisoner
+		guard_sig = ""              //the prisoner's signature this clone guards
+		tmp/guard_done = 0
+	New()
+		..()
+		spawn guard_watch()
+	proc/guard_watch()
+		set waitfor = 0
+		while(src && !guard_done)
+			sleep(8)
+			if(KO || dead || HP <= 15) //BEATEN -> the prisoner escapes
+				guard_done = 1
+				var/mob/master = guard_master
+				var/s = guard_sig
+				del(src) //removes the clone (and nulls rec.guardian so majin_release won't double-del)
+				if(master) master.majin_release_by_sig(s)
+				return
+
+mob/proc/majin_spawn_guardian(mob/M, iz, gx, gy)
+	var/mob/npc/AbsorbGuardian/guard = makeCopy(2, Race, Class, /mob/npc/AbsorbGuardian, TRUE) //a copy of ME (the absorbing Majin)
+	if(!istype(guard)) return null
+	guard.name = "[name]'s image"
+	guard.guard_master = src
+	guard.guard_sig = M.signature
+	guard.nokill = 0       // it CAN be beaten
+	guard.temporary = 0
+	guard.needs_manual_custom = 0
+	guard.icon = icon
+	if(majin_color) guard.icon = icon + majin_color
+	//Give it its OWN body so beating it never damages ME: makeCopy does `A.Body=Body` (a SHARED list ref), and
+	//SpreadDamage iterates src.body, so without this the player's hits on the clone would land on the Majin's limbs.
+	guard.body = list()
+	for(var/bt in list(/datum/Body/Head,/datum/Body/Head/Brain,/datum/Body/Torso,/datum/Body/Abdomen,/datum/Body/Organs,/datum/Body/Reproductive_Organs,/datum/Body/Arm,/datum/Body/Arm/Hand,/datum/Body/Arm,/datum/Body/Arm/Hand,/datum/Body/Leg,/datum/Body/Leg/Foot,/datum/Body/Leg,/datum/Body/Leg/Foot))
+		var/datum/Body/nB = new bt
+		nB.savant = guard
+		guard.body += nB
+	guard.HP = 100
+	guard.KO = 0
+	guard.loc = locate(gx, gy, iz)
+	guard.target = M
+	spawn guard.foundTarget(M) //make it hostile to the prisoner
+	return guard
 
 mob/proc/majin_escape_all()
 	if(!majin_absorbed || !majin_absorbed.len) return

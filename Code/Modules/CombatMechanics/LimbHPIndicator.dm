@@ -12,6 +12,21 @@ mob
 		..() //the /obj/screen base New() applies a 3x2 stretch meant for the HP/Ki bars; reset so this 96x96 limb paperdoll renders at its native size instead of a giant distorted body
 		transform = matrix()
 
+//Monotonic green->red severity colour, matching the Body tab status colours (Injuries.dm limbstatus).
+//The paperdoll used to read the colour BAKED into each .dmi state, but that art skews DARK at the severe
+//end (Critically Injured = muddy brown #993300, Broken = near-black) so a badly hurt part actually looked
+//CALMER than a lightly-hurt one (bright orange). We now tint one uniform silhouette frame by HP% instead,
+//so colour tracks damage cleanly and every limb uses the exact same scale.
+proc/health_hud_color(pct)
+	if(pct >= 100) return "#22ee22" //healthy   - green
+	if(pct >= 80)  return "#9bff00" //slightly  - lime
+	if(pct >= 60)  return "#ffe400" //injured   - yellow
+	if(pct >= 40)  return "#ff8a00" //seriously - orange
+	if(pct >= 20)  return "#ff2200" //critical  - red
+	return "#7a0000"                //broken    - dark red
+
+#define LOPPED_LIMB_COLOR "#9b30ff" //torn-off limbs read purple on the paperdoll, not just "0% dark red"
+
 /obj/screen/damage_indct/proc/update_icon(mob/source)
 	//Run synchronously: the old `set waitfor = 0` + `set background = 1` let the 0.3s HudUpdate loop fire
 	//overlapping, deprioritized rebuilds that raced on overlays.Cut()/overlays= and left the paperdoll
@@ -22,15 +37,12 @@ mob
 	else return
 	overlays.Cut()
 	var/list/overlayList = list()
-	var/bodygenHP = round(savant.HP)
-	var/basestate = "Healthy"
-	switch(bodygenHP)
-		if(80 to 99) basestate = "Slightly Injured"
-		if(60 to 79) basestate = "Injured"
-		if(40 to 59) basestate = "Seriously Injured"
-		if(20 to 39) basestate = "Critically Injured"
-		if(0 to 19) basestate = "Broken"
-	overlayList += image('health_hud_base.dmi', "[basestate]")
+	//SHAPE is a single uniform silhouette frame (the yellow "Slightly Injured" art, present + identical-shape on
+	//every part); we recolour it per part via .color so the hue comes 100% from HP, not from the baked art.
+	var/shape = "Slightly Injured"
+	var/image/baseI = image('health_hud_base.dmi', shape)
+	baseI.color = health_hud_color(round(savant.HP))
+	overlayList += baseI
 	for(var/datum/Body/S in savant.body)
 		if(istype(S,/datum/Body/Arm) || istype(S,/datum/Body/Leg) || istype(S,/datum/Body/Organs) || istype(S,/datum/Body/Head/Brain)) continue
 		//reasoning for excluding organs/brain this is because brain doesn't have a seperate status icon. We only show what's needed, and also adding duplicate overlays screws shit. Reproductive organs are shown and have status icons, so they're good.
@@ -40,84 +52,67 @@ mob
 			if(/datum/Body/Abdomen) bodytype = 'health_hud_abdomen.dmi'
 			if(/datum/Body/Reproductive_Organs) bodytype = 'health_hud_reproductive_organs.dmi'
 		var/selectHP = round((S.health / S.maxhealth) * 100,1)
-		var/bodstate = "Healthy"
-		switch(selectHP)
-			if(80 to 99) bodstate = "Slightly Injured"
-			if(60 to 79) bodstate = "Injured"
-			if(40 to 59) bodstate = "Seriously Injured"
-			if(20 to 39) bodstate = "Critically Injured"
-			if(0 to 19) bodstate = "Broken"
-		overlayList += image(bodytype, "[bodstate]")
+		var/image/I = image(bodytype, shape)
+		I.color = S.lopped ? LOPPED_LIMB_COLOR : health_hud_color(selectHP)
+		overlayList += I
 
 
 	var/overalllarmHP = 0
 	var/larms = 0
 	var/overallrarmHP = 0
 	var/rarms = 0
+	var/larm_lopped = 0
+	var/rarm_lopped = 0
 	for(var/datum/Body/Arm/A in savant.body)
 		if(findtext(A.name,"Right")&&A.maxhealth)
 			rarms += 1
 			overallrarmHP += (A.health / A.maxhealth) * 100
+			if(A.lopped && A.type == /datum/Body/Arm) rarm_lopped = 1 //the whole arm is gone (a lone lopped HAND still shows the average)
 		else if(A.maxhealth)
 			larms += 1
 			overalllarmHP += (A.health / A.maxhealth) * 100
+			if(A.lopped && A.type == /datum/Body/Arm) larm_lopped = 1
 	var/overallllegHP = 0
 	var/llegs = 0
 	var/overallrlegHP = 0
 	var/rlegs = 0
+	var/lleg_lopped = 0
+	var/rleg_lopped = 0
 	for(var/datum/Body/Leg/A in savant.body)
 		if(findtext(A.name,"Right")&&A.maxhealth)
 			rlegs += 1
 			overallrlegHP += (A.health / A.maxhealth) * 100
+			if(A.lopped && A.type == /datum/Body/Leg) rleg_lopped = 1
 		else if(A.maxhealth)
 			llegs += 1
 			overallllegHP += (A.health / A.maxhealth) * 100
+			if(A.lopped && A.type == /datum/Body/Leg) lleg_lopped = 1
 
-	var/totalllarmhp = 100 //default to healthy: if no left-arm limbs are counted this frame, don't fall through the switch into "Broken" (purple)
+	var/totalllarmhp = 100 //default to healthy: if no left-arm limbs are counted this frame, treat as full
 	if(larms)
 		totalllarmhp = round(overalllarmHP/larms,1)
-	var/larmstate = "Healthy"
-	switch(totalllarmhp)
-		if(80 to 99) larmstate = "Slightly Injured"
-		if(60 to 79) larmstate = "Injured"
-		if(40 to 59) larmstate = "Seriously Injured"
-		if(20 to 39) larmstate = "Critically Injured"
-		if(0 to 19) larmstate = "Broken"
-	overlayList += image('health_hud_leftarm.dmi', "[larmstate]")
+	var/image/LA = image('health_hud_leftarm.dmi', shape)
+	LA.color = larm_lopped ? LOPPED_LIMB_COLOR : health_hud_color(totalllarmhp)
+	overlayList += LA
 
 	var/totalrarmhp = 100 //default to healthy (see left arm note)
 	if(rarms)
 		totalrarmhp = round(overallrarmHP/rarms,1)
-	var/rarmstate = "Healthy"
-	switch(totalrarmhp)
-		if(80 to 99) rarmstate = "Slightly Injured"
-		if(60 to 79) rarmstate = "Injured"
-		if(40 to 59) rarmstate = "Seriously Injured"
-		if(20 to 39) rarmstate = "Critically Injured"
-		if(0 to 19) rarmstate = "Broken"
-	overlayList += image('health_hud_rightarm.dmi', "[rarmstate]")
+	var/image/RA = image('health_hud_rightarm.dmi', shape)
+	RA.color = rarm_lopped ? LOPPED_LIMB_COLOR : health_hud_color(totalrarmhp)
+	overlayList += RA
 
 	var/ltotalleghp = 100 //default to healthy (see left arm note)
 	if(llegs)
 		ltotalleghp = round(overallllegHP/llegs,1)
-	var/llegstate = "Healthy"
-	switch(ltotalleghp)
-		if(80 to 99) llegstate = "Slightly Injured"
-		if(60 to 79) llegstate = "Injured"
-		if(40 to 59) llegstate = "Seriously Injured"
-		if(20 to 39) llegstate = "Critically Injured"
-		if(0 to 19) llegstate = "Broken"
-	overlayList += image('health_hud_leftleg.dmi', "[llegstate]")
+	var/image/LL = image('health_hud_leftleg.dmi', shape)
+	LL.color = lleg_lopped ? LOPPED_LIMB_COLOR : health_hud_color(ltotalleghp)
+	overlayList += LL
 
 	var/rtotalleghp = 100 //default to healthy (see left arm note)
 	if(rlegs)
 		rtotalleghp = round(overallrlegHP/rlegs,1)
-	var/rlegstate = "Healthy"
-	switch(rtotalleghp)
-		if(80 to 99) rlegstate = "Slightly Injured"
-		if(60 to 79) rlegstate = "Injured"
-		if(40 to 59) rlegstate = "Seriously Injured"
-		if(20 to 39) rlegstate = "Critically Injured"
-		if(0 to 19) rlegstate = "Broken"
-	overlayList += image('health_hud_rightleg.dmi', "[rlegstate]")
+	var/image/RL = image('health_hud_rightleg.dmi', shape)
+	RL.color = rleg_lopped ? LOPPED_LIMB_COLOR : health_hud_color(rtotalleghp)
+	overlayList += RL
 	overlays = overlayList

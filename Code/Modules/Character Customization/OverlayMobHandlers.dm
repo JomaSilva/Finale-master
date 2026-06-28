@@ -254,3 +254,13 @@ obj/overlay/eyes/default_eye
 	EffectStart()
 		icon = container.eyeicon
 		..()
+
+//Rebuild the eye overlay from the persistent RGB CHANNEL vars (plain numbers, always saved reliably),
+//not from the cached eyeicon (a tinted icon object that can be lost/reset through a relog or the Majin
+//absorb->release cycle, which left players coming back with default-coloured eyes).
+mob/proc/RefreshEyes()
+	if(hascustomeye) return //they uploaded a fully custom eye icon; that has its own overlay, leave it be
+	eyeicon = 'Eyes_Black.dmi'
+	if(eyered || eyeblue || eyegreen) eyeicon += rgb(eyered,eyeblue,eyegreen) //same channel order used at creation/changeicon
+	updateOverlay(/obj/overlay/eyes/default_eye)
+	overlaychanged = 1

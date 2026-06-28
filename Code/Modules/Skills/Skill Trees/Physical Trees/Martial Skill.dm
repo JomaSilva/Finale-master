@@ -6,7 +6,7 @@
 	allowedtier = 3
 	enabled=0
 	constituentskills = list(new/datum/skill/MartialSkill/MartialArts,new/datum/skill/MartialSkill/Green_Dean,new/datum/skill/MartialSkill/Catflex,new/datum/skill/flow,new/datum/skill/Relentless_Strikes,new/datum/skill/Burst,\
-	new/datum/skill/MartialSkill/Dragon_Sweep,new/datum/skill/MartialSkill/Reflexes_Training,new/datum/skill/MartialSkill/Zanzoken_Rush,new/datum/skill/namek/SaibaPUNCH,\
+	new/datum/skill/MartialSkill/Dragon_Sweep,new/datum/skill/MartialSkill/Reflexes_Training,new/datum/skill/MartialSkill/Zanzoken_Rush,\
 	new/datum/skill/MartialSkill/Special_Multihit,new/datum/skill/MartialSkill/Wolf_Fang_Fist,new/datum/skill/MartialSkill/Wolf_Hurricane,new/datum/skill/clarity,new/datum/skill/Brutal_Clarity,new/datum/skill/Tao_of_Art)
 	mod()
 		..()

@@ -157,7 +157,7 @@ mob/proc
 			if(attacking>0)
 				canfight=0
 				canbeleeched=1
-				if(hasTime) attacking = max(0,attacking-0.5)
+				if(hasTime) attacking = max(0,attacking-1) //melee cooldown decays 2x faster -> punches come out twice as readily (fights were dragging on missed-punch cooldowns)
 			else
 				attacking = 0
 				canbeleeched=0

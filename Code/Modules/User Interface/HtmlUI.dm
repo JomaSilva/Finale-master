@@ -97,9 +97,25 @@ mob/proc/bp_gain_mult()
 	return round(max(gmult, 0.01) * wmult, 0.01)
 
 // ---- page assembly: tab bar + active tab -----------------------------------
+//Tabs that a SKILL added at runtime (e.g. Sense). A skill registers its tab name via register_html_tab();
+//the HTML UI then shows it and renders it through mob/proc/ui_tab_<name>() automatically - so any future
+//skill that creates a panel just needs to register a name + provide a matching ui_tab_ proc.
+mob/var/list/html_skill_tabs = null
+
+mob/proc/register_html_tab(tabname)
+	if(!tabname) return
+	if(!html_skill_tabs) html_skill_tabs = list()
+	html_skill_tabs |= tabname
+
+mob/proc/render_skill_tab(tabname)
+	var/pn = "ui_tab_[lowertext(replacetext("[tabname]", " ", ""))]" //"Sense" -> ui_tab_sense ; "Known People" -> ui_tab_knownpeople
+	if(hascall(src, pn)) return call(src, pn)()
+	return ui_sec(html_encode("[tabname]")) + "<div class='mut' style='padding:8px'>(this panel has no detailed view yet)</div>"
+
 mob/proc/BuildStatsHTML()
 	var/list/tabs = list("Stats","Items","Equip","Body","Forms","Ki","People","World","Skills","Other","Learning")
 	if(Admin) tabs += "Admin"
+	if(html_skill_tabs && html_skill_tabs.len) tabs += html_skill_tabs //skill-added panels (Sense, etc.)
 	var/list/h = list()
 	h += "<div class='tabs'>"
 	for(var/t in tabs)
@@ -117,7 +133,9 @@ mob/proc/BuildStatsHTML()
 		if("Other")    h += ui_tab_verbs("Other")
 		if("Learning") h += ui_tab_verbs("Learning")
 		if("Admin")    h += ui_tab_verbs("Admin")
-		else           h += ui_tab_stats()
+		else
+			if(html_skill_tabs && (statsUItab in html_skill_tabs)) h += render_skill_tab(statsUItab)
+			else h += ui_tab_stats()
 	return "<html><head>[UI_CSS]</head><body><div class='wrap'>[jointext(h, "")]</div></body></html>"
 
 // ---- STATS -----------------------------------------------------------------
@@ -241,12 +259,68 @@ mob/proc/ui_tab_body()
 	var/list/h = list()
 	h += ui_sec("LIMBS")
 	for(var/datum/Body/b in body)
-		if(b.status == "Missing")
-			h += ui_row(html_encode(b.name), "<span class='lo'>Missing</span>", "")
-			continue
+		if(b.lopped || b.status == "Missing") continue //torn-off limbs vanish from the list (they show purple on the paperdoll)
 		var/pct = round((b.health / max(b.maxhealth,1)) * 100)
 		var/cls = pct >= 66 ? "hi" : (pct <= 33 ? "lo" : "av")
-		h += ui_row(html_encode(b.name), "[round(b.health)]/[round(b.maxhealth)] <span class='mut'>([pct]%)</span>", cls)
+		h += ui_row(html_encode(b.name), "[round(b.health)]/[round(b.maxhealth)] <span class='mut'>([pct]%)</span> &mdash; <span class='mut'>[injury_word(pct)]</span>", cls)
+	return jointext(h, "")
+
+//Injury level word matching the Body tab / limbstatus thresholds (Injuries.dm) and the paperdoll colour bands.
+proc/injury_word(pct)
+	if(pct >= 100) return "Healthy"
+	if(pct >= 80)  return "Slightly Injured"
+	if(pct >= 60)  return "Injured"
+	if(pct >= 40)  return "Seriously Injured"
+	if(pct >= 20)  return "Critically Injured"
+	return "Broken"
+
+proc/sense_dir_word(d)
+	switch(d)
+		if(NORTH) return "N"
+		if(SOUTH) return "S"
+		if(EAST) return "E"
+		if(WEST) return "W"
+		if(NORTHEAST) return "NE"
+		if(NORTHWEST) return "NW"
+		if(SOUTHEAST) return "SE"
+		if(SOUTHWEST) return "SW"
+	return "?"
+
+// ---- SENSE (HTML mirror of StatSense; this is the tab the Sense skill registers) -------------------
+mob/proc/ui_tab_sense()
+	var/list/h = list()
+	h += ui_sec("SENSE")
+	if(!gotsense)
+		h += "<div class='mut' style='padding:8px'>You cannot sense ki yet.</div>"
+		return jointext(h, "")
+	var/list/shown = list()
+	//nearby (same z, within 15 tiles): a precise read of power + health
+	if(current_area)
+		for(var/mob/D in current_area.contents)
+			if(D == src || D.isconcealed || D.Race == "Android") continue
+			if(D.expressedBP <= 5) continue
+			if(D.z != z || get_dist(src, D) > 15) continue
+			shown |= D
+			var/nm = check_familiarity(D) ? html_encode(D.name) : "<span class='mut'>??? ([D.signature])</span>"
+			h += ui_row(nm, "[round((D.expressedBP/max(expressedBP,1))*100,1)]% pwr <span class='mut'>&middot; [round(D.HP)]% hp</span>", "")
+	//gotsense2: planet-wide directional read
+	if(gotsense2)
+		for(var/mob/D in player_list)
+			if(D == src || (D in shown) || D.isconcealed || D.Race == "Android") continue
+			if(D.expressedBP <= 5 || D.z != z) continue
+			shown |= D
+			var/nm = check_familiarity(D) ? html_encode(D.name) : "<span class='mut'>??? ([D.signature])</span>"
+			h += ui_row(nm, "[round((D.expressedBP/max(expressedBP,1))*100,1)]% pwr <span class='mut'>&middot; [get_dist(src,D)] tiles [sense_dir_word(get_dir(src,D))]</span>", "")
+	//gotsense3: galaxy-wide rough location of powerful beings
+	if(gotsense3)
+		for(var/mob/D in player_list)
+			if(D == src || (D in shown) || D.Race == "Android") continue
+			if(D.expressedBP <= 5000000) continue
+			shown |= D
+			var/nm = check_familiarity(D) ? html_encode(D.name) : "<span class='mut'>??? ([D.signature])</span>"
+			h += ui_row(nm, "[round((D.BP/max(BP,1))*100,1)]% pwr <span class='mut'>&middot; (?,?,z[D.z])</span>", "")
+	if(!shown.len)
+		h += "<div class='mut' style='padding:8px'>You sense no notable presences.</div>"
 	return jointext(h, "")
 
 // ---- FORMS & MASTERY -------------------------------------------------------

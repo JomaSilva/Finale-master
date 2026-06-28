@@ -10,6 +10,7 @@
 
 #define BATTLE_MUSIC_CHANNEL 60 //dedicated channel. In-use elsewhere: 1 (title), 50/51/52 (powerup/beam/fly SFX loops), 1021-1024 (reserved music). 60 is free.
 #define BATTLE_MUSIC_DEFAULT_DUR 1200 //fallback track length (deciseconds) for any file not in the duration map (e.g. a newly added track)
+#define RAGE_MUSIC_CHANNEL 59 //the rage-cinematic theme plays here on its own channel so ANY transformation theme can silence it (transformation always takes precedence over a rage)
 
 var/battle_music_volume_mult = 0.7 //battle music volume as a fraction of the player's clientvolume (the music-volume setting)
 
@@ -132,7 +133,16 @@ mob/proc/stop_battle_music()
 mob/proc/emit_TransformMusic(snd, durationDs)
 	for(var/mob/M in view(src))
 		if(M.client)
+			M << sound(null, channel = RAGE_MUSIC_CHANNEL) //a transformation always wins: cut any rage theme first so the two never overlap
 			M << sound(snd, volume = M.client.clientvolume)
+			if(durationDs) M.duck_battle_music(durationDs)
+
+//Rage-cinematic theme: plays to everyone nearby (like emit_TransformMusic) but on RAGE_MUSIC_CHANNEL, so a
+//transformation theme can silence it. Ducks battle music for the track.
+mob/proc/emit_RageMusic(snd, durationDs)
+	for(var/mob/M in view(src))
+		if(M.client)
+			M << sound(snd, channel = RAGE_MUSIC_CHANNEL, volume = M.client.clientvolume)
 			if(durationDs) M.duck_battle_music(durationDs)
 
 mob/proc/duck_battle_music(durationDs)

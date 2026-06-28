@@ -365,7 +365,7 @@ menu "menu"
 		saved-params = "is-checked"
 	elem 
 		name = "Touch Me"
-		command = "https://youtu.be/GkGmuuPLby8?t=9"
+		command = "https://youtu.be/hCEW_F44rsQ"
 		category = "Commands"
 		saved-params = "is-checked"
 	elem 

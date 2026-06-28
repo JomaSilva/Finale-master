@@ -211,11 +211,10 @@ mob/proc/HealthSync()
 	set waitfor =0
 	if(client||target)
 		var/healthtotal = 0
-		var/healthmax = 0
 		var/limbcount = 0
 		var/vitalcount = 0
-		var/vitalkill = 0
-		var/vitalKO = 0
+		var/coreDead = 0
+		var/coreBroken = 0
 		zenkaicount=0
 		for(var/datum/Body/S in body)
 			S.health = max(-5,S.health)//bottoming out at 0 often makes a regen source tick before it lops
@@ -248,51 +247,37 @@ mob/proc/HealthSync()
 						S.status = "100%"
 					S.health = min(S.maxhealth,S.health)
 			else if(S.status != "Missing") spawn S.LopLimb()
-			limbcount += 1//we want lopped limbs to contribute to health as well, it makes no sense for a person with no limbs to be "healthy"
-			if(S.health == S.maxhealth)
-				healthtotal += S.health * S.healthweight * 0.10
-				healthmax += S.maxhealth * S.healthweight * 0.10
-			else
-				healthtotal += S.health  * S.healthweight * max(0.1,(1 - S.health/S.maxhealth)) //healthweight means limbs matter less than torso.
-				healthmax += S.maxhealth * S.healthweight * max(0.1,(1 - S.health/S.maxhealth))
+			//HP is the plain MEAN of each remaining part's health% (no weighting, user request). A lopped/destroyed
+			//part is excluded (it's gone - hidden from the Body tab, purple on the paperdoll); the lethal danger of
+			//losing one lives entirely in the core-vital KO/death checks below, not in a permanent HP drag.
+			if(!S.lopped)
+				limbcount += 1
+				healthtotal += round((S.health / max(S.maxhealth,1)) * 100, 0.01)
 			if(S.vital)
-				vitalcount+=1
-				if(S.health<=(0.3*S.maxhealth)&&!S.lopped)
-					zenkaicount++
-				if(S.health<=(0.15*S.maxhealth/Ewillpower))
-					vitalKO+=1
-				if(S.lopped)
-					vitalkill+=1
-		if(limbcount)
-			healthtotal /= healthmax
-			healthtotal *= 100
-			HP = round(healthtotal,0.01)
-		if(Race=="Bio-Android"||Race=="Android"||Race=="Frost Demon"||Race=="Majin")
-			if(vitalcount)
-				var/vitaldeath = vitalcount-vitalkill
-				if(vitaldeath<=0 && !KB)
-					Death()
-				else if(vitalkill>=1)
-					zenkaicount=0
-					for(var/datum/Body/V in body)
-						if(V.vital&&V.lopped)
-							if(prob(1)&&prob(1))
-								V.RegrowLimb()
-		else if(vitalkill>=1)
+				vitalcount += 1
+				if(S.health<=(0.3*S.maxhealth)&&!S.lopped) zenkaicount++
+			//the three CORE vitals (head/torso/abdomen) gate consciousness and life directly
+			if(S.type == /datum/Body/Head || S.type == /datum/Body/Torso || S.type == /datum/Body/Abdomen)
+				if(S.lopped || S.health <= 0) coreDead++
+				else if(S.health < 0.2 * S.maxhealth) coreBroken++
+		if(limbcount) HP = round(healthtotal / limbcount, 0.01)
+		//DEATH: a core vital destroyed ("lethal") = instant death. Regen-skin races (canheallopped) instead drop into a coma
+		//and regrow it - unless ALL THREE core vitals are gone at once, which still kills them.
+		if(coreDead >= 1 && (!canheallopped || coreDead >= 3) && !KB)
 			Death()
+		else if(coreBroken >= 1 || coreDead >= 1)
+			//a core vital in the "broken" band (or a destroyed one on a regen-skin race) = instant KO / coma until it heals
+			if(!KO && !vitalKOd)
+				KO(-1)
+				vitalKOd = 1
+				to_chat(src, "<font color=red>A vital part of your body gives out - you collapse, unconscious.</font>", "combat")
+		else if(vitalKOd)
+			//core vitals recovered above the broken line -> wake from the coma
+			if(KO) Un_KO()
+			vitalKOd = 0
 		if(prob(5)&&(!combatTag||fastRegen)) //no passive trickle-heal while In Battle, unless a true regen-passive race
 			if(prob(1))
 				SpreadHeal(1)
-		if(vitalKO>=1&&vitalKOd==0&&!KO)
-			KO(-1)
-			vitalKOd=1
-			to_chat(src, "You are in a coma, and will be until you heal.")
-		else if(vitalKO==0&&vitalKOd==1&&KO)
-			Un_KO()
-			vitalKOd=0
-			to_chat(src, "You are no longer in a coma.")
-		else if(vitalKO==0&&vitalKOd==1&&!KO)
-			vitalKOd = 0
 		if(passiveRegen && (!combatTag || fastRegen)) //no passive healing while In Battle, UNLESS your race has a true regen passive
 			if(prob(75) && HP < 99.99) SpreadHeal(0.1 * passiveRegen)
 			if(canheallopped&&(prob(5*activeRegen)||prob(2*DeathRegen)))

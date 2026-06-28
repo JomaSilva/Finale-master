@@ -8,7 +8,7 @@
 	can_refund = FALSE
 	compatible_races = list("Saibamen")
 	constituentskills = list(new/datum/skill/general/Hardened_Body,new/datum/skill/general/LankyLegs,new/datum/skill/general/Willed,\
-		new/datum/skill/general/selfdestruct,new/datum/skill/namek/SaibaPUNCH,new/datum/skill/saiba/devious,new/datum/skill/saiba/Acid_Spit,new/datum/skill/saiba/growth)
+		new/datum/skill/general/selfdestruct,new/datum/skill/saiba/devious,new/datum/skill/saiba/Acid_Spit,new/datum/skill/saiba/growth)
 
 /datum/skill/saiba/Acid_Spit
 	skilltype = "misc"
@@ -113,57 +113,3 @@ mob/keyable/verb/Rock_Paper_Scissors()
 		n = max(1,n)
 		n = round(n)
 		S.rps=n
-
-
-
-/datum/skill/namek/SaibaPUNCH
-	skilltype = "Ki"
-	name = "Falcon Punch!"
-	desc = "FALCON.... PAWUNCH!!!"
-	can_forget = FALSE
-	common_sense = TRUE
-	teacher = TRUE
-	tier = 2
-	skillcost=2
-	after_learn()
-		assignverb(/mob/keyable/verb/Falcon_Punch)
-		to_chat(savant, "You feel fire in your hands!")
-	before_forget()
-		unassignverb(/mob/keyable/verb/Falcon_Punch)
-		to_chat(savant, "Your firey hands fade...")
-	login()
-		..()
-		assignverb(/mob/keyable/verb/Falcon_Punch)
-
-mob/keyable/verb/Falcon_Punch()
-	set category = "Skills"
-	var/mob/target
-	for(var/mob/M in get_step(usr,usr.dir))
-		target = M
-		break
-	if(ismob(target) && target.attackable)
-		var/kireq=4*usr.Ephysoff*(maxstamina/100) //BaseDrain problem with basedrain is that it scales with Ki, if you're switching things to drain directly stamina, don't use this.
-		if(!usr.med&&!usr.train&&!usr.KO&&usr.stamina>=kireq&&!usr.basicCD&&usr.canfight)
-			usr.basicCD+=30
-			view(usr)<<output("<font size=[usr.TextSize+1]><font color=red><font face=Old English Text MT>-[usr] yells, 'FALCON...!'","Chatpane.Chat")
-			chatcast(view(usr), "<font size=[usr.TextSize+1]><font color=red><font face=Old English Text MT>-[usr] yells, 'FALCON...!'", "say")
-			emit_Sound('chargepn.wav',2)
-			sleep(10)
-			view(usr)<<output("<font size=[usr.TextSize+1]><font color=red><font face=Old English Text MT>-[usr] yells, 'PUUUUUUUNCH!!'","Chatpane.Chat")
-			chatcast(view(usr), "<font size=[usr.TextSize+1]><font color=red><font face=Old English Text MT>-[usr] yells, 'PUUUUUUUNCH!!'", "say")
-			emit_Sound('falcon.wav',2)
-			emit_Sound('thud.wav',2)
-			usr.stamina-=kireq
-			usr.move = 1
-			var/base=Ephysoff*8 * globalmeleeattackdamage
-			var/phystechcalc
-			var/opponentphystechcalc
-			if(Ephysoff<1||Etechnique<1)
-				phystechcalc = Ephysoff*Etechnique
-			if(target.Ephysoff<1||target.Etechnique<1)
-				opponentphystechcalc = target.Ephysoff*target.Etechnique
-			var/dmg=DamageCalc((phystechcalc),(opponentphystechcalc),base)
-			damage_mob(target,dmg*BPModulus(usr.expressedBP,target.expressedBP))
-			usr.BP+=usr.capcheck((target.BP/550)*(rand(1,10)/3))
-			target.BP+=target.capcheck((usr.BP/550)*(rand(1,10)/3))
-			spawn spawnExplosion(target.loc,strength=usr.expressedBP/2)

@@ -177,6 +177,8 @@ mob/proc/OnLogout()
 	if(z in ship_interior_zs) //logging out inside a ship interior -> save at the ship's exterior (the interior z is volatile/regenerated), not on a stale z
 		var/turf/t = current_ship ? ship_free_turf_around(current_ship) : null
 		loc = t || (current_ship ? locate(current_ship.x, current_ship.y, current_ship.z) : locate(rand(240,260),rand(240,260),1))
+	if(z in majin_interior_zs) //logging out inside a Majin pocket -> that z is volatile too; never save on it (DoLogoutStuff also frees the absorption below)
+		loc = locate(rand(240,260),rand(240,260),1)
 	DoLogoutStuff()
 	loggedin=0
 	OfflineSave()
@@ -193,6 +195,10 @@ mob/proc/OnLogout()
 	player_list -= src
 mob/proc/DoLogoutStuff()
 	if(isNPC) return
+	//Majin absorption is a volatile pocket-dimension state that can't survive a relog (the pocket z is
+	//regenerated). Tear it down BEFORE the save so nobody is stranded inside a dead z and no stale rec persists.
+	if(absorbed_into) absorbed_into.majin_release_by_mob(src) //I'm the one absorbed -> free me first
+	if(majin_absorbed && majin_absorbed.len) majin_escape_all() //I'm the Majin -> spit everyone back out
 	src.updateseed=resolveupdate
 	clearbuffs()
 	StopFightingStatus()
@@ -315,13 +321,14 @@ mob/proc
 		CheckGodki()
 		CheckTime()
 		RefreshHair() //re-apply the saved hairstyle so SSJ/SSJ2 hair-icon changes in code reach already-created characters on load (runs before the transformed-hair restore below)
+		RefreshEyes() //rebuild the eye overlay from the saved RGB channels so eye colour survives a relog (and the Majin absorb/release cycle) instead of reverting to default
 		if(ssj && !isBuffed(/obj/buff/SuperSaiyan)) //relog while transformed: persistent buff was destroyed at logout, recreate it so the form (stats + hair) is restored instead of coming back bald
 			startbuff(/obj/buff/SuperSaiyan,'SSJIcon.dmi')
 		if(lssj && !isBuffed(/obj/buff/LSSJ))
 			startbuff(/obj/buff/LSSJ,'SSJIcon.dmi')
 		if(ssj || lssj) AddHair() //restore the hair overlay right away so there's no bald window before the buff loop runs
 		if(has_Tail()) get_Tail().Refresh_Overlay() //relog: re-derive the tail color now that ssj + god ki are restored (so a transformed tail isn't left base/black)
-		if(Created && (isnull(loc) || z == 29 || z == 30)) //limbo recovery: never leave a finished character in the lobby/creation void or at a null location
+		if(Created && (isnull(loc) || z == 29 || z == 30 || (z in majin_interior_zs))) //limbo recovery: never leave a finished character in the lobby/creation void, a dead Majin pocket z, or at a null location
 			if(!spawnPlanet) spawnPlanet = "Earth"
 			GotoPlanet(spawnPlanet,1)
 			if(isnull(loc) || z == 29 || z == 30) //still stuck? hard fallback to ANY enabled spawnpoint

@@ -71,6 +71,8 @@ mob/keyable/combo/club/verb/Grand_Slam()
 			C.AddEffect(/effect/knockback)
 		else
 			spawn MeleeAttack(C,1.5)
+	sleep(15)
+	usr.attacking = 0 //free the melee animation-lock after the AoE finishes; Grand Slam never reset it -> the same permanent freeze Lariat had
 mob/keyable/combo/club/verb/Leaping_Smash()
 	set category = "Skills"
 	set desc = "Leap to a nearby target, doing bonus damage if they are staggered or knocked back. Club skill. Movement skill."
