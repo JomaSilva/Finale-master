@@ -20,7 +20,7 @@
 
 /datum/skill/general/PermanentImitation/after_learn()
 	savant.contents+=new/obj/Permanent_Imitation
-	savant<<"You can become other people! This will overload your genome with every \"safe\" modifier that race has. It won't change your race, but it'll give you their base stats. Can't be reversed except through a tech-synthized cure. This is permanent."
+	to_chat(savant, "You can become other people! This will overload your genome with every \"safe\" modifier that race has. It won't change your race, but it'll give you their base stats. Can't be reversed except through a tech-synthized cure. This is permanent.")
 
 obj/Permanent_Imitation
 	verb/Permanent_Imitate()
@@ -41,7 +41,7 @@ obj/Permanent_Imitation
 			usr.genome.FLAG_SHAPESHIFTER_TYPE = usr.isimitate
 			//del(src)
 		else
-			usr<<"<b>You need to be imitating, or not already permanently imitated, in order to make this form Permanent!"
+			to_chat(usr, "<b>You need to be imitating, or not already permanently imitated, in order to make this form Permanent!")
 
 obj/items/Injections/Shapeshifters_Cure
 	name = "Shapeshifter's Cure"

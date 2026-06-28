@@ -14,7 +14,7 @@ mob/keyable/verb //wrestling skills. Unique in that it doesn't need a target, ju
 			grabbee.stagger -= 1
 			sleep(15)
 			attacking = 0
-		else usr<<"You must have a grabbed person (press grab twice), be combat ready (not be stunned, be able to attack, and not have a cooldown happening (Basic CD = -[basicCD/10]- seconds)) and have at least [kireq] ki."
+		else to_chat(usr, "You must have a grabbed person (press grab twice), be combat ready (not be stunned, be able to attack, and not have a cooldown happening (Basic CD = -[basicCD/10]- seconds)) and have at least [kireq] ki.")
 	Hold() //Mainly destroys grab stacks, stuns a opponent.
 		set category="Skills"
 		var/kireq=usr.Ephysoff*BaseDrain*12
@@ -29,7 +29,7 @@ mob/keyable/verb //wrestling skills. Unique in that it doesn't need a target, ju
 			grabbee.stunCount += 50
 			sleep(15)
 			attacking = 0
-		else usr<<"You must have a grabbed person (press grab twice), be combat ready (not be stunned, be able to attack, and not have a cooldown happening (Basic CD = -[basicCD/10]- seconds)) and have at least [kireq] ki."
+		else to_chat(usr, "You must have a grabbed person (press grab twice), be combat ready (not be stunned, be able to attack, and not have a cooldown happening (Basic CD = -[basicCD/10]- seconds)) and have at least [kireq] ki.")
 	Power_Slam() //Deals major damage to a grabbed person.
 		set category="Skills"
 		var/kireq=usr.Ephysoff*BaseDrain*20
@@ -44,7 +44,7 @@ mob/keyable/verb //wrestling skills. Unique in that it doesn't need a target, ju
 			grabbee.stagger -= 1
 			sleep(15)
 			attacking = 0
-		else usr<<"You must have a grabbed person (press grab twice), be combat ready (not be stunned, be able to attack, and not have a cooldown happening (Basic CD = -[basicCD/10]- seconds)) and have at least [kireq] ki."
+		else to_chat(usr, "You must have a grabbed person (press grab twice), be combat ready (not be stunned, be able to attack, and not have a cooldown happening (Basic CD = -[basicCD/10]- seconds)) and have at least [kireq] ki.")
 	Suplex() //Suplex. Deals major damage then a stun.
 		set category="Skills"
 		var/kireq=usr.Ephysoff*BaseDrain*15
@@ -60,4 +60,4 @@ mob/keyable/verb //wrestling skills. Unique in that it doesn't need a target, ju
 			grabbee.stunCount += 20
 			sleep(15)
 			attacking = 0
-		else usr<<"You must have a grabbed person (press grab twice), be combat ready (not be stunned, be able to attack, and not have a cooldown happening (Basic CD = -[basicCD/10]- seconds)) and have at least [kireq] ki."
+		else to_chat(usr, "You must have a grabbed person (press grab twice), be combat ready (not be stunned, be able to attack, and not have a cooldown happening (Basic CD = -[basicCD/10]- seconds)) and have at least [kireq] ki.")

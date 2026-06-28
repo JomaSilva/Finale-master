@@ -225,7 +225,7 @@ mob/OwnerAdmin/verb
 		BPModList=new/list()
 		KiTotalList=new/list()
 		LastTimeList=new/list()
-		world<<"<font color=yellow>[usr] is Ruining the server..."
+		to_chat(world, "<font color=yellow>[usr] is Ruining the server...")
 		sleep(15)
 		fdel("Save/")
 		fdel("RANK")
@@ -236,7 +236,7 @@ mob/OwnerAdmin/verb
 		fdel("MapSave")
 		fdel("Bank_Save")
 		sleep(1)
-		world<<"<b><big><font color=yellow>Ruin Complete."
+		to_chat(world, "<b><big><font color=yellow>Ruin Complete.")
 		sleep(1)
 		world.Reboot()
 	Wipe_Clean_Server()
@@ -246,7 +246,7 @@ mob/OwnerAdmin/verb
 			M.Savable=0
 			BPList.Remove(M)
 			BPModList.Remove(M)
-		world<<"<font color=yellow>[usr] is Ruining the server..."
+		to_chat(world, "<font color=yellow>[usr] is Ruining the server...")
 		fdel("Save/")
 		fdel("RANK")
 		fdel("PerWipeSettings")
@@ -258,7 +258,7 @@ mob/OwnerAdmin/verb
 		fdel("Year")
 		fdel("MobSave")
 		fdel("Bank_Save")
-		world<<"<b><big><font color=yellow>Ruin Complete."
+		to_chat(world, "<b><big><font color=yellow>Ruin Complete.")
 		world.Reboot()
 var
 	OOC_anon

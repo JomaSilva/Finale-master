@@ -19,7 +19,7 @@ mob/Admin2/verb/Balance_Settings()
 		if("Ki Exp Rate")
 			var/kirate = input("What do you want to change the rate to? The current rate is [GlobalKiExpRate].","",GlobalKiExpRate) as num
 			GlobalKiExpRate = kirate
-			usr<<"Ki Exp Rate set to [GlobalKiExpRate]"
+			to_chat(usr, "Ki Exp Rate set to [GlobalKiExpRate]")
 		if("Resource Gains") GlobalResourceGain = input(usr,"Gain mult","",GlobalResourceGain) as num
 		if("grav Balance") gravBalance = input(usr,"grav mult, norm is 1x","",gravBalance) as num
 		if("power Mult") powerMult = input(usr,"power mult, norm is [initial(powerMult)]x","",powerMult) as num
@@ -33,31 +33,31 @@ mob/Admin2/verb/Balance_Settings()
 		if("Train Meditation To Hidden Potential")
 			if(train_med_to_hp)
 				train_med_to_hp = 0
-				world << "Training and meditation no longer is going to HP instead."
+				to_chat(world, "Training and meditation no longer is going to HP instead.")
 			else
 				train_med_to_hp = 1
-				world << "Training and meditation is now going to HP instead."
+				to_chat(world, "Training and meditation is now going to HP instead.")
 		if("NPC Sparring")
 			if(npc_sparring)
 				npc_sparring = 0
-				world << "Sparring gains with NPCs no longer use player to player calcs."
+				to_chat(world, "Sparring gains with NPCs no longer use player to player calcs.")
 			else
 				npc_sparring = 1
-				world << "Sparring gains with NPCs use player to player calcs (reduced)."
+				to_chat(world, "Sparring gains with NPCs use player to player calcs (reduced).")
 		if("Legends Pre-Ascension")
 			if(legend_pre_ssj)
 				legend_pre_ssj = 0
-				world << "Legends cannot be made pre-ascension. Override exists, legends must be active to be the only one."
+				to_chat(world, "Legends cannot be made pre-ascension. Override exists, legends must be active to be the only one.")
 			else
 				legend_pre_ssj = 1
-				world << "Legends can be made pre-ascension."
+				to_chat(world, "Legends can be made pre-ascension.")
 		if("Legends Override")
 			if(legend_overrider)
 				legend_overrider = 0
-				world << "Override does not exist, legends do not need to be active to be the only one."
+				to_chat(world, "Override does not exist, legends do not need to be active to be the only one.")
 			else
 				legend_overrider = 1
-				world << "Override exists, legends must be active to be the only one."
+				to_chat(world, "Override exists, legends must be active to be the only one.")
 var/techMult = 1 //manipulates how fast tech xp is gained.
 var/powerMult = 1.25
 var/gravBalance = 1

@@ -6,7 +6,7 @@ mob/proc/Boots()
 	var/obj/A=new(locate(x+rand(20,-20),y+rand(20,-20),z))
 	missile('boot.png',A,src)
 	emit_Sound('Boot to the Head.ogg')
-	view(src)<<"[src] is hit by a boot!"
+	to_chat(view(src), "[src] is hit by a boot!")
 
 mob/Admin3/verb/Boot_All_Asses()
 	set category="Admin"
@@ -30,7 +30,7 @@ mob/Admin1/verb/FindItem()
 		objlist+=A
 	var/obj/choice = input(usr,"Which item?","") as null|anything in objlist
 	if(!isnull(choice))
-		usr<<"Object is at [choice.x],[choice.y],[choice.z]."
+		to_chat(usr, "Object is at [choice.x],[choice.y],[choice.z].")
 mob/Admin2/verb/TeleportItem()
 	set category="Admin"
 	set name = "Teleport Item To Me"
@@ -69,7 +69,7 @@ mob/Admin3/verb/Toggele_April_Fools()
 	set category="Admin"
 	if(aprilfoolson)
 		aprilfoolson = 0
-		world << "AF mode off."
+		to_chat(world, "AF mode off.")
 	else
 		aprilfoolson = 1
-		world << "AF mode on."
+		to_chat(world, "AF mode on.")

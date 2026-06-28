@@ -12,9 +12,9 @@ var/writingChrono=0
 var/fixing=0
 mob/Admin3/verb/EditIntro()
 	set category="Admin"
-	for(var/mob/M) if(M.Admin) M<<"[usr] is editing the intro..."
+	for(var/mob/M) if(M.Admin) to_chat(M, "[usr] is editing the intro...")
 	Intro=input(usr,"Edit!","Edit Intro",Intro) as message
-	for(var/mob/F) if(F.Admin) F<<"[usr] is done editing the intro..."
+	for(var/mob/F) if(F.Admin) to_chat(F, "[usr] is done editing the intro...")
 	SaveIntro()
 	LoadIntro()
 proc/SaveIntro()
@@ -44,7 +44,7 @@ mob/default
 			nO.pixel_x = input(usr,"pixel x") as num
 			nO.pixel_y = input(usr,"pixel y") as num
 		if(ismob(choice))
-			usr<<"This will only change the current form, and may not be permanent! Use 'Change Form Icon' to permanently change base forms!"
+			to_chat(usr, "This will only change the current form, and may not be permanent! Use 'Change Form Icon' to permanently change base forms!")
 			var/mob/nM = choice //new variable declaration to hold a reference to choice.
 			if(nM.client)
 				if(alert(nM,"[usr] wants to change your icon. Accept?","","Yes","No")=="Yes")
@@ -53,9 +53,9 @@ mob/default
 					else
 						nM.icon = input(usr,"Choose the icon.") as icon
 						nM.icon_state = input(usr,"State?") as text
-					view(usr)<<"[usr] changed [nM]'s icon."
+					to_chat(view(usr), "[usr] changed [nM]'s icon.")
 				else
-					view(usr)<<"[nM] denied the icon change."
+					to_chat(view(usr), "[nM] denied the icon change.")
 			else
 				nM.icon = input(usr,"Choose the icon.") as icon
 				nM.icon_state = input(usr,"State?") as text
@@ -71,7 +71,7 @@ mob/default/verb/Rename(atom/movable/A in view(usr))
 		return
 	var/Change=input(usr,"What name?","Name change.",A.name) as text
 	if(!Change)
-		usr<<"You cannot change this to a blank name"
+		to_chat(usr, "You cannot change this to a blank name")
 		return
 	if(istype(A,/mob))
 		var/mob/M = A
@@ -79,9 +79,9 @@ mob/default/verb/Rename(atom/movable/A in view(usr))
 			spawn switch(input(M,"[usr] wishes to change your name to [Change]", "", text) in list ("Yes","No"))
 				if("Yes")
 					M.name=Change
-					view(usr)<<"<b>[M] accepted the rename."
+					to_chat(view(usr), "<b>[M] accepted the rename.")
 				if("No")
-					view(usr)<<"<b>[M] refused the rename."
+					to_chat(view(usr), "<b>[M] refused the rename.")
 					return
 		else
 			M.name=Change

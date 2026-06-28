@@ -227,37 +227,37 @@ obj
 							if(usr.zenni>=25000)
 								usr.zenni-=25000
 								can_locate_makyo_port=1
-							else usr<<"You dont have enough money"
+							else to_chat(usr, "You dont have enough money")
 				else
-					view(src)<<"<font color=yellow><font size=3>Dungeon Needle: FIRMWARE ALREADY AT MAXIMUM CAPACITY."
+					to_chat(view(src), "<font color=yellow><font size=3>Dungeon Needle: FIRMWARE ALREADY AT MAXIMUM CAPACITY.")
 			verb/Point()
 				set category=null
 				set src in view(1)
 				if(delay)
-					view(usr)<<"<font color=yellow><font size=3>Dungeon Needle: ERROR: LOW POWER, PLEASE WAIT [round(delay/10)] SECONDS!"
+					to_chat(view(usr), "<font color=yellow><font size=3>Dungeon Needle: ERROR: LOW POWER, PLEASE WAIT [round(delay/10)] SECONDS!")
 					return
 				else
 					for(var/obj/dungeon/DE in dun_list)
 						if(DE.z != usr.z)
 							delay = 2400
-							view(usr)<<"<font color=yellow><font size=3>Dungeon Needle: DUNGEON [DE] ID [DE.id] AT ? LONG ? LAT [area_z_num_to_string(DE.z)] DIM. USER DIMENSIONS ARE [usr.x] LONG [usr.y] LAT [area_z_num_to_string(usr.z)] DIM."
+							to_chat(view(usr), "<font color=yellow><font size=3>Dungeon Needle: DUNGEON [DE] ID [DE.id] AT ? LONG ? LAT [area_z_num_to_string(DE.z)] DIM. USER DIMENSIONS ARE [usr.x] LONG [usr.y] LAT [area_z_num_to_string(usr.z)] DIM.")
 						else
 							if(DE.reserved_z != usr.z)
 								delay = 1200
-								view(usr)<<"<font color=yellow><font size=3>Dungeon Needle: DUNGEON [DE] ID [DE.id] IN AREA. DIRECTION IS [dir_num_to_string(get_dir(usr,DE))]."
+								to_chat(view(usr), "<font color=yellow><font size=3>Dungeon Needle: DUNGEON [DE] ID [DE.id] IN AREA. DIRECTION IS [dir_num_to_string(get_dir(usr,DE))].")
 							else
 								delay = 600
 								for(var/obj/dungeon_exit/nDE in dun_exits)
 									if(nDE.z == usr.z && nDE.linked_dun && nDE.isClearingExit)
-										view(usr)<<"<font color=yellow><font size=3>Dungeon Needle: INSIDE DUNGEON: TARGET EXIT IN AREA. DIRECTION IS [dir_num_to_string(get_dir(usr,nDE))]."
+										to_chat(view(usr), "<font color=yellow><font size=3>Dungeon Needle: INSIDE DUNGEON: TARGET EXIT IN AREA. DIRECTION IS [dir_num_to_string(get_dir(usr,nDE))].")
 									else
-										view(usr)<<"<font color=yellow><font size=3>Dungeon Needle: INSIDE DUNGEON: ENTRANCE IN AREA. DIRECTION IS [dir_num_to_string(get_dir(usr,DE))]."
+										to_chat(view(usr), "<font color=yellow><font size=3>Dungeon Needle: INSIDE DUNGEON: ENTRANCE IN AREA. DIRECTION IS [dir_num_to_string(get_dir(usr,DE))].")
 					if(can_locate_makyo_port)
 						for(var/obj/MakyoGate/DE in obj_list)
 							if(DE.z != usr.z)
-								view(usr)<<"<font color=green>------------<br>Radar: MAKYO PARTICLES AT ? LONG ? LAT [area_z_num_to_string(DE.z)] DIM. USER DIMENSIONS ARE [usr.x] LONG [usr.y] LAT [area_z_num_to_string(usr.z)] DIM."
+								to_chat(view(usr), "<font color=green>------------<br>Radar: MAKYO PARTICLES AT ? LONG ? LAT [area_z_num_to_string(DE.z)] DIM. USER DIMENSIONS ARE [usr.x] LONG [usr.y] LAT [area_z_num_to_string(usr.z)] DIM.")
 							else
-								view(usr)<<"<font color=green>------------<br>Radar: MAKYO PARTICLES IN AREA. DIRECTION IS [dir_num_to_string(get_dir(usr,DE))]"
+								to_chat(view(usr), "<font color=green>------------<br>Radar: MAKYO PARTICLES IN AREA. DIRECTION IS [dir_num_to_string(get_dir(usr,DE))]")
 						delay = 1200
 				spawn while(delay>=1)
 					sleep(1)

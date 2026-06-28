@@ -71,7 +71,7 @@ mob/var/list/icer_vars = list("Form 6 Seperate Icon"=1,"Form 6 base"=1,"Form 6 c
 	after_learn()
 		savant.icer_limit_forms++
 		assignverb(/verb/Icer_Form_Settings)
-		savant << "You can assign your forms! You start with one."
+		to_chat(savant, "You can assign your forms! You start with one.")
 	login()
 		..()
 		assignverb(/verb/Icer_Form_Settings)
@@ -105,10 +105,10 @@ verb/Icer_Form_Settings()
 				if("Make it a seperate icon")
 					if(usr.icer_vars["Form 6 Seperate Icon"] == TRUE)
 						usr.icer_vars["Form 6 Seperate Icon"] = FALSE
-						usr << "Form 6 now uses your default base (form 1)."
+						to_chat(usr, "Form 6 now uses your default base (form 1).")
 					else
 						usr.icer_vars["Form 6 Seperate Icon"] = TRUE
-						usr << "Form 6 now uses a seperate icon."
+						to_chat(usr, "Form 6 now uses a seperate icon.")
 				if("Select a base")
 					usr.icer_vars["Form 6 base"]=round(min(max(input(usr,"Put in a number 1 through 5, it'll use that icon as it's Golden Form base.","",1) as num,1),5))
 				if("Golden Form Aura stuff.")
@@ -128,7 +128,7 @@ verb/Icer_Form_Settings()
 
 	after_learn()
 		assignverb(/mob/keyable/verb/Golden_Form)
-		savant << "Your body shimmers a bit, releasing a hue of gold light. The power within explodes, and a new godly tone empowers your body!"
+		to_chat(savant, "Your body shimmers a bit, releasing a hue of gold light. The power within explodes, and a new godly tone empowers your body!")
 	login()
 		..()
 		assignverb(/mob/keyable/verb/Golden_Form)

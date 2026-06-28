@@ -11,11 +11,11 @@
 
 /datum/skill/rank/BusterShell/after_learn()
 	assignverb(/mob/keyable/verb/BusterShell)
-	savant<<"You can fire an [name]!"
+	to_chat(savant, "You can fire an [name]!")
 
 /datum/skill/rank/BusterShell/before_forget()
 	unassignverb(/mob/keyable/verb/BusterShell)
-	savant<<"You've forgotten how to fire an [name]!?"
+	to_chat(savant, "You've forgotten how to fire an [name]!?")
 datum/skill/rank/BusterShell/login(var/mob/logger)
 	..()
 	assignverb(/mob/keyable/verb/BusterShell)

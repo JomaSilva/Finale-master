@@ -30,11 +30,11 @@ datum/skill/ki/blast/login(var/mob/logger)
 	assignverb(/mob/keyable/verb/Ki_Blast)
 
 /datum/skill/ki/blast/after_learn()
-	savant << "You can feel something bubbling in your palm."
+	to_chat(savant, "You can feel something bubbling in your palm.")
 	assignverb(/mob/keyable/verb/Ki_Blast)
 
 /datum/skill/ki/blast/before_forget()
-	savant << "You can't remember how to use Ki Blast skills!"
+	to_chat(savant, "You can't remember how to use Ki Blast skills!")
 	unassignverb(/mob/keyable/verb/Ki_Blast)*///essentially legacy content at this point
 
 mob/keyable/verb/Basic_Blast()
@@ -196,8 +196,8 @@ mob/keyable/verb/Scattershot()
 		blasting=0
 		sleep(reload)
 		usr.barrageCD=0
-	else if(usr.Ki<=kireq) usr<<"This requires atleast [kireq] energy to use."
-	else if(barrageCD) usr<<"This skill was set on cooldown for [barrageCD/10] seconds."
+	else if(usr.Ki<=kireq) to_chat(usr, "This requires atleast [kireq] energy to use.")
+	else if(barrageCD) to_chat(usr, "This skill was set on cooldown for [barrageCD/10] seconds.")
 
 mob/keyable/verb/Energy_Barrage()
 	set category = "Skills"
@@ -257,8 +257,8 @@ mob/keyable/verb/Energy_Barrage()
 		blasting=0
 		sleep(reload)
 		usr.barrageCD=0
-	else if(usr.Ki<=kireq) usr<<"This requires atleast [kireq] energy to use."
-	else if(barrageCD) usr<<"This skill was set on cooldown for [barrageCD/10] seconds."
+	else if(usr.Ki<=kireq) to_chat(usr, "This requires atleast [kireq] energy to use.")
+	else if(barrageCD) to_chat(usr, "This skill was set on cooldown for [barrageCD/10] seconds.")
 
 mob/keyable/verb/Continuous_Energy_Bullets()
 	set category = "Skills"
@@ -327,8 +327,8 @@ mob/keyable/verb/Continuous_Energy_Bullets()
 		usr.barrageCD=0
 	else if(volleying)
 		usr.volleying=0
-	else if(usr.Ki<=kireq) usr<<"This requires atleast [kireq] energy to use."
-	else if(barrageCD) usr<<"This skill was set on cooldown for [barrageCD/10] seconds."
+	else if(usr.Ki<=kireq) to_chat(usr, "This requires atleast [kireq] energy to use.")
+	else if(barrageCD) to_chat(usr, "This skill was set on cooldown for [barrageCD/10] seconds.")
 
 mob/keyable/verb/Spin_Blast()
 	set category = "Skills"
@@ -398,8 +398,8 @@ mob/keyable/verb/Spin_Blast()
 		usr.barrageCD=0
 	else if(volleying)
 		usr.volleying=0
-	else if(usr.Ki<=kireq) usr<<"This requires atleast [kireq] energy to use."
-	else if(barrageCD) usr<<"This skill was set on cooldown for [barrageCD/10] seconds."
+	else if(usr.Ki<=kireq) to_chat(usr, "This requires atleast [kireq] energy to use.")
+	else if(barrageCD) to_chat(usr, "This skill was set on cooldown for [barrageCD/10] seconds.")
 
 mob/keyable/verb/Ki_Bomb()
 	set name = "Ki Minefield"
@@ -458,10 +458,10 @@ mob/keyable/verb/Ki_Bomb()
 			kitargeting=0
 			usr.targetedCD=0
 		else
-			usr<<"Your target is not in range!"
-	else if(!usr.target) usr<<"You need a target to use this!"
-	else if(usr.Ki<=kireq) usr<<"This requires atleast [kireq] energy to use."
-	else if(targetedCD) usr<<"This skill was set on cooldown for [targetedCD/10] seconds."
+			to_chat(usr, "Your target is not in range!")
+	else if(!usr.target) to_chat(usr, "You need a target to use this!")
+	else if(usr.Ki<=kireq) to_chat(usr, "This requires atleast [kireq] energy to use.")
+	else if(targetedCD) to_chat(usr, "This skill was set on cooldown for [targetedCD/10] seconds.")
 
 mob/keyable/verb/Hellzone_Grenade()
 	set category = "Skills"
@@ -522,10 +522,10 @@ mob/keyable/verb/Hellzone_Grenade()
 			kitargeting=0
 			usr.targetedCD=0
 		else
-			usr<<"Your target is not in range!"
-	else if(!usr.target) usr<<"You need a target to use this!"
-	else if(usr.Ki<=kireq) usr<<"This requires atleast [kireq] energy to use."
-	else if(targetedCD) usr<<"This skill was set on cooldown for [targetedCD/10] seconds."
+			to_chat(usr, "Your target is not in range!")
+	else if(!usr.target) to_chat(usr, "You need a target to use this!")
+	else if(usr.Ki<=kireq) to_chat(usr, "This requires atleast [kireq] energy to use.")
+	else if(targetedCD) to_chat(usr, "This skill was set on cooldown for [targetedCD/10] seconds.")
 
 mob/keyable/verb/Scattering_Bullet()
 	set category = "Skills"
@@ -538,7 +538,7 @@ mob/keyable/verb/Scattering_Bullet()
 		var/mob/M
 		if(target&&get_dist(src,target)<=30)M=target
 		else
-			src<<"You need a valid target..."
+			to_chat(src, "You need a valid target...")
 			return
 		usr.scatterCD=reload
 		usr.Ki-=kireq*BaseDrain
@@ -603,8 +603,8 @@ mob/keyable/verb/Scattering_Bullet()
 		usr.scatterCD=0
 		usr.icon_state="Blast"
 		spawn(3) usr.icon_state=""
-	else if(usr.Ki<=kireq) usr<<"This requires atleast [kireq] energy to use."
-	else if(scatterCD) usr<<"This skill was set on cooldown for [scatterCD/10] seconds."
+	else if(usr.Ki<=kireq) to_chat(usr, "This requires atleast [kireq] energy to use.")
+	else if(scatterCD) to_chat(usr, "This skill was set on cooldown for [scatterCD/10] seconds.")
 
 mob/keyable/verb/Energy_Shot()
 	set category = "Skills"
@@ -656,5 +656,5 @@ mob/keyable/verb/Energy_Shot()
 		usr.eshotCD=0
 		usr.icon_state="Blast"
 		spawn(3) usr.icon_state=""
-	else if(usr.Ki<=kireq) usr<<"This requires atleast [kireq] energy to use."
-	else if(eshotCD) usr<<"This skill was set on cooldown for [eshotCD/10] seconds."
+	else if(usr.Ki<=kireq) to_chat(usr, "This requires atleast [kireq] energy to use.")
+	else if(eshotCD) to_chat(usr, "This skill was set on cooldown for [eshotCD/10] seconds.")

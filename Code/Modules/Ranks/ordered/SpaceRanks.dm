@@ -53,10 +53,10 @@ datum/skill/rank/Holy_Shortcut
 
 /datum/skill/rank/Holy_Shortcut/after_learn()
 	assignverb(/mob/Rank/verb/Holy_Shortcut)
-	savant<<"A bizarre energy washes over you, and you suddenly learn a hidden shortcut to the Holy Summit!"
+	to_chat(savant, "A bizarre energy washes over you, and you suddenly learn a hidden shortcut to the Holy Summit!")
 /datum/skill/rank/Holy_Shortcut/before_forget()
 	unassignverb(/mob/Rank/verb/Holy_Shortcut)
-	savant<<"You no longer remember the Holy Shortcut. However, you forget it too well; you forgot how to chuckle as a result."
+	to_chat(savant, "You no longer remember the Holy Shortcut. However, you forget it too well; you forgot how to chuckle as a result.")
 /datum/skill/rank/Holy_Shortcut/login(var/mob/logger)
 	..()
 	assignverb(/mob/Rank/verb/Holy_Shortcut)
@@ -64,19 +64,19 @@ datum/skill/rank/Holy_Shortcut
 mob/Rank/verb/Holy_Shortcut()
 	set category="Skills"
 	if(!usr.KO&&canfight&&!usr.med&&!usr.train&&usr.Ki>=(usr.MaxKi/2))
-		view(6)<<"[usr] folds their arms and smirks..?"
+		to_chat(view(6), "[usr] folds their arms and smirks..?")
 		var/choice = input("You feel a mental connection between the Holy Summit and the world outside of it. Where would you like to go?", "", text) in list ("Holy Summit", "Arconia", "Nevermind",)
 		if(choice=="Nevermind")
-			view(6)<<"[usr] suddenly..! Wait, no, [usr] just stops smirking and just stands there."
+			to_chat(view(6), "[usr] suddenly..! Wait, no, [usr] just stops smirking and just stands there.")
 		else
 			usr.Ki=(usr.Ki/2)
-			view(6)<<"[usr] chuckles and vanishes!!"
+			to_chat(view(6), "[usr] chuckles and vanishes!!")
 			emit_Sound('Instant_Pop.wav')
 			for(var/mob/V in oview(1))
-				view(6)<<"[V] suddenly disappears!"
+				to_chat(view(6), "[V] suddenly disappears!")
 				spawn(5)
 					V.loc = locate(usr.x,usr.y,usr.z)
-					V<<"[usr] brings you with them using...chuckling?."
+					to_chat(V, "[usr] brings you with them using...chuckling?.")
 					spawn(10) view(6)<<"[V] suddenly appears!"
 			if(choice=="Holy Summit")
 				loc=locate(44,210,31)
@@ -84,8 +84,8 @@ mob/Rank/verb/Holy_Shortcut()
 				loc=locate(340,270,5)
 			emit_Sound('Instant_Pop.wav')
 			spawn(1)
-				view(6)<<"[usr] suddenly appears!"
-	else usr<<"You lack the sufficient Ki required to chuckle. Either that or you refused to stand still like some eight year-old hyped up on sugar."
+				to_chat(view(6), "[usr] suddenly appears!")
+	else to_chat(usr, "You lack the sufficient Ki required to chuckle. Either that or you refused to stand still like some eight year-old hyped up on sugar.")
 
 datum/skill/rank/Detect_Shard
 	skilltype = "Ki"
@@ -99,14 +99,14 @@ datum/skill/rank/Detect_Shard
 
 /datum/skill/rank/Detect_Shard/after_learn()
 	assignverb(/mob/Rank/verb/Detect_Shard)
-	savant<<"The great Emerald's power allows you to feel!"
+	to_chat(savant, "The great Emerald's power allows you to feel!")
 /datum/skill/rank/Detect_Shard/before_forget()
 	unassignverb(/mob/Rank/verb/Detect_Shard)
-	savant<<"Your connection with the Emerald vanishes!"
+	to_chat(savant, "Your connection with the Emerald vanishes!")
 /datum/skill/rank/Detect_Shard/login(var/mob/logger)
 	..()
 	assignverb(/mob/Rank/verb/Detect_Shard)
 
 mob/Rank/verb/Detect_Shard()
 	set category="Skills"
-	usr<<"The Master Emerald is no more; there is nothing to detect."
+	to_chat(usr, "The Master Emerald is no more; there is nothing to detect.")

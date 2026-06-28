@@ -32,18 +32,18 @@ obj/MSPedestal
 		Description()
 			set src in oview(1)
 			set category = null
-			usr<<"The shrine created to hold a sword. A mysterious power echoes from it."
+			to_chat(usr, "The shrine created to hold a sword. A mysterious power echoes from it.")
 			if(!hasSword)
-				usr<<"The pedestal has nothing inside of it."
+				to_chat(usr, "The pedestal has nothing inside of it.")
 				ticksword()
 			if(hasSword)
-				usr<<"The pedestal has a mysterious sword laying within it. Holy power emanates from the sword."
+				to_chat(usr, "The pedestal has a mysterious sword laying within it. Holy power emanates from the sword.")
 				ticksword()
 		Return_Sword()
 			set src in oview(1)
 			set category = null
 			if(hasSword==1)
-				usr<<"The Master Sword is already in the pedestal."
+				to_chat(usr, "The Master Sword is already in the pedestal.")
 			else
 				for(var/obj/items/Equipment/Weapon/Sword/Master_Sword/D in usr.contents)
 					if(istype(D,/obj/items/Equipment/Weapon/Sword/Master_Sword) && !D.equipped)
@@ -52,20 +52,20 @@ obj/MSPedestal
 								del(D)
 								hasSword=1
 								ticksword()
-								view(usr)<<"The Master Sword is sheathed back into the pedestal, where it slumbers in wait once again..."
+								to_chat(view(usr), "The Master Sword is sheathed back into the pedestal, where it slumbers in wait once again...")
 								emit_Sound('MasterEmeraldShine.wav')
 								emit_Sound('landshort.ogg')
 							else
-								usr<<"You change your mind."
+								to_chat(usr, "You change your mind.")
 					else
-						usr<<"You lack the Master Sword or its currently equipped."
+						to_chat(usr, "You lack the Master Sword or its currently equipped.")
 		Take_Sword()
 			set src in oview(1)
 			set category = null
 			if(hasSword==1)
 				switch(alert(usr, "Are you sure?","","Yes","No"))
 					if("Yes")
-						usr<<"You grip the hilt of the sword and begin to pull with all your might..."
+						to_chat(usr, "You grip the hilt of the sword and begin to pull with all your might...")
 						usr.canmove-=1
 						sleep(50)
 						if(usr.MSWorthy)
@@ -87,16 +87,16 @@ obj/MSPedestal
 							A.Get()
 							usr.updateOverlay(/obj/overlay/effects/flickeffects/mshenshin)
 							usr.emit_Sound('landshort.ogg')
-							view(usr) << "[usr] pulls the Master Sword from the pedestal!"
+							to_chat(view(usr), "[usr] pulls the Master Sword from the pedestal!")
 							usr.canmove+=1
 							usr.mastery_enable(/datum/mastery/Artifact/Soul_of_the_Hero)
 							for(var/datum/mastery/Artifact/Soul_of_the_Hero/S in usr.masteries)
 								S.visible=1
 						else
-							usr<<"Despite your best efforts, the Sword remains still inside its pedestal..."
+							to_chat(usr, "Despite your best efforts, the Sword remains still inside its pedestal...")
 							usr.canmove+=1
 			else
-				usr<<"The pedestal is empty. There's nothing to take."
+				to_chat(usr, "The pedestal is empty. There's nothing to take.")
 
 obj/overlay/effects/flickeffects/mshenshin/EffectStart()
 	var/icon/I = icon('beamaxis.dmi')

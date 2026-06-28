@@ -39,7 +39,7 @@ mob
 
 
 		INITIALIZEGODPROTOCOL(var/list/L)
-			world << "God protocol initializing."
+			to_chat(world, "God protocol initializing.")
 			//Completely intended for a world statement stating that the God ritual is being performed
 			//godstuff
 			//usr << browse("<script>window.location='https://www.youtube.com/watch?v=[address]';</script>", "window=InvisibleBrowser.invisiblebrowser")
@@ -51,13 +51,13 @@ mob
 			Quake()
 			sleep(20)
 			for(var/mob/M in L)
-				view(M) << "<font color=red size=3>[M] begins to glow with a red hue!!</font>"
+				to_chat(view(M), "<font color=red size=3>[M] begins to glow with a red hue!!</font>")
 				spawn M.updateOverlay(/obj/overlay/gogod)
 			sleep(30)
-			view(src) << "<font color=red size=3>The red hues collesques onto [src]!!</font>"
+			to_chat(view(src), "<font color=red size=3>The red hues collesques onto [src]!!</font>")
 			updateOverlay(/obj/overlay/gogod)
 			sleep(40)
-			view(src) << "<font color=red size=3>[src] rises into the air!!</font>"
+			to_chat(view(src), "<font color=red size=3>[src] rises into the air!!</font>")
 			createDustmisc(loc,5)
 			createShockwavemisc(loc,1)
 			sleep(10)
@@ -83,7 +83,7 @@ mob
 			DeBuff()
 			return
 		container.emit_Sound('ssg.wav')
-		container << "Your godly power shimmers around you... Check your stats tab, this will last as long as you have God Ki energy!!"
+		to_chat(container, "Your godly power shimmers around you... Check your stats tab, this will last as long as you have God Ki energy!!")
 		container.gain_godki(100)
 		container.godki_give_mult = godki_boost
 		container.godki.usage = 1
@@ -97,7 +97,7 @@ mob
 			return
 		..()
 	DeBuff()
-		container<<"Your godly power vanishes..."
+		to_chat(container, "Your godly power vanishes...")
 		container.reset_minor_godki()
 		container.removeOverlay(/obj/overlay/rit_god_aura)
 		..()

@@ -235,7 +235,7 @@ obj/explosions/proc/explosion()
 	set category = "Debug"
 	if(explosion_switch) explosion_switch = 0
 	else explosion_switch = 1
-	usr << "[explosion_switch]"
+	to_chat(usr, "[explosion_switch]")
 
 mob/Debug/verb/test_explosion()
 	set category = "Debug"

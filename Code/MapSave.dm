@@ -4,10 +4,10 @@ mob/Admin3/verb/MassKO()
 mob/Admin2/verb/ToggleMapSave()
 	set category="Admin"
 	if(!mapenabled)
-		usr<<"On"
+		to_chat(usr, "On")
 		mapenabled=1
 	else
-		usr<<"Off"
+		to_chat(usr, "Off")
 		mapenabled=0
 var/maploadcomplete=0
 proc
@@ -20,7 +20,7 @@ proc
 			L.Add(turfsave)
 			amount+=turfsave.len
 			F<<L
-			world<<"Map Saved ([amount])"
+			to_chat(world, "Map Saved ([amount])")
 	MapLoad()
 		var/amount =0 
 		if(fexists("MapSave"))
@@ -30,7 +30,7 @@ proc
 			amount = L.len
 		LoadPlanets()
 		maploadcomplete=1
-		world<<"<font size=1>Map Loaded. ([amount])"
+		to_chat(world, "<font size=1>Map Loaded. ([amount])")
 
 	BMapSave()
 		if(mapenabled)
@@ -41,7 +41,7 @@ proc
 			L.Add(turfsave)
 			amount+=turfsave.len
 			F<<L
-			world<<"Backup Map Saved ([amount])"
+			to_chat(world, "Backup Map Saved ([amount])")
 
 	BMapLoad()
 		maploadcomplete=0
@@ -51,7 +51,7 @@ proc
 			F>>L
 		LoadPlanets()
 		maploadcomplete=1
-		world<<"<font size=1>Backup Map Loaded."
+		to_chat(world, "<font size=1>Backup Map Loaded.")
 
 	AreaSave()
 		if(mapenabled)
@@ -69,7 +69,7 @@ proc
 				lA.currentWeather = A.currentWeather
 				L += lA
 			F<<L
-			world<<"Areas Saved"
+			to_chat(world, "Areas Saved")
 	AreaLoad()
 		if(fexists("AreaSave"))
 			var/savefile/F=new("AreaSave")
@@ -89,7 +89,7 @@ proc
 						A.planet_dying = lA.planet_dying
 						A.currentWeather = lA.currentWeather
 					else continue
-			world<<"Areas Loaded. [numloadlist] areas in memory, [actualloadlist] actually loaded."
+			to_chat(world, "Areas Loaded. [numloadlist] areas in memory, [actualloadlist] actually loaded.")
 
 datum/areaLoadDatum
 	var
@@ -114,7 +114,7 @@ proc/SaveItems()
 			A.saved_z=A.z
 			L.Add(A)
 	F["SavedItems"]<<L
-	world<<"<font size=1>Items saved ([foundobjects] items)"
+	to_chat(world, "<font size=1>Items saved ([foundobjects] items)")
 proc/LoadItems()
 	var/amount=0
 	if(fexists("ItemSave"))
@@ -130,8 +130,8 @@ proc/LoadItems()
 					if(!ghetto_star_exist) del(nACC)
 					if(ghetto_star_own)
 						nACC.controller = ghetto_star_own
-			world<<"<font size=1>Items Loaded ([amount])."
-	else world<<"<font size=1>Items Loaded ([amount])."
+			to_chat(world, "<font size=1>Items Loaded ([amount]).")
+	else to_chat(world, "<font size=1>Items Loaded ([amount]).")
 proc/SaveMobs()
 	var/foundobjects=0
 	var/list/father_list = list()
@@ -161,7 +161,7 @@ proc/SaveMobs()
 				A.saved_z=A.z
 				L.Add(A)
 	F["MobSave"]<<L
-	world<<"<font size=1>Mobs saved ([foundobjects] items)"
+	to_chat(world, "<font size=1>Mobs saved ([foundobjects] items)")
 proc/LoadMobs()
 	var/amount=0
 	if(fexists("MobSave"))
@@ -177,7 +177,7 @@ proc/LoadMobs()
 			for(var/mob/B in mob_list) //prevents duping: characters with the same signature will delete the mob being loaded.
 				sleep(1)
 				if(B.signature == A.signature) del(A)
-	world<<"<font size=1>Mobs Loaded ([amount])."
+	to_chat(world, "<font size=1>Mobs Loaded ([amount]).")
 obj/var
 	saved_x=1
 	saved_y=1

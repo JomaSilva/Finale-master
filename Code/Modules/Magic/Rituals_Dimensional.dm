@@ -300,7 +300,7 @@ obj/Ritual/proc
 		if(ismob(r_target))
 			var/mob/M = r_target
 			if(M.HasSoul)
-				view(M.screenx,M)<<"<font size=3 color=red>[M]'s soul is ripped out!</font>"
+				to_chat(view(M.screenx,M), "<font size=3 color=red>[M]'s soul is ripped out!</font>")
 				M.HasSoul=0
 				if(prob(100 - M.Emagiskill*5))
 					M.buudead = (Magic - (M.Emagiskill * M.Magic)) / 100
@@ -314,7 +314,7 @@ obj/Ritual/proc
 		if(target_check() == FALSE) return 666
 		if(ismob(r_target))
 			var/mob/M = r_target
-			view(M.screenx,M)<<"<font size=3 color=red>[M]'s soul is restored!!</font>"
+			to_chat(view(M.screenx,M), "<font size=3 color=red>[M]'s soul is restored!!</font>")
 			M.HasSoul=1
 			M.SpreadHeal(25,1)
 		else return 666
@@ -323,7 +323,7 @@ obj/Ritual/proc
 		if(target_check() == FALSE) return 666
 		if(ismob(r_target))
 			var/mob/M = r_target
-			view(M.screenx,M)<<"<font size=3 color=red>[M] begins to shimmer!!!</font>"
+			to_chat(view(M.screenx,M), "<font size=3 color=red>[M] begins to shimmer!!!</font>")
 			M.INITIALIZEGODPROTOCOL(list(null))
 		else return 666
 
@@ -350,7 +350,7 @@ obj/Ritual
 			Choice.loc=locate(x,y-1,z)
 			flick(I,Choice)
 			spawn(1) step(Choice,SOUTH)
-			oview(u)<<"[u] conjures the demon [Choice] to do his bidding!"
+			to_chat(oview(u), "[u] conjures the demon [Choice] to do his bidding!")
 			var/amount = round(magnitude_calc(Magic,magnitude*u.Emagiskill,Choice.Magic))
 			var/HoldPower
 			spawn
@@ -390,7 +390,7 @@ obj/Ritual
 		req_ingredients = list(/obj/items/Material/Alchemy/Misc/Microchip,/obj/items/Material/Alchemy/Misc/Essence_Of_Time,/obj/items/Material/Alchemy/Misc/Angel_Tear,/obj/items/Material/Alchemy/Misc/Moonseed,/obj/items/Material/Alchemy/Misc/Eel_Eye)
 		ritual_effect(mob/u)
 			if(target_check(2) == FALSE && !invoker) return
-			invoker << "<font color=blue><font size=2>An etherial voice calls to you...</font></font>"
+			to_chat(invoker, "<font color=blue><font size=2>An etherial voice calls to you...</font></font>")
 			sleep(10)
 			var/list/lucky_list = list()
 			lucky_list += typesof(/obj/Ritual)
@@ -404,15 +404,15 @@ obj/Ritual
 			if(lucky_list.len)
 				var/lucky_word = pick(lucky_list)
 				var/obj/Ritual/nR = new lucky_word(null)
-				invoker << "<font color=blue><font size=3>???: [lucky_word] : [nR.typing] : [nR.activator_word]</font></font>"
+				to_chat(invoker, "<font color=blue><font size=3>???: [lucky_word] : [nR.typing] : [nR.activator_word]</font></font>")
 				for(var/a in nR.req_ingredients)
-					invoker << "<font color=blue><font size=3>???: REQUIRES : [a]</font></font>"
+					to_chat(invoker, "<font color=blue><font size=3>???: REQUIRES : [a]</font></font>")
 				switch(nR.typing)
 					if("Destruction") invoker.known_ritual_de_types += lucky_word
 					if("Dimensional") invoker.known_ritual_dm_types += lucky_word
 					if("Manipulation") invoker.known_ritual_ma_types += lucky_word
 				del(nR)
-			else invoker << "<font color=blue><font size=3>???: error() : error_code=='teach_invalid' : creature:ritual_knowledge == maximum</font></font>"
+			else to_chat(invoker, "<font color=blue><font size=3>???: error() : error_code=='teach_invalid' : creature:ritual_knowledge == maximum</font></font>")
 	Wish
 		icon_state = "main6"
 		activator_word = "Eno, Owt, Eerht, Ruof, I eralced a bmuht raw!!"
@@ -450,7 +450,7 @@ obj/Ritual
 			var/chosenwish = input(invoker,"Make your wish.", "", text) in WishList
 			switch(chosenwish)
 				if("Cancel")
-					view(invoker)<<"[invoker] cancels [invoker]'s wish."
+					to_chat(view(invoker), "[invoker] cancels [invoker]'s wish.")
 					Magic += ritual_cost / 2
 				else Wish(chosenwish,invoker,1,Magic*273.15)
 	Interdimensional_Escape
@@ -576,7 +576,7 @@ obj/Conjure
 		Demons += "Cancel"
 		var/mob/Choice=input("Send back which Demon?") in Demons
 		if(ismob(Choice))
-			Choice<<"[usr] has sent you back from whence you came."
+			to_chat(Choice, "[usr] has sent you back from whence you came.")
 			var/image/I=image(icon='Black Hole.dmi',icon_state="full")
 			flick(I,Choice)
 			Choice.loc=locate(Choice.ConjureX,Choice.ConjureY,Choice.ConjureZ)

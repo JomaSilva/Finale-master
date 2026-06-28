@@ -17,7 +17,7 @@ obj/Artifacts/RevivalShard
 	ContentsDontSave=1
 	verb/CheckRevive()
 		set category = null
-		usr<<"[container.reviveTime/(10*shardNumber)] seconds remaining."
+		to_chat(usr, "[container.reviveTime/(10*shardNumber)] seconds remaining.")
 	Drop()
 		set category=null
 		set src in usr

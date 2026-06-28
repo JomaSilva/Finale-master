@@ -21,12 +21,12 @@
 
 /datum/skill/general/splitform/after_learn()
 	savant.contents+=new/obj/SplitForm
-	savant<<"You can split your body in two!"
+	to_chat(savant, "You can split your body in two!")
 /datum/skill/general/splitform/before_forget()
 	for(var/obj/D in savant.contents)
 		if(D.name=="SplitForm")
 			del(D)
-	savant<<"You've forgotten how to make copies of yourself!?"
+	to_chat(savant, "You've forgotten how to make copies of yourself!?")
 
 /datum/skill/general/buuabsorb
 	skilltype="Magical"
@@ -37,7 +37,7 @@
 
 /datum/skill/general/buuabsorb/after_learn()
 	savant.contents+=new/obj/Buu_Absorb
-	savant<<"You can absorb others!"
+	to_chat(savant, "You can absorb others!")
 
 /datum/skill/majin/Purification
 	skilltype="Magical"
@@ -49,7 +49,7 @@
 
 	after_learn()
 		assignverb(/mob/keyable/verb/Purification)
-		savant<<"You can purfiy your essence!"
+		to_chat(savant, "You can purfiy your essence!")
 	login()
 		..()
 		assignverb(/mob/keyable/verb/Purification)
@@ -61,14 +61,14 @@ mob/keyable/verb/Purification()
 	else if(Emotion=="Calm" && AbsorbDatum && AbsorbDatum.MajorAbsorbSigs.len)
 		if(usr.startbuff(/obj/buff/Purification))
 			AbsorbDatum.expellall()
-	else usr<<"Either you're not calm, or you don't have anything major absorbed!"
+	else to_chat(usr, "Either you're not calm, or you don't have anything major absorbed!")
 
 /obj/buff/Purification
 	name = "Purification"
 	slot=sFORM
 	Buff()
 		..()
-		container<<"Your essence purifies, leaving behind a stronger Majin!"
+		to_chat(container, "Your essence purifies, leaving behind a stronger Majin!")
 		container.emit_Sound('1aura.wav')
 		if(AscensionStarted)
 			container.transBuff=2
@@ -83,7 +83,7 @@ mob/keyable/verb/Purification()
 	Loop()
 		if(container.Emotion == "Calm") DeBuff()
 	DeBuff()
-		container<<"You relax."
+		to_chat(container, "You relax.")
 		container.transBuff=1
 		container.Tphysoff-=1.2
 		container.Tkioff-=1.2
@@ -103,7 +103,7 @@ mob/keyable/verb/Purification()
 
 	after_learn()
 		assignverb(/mob/keyable/verb/Super_Majin)
-		savant<<"You can absorb others!"
+		to_chat(savant, "You can absorb others!")
 	login()
 		..()
 		assignverb(/mob/keyable/verb/Super_Majin)
@@ -120,7 +120,7 @@ mob/keyable/verb/Super_Majin()
 	var/defensepentl
 	Buff()
 		..()
-		container<<"You become a Super Majin!"
+		to_chat(container, "You become a Super Majin!")
 		container.emit_Sound('1aura.wav')
 		if(AscensionStarted)
 			container.transBuff=3
@@ -134,7 +134,7 @@ mob/keyable/verb/Super_Majin()
 		container.Tkioff+=1.2
 		container.Tspeed+=1.2
 	DeBuff()
-		container<<"You relax."
+		to_chat(container, "You relax.")
 		container.transBuff=1
 		container.Ttechnique-=1.2
 		container.Tkioff-=1.2

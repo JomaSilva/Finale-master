@@ -86,7 +86,7 @@ mob/proc/icer_poll_icon()
 		container.gain_godki(90)
 		container.godki.usage = 1
 	DeBuff()
-		container<<"Your body releases its golden hue."
+		to_chat(container, "Your body releases its golden hue.")
 		container.icon = container.storedicon
 		container.transBuff=1
 		container.Tphysoff-=1.2

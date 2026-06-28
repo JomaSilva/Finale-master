@@ -34,7 +34,7 @@ mob/Debug/verb/Dump_Global_Verbs()
 		file("Debug-Global-Vars-Dump")<<"[S]"
 
 proc/OutputDebug(var/text as text)
-	world << "D E B U G : [text]"
+	to_chat(world, "D E B U G : [text]")
 	WriteToLog("debug","D E B U G : [text] ([time2text(world.realtime,"Day DD hh:mm")])")
 
 //can stay as a temp variable
@@ -54,9 +54,9 @@ mob/Debug/verb/ForceUpdateSkills()
 	resolveupdate++
 	for(var/mob/M in player_list)
 		M.UpdateSkills()
-		M<<"Skills forcibly updated by [usr]"
-	world<<"[usr] updated skills."
-	usr<<"Skills updated."
+		to_chat(M, "Skills forcibly updated by [usr]")
+	to_chat(world, "[usr] updated skills.")
+	to_chat(usr, "Skills updated.")
 	WriteToLog("admin","[usr] forcibly updated skills at [time2text(world.realtime,"Day DD hh:mm")]")
 	sleep(10000)
 
@@ -103,5 +103,5 @@ mob/default
 
 mob/proc/outputDebug(message)
 	if(debug_Show)
-		usr << "[message]"
+		to_chat(usr, "[message]")
 */

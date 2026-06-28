@@ -82,4 +82,4 @@ mob/proc/class_hint()
 			msg = "You are a perfect lifeform in the making. You absorb, regenerate, and evolve without limit."
 		else
 			msg = "You search within and take the measure of your own power, the nature you were born with."
-	src << "<font color=#cda434><i>[msg]</i></font>"
+	to_chat(src, "<font color=#cda434><i>[msg]</i></font>")

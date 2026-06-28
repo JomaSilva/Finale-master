@@ -18,19 +18,19 @@ obj/items
 			if(x&&y&&z&&!Bolted)
 				switch(input("Are you sure you want to bolt this to the ground so nobody can ever pick it up? Not even you?","",text) in list("Yes","No",))
 					if("Yes")
-						view(src)<<"<font size=1>[usr] bolts the [src] to the ground."
+						to_chat(view(src), "<font size=1>[usr] bolts the [src] to the ground.")
 						Bolted=1
 						boltersig=usr.signature
 			else if(Bolted&&boltersig==usr.signature)
 				switch(input("Unbolt?","",text) in list("Yes","No",))
 					if("Yes")
-						view(src)<<"<font size=1>[usr] unbolts the [src] from the ground."
+						to_chat(view(src), "<font size=1>[usr] unbolts the [src] from the ground.")
 						Bolted=0
 		verb/Synthesis()
 			set category = null
 			set src in oview(1)
 			if(!Bolted)
-				usr << "You need to bolt [name] before you can use it!"
+				to_chat(usr, "You need to bolt [name] before you can use it!")
 				return
 			var/list/SynthList = list()
 			if(usr.techskill>=75) SynthList += "Anti-Virus"
@@ -63,7 +63,7 @@ obj/items
 										A.techcost+=cost
 										A.maxarmor = usr.intBPcap
 										A.armor = usr.intBPcap
-									else usr<<"You dont have enough money"
+									else to_chat(usr, "You dont have enough money")
 						if("Virus Bravo")
 							switch(input("Virus Bravo heals your health to the maximum, and increases defenses. Costs 25000 zenni.","",text) in list("Yes","No",))
 								if("Yes")
@@ -73,7 +73,7 @@ obj/items
 										A.techcost+=cost
 										A.maxarmor = usr.intBPcap
 										A.armor = usr.intBPcap
-									else usr<<"You dont have enough money"
+									else to_chat(usr, "You dont have enough money")
 						if("Virus Charlie")
 							switch(input("Virus Charlie brings your Ki and Stamina to the maximum, and extends stamina a little bit, and increases your KiMod a bit. Costs 50000 zenni.","",text) in list("Yes","No",))
 								if("Yes")
@@ -84,7 +84,7 @@ obj/items
 										A.techcost+=cost
 										A.maxarmor = usr.intBPcap
 										A.armor = usr.intBPcap
-									else usr<<"You dont have enough money"
+									else to_chat(usr, "You dont have enough money")
 						if("Virus Delta")
 							switch(input("Virus Delta increases Ki regen a bit, but decreases Ki Offense a bit as well. Costs 25000 zenni.","",text) in list("Yes","No",))
 								if("Yes")
@@ -95,7 +95,7 @@ obj/items
 										A.techcost+=cost
 										A.maxarmor = usr.intBPcap
 										A.armor = usr.intBPcap
-									else usr<<"You dont have enough money"
+									else to_chat(usr, "You dont have enough money")
 						if("Virus Echo")
 							switch(input("Virus Echo increases HP regen a bit, but decreases Phy Defense a bit as well. Costs 25000 zenni.","",text) in list("Yes","No",))
 								if("Yes")
@@ -106,7 +106,7 @@ obj/items
 										A.techcost+=cost
 										A.maxarmor = usr.intBPcap
 										A.armor = usr.intBPcap
-									else usr<<"You dont have enough money"
+									else to_chat(usr, "You dont have enough money")
 						if("Virus Foxtrot")
 							switch(input("Virus Foxtrot increases lifespan a bunch. Costs 25000 zenni.","",text) in list("Yes","No",))
 								if("Yes")
@@ -116,7 +116,7 @@ obj/items
 										A.techcost+=cost
 										A.maxarmor = usr.intBPcap
 										A.armor = usr.intBPcap
-									else usr<<"You dont have enough money"
+									else to_chat(usr, "You dont have enough money")
 						if("Virus Golf")
 							switch(input("Virus Golf increases strength and speed a bit. Costs 25000 zenni.","",text) in list("Yes","No",))
 								if("Yes")
@@ -126,7 +126,7 @@ obj/items
 										A.techcost+=cost
 										A.maxarmor = usr.intBPcap
 										A.armor = usr.intBPcap
-									else usr<<"You dont have enough money"
+									else to_chat(usr, "You dont have enough money")
 						if("Virus Hotel")
 							switch(input("Virus Hotel increases technique and Ki abilities a bit. Costs 25000 zenni.","",text) in list("Yes","No",))
 								if("Yes")
@@ -136,7 +136,7 @@ obj/items
 										A.techcost+=cost
 										A.maxarmor = usr.intBPcap
 										A.armor = usr.intBPcap
-									else usr<<"You dont have enough money"
+									else to_chat(usr, "You dont have enough money")
 						if("Virus India")
 							switch(input("Virus India gives you temporary death regeneration. Costs 75000 zenni.","",text) in list("Yes","No",))
 								if("Yes")
@@ -147,7 +147,7 @@ obj/items
 										A.techcost+=cost
 										A.maxarmor = usr.intBPcap
 										A.armor = usr.intBPcap
-									else usr<<"You dont have enough money"
+									else to_chat(usr, "You dont have enough money")
 						if("Virus Daybreaker")
 							switch(input("Virus Daybreaker turns people into Vampires. Costs 75000 zenni.","",text) in list("Yes","No",))
 								if("Yes")
@@ -157,7 +157,7 @@ obj/items
 										A.techcost+=cost
 										A.maxarmor = usr.intBPcap
 										A.armor = usr.intBPcap
-									else usr<<"You dont have enough money"
+									else to_chat(usr, "You dont have enough money")
 						if("Virus November")
 							switch(input("Gives you the ability to move in time. Costs 5000000 zenni.","",text) in list("Yes","No",))
 								if("Yes")
@@ -167,7 +167,7 @@ obj/items
 										A.techcost+=cost
 										A.maxarmor = usr.intBPcap
 										A.armor = usr.intBPcap
-									else usr<<"You dont have enough money"
+									else to_chat(usr, "You dont have enough money")
 
 				if("Anti-Virus")
 					var/list/CreateList = list()
@@ -190,7 +190,7 @@ obj/items
 										A.techcost+=cost
 										A.maxarmor = usr.intBPcap
 										A.armor = usr.intBPcap
-									else usr<<"You dont have enough money"
+									else to_chat(usr, "You dont have enough money")
 						if("Anti-Virus Echo")
 							switch(input("Cures the Echo Virus. Costs 25000 zenni.","",text) in list("Yes","No",))
 								if("Yes")
@@ -201,7 +201,7 @@ obj/items
 										A.techcost+=cost
 										A.maxarmor = usr.intBPcap
 										A.armor = usr.intBPcap
-									else usr<<"You dont have enough money"
+									else to_chat(usr, "You dont have enough money")
 						if("Anti-Virus Juliett")
 							switch(input("Will eradicate a Zombie Plague, but the energy will kill your body in doing so. Costs 75000 zenni.","",text) in list("Yes","No",))
 								if("Yes")
@@ -212,7 +212,7 @@ obj/items
 										A.techcost+=cost
 										A.maxarmor = usr.intBPcap
 										A.armor = usr.intBPcap
-									else usr<<"You dont have enough money"
+									else to_chat(usr, "You dont have enough money")
 						if("Anti-Virus Kilo")
 							switch(input("Will completely cure you of any mutations. Costs 25000 zenni.","",text) in list("Yes","No",))
 								if("Yes")
@@ -223,7 +223,7 @@ obj/items
 										A.techcost+=cost
 										A.maxarmor = usr.intBPcap
 										A.armor = usr.intBPcap
-									else usr<<"You dont have enough money"
+									else to_chat(usr, "You dont have enough money")
 						if("Anti-Virus Lima")
 							switch(input("Anti-Virus Lima heals some damage. Has a chance to grow back limbs. Costs 25000 zenni.","",text) in list("Yes","No",))
 								if("Yes")
@@ -233,7 +233,7 @@ obj/items
 										A.techcost+=cost
 										A.maxarmor = usr.intBPcap
 										A.armor = usr.intBPcap
-									else usr<<"You dont have enough money"
+									else to_chat(usr, "You dont have enough money")
 						if("Anti-Virus Mike")
 							switch(input("Anti-Virus Mike heals HP hugely, Stamina and Ki completely. Doesn't have a chance to regrow limbs. Costs 50000 zenni.","",text) in list("Yes","No",))
 								if("Yes")
@@ -243,7 +243,7 @@ obj/items
 										A.techcost+=cost
 										A.maxarmor = usr.intBPcap
 										A.armor = usr.intBPcap
-									else usr<<"You dont have enough money"
+									else to_chat(usr, "You dont have enough money")
 						if("Anti-Virus Daybreaker")
 							switch(input("Anti-Virus Daybreaker cures vampirism. Costs 100000 zenni.","",text) in list("Yes","No",))
 								if("Yes")
@@ -253,7 +253,7 @@ obj/items
 										A.techcost+=cost
 										A.maxarmor = usr.intBPcap
 										A.armor = usr.intBPcap
-									else usr<<"You dont have enough money"
+									else to_chat(usr, "You dont have enough money")
 				if("Injections")
 					usr.InjectionChoice()
 	Viruses
@@ -266,11 +266,11 @@ obj/items
 			set category = null
 			set src in usr
 			if(usr.Race=="Android")
-				usr<<"You're an android, you cannot use this."
+				to_chat(usr, "You're an android, you cannot use this.")
 				return FALSE
 			if(usr.VirusesConsumed.len)
 				if(src.type in usr.VirusesConsumed)
-					usr<<"You've already consumed this virus."
+					to_chat(usr, "You've already consumed this virus.")
 					return FALSE
 			if(prob(25)||usr.Mutations>=4)
 				usr.Mutations+=1
@@ -278,10 +278,10 @@ obj/items
 					usr.Mutations+=1
 					if(prob(25)||usr.Mutations>=5)
 						usr.buudead = "force"
-						view(usr)<<"[usr] begins to fucking die!!"
+						to_chat(view(usr), "[usr] begins to fucking die!!")
 						spawn usr.Death()
 						return FALSE
-			view(usr)<<"[usr] injects a mysterious needle!"
+			to_chat(view(usr), "[usr] injects a mysterious needle!")
 			usr.VirusesConsumed+=src.type
 			return TRUE
 		Virus_Alfa
@@ -293,22 +293,22 @@ obj/items
 				if(..())
 					if(usr.techmod<4)
 						usr.genome.add_to_stat("Tech Modifier",2)
-						usr<<"Intelligence increased."
+						to_chat(usr, "Intelligence increased.")
 					else if(usr.techmod>=4)
 						usr.genome.add_to_stat("Tech Modifier",1)
-						usr<<"Intelligence increased."
+						to_chat(usr, "Intelligence increased.")
 					else if(usr.techmod>=7)
-						usr<<"You seem to already be too smart for this"
+						to_chat(usr, "You seem to already be too smart for this")
 					del(src)
 				else return
 			proc/Use(mob/M in view(1))
 				if(M in usr.out_mobs || M.KO || M == usr)
 					if(M.Race=="Android")
-						M<<"[M]: Android, it cannot use this."
+						to_chat(M, "[M]: Android, it cannot use this.")
 						return FALSE
 					if(M.VirusesConsumed.len)
 						if(src.type in M.VirusesConsumed)
-							M<<"[M]: already consumed this virus."
+							to_chat(M, "[M]: already consumed this virus.")
 							return FALSE
 					if(prob(25))
 						M.Mutations+=1
@@ -316,19 +316,19 @@ obj/items
 							M.Mutations+=1
 							if(prob(25) && M.Mutations>=5)
 								M.buudead = "force"
-								view(M)<<"[M]'s mutations overload the body, causing immediate death!"
+								to_chat(view(M), "[M]'s mutations overload the body, causing immediate death!")
 								spawn M.Death()
 								return FALSE
-					view(M)<<"[M] injects a mysterious needle!"
+					to_chat(view(M), "[M] injects a mysterious needle!")
 					M.VirusesConsumed+=src.type
 					if(M.techmod<4)
 						M.genome.add_to_stat("Tech Modifier",2)
-						usr<<"[M]: Intelligence increased."
+						to_chat(usr, "[M]: Intelligence increased.")
 					else if(M.techmod>=4)
 						M.genome.add_to_stat("Tech Modifier",1)
-						usr<<"[M]: Intelligence increased."
+						to_chat(usr, "[M]: Intelligence increased.")
 					else if(M.techmod>=7)
-						usr<<"[M] seems to already be too smart for this"
+						to_chat(usr, "[M] seems to already be too smart for this")
 					del(src)
 				else return
 		Virus_Bravo
@@ -338,7 +338,7 @@ obj/items
 			CompletelyBeneficial = 1
 			Consume()
 				if(..())
-					usr<<"Health and Defense increased."
+					to_chat(usr, "Health and Defense increased.")
 					usr.physdefBuff += 0.15
 					usr.kidefBuff += 0.15
 					del(src)
@@ -350,7 +350,7 @@ obj/items
 			CompletelyBeneficial = 1
 			Consume()
 				if(..())
-					usr<<"Ki and Stamina increased."
+					to_chat(usr, "Ki and Stamina increased.")
 					usr.maxstamina += 50
 					usr.Ki = usr.MaxKi
 					usr.stamina = usr.maxstamina
@@ -363,7 +363,7 @@ obj/items
 			cantblueprint=1
 			Consume()
 				if(..())
-					usr<<"Ki Regen increased."
+					to_chat(usr, "Ki Regen increased.")
 					usr.kiregenMod += 1
 					usr.kidefBuff -= 1.15
 					usr.kioffBuff -= 1.15
@@ -375,7 +375,7 @@ obj/items
 			cantblueprint=1
 			Consume()
 				if(..())
-					usr<<"Regeneration increased."
+					to_chat(usr, "Regeneration increased.")
 					usr.HPregenbuff += 2
 					usr.physdefBuff -= 1.25
 					del(src)
@@ -387,7 +387,7 @@ obj/items
 			CompletelyBeneficial = 1
 			Consume()
 				if(..())
-					usr<<"Lifespan increased."
+					to_chat(usr, "Lifespan increased.")
 					usr.genome.add_to_stat("Lifespan",3)
 					del(src)
 				else return
@@ -398,7 +398,7 @@ obj/items
 			CompletelyBeneficial = 1
 			Consume()
 				if(..())
-					usr<<"Strength and speed increased."
+					to_chat(usr, "Strength and speed increased.")
 					usr.physoffBuff += 0.5
 					usr.speedBuff += 0.5
 					del(src)
@@ -410,7 +410,7 @@ obj/items
 			CompletelyBeneficial = 1
 			Consume()
 				if(..())
-					usr<<"Technique and Ki increased."
+					to_chat(usr, "Technique and Ki increased.")
 					usr.techniqueBuff += 0.5
 					usr.kioffBuff += 0.5
 					usr.kidefBuff += 0.5
@@ -423,7 +423,7 @@ obj/items
 			CompletelyBeneficial = 1
 			Consume()
 				if(..())
-					usr<<"Temporary death regeneration achieved. You can resurrected from 10 more deaths. Each death will weaken [src]'s effectiveness."
+					to_chat(usr, "Temporary death regeneration achieved. You can resurrected from 10 more deaths. Each death will weaken [src]'s effectiveness.")
 					usr.DeathRegenTmp = 1
 					del(src)
 				else return
@@ -433,7 +433,7 @@ obj/items
 			cantblueprint=1
 			Consume()
 				if(..())
-					usr<<"You've become a vampire!"
+					to_chat(usr, "You've become a vampire!")
 					usr.Vampirification()
 					del(src)
 				else return
@@ -444,7 +444,7 @@ obj/items
 			CompletelyBeneficial = 1
 			Consume()
 				if(..())
-					usr<<"You've become able to move in stopped time!"
+					to_chat(usr, "You've become able to move in stopped time!")
 					usr.CanMoveInFrozenTime = 1
 					del(src)
 				else return
@@ -459,9 +459,9 @@ obj/items
 			set category = null
 			set src in view(1)
 			if(usr.Race=="Android")
-				usr<<"You're an android, you cannot use this."
+				to_chat(usr, "You're an android, you cannot use this.")
 				return
-			view(usr)<<"[usr] consumes a mysterious object!"
+			to_chat(view(usr), "[usr] consumes a mysterious object!")
 			if(counterVirus)
 				for(var/S in usr.VirusesConsumed)
 					if(counterVirus==S)
@@ -476,7 +476,7 @@ obj/items
 			counterVirus = /obj/items/Viruses/Virus_Delta
 			Consume()
 				if(..())
-					usr<<"Ki Regen reset."
+					to_chat(usr, "Ki Regen reset.")
 					usr.kiregenMod -= 1
 					usr.kidefBuff += 1.15
 					usr.kioffBuff += 1.15
@@ -488,7 +488,7 @@ obj/items
 			counterVirus = /obj/items/Viruses/Virus_Echo
 			Consume()
 				if(..())
-					usr<<"Regeneration increased."
+					to_chat(usr, "Regeneration increased.")
 					usr.HPregenbuff -= 2
 					usr.physdefBuff += 1.25
 					del(src)
@@ -498,7 +498,7 @@ obj/items
 			cantblueprint=1
 			Consume()
 				..()
-				view(usr)<<"[usr] sacrifices [usr] to destroy every Zombie!"
+				to_chat(view(usr), "[usr] sacrifices [usr] to destroy every Zombie!")
 				for(var/mob/npc/Enemy/Zombie/A in NPC_list)
 					A.Death()
 					sleep(1)
@@ -512,12 +512,12 @@ obj/items
 			Consume()
 				..()
 				if(prob(25))
-					usr << "Cure failed."
+					to_chat(usr, "Cure failed.")
 					return
 				var/nummut = rand(1,3)
 				usr.Mutations -= nummut
 				usr.Mutations = max(usr.Mutations,0)
-				usr << "[min(nummut,usr.Mutations)] mutations destroyed."
+				to_chat(usr, "[min(nummut,usr.Mutations)] mutations destroyed.")
 				del(src)
 				return
 		Anti_Virus_Lima
@@ -534,7 +534,7 @@ obj/items
 							if(C.lopped)
 								C.RegrowLimb()
 								C.health = 100
-				else usr << "You're still under the effects of a healing medicine."
+				else to_chat(usr, "You're still under the effects of a healing medicine.")
 				del(src)
 				return
 		Anti_Virus_Mike
@@ -542,7 +542,7 @@ obj/items
 			cantblueprint=1
 			Consume()
 				..()
-				usr <<"You must stand still and cannot take damage for 10 seconds!"
+				to_chat(usr, "You must stand still and cannot take damage for 10 seconds!")
 				var/prevHP = usr.HP
 				var/prevloc = usr.loc
 				sleep(100)
@@ -552,7 +552,7 @@ obj/items
 						usr.Ki = usr.MaxKi
 						usr.stamina = usr.maxstamina
 						usr.SpreadHeal(100)
-					else usr << "You're still under the effects of a healing medicine."
+					else to_chat(usr, "You're still under the effects of a healing medicine.")
 					del(src)
 				return
 		Anti_Virus_Daybreaker
@@ -561,7 +561,7 @@ obj/items
 			cantblueprint=1
 			Consume()
 				..()
-				usr << "You've been cured of Vampirism!"
+				to_chat(usr, "You've been cured of Vampirism!")
 				usr.UnVampire()
 				del(src)
 				return

@@ -23,7 +23,7 @@ obj/buff/MaxPower/Loop()
 				if(prob(20)) container.Ki-=(container.MaxKi*container.ssjdrain) //ki takes a small hit regardless.
 				if(container.Ki<=container.MaxKi*container.ssjdrain)
 					container.Revert()
-					container<<"You are too tired to sustain your form."
+					to_chat(container, "You are too tired to sustain your form.")
 				container.stamina -= trans_drain*max(0.001,container.ssjdrain)/2 //max statement ensures you won't be hitting exactly zero if drain changes mid drain.
 		//Super Saiyan 2 Drain
 		if(container.ssj==2) if(container.ssj2drain)
@@ -31,7 +31,7 @@ obj/buff/MaxPower/Loop()
 				if(prob(20)) container.Ki-=(container.MaxKi*container.ssj2drain) //ki takes a small hit regardless.
 				if(container.Ki<=container.MaxKi*container.ssj2drain)
 					container.Revert()
-					container<<"You are too tired to sustain your form."
+					to_chat(container, "You are too tired to sustain your form.")
 				container.stamina -= trans_drain*max(0.001,container.ssj2drain)/2 //max statement ensures you won't be hitting exactly zero if drain changes mid drain.
 		if(container.ssj == 1 && container.HasSkill(/datum/skill/heran/MstedMXPWR) && container.heran1mastery < 100) //Maestria do Super Heran cresce na forma (degraus pela %); requer a skill de maestria comprada
 			container.heran1mastery = min(100, container.heran1mastery + 0.0174)
@@ -175,14 +175,14 @@ mob/proc/Max_Power()
 			ssjat *= 0.5
 		hasssj=1
 		overlaychanged=1
-		view(src)<<"<font color=green>*A great wave of power emanates from [src] as they unleash their full power!*"
+		to_chat(view(src), "<font color=green>*A great wave of power emanates from [src] as they unleash their full power!*")
 		emit_Sound('chargeaura.wav')
 		createShockwavemisc(loc,1)
 		createCrater(loc,5)
 		Quake()
 		spawn Quake()
 		sleep(2000*ssjdrain)
-		view(src)<<"<font color=green>*[src]'s hair stands on end and grows!*"
+		to_chat(view(src), "<font color=green>*[src]'s hair stands on end and grows!*")
 		updateOverlay(/obj/overlay/hairs/superheran/sh1)
 		ssj=1
 		startbuff(/obj/buff/MaxPower,'SSJIcon.dmi')
@@ -245,13 +245,13 @@ mob/proc/True_Max_Power()
 		overlayList-='Electric_Red.dmi'
 		overlayList+='Electric_Red.dmi'
 		overlaychanged=1
-		view(6)<<"<font color=green>*A great wave of power emanates from [src] as they unleash their true power!!!*"
+		to_chat(view(6), "<font color=green>*A great wave of power emanates from [src] as they unleash their true power!!!*")
 		emit_Sound('chargeaura.wav')
 		createShockwavemisc(loc,1)
 		createCrater(loc,5)
 		spawn Quake()
 		sleep(2000*ssj2drain)
-		view(6)<<"<font color=green>*Red sparks begin to burst around [src]!*"
+		to_chat(view(6), "<font color=green>*Red sparks begin to burst around [src]!*")
 		ssj=2
 		updateOverlay(/obj/overlay/hairs/superheran/sh2)
 		ssjBuff=heran_form_mult()

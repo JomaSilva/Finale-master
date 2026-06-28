@@ -81,32 +81,32 @@ obj/Contact
 			if("Rival/Bad")
 				if(familiarity["[usr.signature]"]>=15)
 					relation["[usr.signature]"]="Rival/Bad"
-				else usr<<"You need 15 or more familiarity"
+				else to_chat(usr, "You need 15 or more familiarity")
 			if("Rival/Good")
 				if(familiarity["[usr.signature]"]>=15)
 					relation["[usr.signature]"]="Rival/Good"
-				else usr<<"You need 15 or more familiarity"
+				else to_chat(usr, "You need 15 or more familiarity")
 			if("Good")
 				if(familiarity["[usr.signature]"]>=50)
 					relation["[usr.signature]"]="Good"
-				else usr<<"You need 50 or more familiarity"
+				else to_chat(usr, "You need 50 or more familiarity")
 			if("Bad")
 				if(familiarity["[usr.signature]"]>=10)
 					relation["[usr.signature]"]="Bad"
-				else usr<<"You need 10 or more familiarity"
+				else to_chat(usr, "You need 10 or more familiarity")
 			if("Very Good")
 				if(familiarity["[usr.signature]"]>=100)
 					relation["[usr.signature]"]="Very Good"
-				else usr<<"You need 100 or more familiarity"
+				else to_chat(usr, "You need 100 or more familiarity")
 			if("Very Bad")
 				if(familiarity["[usr.signature]"]>=20)
 					relation["[usr.signature]"]="Very Bad"
-				else usr<<"You need 20 or more familiarity"
+				else to_chat(usr, "You need 20 or more familiarity")
 			if("Love")
 				if(familiarity["[usr.signature]"]>=200)
 					relation["[usr.signature]"]="Love"
-				else usr<<"You need 200 or more familiarity"
+				else to_chat(usr, "You need 200 or more familiarity")
 			if("Hate")
 				if(familiarity["[usr.signature]"]>=50)
 					relation["[usr.signature]"]="Hate"
-				else usr<<"You need 50 or more familiarity"
+				else to_chat(usr, "You need 50 or more familiarity")

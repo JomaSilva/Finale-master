@@ -26,7 +26,7 @@ obj/items/Equipment/Accessory/Crafted
 
 		Description()
 			..()
-			usr<<"<font color=white>Boosts inventory space by [invenboost]</font>"
+			to_chat(usr, "<font color=white>Boosts inventory space by [invenboost]</font>")
 
 		equip(var/mob/M)
 			..()
@@ -50,7 +50,7 @@ obj/items/Equipment/Accessory/Crafted
 
 		Description()
 			..()
-			usr<<"<font color=white>Boosts Energy Resistance by [eresist*100]%</font>"
+			to_chat(usr, "<font color=white>Boosts Energy Resistance by [eresist*100]%</font>")
 
 		equip(var/mob/M)
 			..()
@@ -76,7 +76,7 @@ obj/items/Equipment/Accessory/Crafted
 			set category = null
 			set src in usr
 			if(!equipped)
-				usr<<"You must equip this bag to use it!"
+				to_chat(usr, "You must equip this bag to use it!")
 				return
 			var/choice = alert(usr,"Would you like to store or take materials? This sack is holding [matlist.len]/[capacity] items.","","Store","Take")
 			switch(choice)
@@ -85,10 +85,10 @@ obj/items/Equipment/Accessory/Crafted
 					for(var/obj/items/Material/m in usr.contents)
 						mats+=m
 					if(mats.len==0)
-						usr<<"You have no materials to store!"
+						to_chat(usr, "You have no materials to store!")
 						return
 					if(matlist.len==capacity)
-						usr<<"Your bag is full!"
+						to_chat(usr, "Your bag is full!")
 						return
 					var/obj/items/Material/c = input(usr,"Which material would you like to store?","") as null|anything in mats
 					if(!c)
@@ -97,10 +97,10 @@ obj/items/Equipment/Accessory/Crafted
 					usr.contents-=c
 				if("Take")
 					if(matlist.len==0)
-						usr<<"You have no materials to take!"
+						to_chat(usr, "You have no materials to take!")
 						return
 					if(usr.inven_min==usr.inven_max)
-						usr<<"You have no room to take anything!"
+						to_chat(usr, "You have no room to take anything!")
 						return
 					var/obj/items/Material/c = input(usr,"Which material would you like to take?","") as null|anything in matlist
 					if(!c)

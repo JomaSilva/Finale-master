@@ -9,10 +9,10 @@ mob/keyable/verb/Focus()
 	set category = "Skills"
 	desc = "Focus on the circulation of your ki, increasing both your power and your drain."
 	if(!isBuffed(/obj/buff/Focus)&&!usr.KO)
-		usr<<"You focus on your ki circulation."
+		to_chat(usr, "You focus on your ki circulation.")
 		usr.startbuff(/obj/buff/Focus)
 	else if(isBuffed(/obj/buff/Focus))
-		usr<<"You let your mind drift."
+		to_chat(usr, "You let your mind drift.")
 		usr.stopbuff(/obj/buff/Focus)
 
 /obj/buff/Focus
@@ -36,11 +36,11 @@ mob/keyable/verb/Efficiency()
 	set category = "Skills"
 	desc = "Attempt to restrict your ki expenditure, becoming much more efficient but suffering a power reduction."
 	if(!isBuffed(/obj/buff/Efficiency)&&!usr.KO)
-		usr<<"You limit your ki expenditure."
+		to_chat(usr, "You limit your ki expenditure.")
 		usr.efficiencyon=1
 		usr.startbuff(/obj/buff/Efficiency)
 	else if(isBuffed(/obj/buff/Efficiency))
-		usr<<"You stop limiting your ki expenditure."
+		to_chat(usr, "You stop limiting your ki expenditure.")
 		usr.efficiencyon=0
 		usr.stopbuff(/obj/buff/Efficiency)
 

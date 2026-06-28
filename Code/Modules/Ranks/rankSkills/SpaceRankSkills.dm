@@ -18,7 +18,7 @@
 		assignverb(/mob/ETax/verb/Earth_Taxes)
 		assignverb(/mob/ETax/verb/Collect_Earth_Taxes)
 		assignverb(/mob/ETax/verb/Exempt_Earth_Taxes)
-	savant<<"You can add numbers together!"
+	to_chat(savant, "You can add numbers together!")
 /datum/skill/rank/Taxes/before_forget()
 	unassignverb(/mob/RTax/verb/Vegeta_Taxes)
 	unassignverb(/mob/RTax/verb/Collect_Vegeta_Taxes)
@@ -26,7 +26,7 @@
 	unassignverb(/mob/ETax/verb/Earth_Taxes)
 	unassignverb(/mob/ETax/verb/Collect_Earth_Taxes)
 	unassignverb(/mob/ETax/verb/Exempt_Earth_Taxes)
-	savant<<"You've forgotten how to do basic fucking math!?"
+	to_chat(savant, "You've forgotten how to do basic fucking math!?")
 /datum/skill/rank/Taxes/login(var/mob/logger)
 	..()
 	if(savant.Rank =="King of Vegeta")
@@ -45,7 +45,7 @@ mob/RTax/verb
 		set category="Other"
 		switch(input(usr,"You can set a person as royalty (either Prince, Princess, or simple lordship- only lordship can be undone completely.), or set them as a rank inside the army. You can also set taxes. Vegeta's Taxes are at [VegetaTax]z.") in list("Royalty","Army","Taxes","Cancel"))
 			if("Taxes")
-				usr<<"Vegeta's Taxes are at [VegetaTax]z."
+				to_chat(usr, "Vegeta's Taxes are at [VegetaTax]z.")
 				var/Mult=input("Enter a number for tax rate. This will increase or decrease across Vegeta. (1 = 1z)") as num
 				VegetaTax=Mult
 			if("Royalty")
@@ -122,7 +122,7 @@ mob/RTax/verb
 									if(vegeta_army[a][1] == madman) vegeta_army-=a
 	Collect_Vegeta_Taxes()
 		set category="Other"
-		usr<<"Vegeta's bank has [VegetaBank]z."
+		to_chat(usr, "Vegeta's bank has [VegetaBank]z.")
 		var/Mult=input("Enter a number to deduct from the bank. (1 = 1z)") as num
 		if(Mult<=VegetaBank)
 			VegetaBank-=Mult
@@ -144,9 +144,9 @@ mob/RTax/verb
 
 /datum/skill/rank/Fusion_Dance/after_learn()
 	savant.contents+=new/obj/Fusion_dance
-	savant<<"You can fuse!!"
+	to_chat(savant, "You can fuse!!")
 /datum/skill/rank/Fusion_Dance/before_forget()
 	for(var/obj/D in savant.contents)
 		if(D==/obj/Fusion_dance)
 			del(D)
-	savant<<"You've forgotten how to 'do the dance'!?"
+	to_chat(savant, "You've forgotten how to 'do the dance'!?")

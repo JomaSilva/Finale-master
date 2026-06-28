@@ -4,7 +4,7 @@ mob/proc/statfrost()
 		if(Class=="None") //class is RANDOM at birth (like the Saiyan class), not chosen — Mutant is the rare ~1% variant
 			if(rand(1,100) <= 1) Class = "Mutant Frost Demon"
 			else Class = "Frost Demon"
-			src << "<font color=#cda434><b>You were born a [Class].</b></font>"
+			to_chat(src, "<font color=#cda434><b>You were born a [Class].</b></font>")
 		genome = new/datum/genetics/Icer(/datum/genetics/proto/Icer)
 		genome.this_class = Class
 

@@ -32,11 +32,11 @@
 					precheck-=1
 			if(precheck<=0 && savant.skillUnlockOK(S)) //prereqs atendidos E a classe/raca permite (ex.: Wrathful so para Class=="Legendary")
 				if(S.enabled==0)
-					if(allowedtier >= S.tier) savant<<"You can now acquire Skill [S.name]!"
+					if(allowedtier >= S.tier) to_chat(savant, "You can now acquire Skill [S.name]!")
 					S.enabled = 1
 			else
 				if(S.enabled==1)
-					if(allowedtier >= S.tier) savant<<"You can no longer acquire Skill [S.name]."
+					if(allowedtier >= S.tier) to_chat(savant, "You can no longer acquire Skill [S.name].")
 					S.enabled = 0
 	for(var/datum/skill/S in savant.learned_skills)
 		if(S.prereqs.len > 0)
@@ -72,7 +72,7 @@
 /datum/skill/tree/proc/mod()
 	return
 /datum/skill/tree/proc/demod()
-	savant<<"You lost your ability to use [src.name], and with it, a huge chunk of power!"
+	to_chat(savant, "You lost your ability to use [src.name], and with it, a huge chunk of power!")
 	purge(src)
 	return
 /datum/skill/tree/proc/purge()
@@ -112,15 +112,15 @@
 	savant.testunlocks()
 	for(var/datum/skill/S in savant.learned_skills)
 		if(locate(S.type) in investedskills && S.tier > allowedtier && S.can_forget)
-			savant<<"You don't have enough skill in [src.name] to maintain [S.name]!"
+			to_chat(savant, "You don't have enough skill in [src.name] to maintain [S.name]!")
 			refund(S)
 		for(var/datum/skill/nS in constituentskills)
 			if(nS.type == S.type)
 				if(nS.enabled == 0 && S.can_forget)
-					savant<<"You forgot the prereqs for skill [S.name] and forgot it as well."
+					to_chat(savant, "You forgot the prereqs for skill [S.name] and forgot it as well.")
 					refund(S)
 				if(nS.override == 1 && S.can_forget)
-					savant<<"You learned a skill incompatible for [S.name] and as a result forgot it."
+					to_chat(savant, "You learned a skill incompatible for [S.name] and as a result forgot it.")
 					refund(S)
 	return
 
@@ -137,19 +137,19 @@
 		var/datum/skill/tree/nT = new path
 		nT.savant = savant
 		nT.enabled=1
-		savant<<"You can now acquire the Skilltree [nT.name]!"
+		to_chat(savant, "You can now acquire the Skilltree [nT.name]!")
 		savant.allowed_trees.Add(nT)
 	for(var/datum/skill/tree/T in savant.allowed_trees)
 		if(istype(T,path)&&T.enabled==0)
 			T.enabled=1
-			savant<<"You can now acquire the Skilltree [T.name]!"
+			to_chat(savant, "You can now acquire the Skilltree [T.name]!")
 	return
 
 /datum/skill/tree/proc/disabletree(var/datum/skill/tree/path1)
 	for(var/datum/skill/tree/T in savant.allowed_trees)
 		if(istype(T,path1)&&T.enabled==1)
 			T.enabled=0
-			savant<<"You can no longer acquire the Skilltree [T.name]."
+			to_chat(savant, "You can no longer acquire the Skilltree [T.name].")
 	return
 
 datum/skill/tree/proc/blacklist(var/datum/skill/S)
@@ -163,12 +163,12 @@ datum/skill/tree/proc/whitelist(var/datum/skill/S)
 datum/skill/tree/proc/enableskill(var/datum/skill/S)
 	for(var/datum/skill/nS in constituentskills)
 		if(nS.type==S)
-			if(!nS.enabled) savant<<"You can now learn [nS.name]!"
+			if(!nS.enabled) to_chat(savant, "You can now learn [nS.name]!")
 			nS.enabled=1
 datum/skill/tree/proc/disableskill(var/datum/skill/S)
 	for(var/datum/skill/nS in constituentskills)
 		if(nS.type==S)
-			if(nS.enabled) savant<<"You can no longer learn [nS.name]"
+			if(nS.enabled) to_chat(savant, "You can no longer learn [nS.name]")
 			nS.enabled=0
 datum/skill/tree/proc/is_enabled(var/datum/skill/S)
 	for(var/datum/skill/nS in constituentskills)

@@ -15,7 +15,7 @@ mob/proc/Death()
 				break
 	StopFightingStatus()
 	for(var/mob/A in view(src)) if(A.grabbee==src)
-		view()<<"[A] is forced to release [A.grabbee]!"
+		to_chat(view(), "[A] is forced to release [A.grabbee]!")
 		A.grabbee=null
 		A.grabMode=0
 		A.attacking=0
@@ -157,4 +157,4 @@ proc/Revive(var/mob/M,deathMessage)
 		M.overlayList-='Halo.dmi'
 		M.overlaychanged=1
 		M:Locate()
-		if(!deathMessage) M<<"You've been automagically revived. Enjoy your new life."
+		if(!deathMessage) to_chat(M, "You've been automagically revived. Enjoy your new life.")

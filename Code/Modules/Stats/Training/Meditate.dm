@@ -25,17 +25,17 @@ mob/default/verb/Meditate()
 			if(Anger > 100 || rageExpire)
 				Anger = 100
 				rageExpire = 0
-				src << "<font color=#88aacc>You center yourself; your rage melts away.</font>"
+				to_chat(src, "<font color=#88aacc>You center yourself; your rage melts away.</font>")
 			//First choice: study technology (gain tech) or meditate normally.
 			var/mode = alert(usr,"What would you like to do?","Meditate","Study","Meditate","Cancel")
 			if(mode == "Cancel") return
 			if(mode == "Study")
 				studytech = 1
 				deepmeditation = 0
-				usr << "You sit and study, turning your mind toward technology."
+				to_chat(usr, "You sit and study, turning your mind toward technology.")
 			else
 				studytech = 0
-				usr<<"You begin meditating."
+				to_chat(usr, "You begin meditating.")
 				if(!train&&alert(usr,"Deep meditation? You'll be interrupted by noise but you'll get more gains. This will also consume a little stamina.","","Sure","No.")=="Sure")
 					deepmeditation = 1
 					train=0
@@ -45,7 +45,7 @@ mob/default/verb/Meditate()
 			med=1
 			icon_state="Meditate"
 		else
-			usr<<"You stop meditating."
+			to_chat(usr, "You stop meditating.")
 			med=0
 			deepmeditation = 0
 			studytech = 0
@@ -59,14 +59,14 @@ mob/proc/medproc() if(client)
 				if(prob(1)) medruincount+=1
 				if(medruincount>=10)
 					medruincount=0
-					src << "The sounds around you are disrupting your meditation."
-					src << "You're pulled out of deep meditation."
+					to_chat(src, "The sounds around you are disrupting your meditation.")
+					to_chat(src, "You're pulled out of deep meditation.")
 					deepmeditation = 0
 		if(studyenchant)
 			if(studyenchanttimer>0)
 				studyenchanttimer--
 			else
-				usr<<"You've learned how to use the [studyenchant] enchantment!"
+				to_chat(usr, "You've learned how to use the [studyenchant] enchantment!")
 				knownenchants+=studyenchant
 				studyenchant=""
 				studyenchanttimer=0
@@ -133,7 +133,7 @@ mob/proc/medproc() if(client)
 				A.level = writelevel
 				A.exp = writeexp
 				src.contents+=A
-				src<<"You have finished writing!"
+				to_chat(src, "You have finished writing!")
 				writing=0
 				writetime=0
 				writetarget=0
@@ -183,7 +183,7 @@ mob/default/verb/Draw_Energy()
 		if(dblclk>=2&&DUpowerupon)
 			dblclk=0
 			Transformations_Activate()
-			src<<"You attempt to transform."
+			to_chat(src, "You attempt to transform.")
 		spawn (10) dblclk=0
 		adding = 1
 		poweruprunning = 1
@@ -218,7 +218,7 @@ mob/default/verb/Expel_Bal()
 	set hidden = 1
 	if(med&&deepmeditation&&!adding&&medbal)
 		medbal = 0
-		view(src)<<"[src] expelled some energy!"
+		to_chat(view(src), "[src] expelled some energy!")
 		Ki -= (MaxKi / 5)
 	adding = 1
 	spawn(7) adding = 0
@@ -234,15 +234,15 @@ mob/keyable/verb/Ki_Targets()
 	set waitfor = 0
 	set background = 1
 	if(shdboxcl)
-		usr<<"A cooldown for Ki targets is set. [shdboxcl/10] seconds."
+		to_chat(usr, "A cooldown for Ki targets is set. [shdboxcl/10] seconds.")
 		return
 	if(shdbox)
 		shdbox = 0
-		usr << "You are no longer shadowboxing||Ki targeting."
+		to_chat(usr, "You are no longer shadowboxing||Ki targeting.")
 		return
 	if(!move || !hasTime) return
 	med = 1
-	usr << "You are Ki targeting. Balls of your Ki will appear around you. Every time you click on one, a blast will be sent towards it, rewarding you with some blasting gains. This is more effective than meditation. You must still be meditating to do this. You can't do this in deep meditation."
+	to_chat(usr, "You are Ki targeting. Balls of your Ki will appear around you. Every time you click on one, a blast will be sent towards it, rewarding you with some blasting gains. This is more effective than meditation. You must still be meditating to do this. You can't do this in deep meditation.")
 	shdbox=1
 	while(shdbox && med && !deepmeditation)
 		if(!move || !hasTime) break

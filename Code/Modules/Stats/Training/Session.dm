@@ -10,10 +10,10 @@ mob/verb/Training_Session()
 		if("New Session")
 			usr.startingbp=usr.BP
 			usr.insession=1
-			usr<<"Session started!"
+			to_chat(usr, "Session started!")
 		if("View Session")
 			if(!usr.insession)
-				usr<<"You need to start a session first!"
+				to_chat(usr, "You need to start a session first!")
 				return
 			var/sessionbp=usr.BP-usr.startingbp
-			usr<<"So far, you have gained [sessionbp] battle power!"
+			to_chat(usr, "So far, you have gained [sessionbp] battle power!")

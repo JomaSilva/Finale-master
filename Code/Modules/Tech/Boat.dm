@@ -19,7 +19,7 @@ obj/Boat
 			set background = 1
 			var/turf/T = get_step(usr,dir)
 			if(T.Water&&!usr.boat&&!inuse)
-				usr<<"Anchors away! You set sail!"
+				to_chat(usr, "Anchors away! You set sail!")
 				usr.boat=1
 				inuse=1
 				step(usr,usr.dir)
@@ -62,9 +62,9 @@ obj/Boat
 				inuse=0
 				usr.boat = 0
 				if(usr.Savable) usr.icon_state=""
-				usr<<"You stop sailing."
+				to_chat(usr, "You stop sailing.")
 			else
-				usr<<"You can only sail in water!"
+				to_chat(usr, "You can only sail in water!")
 
 	Del()
 		if(pilot)

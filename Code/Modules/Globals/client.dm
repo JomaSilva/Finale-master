@@ -5,7 +5,7 @@ client
 mob/verb/examine(var/atom/A as anything)
 	set hidden = 1
 	set category = null
-	usr << "[A.name]: [A.desc]"
+	to_chat(usr, "[A.name]: [A.desc]")
 
 
 atom/proc/GetArea()
@@ -117,7 +117,7 @@ client
 			if(mob)
 				if(mob.Admin)
 					return 1
-			src << "[filename] is too big to upload!"
+			to_chat(src, "[filename] is too big to upload!")
 			return 0
 		return 1
 

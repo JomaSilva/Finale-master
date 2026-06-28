@@ -22,10 +22,10 @@ mob/Debug/verb/Roids()
 	set category = "Debug"
 	if(Roids)
 		Roids=0
-		usr<<"Asteroids are off."
+		to_chat(usr, "Asteroids are off.")
 	else
 		Roids=1
-		usr<<"Asteroids are on."
+		to_chat(usr, "Asteroids are on.")
 mob/Admin1/verb/Send_Spawn(mob/M in world)
 	set category="Admin"
 	desc = "Sends someone to a Planet's spawn point"
@@ -42,7 +42,7 @@ mob/OwnerAdmin/verb
 				summoning2=1
 				sleep(50)
 				summoning2=0
-			else usr<<"You are already trying to Judge someone..."
+			else to_chat(usr, "You are already trying to Judge someone...")
 		switch(input("Where to send [M]", "", text) in list ("Heaven","Hell"))
 		 if("Heaven")
 		  M.loc=locate(175,115,10)
@@ -107,11 +107,11 @@ mob/Admin3/verb/WipeRanksAutomatically()
 	set category="Admin"
 	if(!WipeRanks)
 		WipeRanks=1
-		usr<<"Wipe Ranks on"
+		to_chat(usr, "Wipe Ranks on")
 		return
 	if(WipeRanks)
 		WipeRanks=0
-		usr<<"Wipe Ranks off."
+		to_chat(usr, "Wipe Ranks off.")
 		return
 mob/Admin3/verb/Wipe_Ranks()
 	set name="Wipe ranks"
@@ -141,17 +141,17 @@ mob/Admin2/verb/Delete_Items2()
 mob/Admin2/verb/AllowBuilding()
 	set category="Admin"
 	if(buildable)
-		world<<"Building has been turned off."
+		to_chat(world, "Building has been turned off.")
 		buildable=0
 	else
-		world<<"Building has been turned on."
+		to_chat(world, "Building has been turned on.")
 		buildable=1
 var/showstats=0
 var/savingmap
 mob/Admin2/verb/SaveAll()
 	set category="Admin"
 	if(!savingmap) SaveWorld()
-	else usr<<"The map is already in the middle of saving."
+	else to_chat(usr, "The map is already in the middle of saving.")
 mob/OwnerAdmin/verb/Reboot()
 	set category="Admin"
 	switch(input(usr,"Restart the server?","Restart","No") in list("Yes","No"))
@@ -181,10 +181,10 @@ mob/OwnerAdmin/verb/Shutdown()
 
 mob/verb/Admins()
 	set category="Other"
-	for(var/mob/M) if(M.Admin) usr<<"[M.displaykey] ([M.Admin])"
+	for(var/mob/M) if(M.Admin) to_chat(usr, "[M.displaykey] ([M.Admin])")
 mob/Admin2/verb/Message(msg as text)
 	set category="Other"
-	world<<"<font size=2><font color=yellow>[msg]"
+	to_chat(world, "<font size=2><font color=yellow>[msg]")
 mob/var/tmp
 	walkingrand
 	walkingspeed
@@ -201,10 +201,10 @@ mob/Admin1/verb
 	ChatOn()
 		set category="Admin"
 		if(adminon)
-			usr<<"Admin chat off"
+			to_chat(usr, "Admin chat off")
 			adminon=0
 		else
-			usr<<"Admin chat on"
+			to_chat(usr, "Admin chat on")
 			adminon=1
 	Walk_Toward(mob/M in view(usr))
 		set category="Admin"
@@ -226,7 +226,7 @@ mob/Admin1/verb
 		WriteToLog("admin","[usr]([key]) changed their icon at [time2text(world.realtime,"Day DD hh:mm")]")
 	AllIPs()
 		set category="Admin"
-		for(var/mob/A) if(A.client) usr<<"[A.key] || IP [A.client.address] || Computer ID [A.client.computer_id]"
+		for(var/mob/A) if(A.client) to_chat(usr, "[A.key] || IP [A.client.address] || Computer ID [A.client.computer_id]")
 mob/Admin3/verb
 	Colorize(obj/O as obj|mob|turf in world)
 		set category="Admin"
@@ -261,7 +261,7 @@ mob/Admin1/verb
 		var/list/Races=new/list
 		for(var/mob/A) if(A.Player) if(!Races.Find(A.Race))
 			Races.Add(A.Race)
-			for(var/mob/B) if(B.Player) if(B.Race==A.Race) usr<<"[B.Race]:[B.name]"
+			for(var/mob/B) if(B.Player) if(B.Race==A.Race) to_chat(usr, "[B.Race]:[B.name]")
 mob/Admin3/verb
 
 	MassRevive()
@@ -295,7 +295,7 @@ mob/Admin2/verb
 		del(M)
 	XYZTeleport(mob/M in world)
 		set category="Admin"
-		usr<<"This will send the mob you choose to a specific xyz location."
+		to_chat(usr, "This will send the mob you choose to a specific xyz location.")
 		var/xx=input("X Location?") as num
 		var/yy=input("Y Location?") as num
 		var/zz=input("Z Location?") as num
@@ -315,10 +315,10 @@ mob/Admin2/verb
 		set category="Admin"
 		if(OOC)
 			OOC=0
-			world<<"OOC is disabled."
+			to_chat(world, "OOC is disabled.")
 		else
 			OOC=1
-			world<<"OOC is enabled."
+			to_chat(world, "OOC is enabled.")
 mob/Admin3/verb
 	Kill(mob/M in world)
 		set category="Admin"
@@ -332,9 +332,9 @@ mob/Admin3/verb
 				loc=M.loc
 				x-=1
 				sleep(10)
-				view(6)<<"<font color=red>[usr] grabs [M]!"
+				to_chat(view(6), "<font color=red>[usr] grabs [M]!")
 				M.move=0
-				view(6)<<"<font color=red>[M] shits his pants as [usr] sends his n00b ass to hell!"
+				to_chat(view(6), "<font color=red>[M] shits his pants as [usr] sends his n00b ass to hell!")
 				M.icon_state=""
 				previousicon = M.icon
 				M.icon='Exploded.dmi'
@@ -342,7 +342,7 @@ mob/Admin3/verb
 				M.icon_state="Dead"
 				sleep(10)
 				M.move=1
-				M<<"This is what you get for being a fucking n00b."
+				to_chat(M, "This is what you get for being a fucking n00b.")
 				M.icon_state=""
 				M.icon=previousicon
 				M.Death()
@@ -353,10 +353,10 @@ mob/Admin3/verb
 mob/Admin1/verb
 	Chat(msg as text)
 		set category="Admin"
-		for(var/mob/M) if(M.Admin) if(M.adminon) M<<"(Admin)<[SayColor]>[key]: [msg]"
+		for(var/mob/M) if(M.Admin) if(M.adminon) to_chat(M, "(Admin)<[SayColor]>[key]: [msg]")
 	Announce(msg as text)
 		set category="Admin"
-		world<<"<center><font color=silver>____________________<br>[usr] announces:<br>[msg]<br>____________________</center>"
+		to_chat(world, "<center><font color=silver>____________________<br>[usr] announces:<br>[msg]<br>____________________</center>")
 		chatcast(world, "<font color=#e0a030><b>[usr] announces:</b> [msg]</font>", "announce")
 mob/Admin2/verb
 	KO_Someone(mob/M in world)
@@ -372,7 +372,7 @@ mob/Admin2/verb
 mob/Admin2/verb
 	AssessAll()
 		set category="Admin"
-		for(var/mob/M) if(M.Player) usr<<"[M.name] ([num2text((round(M.BP)),20)]"
+		for(var/mob/M) if(M.Player) to_chat(usr, "[M.name] ([num2text((round(M.BP)),20)]")
 mob/Admin1/verb
 	Teleport(mob/M in world)
 		set category="Admin"
@@ -393,13 +393,13 @@ mob/Admin3/verb
 		world.Repop()
 	Set_Year()
 		set category="Admin"
-		usr<<"Global Year is at [Year]."
+		to_chat(usr, "Global Year is at [Year].")
 		var/mult=input("Enter a number for the Year. Example: 1.7 for month 7 of year 1.") as num
 		Year=mult
 		WriteToLog("admin","[usr]([key]) changed the Year to [mult] at [time2text(world.realtime,"Day DD hh:mm")]")
 	Year_Speed()
 		set category="Admin"
-		usr<<"Year speed is at [Yearspeed]x."
+		to_chat(usr, "Year speed is at [Yearspeed]x.")
 		var/multiplier=input("Enter a number for Year Speed, this will change how fast/slow the months go by.") as num
 		Yearspeed=multiplier
 		WriteToLog("admin","[usr]([key]) changed the Year speed to [multiplier]x at [time2text(world.realtime,"Day DD hh:mm")]")
@@ -410,11 +410,11 @@ mob/Admin2/verb
 		WriteToLog("admin","[usr]([key]) summoned [M.name]([M.key]) at [time2text(world.realtime,"Day DD hh:mm")]")
 		if(!Admin)
 			if(!summoning2)
-				usr<<"This takes all your energy to do... They will be summoned to you in 3 minutes..."
+				to_chat(usr, "This takes all your energy to do... They will be summoned to you in 3 minutes...")
 				Ki=0
 				summoning2=1
 				sleep(1800)
-			else usr<<"You are already trying to summon someone..."
+			else to_chat(usr, "You are already trying to summon someone...")
 		M.x=(x-1)
 		M.y=y
 		M.z=z
@@ -425,14 +425,14 @@ mob/Admin1/verb
 		WriteToLog("admin","[usr]([key]) booted [M.name]([M.key]) at [time2text(world.realtime,"Day DD hh:mm")]")
 		if(client)
 			if(M.Admin > usr.Admin)
-				M<<"[usr] tried to boot you."
+				to_chat(M, "[usr] tried to boot you.")
 			else
-				world<<"<font color=silver><center>[M.displaykey] has been booted."
+				to_chat(world, "<font color=silver><center>[M.displaykey] has been booted.")
 				M.Logout()
 	Mute(mob/M in world)
 		set category="Admin"
-		usr<<"You mute [M]."
-		world<<"[M] has been muted."
+		to_chat(usr, "You mute [M].")
+		to_chat(world, "[M] has been muted.")
 		M.talk=0
 		Mutes:Add(M.key)
 		WriteToLog("admin","[usr]([key]) muted [M.name]([M.key]) at [time2text(world.realtime,"Day DD hh:mm")]")
@@ -443,7 +443,7 @@ mob/Admin1/verb
 		for(var/mob/M in world)
 			if(M.key == Key)//Hope this works
 				M.talk=1
-				world<<"[M.displaykey] was unmuted, and may speak in OOC again."
+				to_chat(world, "[M.displaykey] was unmuted, and may speak in OOC again.")
 		WriteToLog("admin","[usr]([key]) unmuted Someone at [time2text(world.realtime,"Day DD hh:mm")]")
 var/list/Mutes = list()
 proc

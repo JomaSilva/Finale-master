@@ -248,7 +248,7 @@ mob/verb/Muscle_Icons()
 					usr.doexpandicon4=1
 					goto muscleformchoice
 				if("Ultra SSJ Muscle Form")
-					usr<<"This is your Muscle USSJ icon. This does not change your USSJ hair."
+					to_chat(usr, "This is your Muscle USSJ icon. This does not change your USSJ hair.")
 					usr.USSJMuscleForm=input(usr,"Select your Muscle USSJ form.","",null) as icon
 					usr.doexpandicon4=1
 					goto muscleformchoice
@@ -367,7 +367,7 @@ mob
 						goto ssjhairselection
 					if("Cancel")
 						done=1
-				if(done&&src.Race=="Saiyan") src<<"It's not normal for a full blood Saiyan to not have black hair, by the way."
+				if(done&&src.Race=="Saiyan") to_chat(src, "It's not normal for a full blood Saiyan to not have black hair, by the way.")
 			if("No"==alert(usr,"Change regular hair?","","Yes","No")) return
 			hairred=0
 			hairgreen=0

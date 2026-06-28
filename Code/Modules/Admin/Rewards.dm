@@ -22,11 +22,11 @@ mob/Admin1/verb
 			if("Power")
 				var/REWARD=input("How much?","Multiply [M.BP] x ??(Base BP = True Power x BP Mod")as num
 				if(REWARD<0)
-					src<<"You cant do that!"
+					to_chat(src, "You cant do that!")
 				else
 					M.BP*=REWARD
 					M.safetyBP*=REWARD
-					M<<"You have been rewarded [REWARD]x your BP by [usr]!"
+					to_chat(M, "You have been rewarded [REWARD]x your BP by [usr]!")
 				WriteToLog("admin","[usr]([key]) multiplied [M.name]([M.key])'s power by x[REWARD] at [time2text(world.realtime,"Day DD hh:mm")]")
 			if("Zenni")
 				var/amount=input("Add how much zenni?") as num
@@ -39,20 +39,20 @@ mob/Admin1/verb
 			if("Milestones")
 				var/REWARD=input("How much?","This will give free Milestones to [M]!")as num
 				if(REWARD<0||REWARD>10000)
-					src<<"You cant do that!"
+					to_chat(src, "You cant do that!")
 				else
 					M.totalskillpoints+=REWARD
 					M.admingibbedpoints+=REWARD
 					M.skillpoints+=REWARD //grant the SPENDABLE pool right away so the gift is usable immediately (skill trees check skillpoints, not totalskillpoints)
 					M.availablepoints+=REWARD //and the style-allocatable pool
-					M<<"You have been rewarded [REWARD] Milestones by [usr]!"
+					to_chat(M, "You have been rewarded [REWARD] Milestones by [usr]!")
 			if("Energy")
 				var/REWARD=input("How much?","Multiply [M.BP] x ??(Base BP = True Power x BP Mod")as num
 				if(REWARD<0)
-					src<<"You cant do that!"
+					to_chat(src, "You cant do that!")
 				else
 					M.BP*=REWARD
-					M<<"You have been rewarded [REWARD]x your BP by [usr]!"
+					to_chat(M, "You have been rewarded [REWARD]x your BP by [usr]!")
 			if("Anger")
 				M.StoredAnger=80
 			if("Anger Greatly")
@@ -87,7 +87,7 @@ mob/Admin1/verb
 			if("Super Namek")
 				WriteToLog("admin","[usr]([key]) made [M.name]([M.key]) Super Namekian at [time2text(world.realtime,"Day DD hh:mm")]")
 				if(!M.snamek) M.snamek()
-				else usr<<"They are a super namek."
+				else to_chat(usr, "They are a super namek.")
 			if("SSJ2")
 				WriteToLog("admin","[usr]([key]) made [M.name]([M.key]) Super Saiyan 2 at [time2text(world.realtime,"Day DD hh:mm")]")
 				M.SSj2()
@@ -100,21 +100,21 @@ mob/Admin1/verb
 				if(choice=="Yes")
 					if(!M.AscensionAllowed)
 						AscensionStarted = 1
-						world << "Ascension has started."
-						usr << "Enabled their ascension."
+						to_chat(world, "Ascension has started.")
+						to_chat(usr, "Enabled their ascension.")
 						M.AscensionAllowed = 1
 					else
-						usr << "Disabled their ascension."
+						to_chat(usr, "Disabled their ascension.")
 						M.AscensionAllowed = 0
 					WriteToLog("admin","[usr]([key]) toggled [M]'s ascension variable to [M.AscensionAllowed]. (1 == true, 0 == false.)")
 			if("Immortality")
 				if(!M.immortal)
 					M.immortal=1
-					usr<<"[M] is now immortal"
+					to_chat(usr, "[M] is now immortal")
 					WriteToLog("admin","[usr]([key]) made [M.name]([M.key]) immortal at [time2text(world.realtime,"Day DD hh:mm")]")
 				else
 					M.immortal=0
-					usr<<"[M] is now mortal"
+					to_chat(usr, "[M] is now mortal")
 					WriteToLog("admin","[usr]([key]) made [M.name]([M.key]) mortal at [time2text(world.realtime,"Day DD hh:mm")]")
 			if("Revive")
 				WriteToLog("admin","[usr]([key]) revived [M.name]([M.key]) at [time2text(world.realtime,"Day DD hh:mm")]")

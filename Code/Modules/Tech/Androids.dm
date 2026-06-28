@@ -9,7 +9,7 @@
 				usr.zenni-=cost
 				var/obj/A=new/obj/Modules/Solar_Cell(locate(usr.x,usr.y,usr.z))
 				A.techcost+=cost
-			else usr<<"You dont have enough money"
+			else to_chat(usr, "You dont have enough money")
 		verb/Description()
 			set category =null
 			usr<<"This device is usually pre-installed in androids. Solar Cells are pretty shit, they only charge you up to 80% stamina."*/
@@ -30,10 +30,10 @@ obj/Creatables
 				usr.zenni-=cost
 				var/obj/A=new/obj/Modules/Researcher_AI(locate(usr.x,usr.y,usr.z))
 				A.techcost+=cost
-			else usr<<"You dont have enough money"
+			else to_chat(usr, "You dont have enough money")
 		verb/Description()
 			set category =null
-			usr<<"A Researcher AI allows you to research tech on the fly, giving you small amounts of tech XP."
+			to_chat(usr, "A Researcher AI allows you to research tech on the fly, giving you small amounts of tech XP.")
 	Basic_Repair_Core
 		icon = 'Modules.dmi'
 		icon_state = "2"
@@ -44,10 +44,10 @@ obj/Creatables
 				usr.zenni-=cost
 				var/obj/A=new/obj/Modules/Basic_Repair_Core(locate(usr.x,usr.y,usr.z))
 				A.techcost+=cost
-			else usr<<"You dont have enough money"
+			else to_chat(usr, "You dont have enough money")
 		verb/Description()
 			set category =null
-			usr<<"A not very good repair core used as a supplement for normal celluar regeneration processes."
+			to_chat(usr, "A not very good repair core used as a supplement for normal celluar regeneration processes.")
 	Time_Stop_Inhibitor
 		icon = 'Modules.dmi'
 		icon_state = "2"
@@ -58,10 +58,10 @@ obj/Creatables
 				usr.zenni-=cost
 				var/obj/A=new/obj/Modules/Time_Stop_Inhibitor(locate(usr.x,usr.y,usr.z))
 				A.techcost+=cost
-			else usr<<"You dont have enough money"
+			else to_chat(usr, "You dont have enough money")
 		verb/Description()
 			set category =null
-			usr<<"A time stop inhibitor prevents you from being frozen from localized timestop and global timestops. Takes shitloads of energy."
+			to_chat(usr, "A time stop inhibitor prevents you from being frozen from localized timestop and global timestops. Takes shitloads of energy.")
 	Reinforced_Frame
 		icon = 'Modules.dmi'
 		icon_state = "2"
@@ -94,10 +94,10 @@ obj/Creatables
 				I.techcost+=500000
 				J.techcost+=500000
 				K.techcost+=500000
-			else usr<<"You dont have enough money"
+			else to_chat(usr, "You dont have enough money")
 		verb/Description()
 			set category =null
-			usr<<"Upgraded frame for androids. Further enhances body durability, but further limits the flow of ki. WARNING: You cannot uninstall this part, choose wisely."
+			to_chat(usr, "Upgraded frame for androids. Further enhances body durability, but further limits the flow of ki. WARNING: You cannot uninstall this part, choose wisely.")
 */
 obj/Modules/Time_Stop_Inhibitor
 	desc = "An item that prevents you from being frozen from localized timestop and global timestops. Takes shitloads of energy."
@@ -108,10 +108,10 @@ obj/Modules/Time_Stop_Inhibitor
 			if(TimeStopped&&!CanMoveInFrozenTime)
 				if(elec_energy>=elec_energy_max)
 					elec_energy = 0
-					savant << "You can move in the frozen time."
+					to_chat(savant, "You can move in the frozen time.")
 					CanMoveInFrozenTime=1
 					spawn(300)
-						savant << "Your time is up."
+						to_chat(savant, "Your time is up.")
 						CanMoveInFrozenTime=0
 				else CanMoveInFrozenTime = 0
 			else if(!TimeStopped) CanMoveInFrozenTime = 0
@@ -260,7 +260,7 @@ obj/Modules/Reinforced_Frame
 				if(istype(M,requiredupgrade))
 					prereq+=1
 			if(prereq<1)
-				savant<<"Your [src.name] has been uninstalled, as a dependancy is missing"
+				to_chat(savant, "Your [src.name] has been uninstalled, as a dependancy is missing")
 				unequip()
 				remove()
 		..()
@@ -368,16 +368,16 @@ obj/Modules/Reconstruction_Core
 		set src in usr
 		var/calibrating=0 //no need for tmp in verbs
 		if(isequipped&&functional&&!calibrating)
-			usr<<"Maintenance processes engaged. Please wait..."
+			to_chat(usr, "Maintenance processes engaged. Please wait...")
 			calibrating=1
 			spawn(6000)
-			usr<<"Maintenance complete. Reconstruction core functional"
+			to_chat(usr, "Maintenance complete. Reconstruction core functional")
 			calibrating=0
 			canreconstruct=1
 		else if(isequipped&&functional&&calibrating)
-			usr<<"Calibration in progress..."
+			to_chat(usr, "Calibration in progress...")
 		else
-			usr<<"ERROR: NONFUNCTIONAL UNIT"
+			to_chat(usr, "ERROR: NONFUNCTIONAL UNIT")
 	remove()
 		if(savant)
 			savant.reconstructable=0
@@ -401,7 +401,7 @@ mob/var/reconstructable=0
 mob/proc/Generate_Droid_Parts() //meant to be used ONCE on character creation for droids.
 	set background = 1
 	if(client&&Race=="Android")
-		src<<"Initializing systems, please stand by."
+		to_chat(src, "Initializing systems, please stand by.")
 		var/obj/Modules/Solar_Cell/A = new
 		A.loc = src
 		var/list/limbselection = list()
@@ -563,7 +563,7 @@ mob/proc/Generate_Droid_Parts() //meant to be used ONCE on character creation fo
 					X.name = "Systems"
 					sleep(2)
 		sleep(2)
-		src<<"All systems nominal."
+		to_chat(src, "All systems nominal.")
 
 obj/items/Recharge_Station
 	desc = "When provided power, this station will be able to provide power to androids and cyborg modules."
@@ -582,42 +582,42 @@ obj/items/Recharge_Station
 		switch(alert(usr,"Upgrade what?","","Efficiency","Tier","Solars"))
 			if("Solars")
 				if(solarupgrade)
-					usr << "You already have this upgrade!"
+					to_chat(usr, "You already have this upgrade!")
 					return
 				else
 					if(alert(usr,"Pay 100000 zenni for this upgrade? You have [usr.zenni] zenni.","","Yes","No")=="Yes")
 						if(usr.zenni>=100000)
 							usr.zenni-=100000
 							solarupgrade = 1
-							view(usr) << "Recharge Station upgraded."
+							to_chat(view(usr), "Recharge Station upgraded.")
 						else
-							usr<<"Not enough zenni!"
+							to_chat(usr, "Not enough zenni!")
 							return
 			if("Tier")
 				if(tier>=maxtier)
-					usr << "You can't upgrade this any further!"
+					to_chat(usr, "You can't upgrade this any further!")
 					return
 				else
 					if(alert(usr,"Pay [10000*tier] zenni for this upgrade? You have [usr.zenni] zenni.","","Yes","No")=="Yes")
 						if(usr.zenni>=10000*tier)
 							usr.zenni-=10000*tier
 							tier += 1
-							view(usr) << "Recharge Station upgraded."
+							to_chat(view(usr), "Recharge Station upgraded.")
 						else
-							usr<<"Not enough zenni!"
+							to_chat(usr, "Not enough zenni!")
 							return
 			if("Efficiency")
 				if(efficiency>=4)
-					usr<<"You can't upgrade this any further!"
+					to_chat(usr, "You can't upgrade this any further!")
 					return
 				else
 					if(alert(usr,"Pay [20000*efficiency] zenni for this upgrade? You have [usr.zenni] zenni.","","Yes","No")=="Yes")
 						if(usr.zenni>=20000*efficiency)
 							usr.zenni-=20000*efficiency
 							efficiency += 0.5
-							view(usr) << "Recharge Station upgraded."
+							to_chat(view(usr), "Recharge Station upgraded.")
 						else
-							usr<<"Not enough zenni!"
+							to_chat(usr, "Not enough zenni!")
 							return
 	verb/Bolt()
 		set category = null
@@ -625,14 +625,14 @@ obj/items/Recharge_Station
 		switch(alert(usr,"Bolt? Currently its [Bolted]. (1 == Bolted, 0 == Free.) This machine will only work while bolted.","","Bolt","Unbolt","Cancel"))
 			if("Bolt")
 				Bolted = 1
-				view(usr) << "Recharge Station bolted."
+				to_chat(view(usr), "Recharge Station bolted.")
 			if("Unbolt")
 				Bolted = 0
-				view(usr) << "Recharge Station unbolted."
+				to_chat(view(usr), "Recharge Station unbolted.")
 	verb/Check_Energy()
 		set category = null
 		set src in view(1)
-		usr<<"This station has [elec_energy] energy of a maximum of [elec_energy_max]."
+		to_chat(usr, "This station has [elec_energy] energy of a maximum of [elec_energy_max].")
 
 	New()
 		..()

@@ -181,10 +181,10 @@ mob/verb
 the var as /image for easy access, even though what's inside
 isn't really images*/
 		var/overlaycount
-		src<<"Listing Overlays:"
+		to_chat(src, "Listing Overlays:")
 		for(var/image/X as anything in src.overlays)
 			overlaycount++
-			src << "Overlay [overlaycount]: [X]([X.icon])([X.icon_state])[X.tag]"
+			to_chat(src, "Overlay [overlaycount]: [X]([X.icon])([X.icon_state])[X.tag]")
 		var/Choice=alert(usr,"show objoverlay list?","","Yes","No")
 		switch(Choice)
 			if("Yes")
@@ -193,29 +193,29 @@ isn't really images*/
 					overlaycount2+=1
 					if(istype(X,/obj/overlay))
 						var/obj/overlay/nX = X
-						src << "Overlay ID [overlaycount2]: [nX].[nX.ID]([nX.icon])[nX.tag]"
+						to_chat(src, "Overlay ID [overlaycount2]: [nX].[nX.ID]([nX.icon])[nX.tag]")
 					else
-						src << "Overlay [overlaycount]: [X]([X.icon])([X.icon_state])[X.tag]"
-		src<<"Select a Overlay"
+						to_chat(src, "Overlay [overlaycount]: [X]([X.icon])([X.icon_state])[X.tag]")
+		to_chat(src, "Select a Overlay")
 		overlaycount=0
 		for(var/image/X as anything in src.overlays)
 			overlaycount+=1
-			src << "Overlay [overlaycount]: [X]([X.icon])([X.icon_state])[X.tag]"
+			to_chat(src, "Overlay [overlaycount]: [X]([X.icon])([X.icon_state])[X.tag]")
 			if(alert(src,"Remove this overlay?",,"Yes","No") == "Yes")
 				src.overlays -= X
 		var/Choice2=alert(usr,"delete from overlays list?","","Yes","No")
 		switch(Choice2)
 			if("Yes")
 				overlaycount=0
-				src<<"Listing Overlays (2)"
+				to_chat(src, "Listing Overlays (2)")
 				for(var/obj/overlay/X as anything in src.vis_contents)
 					overlaycount+=1
-					src << "Overlay ID [overlaycount]: [X].[X.ID]([X.icon])[X.tag]"
-				src<<"Select a Overlay (2)"
+					to_chat(src, "Overlay ID [overlaycount]: [X].[X.ID]([X.icon])[X.tag]")
+				to_chat(src, "Select a Overlay (2)")
 				overlaycount=0
 				for(var/obj/overlay/X as anything in src.vis_contents)
 					overlaycount+=1
-					src << "Overlay [overlaycount]: [X]([X.icon])([X.icon_state])[X.tag]"
+					to_chat(src, "Overlay [overlaycount]: [X]([X.icon])([X.icon_state])[X.tag]")
 					if(alert(src,"Remove this overlay?",,"Yes","No") == "Yes")
 						src.overlays -= X
 		overlaychanged = 1

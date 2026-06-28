@@ -39,10 +39,10 @@ mob/var/AdvEffusion=0
 
 /datum/skill/general/selfdestruct/after_learn()
 	assignverb(/mob/keyable/verb/Self_Destruct)
-	savant<<"You can now suicide!"
+	to_chat(savant, "You can now suicide!")
 /datum/skill/general/selfdestruct/before_forget()
 	unassignverb(/mob/keyable/verb/Self_Destruct)
-	savant<<"You've forgotten how to use Self Destruct!?"
+	to_chat(savant, "You've forgotten how to use Self Destruct!?")
 
 
 /datum/skill/adveff/VoidShout
@@ -60,22 +60,22 @@ mob/var/AdvEffusion=0
 
 	after_learn()
 		assignverb(/mob/keyable/verb/Void_Shout)
-		savant<<"You can now use Void Shout!"
+		to_chat(savant, "You can now use Void Shout!")
 	before_forget()
 		unassignverb(/mob/keyable/verb/Void_Shout)
-		savant<<"You've forgotten how to use Void Shout!?"
+		to_chat(savant, "You've forgotten how to use Void Shout!?")
 
 
 /mob/keyable/verb/Void_Shout()
 	set category="Skills"
 	if(Planet=="Interdimension"||expressedBP<4e010)
-		usr << "You can't use Void Shout right now. (40 billion BP and not already in Interdimension.)"
+		to_chat(usr, "You can't use Void Shout right now. (40 billion BP and not already in Interdimension.)")
 		return
-	view(usr)<<"[usr] starts screaming!"
+	to_chat(view(usr), "[usr] starts screaming!")
 	Quake()
 	sleep(40)
 	Quake()
-	view(usr)<<"[usr]'s screams open up a small temporary portal!"
+	to_chat(view(usr), "[usr]'s screams open up a small temporary portal!")
 	var/obj/InterdimensionPortal/nP = new(get_step(usr,usr.dir))
 	step(nP,dir)
 

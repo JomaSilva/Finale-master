@@ -21,16 +21,16 @@ obj/Absorb_Android
 			usr.absorbing=1
 			if(M.KO&&!M.dead)
 				if(M.Race=="Android") if(!M.dead)
-					usr<<"You absorb [M], and [M]'s materials siphon into you!"
-					M<<"<font color=red>STRUCTUAL INTEGRITY FAILURE"
-					oview(usr)<<"[usr]([usr.displaykey]) absorbs [M]!"
+					to_chat(usr, "You absorb [M], and [M]'s materials siphon into you!")
+					to_chat(M, "<font color=red>STRUCTUAL INTEGRITY FAILURE")
+					to_chat(oview(usr), "[usr]([usr.displaykey]) absorbs [M]!")
 					usr.emit_Sound('Electricity-sound.ogg')
 					usr.AbsorbDatum.absorb(M,2,6)
 					usr.Ki+=M.Ki
 					if(usr.Ki>usr.MaxKi) usr.Ki=usr.MaxKi
 				else if(!M.dead)
-					usr<<"You begin absorbing [M]'s energy"
-					oview(usr)<<"[usr]([usr.displaykey]) begins draining [M] of their energy!"
+					to_chat(usr, "You begin absorbing [M]'s energy")
+					to_chat(oview(usr), "[usr]([usr.displaykey]) begins draining [M] of their energy!")
 					usr.emit_Sound('absorb.wav')
 					usr.overlayList+='AbsorbSparks.dmi'
 					usr.overlaychanged=1
@@ -61,12 +61,12 @@ obj/Absorb_Android
 					usr.absorbing = 0
 					action = 0
 					if(usr.baseKi<=usr.baseKiMax)usr.baseKi+=usr.kicapcheck(5*usr.KiMod)
-				else usr << "They're dead. Can't absorb them."
-			else usr<<"They must be knocked out, and must be alive, and must not have been already absorbed in the last 5 minutes."
+				else to_chat(usr, "They're dead. Can't absorb them.")
+			else to_chat(usr, "They must be knocked out, and must be alive, and must not have been already absorbed in the last 5 minutes.")
 		else if(usr.absorbing&&action)
 			action = 0
 			usr.absorbing = 0
-		else usr << "Unable to absorb."
+		else to_chat(usr, "Unable to absorb.")
 
 
 	verb/A_Expel()
@@ -83,8 +83,8 @@ obj/Buu_Absorb
 			if(M.KO&&!M.dead)
 				M.buudead="force"
 				var/ismajor = usr.AbsorbDatum:absorb(M,2,6)
-				M<<"[usr]([usr.displaykey]) absorbs you!"
-				oview(usr)<<"[usr]([usr.displaykey]) absorbed [M]!"
+				to_chat(M, "[usr]([usr.displaykey]) absorbs you!")
+				to_chat(oview(usr), "[usr]([usr.displaykey]) absorbed [M]!")
 				usr.currentNutrition += 50
 				if(ismajor)
 					M.buudead=0
@@ -93,7 +93,7 @@ obj/Buu_Absorb
 					usr.Ki+=M.Ki
 					usr.overcharge = 1
 				usr.emit_Sound('absorb.wav')
-			else usr<<"They must be knocked out, and must be alive, and must not have been absorbed already in the last 5 minutes."
+			else to_chat(usr, "They must be knocked out, and must be alive, and must not have been absorbed already in the last 5 minutes.")
 		sleep(20)
 		usr.absorbing=0
 	verb/Bu_Expel()
@@ -112,17 +112,17 @@ obj/Bio_Absorb
 				var/canachieve
 				if((usr.Race=="Bio-Android"|| (usr.Parent_Race=="Bio-Android"))&&!usr.cell2)
 					if(M.Player&&M.BP>=15000000||usr.expressedBP>=usr.cell2at)
-						usr<<"You can reach form 2 in this absorption. (If Ascension is turned on. It has to be marked as a Major absorb.)"
+						to_chat(usr, "You can reach form 2 in this absorption. (If Ascension is turned on. It has to be marked as a Major absorb.)")
 						canachieve = 1
 				if((usr.Race=="Bio-Android"|| (usr.Parent_Race=="Bio-Android"))&&!usr.cell3)
 					if(M.Player&&M.BP>=20000000||usr.expressedBP>=usr.cell3at)
-						usr<<"You can reach form 3 in this absorption. (If Ascension is turned on. It has to be marked as a Major absorb.)"
+						to_chat(usr, "You can reach form 3 in this absorption. (If Ascension is turned on. It has to be marked as a Major absorb.)")
 						canachieve = 1
 				var/ismajor = usr.AbsorbDatum.absorb(M)
 				usr.currentNutrition += 50
-				usr<<"You absorb [M]!"
-				M<<"[usr]([usr.displaykey]) absorbs you!"
-				oview(usr)<<"[usr]([usr.displaykey]) absorbed [M]!"
+				to_chat(usr, "You absorb [M]!")
+				to_chat(M, "[usr]([usr.displaykey]) absorbs you!")
+				to_chat(oview(usr), "[usr]([usr.displaykey]) absorbed [M]!")
 				if(ismajor)
 					M.buudead=0
 					usr.SpreadHeal(100,1,0)
@@ -149,7 +149,7 @@ obj/Bio_Absorb
 							usr.perfecttranscinematic()
 				else
 					usr.emit_Sound('absorb.wav')
-			else usr<<"They must be knocked out, and must be alive, and must not have been absorbed already in the last 5 minutes."
+			else to_chat(usr, "They must be knocked out, and must be alive, and must not have been absorbed already in the last 5 minutes.")
 		sleep(20)
 		usr.absorbing=0
 	verb/B_Expel()
@@ -224,9 +224,9 @@ datum/Absorbs
 						Revive(M,1)
 						//M.loc = locate(container.loc)
 						M.loc = locate(container.x,container.y,container.z)
-						M << "You've been regurgitated."
+						to_chat(M, "You've been regurgitated.")
 						spawn M.KO()
-						oview(M) << "[M] was thrown up!"
+						to_chat(oview(M), "[M] was thrown up!")
 						step(M,container.dir)
 						MajorAbsorbSigs -= M.signature
 					else if(M)
@@ -235,9 +235,9 @@ datum/Absorbs
 								Revive(M,1)
 								//M.loc = locate(container.loc)
 								M.loc = locate(container.x,container.y,container.z)
-								M << "You've been regurgitated."
+								to_chat(M, "You've been regurgitated.")
 								spawn M.KO()
-								oview(M) << "[M] was thrown up!"
+								to_chat(oview(M), "[M] was thrown up!")
 								step(M,container.dir)
 								MajorAbsorbSigs -= M.signature
 					break
@@ -272,8 +272,8 @@ datum/Absorbs
 						M.loc = locate(container.x,container.y,container.z)
 						Revive(M,1)
 						spawn M.KO()
-						M << "You've been regurgitated."
-						oview(M) << "[M] was thrown up!"
+						to_chat(M, "You've been regurgitated.")
+						to_chat(oview(M), "[M] was thrown up!")
 						M.loc = locate(container.x,container.y,container.z)
 						step(M,container.dir)
 						MajorAbsorbSigs -= M.signature
@@ -323,7 +323,7 @@ datum/Absorbs
 				container.AbsorbBP += LastMajorAbsorbBP
 				M.GotoPlanet("Sealed",0)
 				spawn
-					M << "You have been marked as a Major absorb. This means you're technically alive, but 'sealed.' Reincarnate to make this permanent, or be online when the other player regurgitates you. You can also choose to die."
+					to_chat(M, "You have been marked as a Major absorb. This means you're technically alive, but 'sealed.' Reincarnate to make this permanent, or be online when the other player regurgitates you. You can also choose to die.")
 					if(alert(M,"Would you like to die?","","Fuck Yeah","Nah")=="Fuck Yeah")
 						M.buudead = "force"
 						spawn M.Death()

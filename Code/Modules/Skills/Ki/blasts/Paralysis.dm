@@ -11,11 +11,11 @@
 
 /datum/skill/rank/Paralysis/after_learn()
 	assignverb(/mob/keyable/verb/Paralysis)
-	savant<<"You can fire an [name]!"
+	to_chat(savant, "You can fire an [name]!")
 
 /datum/skill/rank/Paralysis/before_forget()
 	unassignverb(/mob/keyable/verb/Paralysis)
-	savant<<"You've forgotten how to fire an [name]!?"
+	to_chat(savant, "You've forgotten how to fire an [name]!?")
 datum/skill/rank/Paralysis/login(var/mob/logger)
 	..()
 	assignverb(/mob/keyable/verb/Paralysis)

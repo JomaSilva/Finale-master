@@ -20,7 +20,7 @@ mob
 				if(TargetMob.HP>=10&&prob(40))
 					spawn TargetMob.Werewolfify()
 			if(TargetMob.HP<5&&murderToggle)
-				view(TargetMob) << "[TargetMob] was killed by [usr], the werewolf!"
+				to_chat(view(TargetMob), "[TargetMob] was killed by [usr], the werewolf!")
 				spawn TargetMob.Death()
 			return TRUE
 		Werewolfify()
@@ -55,11 +55,11 @@ obj/items/Clawed_Talisman
 		set src in view(1)
 		if(!usr.IsAWereWolf&&usr.CanEat&&!usr.IsAVampire)
 			usr.Werewolfify()
-			view(usr)<<"[usr] has become a Werewolf!!!"
+			to_chat(view(usr), "[usr] has become a Werewolf!!!")
 			usr.startbuff(/obj/buff/Werewolf)
 			del(src)
 		else
-			usr<<"The talisman simply passes through your system. It cannot do anything for you."
+			to_chat(usr, "The talisman simply passes through your system. It cannot do anything for you.")
 
 obj/Artifacts/Silver_Chalice
 	//parent_type = /obj/items //This allows obj/Artifact to access ALL procedures and variables of /item.
@@ -73,10 +73,10 @@ obj/Artifacts/Silver_Chalice
 		set src in oview(1)
 		if(usr.IsAWereWolf&&usr.CanEat)
 			usr.UnWerewolf()
-			view(usr)<<"[usr] has been cured of Lycanthropy!!!"
+			to_chat(view(usr), "[usr] has been cured of Lycanthropy!!!")
 			usr.stopbuff(/obj/buff/Werewolf)
 		else
-			usr<<"The liquids simply pass through your system. The chalice cannot do anything for you."
+			to_chat(usr, "The liquids simply pass through your system. The chalice cannot do anything for you.")
 mob/var
 	iswolfform=0
 	wolfdrain=0.015
@@ -97,7 +97,7 @@ obj/buff/Werewolf
 					if(container.MysticPcnt==1) container.Ki-=(container.MaxKi*container.wolfdrain) //ki takes a small hit regardless.
 					if(container.Ki<=container.MaxKi*container.wolfdrain)
 						container.Revert()
-						container<<"You are too tired to sustain your form."
+						to_chat(container, "You are too tired to sustain your form.")
 					container.stamina -= trans_drain*max(0.001,container.wolfdrain)/2 //max statement ensures you won't be hitting exactly zero if drain changes mid drain.
 		if(lastForm!=container.iswolfform)
 			lastForm=container.iswolfform

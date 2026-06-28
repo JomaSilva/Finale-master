@@ -45,10 +45,10 @@ obj/items
 			if(telenulon)
 				telenulon = 0
 				telenuldur = 0
-				view(src) << "[src] turned off!!!"
+				to_chat(view(src), "[src] turned off!!!")
 			else
 				telenulon = 1
-				view(src) << "[src] turned on!!!"
+				to_chat(view(src), "[src] turned on!!!")
 				telenulmdur = min(100 * round(log(8,usr.techskill)),10)
 		proc/Ticker()
 			set background = 1
@@ -58,7 +58,7 @@ obj/items
 				if(telenuldur <=0)
 					telenulon=0
 					telenuldur=0
-					view(src) << "[src] turned off!!!"
+					to_chat(view(src), "[src] turned off!!!")
 			sleep(1)
 			spawn Ticker()
 	Omniwatch
@@ -78,7 +78,7 @@ obj/items
 			set category = null
 			set src in usr
 			if(isdnaonly == 1 && mastersig != usr.signature)
-				view(5) << "[src] explodes!"
+				to_chat(view(5), "[src] explodes!")
 				del(src)
 				return
 			else omnichannel = input(usr,"Set the channel.","",omnichannel) as text
@@ -90,7 +90,7 @@ obj/items
 			set category = null
 			set src in usr
 			if(isdnaonly == 1 && mastersig != usr.signature)
-				view(5) << "[src] explodes!"
+				to_chat(view(5), "[src] explodes!")
 				del(src)
 			else
 				isdnaonly = 1
@@ -99,14 +99,14 @@ obj/items
 			switch(input(usr,"Watch Interface:","Watch Options","Done") in list("Done","Teleport","Speak","Henshin!","Henshin Icon"))
 				if("Teleport")
 					if(isdnaonly == 1 && mastersig != usr.signature)
-						view(5) << "[src] explodes!"
+						to_chat(view(5), "[src] explodes!")
 						del(src)
 						return
 					else
 						var/telecheck = 0
 						for(var/obj/items/Teleport_Nullifier/Tn in nulllist)
 							if(Tn.z == usr.z && Tn.telenulon)
-								usr << "Teleport failed!"
+								to_chat(usr, "Teleport failed!")
 								telecheck = 1
 								break
 						if(!usr.canmove || usr.KO || usr.deathregening || usr.grabParalysis || usr.stagger) telecheck = 1
@@ -135,8 +135,8 @@ obj/items
 									if(isturf(oj.loc))
 										var/obj/nM = choice.loc
 										usr.loc = locate(nM.x,nM.y,nM.z)
-									else usr<<"[src]: Failed teleport!"
-								else usr<<"[src]: Failed teleport!"
+									else to_chat(usr, "[src]: Failed teleport!")
+								else to_chat(usr, "[src]: Failed teleport!")
 								usr.emit_Sound('Instant_Pop.wav')
 				if("Speak")
 					if(!usr.KO)
@@ -146,16 +146,17 @@ obj/items
 								var/obj/items/Omniwatch/nO = O
 								if(ismob(nO.loc)&&omnichannel==nO.omnichannel)
 									var/mob/M = nO.loc
-									M<<"(Watch)<[usr.SayColor]>[usr] says, '[msg]'"
+									to_chat(M, "(Watch)<[usr.SayColor]>[usr] says, '[msg]'")
 							if(istype(O,/obj/items/Communicator))
 								var/obj/items/Communicator/nO = O
 								if(omnichannel in nO.freqlist)
 									nO.messagelist+={"<html><head><title></title></head><body><body bgcolor="#000000"><font size=1><font color="#0099FF"><b><i>(Watch)<[usr.SayColor]>[usr] says, '[msg]'</font><br></body><html>"}
-									if(nO.hasbroadcaster) view(nO) << "(Watch)<[usr.SayColor]>[usr] says, '[msg]'"
+									if(nO.hasbroadcaster) to_chat(view(nO), "(Watch)<[usr.SayColor]>[usr] says, '[msg]'")
 				if("Henshin!")
 					for(var/mob/M in view(usr))
 						var/msg = "Transform!!"
 						M<<output("<font size=[M.TextSize]><[usr.SayColor]>[usr.name] shouts, '[html_encode(msg)]'","Chatpane.Chat")
+						chatcast(M, "<font size=[M.TextSize]><[usr.SayColor]>[usr.name] shouts, '[html_encode(msg)]'", "say")
 					usr.updateOverlay(/obj/overlay/effects/flickeffects/henshineffect)
 					if(usr.HasOverlay(/obj/overlay/clothes/henshin)) usr.removeOverlay(/obj/overlay/clothes/henshin)
 					else usr.updateOverlay(/obj/overlay/clothes/henshin,storedclothesicon)
@@ -192,18 +193,18 @@ obj/items
 			if(x&&y&&z&&!Bolted)
 				switch(input("Are you sure you want to bolt this to the ground so nobody can ever pick it up? Not even you?","",text) in list("Yes","No",))
 					if("Yes")
-						view(src)<<"<font size=1>[usr] bolts the [src] to the ground."
+						to_chat(view(src), "<font size=1>[usr] bolts the [src] to the ground.")
 						Bolted=1
 						boltersig=usr.signature
 			else if(Bolted&&boltersig==usr.signature)
 				switch(input("Unbolt?","",text) in list("Yes","No",))
 					if("Yes")
-						view(src)<<"<font size=1>[usr] unbolts the [src] from the ground."
+						to_chat(view(src), "<font size=1>[usr] unbolts the [src] from the ground.")
 						Bolted=0
 		Click()
 			maxarmor = usr.intBPcap
 			healDamage(maxarmor)
-			usr << "Telepad upgraded!"
+			to_chat(usr, "Telepad upgraded!")
 
 obj/overlay/effects/flickeffects/teleeffect
 	icon = 'sparkleblast.dmi'

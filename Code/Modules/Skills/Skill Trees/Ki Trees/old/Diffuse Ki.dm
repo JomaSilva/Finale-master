@@ -36,11 +36,11 @@ datum/skill/ki/Solar_Flare/login(var/mob/logger)
 	assignverb(/mob/keyable/verb/Solar_Flare)
 
 /datum/skill/ki/Solar_Flare/after_learn()
-	savant << "You feel like you can use your Ki to generate light."
+	to_chat(savant, "You feel like you can use your Ki to generate light.")
 	assignverb(/mob/keyable/verb/Solar_Flare)
 
 /datum/skill/ki/Solar_Flare/before_forget()
-	savant << "You can't feel the light."
+	to_chat(savant, "You can't feel the light.")
 	unassignverb(/mob/keyable/verb/Solar_Flare)
 
 /datum/skill/ki/Scattering_Bullet
@@ -60,11 +60,11 @@ datum/skill/ki/Scattering_Bullet/login(var/mob/logger)
 	assignverb(/mob/keyable/verb/Scattering_Bullet)
 
 /datum/skill/ki/Scattering_Bullet/after_learn()
-	savant << "You feel like you can use your Ki to generate light."
+	to_chat(savant, "You feel like you can use your Ki to generate light.")
 	assignverb(/mob/keyable/verb/Scattering_Bullet)
 
 /datum/skill/ki/Scattering_Bullet/before_forget()
-	savant << "You can't feel the light."
+	to_chat(savant, "You can't feel the light.")
 	unassignverb(/mob/keyable/verb/Scattering_Bullet)
 
 /datum/skill/multitasking
@@ -76,10 +76,10 @@ datum/skill/ki/Scattering_Bullet/login(var/mob/logger)
 	maxlevel = 1
 	tier = 1
 /datum/skill/multitasking/after_learn()
-	savant<<"You feel ready to handle more masses of Ki."
+	to_chat(savant, "You feel ready to handle more masses of Ki.")
 	savant.kioffBuff+=0.2
 	savant.bonusShots+=2
 /datum/skill/multitasking/before_forget()
-	savant<<"You lose your concentration."
+	to_chat(savant, "You lose your concentration.")
 	savant.kioffBuff-=0.2
 	savant.bonusShots-=2

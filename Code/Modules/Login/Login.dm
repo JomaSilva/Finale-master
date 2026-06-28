@@ -30,7 +30,7 @@ client
 			if(IP_Address.Find("[computer_id]") && IP_Address["[computer_id]"]>0)
 				IP_Address["[computer_id]"]++//Add how many People on that address
 				if(IP_Address["[computer_id]"]>Maximum_Addresses_Allowed)//Checks to see how many can login, also checks if the person is exempted from Multikey blocking.
-					src<<"<font color=red>You can only have a maximum of [Maximum_Addresses_Allowed] keys on at a time per computer.</font>"//Message they get before being booted
+					to_chat(src, "<font color=red>You can only have a maximum of [Maximum_Addresses_Allowed] keys on at a time per computer.</font>")//Message they get before being booted
 					del(src)//Obivious...
 			else
 				IP_Address["[computer_id]"] += 1//When they login, they're going to have a character logged in anyway if they're not trying to multikey
@@ -48,7 +48,7 @@ mob/Admin3
 			if(!n) n = 1
 			if(n <= 0) n = 1
 			Maximum_Addresses_Allowed = n
-			world<<"<b>>Announcement<</b> - [Maximum_Addresses_Allowed] People can be logged in at a time with the same computer, as declared by [usr]"
+			to_chat(world, "<b>>Announcement<</b> - [Maximum_Addresses_Allowed] People can be logged in at a time with the same computer, as declared by [usr]")
 mob/var
 	GetPops=0
 	list/verblist = list()
@@ -140,12 +140,12 @@ mob/proc/loginTests()
 		PlayerCount+=1
 		Players.Add(key)
 	if(findtext(key,"Guest")&&findtext(key,"1"))
-		src<<"Please create a BYOND Account, or if you already have one use a current one. Guest accounts are TEMPORARY. ANY LOGIN COULD BE YOUR LAST CONSIDERING YOUR SAVE FILES!"
-		src<<"If you do not heed this warning, the Admins will laugh at you when you eventually migrate to an actual account and wish for your savefile back."
+		to_chat(src, "Please create a BYOND Account, or if you already have one use a current one. Guest accounts are TEMPORARY. ANY LOGIN COULD BE YOUR LAST CONSIDERING YOUR SAVE FILES!")
+		to_chat(src, "If you do not heed this warning, the Admins will laugh at you when you eventually migrate to an actual account and wish for your savefile back.")
 		//del(src)
 		//return
 	if(!Admin&&client) if(Bans) if(Bans.Find(client.address)|Bans.Find(key))
-		src<<"<font size=5><font color=red>YOU ARE BANNED."
+		to_chat(src, "<font size=5><font color=red>YOU ARE BANNED.")
 		del(src)
 		return
 
@@ -206,7 +206,7 @@ mob/proc/DoLogoutStuff()
 			S.Move(locate(x,y,z))
 	for(var/datum/skill/tree/S in src.allowed_trees) S.logout()
 	for(var/datum/skill/tree/S in src.possessed_trees) S.logout(src)
-	for(var/mob/A) if(A.Admin && A.client) if(src) A<<"[name]([displaykey]) logged out"
+	for(var/mob/A) if(A.Admin && A.client) if(src) to_chat(A, "[name]([displaykey]) logged out")
 	for(var/obj/DB/A in contents) A.Scatter()
 	for(var/obj/Modules/A in contents) A.logout()
 	for(var/datum/Body/A in body) A.logout()
@@ -338,7 +338,7 @@ mob/proc
 mob/verb/DBGState()
 	set category = "Other"
 	set name = "DBG State"
-	src << "MOVE: canmove=[canmove] move=[move] turnlock=[turnlock] gravParalysis=[gravParalysis] Guiding=[Guiding] Frozen=[Frozen] KBParalysis=[KBParalysis] omegastun=[omegastun]"
-	src << "GRAV: mobTime=[mobTime] totalTime=[totalTime] Planetgrav=[Planetgrav] gravmult=[gravmult] GravMastered=[GravMastered]"
-	src << "ANGER: Anger=[Anger] MaxAnger=[MaxAnger] baseAnger=[baseAnger] Ewillpower=[Ewillpower] angerMod=[angerMod] Emotion=[Emotion]"
-	src << "POS: z=[z] x=[x] y=[y] Race=[Race] dead=[dead]"
+	to_chat(src, "MOVE: canmove=[canmove] move=[move] turnlock=[turnlock] gravParalysis=[gravParalysis] Guiding=[Guiding] Frozen=[Frozen] KBParalysis=[KBParalysis] omegastun=[omegastun]")
+	to_chat(src, "GRAV: mobTime=[mobTime] totalTime=[totalTime] Planetgrav=[Planetgrav] gravmult=[gravmult] GravMastered=[GravMastered]")
+	to_chat(src, "ANGER: Anger=[Anger] MaxAnger=[MaxAnger] baseAnger=[baseAnger] Ewillpower=[Ewillpower] angerMod=[angerMod] Emotion=[Emotion]")
+	to_chat(src, "POS: z=[z] x=[x] y=[y] Race=[Race] dead=[dead]")

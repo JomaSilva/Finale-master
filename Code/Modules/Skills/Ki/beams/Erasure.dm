@@ -11,11 +11,11 @@
 
 /datum/skill/Erasure/after_learn()
 	assignverb(/mob/keyable/verb/Erasure)
-	savant<<"You can fire an Erasure Cannon!"
+	to_chat(savant, "You can fire an Erasure Cannon!")
 
 /datum/skill/Erasure/before_forget()
 	unassignverb(/mob/keyable/verb/Erasure)
-	savant<<"You've forgotten how to fire an Erasure Cannon!?"
+	to_chat(savant, "You've forgotten how to fire an Erasure Cannon!?")
 datum/skill/Erasure/login(var/mob/logger)
 	..()
 	assignverb(/mob/keyable/verb/Erasure)
@@ -85,4 +85,4 @@ mob/keyable/verb/Erasure()
 			charging=1
 			spawn usr.addchargeoverlay()
 		return
-	else src << "You need at least [kireq] Ki!"
+	else to_chat(src, "You need at least [kireq] Ki!")

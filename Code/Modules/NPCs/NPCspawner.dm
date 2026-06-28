@@ -2,10 +2,10 @@ mob/Admin1/verb
 	toggleNPCspawns()
 		set category = "Admin"
 		if(npcspawnson)
-			world<<"NPC spawns turned off"
+			to_chat(world, "NPC spawns turned off")
 			npcspawnson = 0
 		else
-			world<<"NPC spawns turned on."
+			to_chat(world, "NPC spawns turned on.")
 			npcspawnson = 1
 	max_NPCs()
 		set category = "Admin"

@@ -12,11 +12,11 @@
 
 /datum/skill/general/kikoho/after_learn()
 	assignverb(/mob/keyable/verb/Kikoho)
-	savant<<"You can fire an [name]!"
+	to_chat(savant, "You can fire an [name]!")
 
 /datum/skill/general/kikoho/before_forget()
 	unassignverb(/mob/keyable/verb/Kikoho)
-	savant<<"You've forgotten how to fire an [name]!?"
+	to_chat(savant, "You've forgotten how to fire an [name]!?")
 datum/skill/general/kikoho/login(var/mob/logger)
 	..()
 	assignverb(/mob/keyable/verb/Kikoho)
@@ -33,12 +33,15 @@ mob/var/tmp/kikohoblasts=0
 			if(M.client)
 				if(kikohoblasts==1)
 					M<<output("<font size=[M.TextSize]><[SayColor]>[name] says, 'KI'","Chatpane.Chat")
+					chatcast(M, "<font size=[M.TextSize]><[SayColor]>[name] says, 'KI'", "say")
 					M.TestListeners("<font size=[M.TextSize]><[SayColor]>[name] says, 'KI'","Chatpane.Chat")
 				if(kikohoblasts==2)
 					M<<output("<font size=[M.TextSize]><[SayColor]>[name] says, 'KO'","Chatpane.Chat")
+					chatcast(M, "<font size=[M.TextSize]><[SayColor]>[name] says, 'KO'", "say")
 					M.TestListeners("<font size=[M.TextSize]><[SayColor]>[name] says, 'KO'","Chatpane.Chat")
 				if(kikohoblasts==3)
 					M<<output("<font size=[M.TextSize]><[SayColor]>[name] says, 'HO'","Chatpane.Chat")
+					chatcast(M, "<font size=[M.TextSize]><[SayColor]>[name] says, 'HO'", "say")
 					M.TestListeners("<font size=[M.TextSize]><[SayColor]>[name] says, 'HO'","Chatpane.Chat")
 		usr.blasting=1
 		usr.Ki-=50*BaseDrain * kikohoblasts

@@ -211,7 +211,7 @@ mob/proc/Stats()
 			if(!spacesuit&&!ship&&!spacewalker&&!spacebreather&&!inpod&&!Space_Breath)
 				spacetime--
 				if(!spacetime)
-					view()<<"[src] suffocates and dies!"
+					to_chat(view(), "[src] suffocates and dies!")
 					spawn Death()
 		else if(spacetime!=100)
 			spacetime=100
@@ -230,7 +230,7 @@ mob/proc/Stats()
 				tmpdeclinediv=DeclineAge/Age
 				if(Body<0.1)
 					Body=4
-					view(src)<<"[src] dies from old age."
+					to_chat(view(src), "[src] dies from old age.")
 					EnteredHBTC=0
 					buudead=1
 					Death()
@@ -258,7 +258,7 @@ mob/proc/Stats()
 			//if(Apeshitskill < 10) Apeshitskill+=0.01
 			usr.canRevert=1
 			if(prob(1)) if(golden&&hasssj&&!hasssj4&&expressedBP>=ssj4at&&BP>=rawssj4at)
-				usr<<"You feel calmer."
+				to_chat(usr, "You feel calmer.")
 				spawn
 					Apeshit_Revert()
 					SSj4()
@@ -269,11 +269,11 @@ mob/proc/Stats()
 					if(Ki<=(MaxKi/6))
 						if(!returning)
 							returning=1
-							usr<<"Your spirit is waving and your time in the Material World is coming to a close."
+							to_chat(usr, "Your spirit is waving and your time in the Material World is coming to a close.")
 						if(returning)
 							if(prob(5))
 								SpreadHeal(100,1,1)
-								view(usr)<<"[src]'s time in the living world has expired."
+								to_chat(view(usr), "[src]'s time in the living world has expired.")
 								if(HasSoul)
 									loc=locate(187,104,6) //And finally, send them to the death checkpoint...
 								else if(!HasSoul)
@@ -282,7 +282,7 @@ mob/proc/Stats()
 								sleep(1)
 				else if(!KeepsBody)
 					SpreadHeal(100,1,1)
-					view(usr)<<"[src] cannot exist outside of the Afterlife."
+					to_chat(view(usr), "[src] cannot exist outside of the Afterlife.")
 					if(HasSoul)
 						loc=locate(187,104,6) //And finally, send them to the death checkpoint...
 					else if(!HasSoul)
@@ -293,32 +293,32 @@ mob/proc/Stats()
 		//Anger display text...
 		if(CurrentAnger!=Emotion)
 			CurrentAnger=Emotion
-			view(usr)<<"<font color=#FF0000>[usr] appears [Emotion]"
+			to_chat(view(usr), "<font color=#FF0000>[usr] appears [Emotion]")
 		//If the King is dead...
 		if(King_of_Vegeta==name) if(dead)
-			usr<<"You are no longer King of Vegeta, since you are dead."
+			to_chat(usr, "You are no longer King of Vegeta, since you are dead.")
 			King_of_Vegeta=null
 		//Absorbtion decline...
 		if(absorbadd>BP&&!lssj) absorbadd*=0.95
 		if(prob(0.5)) if(!absorbable) absorbable=1
 		//High damage / low energy notifiers
 		if(!highdamage&&HP<=20)
-			view(usr)<<"<font color=red>You notice [usr] has become highly damaged..."
+			to_chat(view(usr), "<font color=red>You notice [usr] has become highly damaged...")
 			highdamage=1
 		if(highdamage&&HP>20) highdamage=0
 		if(!lowenergy&&Ki<=MaxKi*0.2)
-			view(usr)<<"<font color=red>You notice [usr] has become very drained..."
+			to_chat(view(usr), "<font color=red>You notice [usr] has become very drained...")
 			lowenergy=1
 		if(lowenergy&&Ki>MaxKi*0.2) lowenergy=0
 		if(!highfatigue&&stamina<maxstamina*0.2)
-			view(usr)<<"<font color=red>You notice [usr] has become very fatigued..."
+			to_chat(view(usr), "<font color=red>You notice [usr] has become very fatigued...")
 			highfatigue=1
 		if(!highfatigue&&stamina>maxstamina*0.2) highfatigue=0
 		if(KO)
 			//regen=0
 			if(Anger>=120)
 				if(prob(1)&&prob(1)||(prob(1)&&Ewillpower>=1.5&&prob(1*Ewillpower)))
-					view(usr)<<"<font color=red>[usr] willed themself back up!"
+					to_chat(view(usr), "<font color=red>[usr] willed themself back up!")
 					SpreadHeal(10)
 					vitalKOd = 0
 					spawn Un_KO(1)
@@ -335,16 +335,16 @@ mob/proc/Stats()
 				Hell=1
 				if(Race=="Makyo"||Parent_Race=="Makyo")
 					HellstarBuff=1.5
-					usr<<"<font color=yellow>You feel your power increase greatly from the Makyo Star."
+					to_chat(usr, "<font color=yellow>You feel your power increase greatly from the Makyo Star.")
 				else
 					HellstarBuff=1.25
-					usr<<"<font color=red>You feel your power increase a bit from the Makyo Star."
+					to_chat(usr, "<font color=red>You feel your power increase a bit from the Makyo Star.")
 			if(Hell&&!HellStar)
 				Hell=0
 				HellstarBuff=1
 				if(Race=="Makyo"||Parent_Race=="Makyo")
-					usr<<"<font color=yellow>You feel your power decrease greatly from the depature of the Makyo Star."
-				else usr<<"<font color=red>You feel your power decrease a bit from the depature of the Makyo Star."
+					to_chat(usr, "<font color=yellow>You feel your power decrease greatly from the depature of the Makyo Star.")
+				else to_chat(usr, "<font color=red>You feel your power decrease a bit from the depature of the Makyo Star.")
 		///
 		///
 		///
@@ -362,7 +362,7 @@ mob/proc/Stats()
 				paralysistime-=1
 				if(paralysistime<=0) paralysistime=0
 			else
-				usr<<"<font color=Purple>The paralysis wears off..."
+				to_chat(usr, "<font color=Purple>The paralysis wears off...")
 				paralyzed=0
 		//Makes sure that the Supreme Kai can grant Mystic indefinitely.
 		if(prob(1)) if(Supreme_Kai==key) mystified=0
@@ -390,7 +390,7 @@ mob/proc/Stats()
 					Ki-=max(1+(MaxKi*0.001*(KiMod/(100*swimmastery))),1)
 				if(Ki<0) Ki=0
 			else
-				usr<<"You stop swimming."
+				to_chat(usr, "You stop swimming.")
 				density=1
 				swim=0
 				Ki=0
@@ -409,7 +409,7 @@ mob/proc/Stats()
 					emit_Sound('buku_land.wav')
 					usr.overlayList-=usr.FLIGHTAURA
 					usr.overlaychanged=1
-					usr<<"You're exhausted."
+					to_chat(usr, "You're exhausted.")
 					density=1
 					flight=0
 		if(current_area && current_area.isdestroyed && client)
@@ -424,7 +424,7 @@ mob/proc/Stats()
 		if(rageExpire && world.time >= rageExpire) //rage lasts at most 2 minutes, then snaps back to calm (1x)
 			rageExpire = 0
 			Anger = 100
-			if(client) src << "<font color=#888888>Your rage fades and you feel calm again.</font>"
+			if(client) to_chat(src, "<font color=#888888>Your rage fades and you feel calm again.</font>")
 		if(Anger>MaxAnger) Anger=MaxAnger //hard cap at MaxAnger (was MaxAnger*10 — that, plus stacking, caused the 12x/20x buffs)
 		if(Anger>100) Anger-=((MaxAnger-100)/8000)
 		if(Anger<100) Anger=100
@@ -458,17 +458,17 @@ mob/proc/Stats()
 				if(M?.client)
 					//
 					if(M.ssj && !hasssj && ssj_capable && prob(10) && SSJInspired < 25)
-						usr << "<font color=blue>The super form from [M] has inspired you a little to try harder!"
+						to_chat(usr, "<font color=blue>The super form from [M] has inspired you a little to try harder!")
 						SSJInspired += 1
 						SSJInspired = min(SSJInspired,25)
 						if(SSJInspired == 25)
-							usr << "<font color=blue>Alright... you've seem to have a inkling on how to achieve a transformation! (Maximum inspiration reached. Keep angering.)"
+							to_chat(usr, "<font color=blue>Alright... you've seem to have a inkling on how to achieve a transformation! (Maximum inspiration reached. Keep angering.)")
 					if(M.ssj == 2 && hasssj && !hasssj2 && ssj_capable && prob(10) && SSJInspired < 50)
-						usr << "<font color=blue>The super 2 form from [M] has inspired you a little to try harder!"
+						to_chat(usr, "<font color=blue>The super 2 form from [M] has inspired you a little to try harder!")
 						SSJInspired += 1
 						SSJInspired = min(SSJInspired,50)
 						if(SSJInspired == 50)
-							usr << "<font color=blue>Alright... you've seem to have a inkling on how to achieve a transformation! (Maximum inspiration reached. Keep angering. Form 2 capable.)"
+							to_chat(usr, "<font color=blue>Alright... you've seem to have a inkling on how to achieve a transformation! (Maximum inspiration reached. Keep angering. Form 2 capable.)")
 		//RoSaT
 		if(Planet=="Hyperbolic Time Dimension")
 			HBTCTime-=sleep_tiem
@@ -476,20 +476,20 @@ mob/proc/Stats()
 			HBTCMod=25//massive increase
 			var/hbtctimetest = abs(HBTCTime - 36000)
 			switch(hbtctimetest)
-				if(3000) usr<<"You have been in the Time Chamber for 30 days."
-				if(6000) usr<<"You have been in the Time Chamber for 60 days."
-				if(9000) usr<<"You have been in the Time Chamber for 90 days."
-				if(12000) usr<<"You have been in the Time Chamber for 120 days."
-				if(15000) usr<<"You have been in the Time Chamber for 150 days."
-				if(18000) usr<<"You have been in the Time Chamber for 180 days."
-				if(21000) usr<<"You have been in the Time Chamber for 210 days."
-				if(24000) usr<<"You have been in the Time Chamber for 240 days."
-				if(27000) usr<<"You have been in the Time Chamber for 270 days."
-				if(30000) usr<<"You have been in the Time Chamber for 300 days."
-				if(33000) usr<<"You have been in the Time Chamber for 330 days."
+				if(3000) to_chat(usr, "You have been in the Time Chamber for 30 days.")
+				if(6000) to_chat(usr, "You have been in the Time Chamber for 60 days.")
+				if(9000) to_chat(usr, "You have been in the Time Chamber for 90 days.")
+				if(12000) to_chat(usr, "You have been in the Time Chamber for 120 days.")
+				if(15000) to_chat(usr, "You have been in the Time Chamber for 150 days.")
+				if(18000) to_chat(usr, "You have been in the Time Chamber for 180 days.")
+				if(21000) to_chat(usr, "You have been in the Time Chamber for 210 days.")
+				if(24000) to_chat(usr, "You have been in the Time Chamber for 240 days.")
+				if(27000) to_chat(usr, "You have been in the Time Chamber for 270 days.")
+				if(30000) to_chat(usr, "You have been in the Time Chamber for 300 days.")
+				if(33000) to_chat(usr, "You have been in the Time Chamber for 330 days.")
 				if(36000)
 					loc=locate(154,152,12)
-					usr<<"You have spent an entire year in the room."
+					to_chat(usr, "You have spent an entire year in the room.")
 					Age+=1
 					SAge+=1
 					HBTCTime=36000

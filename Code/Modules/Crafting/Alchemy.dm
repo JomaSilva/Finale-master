@@ -122,17 +122,17 @@ obj/Alchemy
 					if(!usr.ingredientlist[A.ingredtype])
 						studylist+=A
 				if(studylist.len==0)
-					usr<<"You have no ingredients to study!"
+					to_chat(usr, "You have no ingredients to study!")
 				else
 					var/obj/items/Material/Alchemy/choice = input(usr,"Which ingredient would you like to study? You can learn one effect from it, alongside its general properties.","") as null|anything in studylist
 					if(!choice)
 						return
 					else
 						var/effect = rand(1,4)//randomly pick which effect to learn
-						usr<<"[choice.name]:[choice.desc]"
-						usr<<"Magnitude: [choice.magnitude]"
-						usr<<"Duration: [choice.duration]"
-						usr<<"Effect: [choice.Effects[effect]]"
+						to_chat(usr, "[choice.name]:[choice.desc]")
+						to_chat(usr, "Magnitude: [choice.magnitude]")
+						to_chat(usr, "Duration: [choice.duration]")
+						to_chat(usr, "Effect: [choice.Effects[effect]]")
 						usr.ingredientlist[choice.ingredtype] = 2**(effect-1)
 						AddExp(usr,masterytype,100)
 						usr.contents-=choice
@@ -143,7 +143,7 @@ obj/Alchemy
 				for(var/obj/items/Material/Alchemy/A in usr.contents)
 					ingreds+=A
 				if(ingreds.len<2)
-					usr<<"You need at least 2 ingredients to brew!"
+					to_chat(usr, "You need at least 2 ingredients to brew!")
 					return
 				var/level
 				for(var/datum/mastery/M in usr.learnedmasteries)
@@ -156,14 +156,14 @@ obj/Alchemy
 				while(useingreds.len<4)
 					var/obj/items/Material/Alchemy/using = input(usr,"Which ingredient would you like to use? This is ingredient [useingreds.len+1] out of a maximum of 4. Note you need at least 2 ingredients to brew, and they cannot be of the same type.","") as null|anything in ingreds
 					if(!using&&useingreds.len<2)
-						usr<<"Brewing cancelled."
+						to_chat(usr, "Brewing cancelled.")
 						return
 					else if(!using)
 						break
 					var/repeat
 					for(var/obj/items/Material/Alchemy/B in useingreds)
 						if(using.type == B.type)
-							usr<<"You are already using this ingredient type!"
+							to_chat(usr, "You are already using this ingredient type!")
 							repeat = 1
 							break
 					if(!repeat)
@@ -224,7 +224,7 @@ obj/Alchemy
 							ueffects+=e3
 							peffects-=e3
 				if(ueffects.len<1)
-					usr<<"Your brewing failed, it seems you did not have any matching effects."
+					to_chat(usr, "Your brewing failed, it seems you did not have any matching effects.")
 					return
 				else
 					if(itemtype == "Potion")
@@ -237,7 +237,7 @@ obj/Alchemy
 							O.name = "[n] Potion"
 							break
 						usr.contents+=O
-						usr<<"You've successfully brewed a potion!"
+						to_chat(usr, "You've successfully brewed a potion!")
 					else if(itemtype == "Poison")
 						var/obj/items/Alchemy/Poison/O = new
 						O.magnitude = min(mag,level)
@@ -247,7 +247,7 @@ obj/Alchemy
 						for(var/n in O.Effects)
 							O.name = "[n] Poison"
 						usr.contents+=O
-						usr<<"You've successfully brewed a poison!"
+						to_chat(usr, "You've successfully brewed a poison!")
 					AddExp(usr,masterytype,10*(mag+dur))
 
 obj/items/Material
@@ -273,21 +273,21 @@ obj/items/Material
 		Description()
 			..()
 			if(src.ingredtype in usr.ingredientlist)//has the player learned about this ingredient?
-				usr<<"---Alchemy Stats---"
-				usr<<"Magnitude: [magnitude]"
-				usr<<"Duration: [duration]"
+				to_chat(usr, "---Alchemy Stats---")
+				to_chat(usr, "Magnitude: [magnitude]")
+				to_chat(usr, "Duration: [duration]")
 				var/known = usr.ingredientlist[ingredtype]
-				usr<<"Known effects:"
+				to_chat(usr, "Known effects:")
 				if(known in list(1,3,5,9,7,11,13,15))
-					usr<<"[Effects[1]]"
+					to_chat(usr, "[Effects[1]]")
 				if(known in list(2,3,6,10,7,11,14,15))
-					usr<<"[Effects[2]]"
+					to_chat(usr, "[Effects[2]]")
 				if(known in list(4,5,6,12,7,13,14,15))
-					usr<<"[Effects[3]]"
+					to_chat(usr, "[Effects[3]]")
 				if(known in list(8,9,10,12,11,13,14,15))
-					usr<<"[Effects[4]]"
+					to_chat(usr, "[Effects[4]]")
 			else
-				usr<<"You do not know the properties of this material."
+				to_chat(usr, "You do not know the properties of this material.")
 		Plant
 			desc = "A plant with alchemical properties"
 			Basil
@@ -440,12 +440,12 @@ obj/items/Alchemy
 	verb
 		Description()
 			set category = null
-			usr<<"[name]"
-			usr<<"Magnitude: [magnitude]"
-			usr<<"Duration: [duration] seconds"
-			usr<<"Effects include:"
+			to_chat(usr, "[name]")
+			to_chat(usr, "Magnitude: [magnitude]")
+			to_chat(usr, "Duration: [duration] seconds")
+			to_chat(usr, "Effects include:")
 			for(var/a in Effects)
-				usr<<"[a]"
+				to_chat(usr, "[a]")
 	var
 		list/Effects = list()//where the effects are stored, balanced around 4 on an item
 		magnitude = 0//how strong are the effects, should range from 0-100, formulas on the effects themselves account for this
@@ -455,9 +455,9 @@ obj/items/Alchemy
 			set category = null
 			set src in usr
 			for(var/effect/Potion/P in usr.effects)
-				usr<<"You cannot consume another potion yet!"
+				to_chat(usr, "You cannot consume another potion yet!")
 				return
-			usr<<"You drink the potion!"
+			to_chat(usr, "You drink the potion!")
 			for(var/a in Effects)
 				spawn usr.AddEffect(Effects[a])
 				sleep(1)
@@ -473,14 +473,14 @@ obj/items/Alchemy
 			set category = null
 			set src in usr
 			for(var/effect/Poison/P in usr.effects)
-				usr<<"You cannot apply more poison yet!"
+				to_chat(usr, "You cannot apply more poison yet!")
 				return
-			usr<<"You apply the poison!"
+			to_chat(usr, "You apply the poison!")
 			usr.poisonlist+=src
 			usr.AddEffect(/effect/Poison)
 			usr.contents-=src
 		proc/Affect(mob/M)
-			M<<"You are poisoned!"
+			to_chat(M, "You are poisoned!")
 			for(var/a in Effects)
 				spawn M.AddEffect(Effects[a])
 				sleep(1)

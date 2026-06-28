@@ -3,8 +3,8 @@ proc/Dungeon_Timer(t)
 	t += 1
 	dungeon_timer_check()
 	if(add_rnd_dungeon())
-		world << "The previous dungeon has collapsed! A new dungeon has formed..."
-	else world << "ERROR: Dungeon Failed to load!"
+		to_chat(world, "The previous dungeon has collapsed! A new dungeon has formed...")
+	else to_chat(world, "ERROR: Dungeon Failed to load!")
 	if(t >= 4) return
 	sleep(36000)
 	spawn Dungeon_Timer(t)

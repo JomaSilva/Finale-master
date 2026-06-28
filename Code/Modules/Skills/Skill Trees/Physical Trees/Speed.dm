@@ -9,11 +9,11 @@
 	maxlevel = 1
 	tier = 1
 	after_learn()
-		savant<<"You start circulating your Ki."
+		to_chat(savant, "You start circulating your Ki.")
 		savant.kiskillBuff+=0.15
 		savant.speedBuff+=1
 	before_forget()
-		savant<<"You stop circulating your Ki."
+		to_chat(savant, "You stop circulating your Ki.")
 		savant.kiskillBuff-=0.15
 		savant.speedBuff-=1
 
@@ -30,12 +30,12 @@
 	tier = 3
 	skillcost = 5
 	after_learn()
-		savant<<"You can now burst your speed!"
+		to_chat(savant, "You can now burst your speed!")
 		savant.kiskillBuff+=0.15
 		savant.speedBuff+=2
 		assignverb(/mob/keyable/verb/Extreme_Burst)
 	before_forget()
-		savant<<"You no longer burst it anymore."
+		to_chat(savant, "You no longer burst it anymore.")
 		savant.kiskillBuff-=0.15
 		savant.speedBuff-=2
 		unassignverb(/mob/keyable/verb/Extreme_Burst)
@@ -46,10 +46,10 @@ mob/keyable/verb/Extreme_Burst()
 	set category = "Skills"
 	desc = "Burst your speed even further beyond!"
 	if(!isBuffed(/obj/buff/Extreme_Burst)&&!usr.KO)
-		usr<<"You start bursting your speed!"
+		to_chat(usr, "You start bursting your speed!")
 		usr.startbuff(/obj/buff/Extreme_Burst)
 	else if(isBuffed(/obj/buff/Extreme_Burst))
-		usr<<"You let your speed slack."
+		to_chat(usr, "You let your speed slack.")
 		usr.stopbuff(/obj/buff/Extreme_Burst)
 
 /obj/buff/Extreme_Burst
@@ -79,8 +79,8 @@ mob/keyable/verb/Extreme_Burst()
 	maxlevel = 1
 	tier = 4
 	after_learn()
-		savant<<"Your speed has reached the endgame."
+		to_chat(savant, "Your speed has reached the endgame.")
 		savant.speedBuff+=5
 	before_forget()
-		savant<<"You stop manipulating your momentum..."
+		to_chat(savant, "You stop manipulating your momentum...")
 		savant.speedBuff-=5

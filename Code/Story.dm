@@ -13,9 +13,9 @@ mob/verb/Story()
 mob/Admin2/verb/EditStory()
 	set category="Admin"
 	set hidden = 0
-	for(var/mob/M) if(M.Admin) M<<"[usr] is editing the story..."
+	for(var/mob/M) if(M.Admin) to_chat(M, "[usr] is editing the story...")
 	Story=input(usr,"Edit!","Edit Story",Story) as message
-	for(var/mob/F) if(F.Admin) F<<"[usr] is done editing the story..."
+	for(var/mob/F) if(F.Admin) to_chat(F, "[usr] is done editing the story...")
 	SaveStory()
 	LoadStory()
 proc/SaveStory()
@@ -41,13 +41,13 @@ mob/Admin3/verb/EditRules()
 	set category="Admin"
 	if(!WritingRules)
 		WritingRules=1
-		for(var/mob/M) if(M.Admin) M<<"[usr] is editing the rules..."
+		for(var/mob/M) if(M.Admin) to_chat(M, "[usr] is editing the rules...")
 		Rules=input(usr,"Edit!","Edit Rules",Rules) as message
-		for(var/mob/F) if(F.Admin) F<<"[usr] is done editing the rules..."
+		for(var/mob/F) if(F.Admin) to_chat(F, "[usr] is done editing the rules...")
 		WritingRules=0
 		SaveRules()
 		LoadRules()
-	else usr<<"<b>Someone is already editing the rules."
+	else to_chat(usr, "<b>Someone is already editing the rules.")
 proc/SaveRules()
 	var/savefile/S=new("Rules")
 	S["Rules"]<<Rules

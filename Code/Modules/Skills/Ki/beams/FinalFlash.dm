@@ -11,11 +11,11 @@ datum/skill/rank/FinalFlash
 
 datum/skill/rank/FinalFlash/after_learn()
 	assignverb(/mob/keyable/verb/Final_Flash)
-	savant<<"You can use Final Flash!"
+	to_chat(savant, "You can use Final Flash!")
 
 datum/skill/rank/FinalFlash/before_forget()
 	unassignverb(/mob/keyable/verb/Final_Flash)
-	savant<<"You've forgotten how to use the Final Flash?"
+	to_chat(savant, "You've forgotten how to use the Final Flash?")
 
 datum/skill/rank/FinalFlash/login(var/mob/logger)
 	..()
@@ -80,4 +80,4 @@ mob/keyable/verb/Final_Flash()
 				charging=1
 			spawn usr.addchargeoverlay()
 		return
-	else src << "You need at least [kireq] Ki!"
+	else to_chat(src, "You need at least [kireq] Ki!")

@@ -40,11 +40,11 @@ obj/DB
 			var/chosenwish = input("Make your wish.", "", text) in WishList
 			switch(chosenwish)
 				if("Nothing (Waste Wish)")
-					view()<<"[usr] wishes for nothing!"
+					to_chat(view(), "[usr] wishes for nothing!")
 					WishPower*=1.1
-					usr<<"You wish for nothing!"
+					to_chat(usr, "You wish for nothing!")
 				if("Cancel")
-					view()<<"[usr] cancels [usr]'s wish."
+					to_chat(view(), "[usr] cancels [usr]'s wish.")
 					break
 				else
 					var/list/nl = Wish(chosenwish,usr,Earth_Guardian,WishPower)
@@ -59,16 +59,16 @@ proc/Wish(var/wish,mob/originator,E_G,TrueWishPower)
 	var/wishpower = 1
 	switch(wish)
 		if("Power")
-			view(originator)<<"[originator] wishes for power!"
+			to_chat(view(originator), "[originator] wishes for power!")
 			if(E_G!=originator.key)
 				originator.BP+=originator.capcheck(originator.relBPmax/4)
 				//originator.BPMod+=0.2 //slight mod increase!
 			else
-				view(originator)<<"[originator]'s wish fails because they are the guardian."
-				originator<<"You cannot increase your power with the Dragon Balls, because the Dragon Balls use your power to increase the power of others, and your power cannot increase your own power."
+				to_chat(view(originator), "[originator]'s wish fails because they are the guardian.")
+				to_chat(originator, "You cannot increase your power with the Dragon Balls, because the Dragon Balls use your power to increase the power of others, and your power cannot increase your own power.")
 				return list(wishpower,TRUE)
 		if("Revive")
-			view(originator)<<"[originator] wishes to revive somebody!"
+			to_chat(view(originator), "[originator] wishes to revive somebody!")
 			var/summon
 			switch(input(originator,"Summon them to you?", "", text) in list ("Yes","No",))
 				if("Yes") summon=1
@@ -88,10 +88,10 @@ proc/Wish(var/wish,mob/originator,E_G,TrueWishPower)
 					if(summon) revivespecific.loc=locate(originator.x,(originator.y-2),originator.z)
 					else revivespecific.Locate()
 				else
-					view()<<"[originator] cancels [originator]'s wish."
+					to_chat(view(), "[originator] cancels [originator]'s wish.")
 					return list(wishpower,TRUE)
 		if("Revive-All")
-			view(originator)<<"[originator] wishes to revive everyone!"
+			to_chat(view(originator), "[originator] wishes to revive everyone!")
 			var/summon
 			switch(input(originator,"Summon them to you?", "", text) in list ("Yes","No",))
 				if("Yes") summon=1
@@ -112,20 +112,20 @@ proc/Wish(var/wish,mob/originator,E_G,TrueWishPower)
 				if(ismob(M))
 					if(!M.immortal)
 						M.immortal=1
-						view(originator)<<"[originator] wishes for [M] to have immortality!"
-						M<<"You are now immortal."
+						to_chat(view(originator), "[originator] wishes for [M] to have immortality!")
+						to_chat(M, "You are now immortal.")
 					else
 						M.immortal=0
-						view(originator)<<"[originator] wishes for [M] to be mortal!"
-						M<<"You are now mortal."
+						to_chat(view(originator), "[originator] wishes for [M] to be mortal!")
+						to_chat(M, "You are now mortal.")
 			else if(!originator.immortal)
 				originator.immortal=1
-				view(originator)<<"[originator] wishes for immortality!"
-				originator<<"You are now immortal."
+				to_chat(view(originator), "[originator] wishes for immortality!")
+				to_chat(originator, "You are now immortal.")
 			else
 				originator.immortal=0
-				view(originator)<<"[originator] wishes to be mortal!"
-				originator<<"You are now mortal."
+				to_chat(view(originator), "[originator] wishes to be mortal!")
+				to_chat(originator, "You are now mortal.")
 		if("Make Somebody Else Young")
 			var/list/younglist = list()
 			for(var/mob/M) if(M.client)
@@ -140,12 +140,12 @@ proc/Wish(var/wish,mob/originator,E_G,TrueWishPower)
 					if("Yes"==alert(originator,"Make extremely young?","","Yes","No"))
 						revivespecific.Age = 10
 						revivespecific.Body = 10
-					view()<<"[originator] wishes for [revivespecific]'s youth!"
-					revivespecific<<"You are now younger."
+					to_chat(view(), "[originator] wishes for [revivespecific]'s youth!")
+					to_chat(revivespecific, "You are now younger.")
 					for(var/obj/overlay/hairs/hair/A in revivespecific.overlayList)
 						A.UnGrayMe()
 				else
-					view()<<"[originator] cancels [originator]'s wish."
+					to_chat(view(), "[originator] cancels [originator]'s wish.")
 					return list(wishpower,TRUE)
 		if("Youth")
 			originator.Age = 25
@@ -155,12 +155,12 @@ proc/Wish(var/wish,mob/originator,E_G,TrueWishPower)
 				originator.Body = 10
 			for(var/obj/overlay/hairs/hair/A in originator.overlayList)
 				A.UnGrayMe()
-			view(originator)<<"[originator] wishes for youth!"
-			originator<<"You are now younger."
+			to_chat(view(originator), "[originator] wishes for youth!")
+			to_chat(originator, "You are now younger.")
 		if("Cash")
-			view(originator)<<"[originator] wishes for zeni!"
+			to_chat(view(originator), "[originator] wishes for zeni!")
 			originator.zenni+=50000000
-			originator<<"You recieve millions of zeni."
+			to_chat(originator, "You recieve millions of zeni.")
 		if("Kill Somebody")
 			var/list/deadlist = list()
 			for(var/mob/M)
@@ -171,12 +171,12 @@ proc/Wish(var/wish,mob/originator,E_G,TrueWishPower)
 				var/mob/revivespecific = input(originator,"Kill who? If their power exceeds the creators power, it won't work! Power : [TrueWishPower]","") as null|anything in deadlist
 				if(!isnull(revivespecific))
 					if(revivespecific.expressedBP>=TrueWishPower)
-						view(originator)<<"[originator] wishes to kill [revivespecific]!"
+						to_chat(view(originator), "[originator] wishes to kill [revivespecific]!")
 					else
-						view(originator)<<"[originator] wishes to kill [revivespecific]!"
-						view(originator)<<"It fails!"
+						to_chat(view(originator), "[originator] wishes to kill [revivespecific]!")
+						to_chat(view(originator), "It fails!")
 				else
-					view(originator)<<"[originator] cancels [originator]'s wish."
+					to_chat(view(originator), "[originator] cancels [originator]'s wish.")
 					return list(wishpower,TRUE)
 		if("Heal Planet")
 			var/list/deadlist = list()
@@ -189,10 +189,10 @@ proc/Wish(var/wish,mob/originator,E_G,TrueWishPower)
 				if(!isnull(revivespecific))
 					revivespecific.isDestroyed = 0
 					revivespecific.isBeingDestroyed = 0
-					view(originator)<<"[originator] wishes for [revivespecific] to be restored!"
-					world << "[revivespecific] restored."
+					to_chat(view(originator), "[originator] wishes for [revivespecific] to be restored!")
+					to_chat(world, "[revivespecific] restored.")
 				else
-					view(originator)<<"[originator] cancels [originator]'s wish."
+					to_chat(view(originator), "[originator] cancels [originator]'s wish.")
 					return list(wishpower,TRUE)
 		if("Panties")
 			var/list/moblist = new
@@ -202,38 +202,38 @@ proc/Wish(var/wish,mob/originator,E_G,TrueWishPower)
 			if(moblist.len>=1)
 				var/mob/revivespecific = input(originator,"Get panties of whom? If cancel/null, it'll just be generic possibly worn panties.","") as null|anything in moblist
 				if(!isnull(revivespecific))
-					view(originator)<<"[originator] wishes for [revivespecific]'s panties!"
+					to_chat(view(originator), "[originator] wishes for [revivespecific]'s panties!")
 					var/obj/A=new/obj/items/Panties(locate(originator.x,originator.y,originator.z))
 					A.name = "[revivespecific]'s Panties"
 				else
-					view(originator)<<"[originator] wishes for panties!"
+					to_chat(view(originator), "[originator] wishes for panties!")
 					new/obj/items/Panties(locate(originator.x,originator.y,originator.z))
 			else
-				view(originator)<<"[originator] wishes for panties!"
+				to_chat(view(originator), "[originator] wishes for panties!")
 				new/obj/items/Panties(locate(originator.x,originator.y,originator.z))
 		if("Milestones")
 			if(originator.wishedpoints)
-				originator<<"You already have wished Milestones!"
-				view(originator)<<"[originator] cancels [originator]'s wish."
+				to_chat(originator, "You already have wished Milestones!")
+				to_chat(view(originator), "[originator] cancels [originator]'s wish.")
 
 			else
-				originator<<"You wish for Milestones!!"
+				to_chat(originator, "You wish for Milestones!!")
 				originator.wishedpoints += 2
 				originator.totalskillpoints += 2
 				originator.skillpoints += 2 //grant the spendable pool immediately (matches the admin Reward fix)
 				originator.availablepoints += 2
-				view(originator)<<"[originator] wishes for Milestones!"
+				to_chat(view(originator), "[originator] wishes for Milestones!")
 		if("Intelligence")
-			view(originator)<<"[originator] wishes for intelligence!!"
+			to_chat(view(originator), "[originator] wishes for intelligence!!")
 			originator.genome.add_to_stat("Tech Modifier",2)
-			originator<<"You wish for intelligence!"
+			to_chat(originator, "You wish for intelligence!")
 		if("Technology")
-			view(originator)<<"[originator] wishes for some research technology!!!"
+			to_chat(view(originator), "[originator] wishes for some research technology!!!")
 			var/obj/items/Research_Book/A=new/obj/items/Research_Book(locate(originator.x,originator.y,originator.z))
 			A.name = "Technology Blueprints"
 			A.IntPower = 100 * originator.techskill**2
 			A.techcost+=50*originator.techskill
-			originator<<"You wish for technology!"
+			to_chat(originator, "You wish for technology!")
 		if("Gender Change")
 			var/list/moblist = new
 			for(var/mob/M in mob_list)
@@ -243,8 +243,8 @@ proc/Wish(var/wish,mob/originator,E_G,TrueWishPower)
 				var/mob/revivespecific = input(originator,"Change gender of whom? If cancel/null, it'll cancel the wish.","") as null|anything in moblist
 				if(!isnull(revivespecific))
 					var/Choice=alert(originator,"Choose gender","","Male","Female")
-					view(originator)<<"[originator] wishes to change the gender of [revivespecific] to [Choice]!!!"
-					originator<<"You wish for a gender change!"
+					to_chat(view(originator), "[originator] wishes to change the gender of [revivespecific] to [Choice]!!!")
+					to_chat(originator, "You wish for a gender change!")
 					switch(Choice)
 						if("Female")
 							revivespecific.pgender="Female"
@@ -252,19 +252,19 @@ proc/Wish(var/wish,mob/originator,E_G,TrueWishPower)
 						if("Male")
 							revivespecific.pgender="Male"
 							revivespecific.gender = MALE
-					revivespecific << "Your gender has been changed to [Choice]."
+					to_chat(revivespecific, "Your gender has been changed to [Choice].")
 					revivespecific.Skin()
 				else
-					view(originator)<<"[originator] cancels [originator]'s wish."
+					to_chat(view(originator), "[originator] cancels [originator]'s wish.")
 					return list(wishpower,TRUE)
 			else
-				view(originator)<<"[originator] cancels [originator]'s wish."
+				to_chat(view(originator), "[originator] cancels [originator]'s wish.")
 				return list(wishpower,TRUE)
 		if("Super Saiyan")
 			var/badssjwish = 0
 			if(!originator.hasssj)
-				view(originator)<<"[originator] wishes for Super Saiyan!"
-				originator<<"You wish for Super Saiyan!"
+				to_chat(view(originator), "[originator] wishes for Super Saiyan!")
+				to_chat(originator, "You wish for Super Saiyan!")
 				originator.ssjdrain = 0.02
 				spawn originator.SSj()
 			else if(!originator.hasssj2)
@@ -274,8 +274,8 @@ proc/Wish(var/wish,mob/originator,E_G,TrueWishPower)
 						ssj2exists = 1
 
 				if(ssj2exists)
-					view(originator)<<"[originator] wishes for Super Saiyan 2!"
-					originator<<"You wish for Super Saiyan 2!"
+					to_chat(view(originator), "[originator] wishes for Super Saiyan 2!")
+					to_chat(originator, "You wish for Super Saiyan 2!")
 					originator.ssj2drain = 0.03
 					spawn originator.SSj2()
 				else
@@ -294,8 +294,8 @@ proc/Wish(var/wish,mob/originator,E_G,TrueWishPower)
 
 					else continue
 				if(!approved)
-					view(originator)<<"[originator] wishes for Super Saiyan, it fails!!"
-					originator<<"You wish for Super Saiyan, it fails!!"
+					to_chat(view(originator), "[originator] wishes for Super Saiyan, it fails!!")
+					to_chat(originator, "You wish for Super Saiyan, it fails!!")
 					wishpower = 1.05
 				else if(approved == 1)
 					originator.ssjdrain = 0.02
@@ -304,8 +304,8 @@ proc/Wish(var/wish,mob/originator,E_G,TrueWishPower)
 					originator.ssj2drain = 0.03
 					originator.SSj2()
 				else
-					view(originator)<<"[originator] wishes for Super Saiyan, it fails!!"
-					originator<<"You wish for Super Saiyan, it fails!!"
+					to_chat(view(originator), "[originator] wishes for Super Saiyan, it fails!!")
+					to_chat(originator, "You wish for Super Saiyan, it fails!!")
 					wishpower = 1.05
 		if("Give Soul")
 			var/list/moblist = new
@@ -315,14 +315,14 @@ proc/Wish(var/wish,mob/originator,E_G,TrueWishPower)
 			if(moblist.len>=1)
 				var/mob/revivespecific = input("Give soul to whom?","") as null|anything in moblist
 				if(!isnull(revivespecific))
-					view(originator)<<"[originator] wishes for a soul for [revivespecific]!!!"
-					originator<<"You wish to give a soul!"
+					to_chat(view(originator), "[originator] wishes for a soul for [revivespecific]!!!")
+					to_chat(originator, "You wish to give a soul!")
 					revivespecific.HasSoul = 1
 				else
-					view(originator)<<"[originator] cancels [originator]'s wish."
+					to_chat(view(originator), "[originator] cancels [originator]'s wish.")
 					return list(wishpower,TRUE)
 			else
-				view(originator)<<"[originator] cancels [originator]'s wish."
+				to_chat(view(originator), "[originator] cancels [originator]'s wish.")
 				return list(wishpower,TRUE)
 		if("Give Magic")
 			if(!originator.wished_for_magic)
@@ -331,8 +331,8 @@ proc/Wish(var/wish,mob/originator,E_G,TrueWishPower)
 				originator.word_power=1
 				originator.ritual_power=1
 			else
-				view(originator)<<"[originator] cancels [originator]'s wish."
-				originator << "You already wished for this!"
+				to_chat(view(originator), "[originator] cancels [originator]'s wish.")
+				to_chat(originator, "You already wished for this!")
 				return list(wishpower,TRUE)
 	return list(wishpower,FALSE)
 mob/var
@@ -356,26 +356,26 @@ obj/items/Panties
 	verb/Sniff()
 		set category = null
 		set src in usr
-		if(!equipped) view(usr)<<"[usr] brings [src] up and [usr] sniffs."
-		if(equipped) view(usr)<<"[usr] takes a large and noticable sniff."
+		if(!equipped) to_chat(view(usr), "[usr] brings [src] up and [usr] sniffs.")
+		if(equipped) to_chat(view(usr), "[usr] takes a large and noticable sniff.")
 		if(prob(1))
-			usr<<"You sniff [src]. It smells very good."
+			to_chat(usr, "You sniff [src]. It smells very good.")
 		else
-			usr<<"You sniff [src]. It smells like silk?"
+			to_chat(usr, "You sniff [src]. It smells like silk?")
 	verb/Use()
 		set category = null
 		set src in usr
-		view(usr)<<"[usr] brings [src] up and [usr] puts it on [usr]'s' head."
+		to_chat(view(usr), "[usr] brings [src] up and [usr] puts it on [usr]'s' head.")
 		if(!equipped)
 			equipped=1
 			suffix="*Equipped*"
 			usr.updateOverlay(/obj/overlay/clothes/panties,pantsuicon)
-			usr<<"You put on the [src]."
+			to_chat(usr, "You put on the [src].")
 		else
 			equipped=0
 			suffix=""
 			usr.removeOverlay(/obj/overlay/clothes/panties,pantsuicon)
-			usr<<"You take off the [src]."
+			to_chat(usr, "You take off the [src].")
 	verb/Icon()
 		set category = null
 		set src in usr

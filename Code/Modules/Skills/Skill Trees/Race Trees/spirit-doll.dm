@@ -29,11 +29,11 @@
 	tier = 1
 	maxlevel = 1
 	after_learn()
-		savant<<"Your body's regeneration changes."
+		to_chat(savant, "Your body's regeneration changes.")
 		savant.genome.add_to_stat("Regeneration",10)
 		savant.pitted = 1
 	before_forget()
-		savant<<"Your body's regeneration returns to normal."
+		to_chat(savant, "Your body's regeneration returns to normal.")
 		savant.genome.sub_to_stat("Regeneration",10)
 		savant.pitted = 0
 
@@ -47,10 +47,10 @@
 	tier = 1
 	maxlevel = 1
 	after_learn()
-		savant<<"Your zenkai increases."
+		to_chat(savant, "Your zenkai increases.")
 		savant.genome.add_to_stat("Zenkai",3)
 		savant.pitted = 2
 	before_forget()
-		savant<<"Your zenkai returns to normal."
+		to_chat(savant, "Your zenkai returns to normal.")
 		savant.genome.sub_to_stat("Zenkai",3)
 		savant.pitted = 0

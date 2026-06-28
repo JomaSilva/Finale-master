@@ -79,7 +79,7 @@ area/proc/DestroyPlanet(var/mexpressedBP)
 		if(M.client)
 			M.Quake()
 			emit_Sound('telekinesis_charge.wav')
-			M<<"<font color=red><font size=4>*The planet begins breaking apart around you!!*"
+			to_chat(M, "<font color=red><font size=4>*The planet begins breaking apart around you!!*")
 	var/obj/Planets/P=null
 	for(var/obj/Planets/Pl in planet_list)
 		if(Pl.planetType==Planet)
@@ -127,7 +127,7 @@ area/proc/DestroyPlanet(var/mexpressedBP)
 				M.Death()
 			if(M.expressedBP<=mexpressedBP)
 				M.SpreadDamage(99)
-				M << "You have been damaged by the planet destructing!"
+				to_chat(M, "You have been damaged by the planet destructing!")
 		P.isBeingDestroyed = 0
 		PlanetDisableList += P.planetType
 		P.isDestroyed=1

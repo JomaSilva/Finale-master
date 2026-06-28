@@ -100,7 +100,7 @@ mob/keyable/verb/Elemental_Options()
 	can_forget= FALSE
 	common_sense = FALSE
 	after_learn()
-		savant <<"The basic elements have chosen you as their champion."
+		to_chat(savant, "The basic elements have chosen you as their champion.")
 		savant.can_sup_el = 1
 		savant.magiBuff += 0.5
 
@@ -128,21 +128,21 @@ mob/keyable/verb/Magic_Words()
 		if("Toggle Ritual Words")
 			if(ritual_power)
 				ritual_power=0
-				view(src) << "[src]'s voice carries less power..."
+				to_chat(view(src), "[src]'s voice carries less power...")
 			else
 				ritual_power=1
-				view(src) << "[src]'s voice carries more power..."
+				to_chat(view(src), "[src]'s voice carries more power...")
 		if("View Known Words")
 			for(var/a, a <= known_words.len, a++)
 				a = max(1,a)
-				usr<<"Known Word: [known_words[known_words[a]]] Effect: [known_words[a]]"
+				to_chat(usr, "Known Word: [known_words[known_words[a]]] Effect: [known_words[a]]")
 mob/keyable/verb/Word_Power()
 	set category = "Other"
 	if(!word_power)
-		view(src) << "[src]'s voice carries more power..."
+		to_chat(view(src), "[src]'s voice carries more power...")
 		word_power = 1
 	else
-		view(src) << "[src]'s voice is empty of magic power..."
+		to_chat(view(src), "[src]'s voice is empty of magic power...")
 		word_power = 0
 
 mob/proc/reinitialize_words()
@@ -336,15 +336,15 @@ mob/Admin3/verb/View_Spell_Index()
 	for(var/a, a <= p_power_words.len, a++)
 		a = max(1,a)
 		if(p_power_words[a] != "")
-			usr<<"word: [p_power_words[a]] : [power_words_p_activations[p_power_words[a]]]"
+			to_chat(usr, "word: [p_power_words[a]] : [power_words_p_activations[p_power_words[a]]]")
 	for(var/a, a <= t_power_words.len, a++)
 		a = max(1,a)
 		if(t_power_words[a] != "")
-			usr<<"word: [t_power_words[a]] : [power_words_t_activations[t_power_words[a]]]"
+			to_chat(usr, "word: [t_power_words[a]] : [power_words_t_activations[t_power_words[a]]]")
 	for(var/a, a <= e_power_words.len, a++)
 		a = max(1,a)
 		if(e_power_words[a] != "")
-			usr<<"word: [e_power_words[a]] : [power_words_e_activations[e_power_words[a]]]"
+			to_chat(usr, "word: [e_power_words[a]] : [power_words_e_activations[e_power_words[a]]]")
 
 //temp
 /obj/Materialization

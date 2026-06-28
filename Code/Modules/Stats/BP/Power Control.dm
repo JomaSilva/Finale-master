@@ -34,14 +34,14 @@ mob/default/verb/ReadyUp()
 	set name="Toggle Readiness"
 	set category="Skills"
 	if(powerMod >= 1)
-		src<<"You are relaxed."
+		to_chat(src, "You are relaxed.")
 		isrelaxed=1
 		if(ispoweringdown)ispoweringdown=0
 		ClearPowerBuffs()
 		AuraCheck()
 		powerMod=0.01
 	else
-		src<<"You are now ready."
+		to_chat(src, "You are now ready.")
 		isrelaxed=0
 		powerMod=1
 mob/default/verb/Power_Revert()
@@ -50,11 +50,11 @@ mob/default/verb/Power_Revert()
 	dblclk++
 	spawn(4)
 		if(Ki > MaxKi && dblclk==1)
-			src<<"You shunt some extra energy."
+			to_chat(src, "You shunt some extra energy.")
 			Ki -= (Ki/MaxKi) * 10 * (MaxKi/100)
 			AuraCheck()
 		else
-			src<<"You revert forms."
+			to_chat(src, "You revert forms.")
 			AuraCheck()
 			spawn usr.Revert(2)
 			spawn usr.revertIcer()
@@ -67,24 +67,24 @@ mob/keyable/verb/Conceal_Power()
 	if(canconceal)
 		canconceal=0
 		if(isconcealed)
-			src<<"You are no longer hiding your power. It'll take a minute to conceal yourself again."
+			to_chat(src, "You are no longer hiding your power. It'll take a minute to conceal yourself again.")
 			isconcealed=0
 			sleep(50)
 			canconceal=1
 		else
-			src<<"You are now hiding your power. It'll take a minute to reveal yourself again."
+			to_chat(src, "You are now hiding your power. It'll take a minute to reveal yourself again.")
 			isconcealed=1
 			sleep(50)
 			canconceal=1
-	else src<<"You can't do that yet."
+	else to_chat(src, "You can't do that yet.")
 
 mob/proc
 	RelaxCheck()
 		if(dblclk) spawn(10) dblclk=0
 		if(isrelaxed)
 			if(Anger>(((MaxAnger-100)/1.66)+100))
-				src<<"You can't relax, you're just too angry!"
-				src<<"You are now itching for a fight."
+				to_chat(src, "You can't relax, you're just too angry!")
+				to_chat(src, "You are now itching for a fight.")
 				powerMod=1
 				isrelaxed=0
 			if(!powerMod==0.01)

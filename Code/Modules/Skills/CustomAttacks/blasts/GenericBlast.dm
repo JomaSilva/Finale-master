@@ -39,7 +39,7 @@ mob/var/maxcreatedblastamount = 8 //maximum custom blasts is eight, why not?
 /verb/Create_Blast()
 	set category = "Learning"
 	if(usr.createdblastamount>=usr.maxcreatedblastamount)
-		usr <<"Your maximum blast count is [usr.maxcreatedblastamount]! You currently have [usr.createdblastamount]! Delete a few old blasts."
+		to_chat(usr, "Your maximum blast count is [usr.maxcreatedblastamount]! You currently have [usr.createdblastamount]! Delete a few old blasts.")
 		return
 	var/obj/skill/CustomAttacks/ki/blast/Blast/A = new/obj/skill/CustomAttacks/ki/blast/Blast
 	A.savant = usr
@@ -51,7 +51,7 @@ mob/var/maxcreatedblastamount = 8 //maximum custom blasts is eight, why not?
 	usr.createdblastamount+=1
 	for(var/obj/skill/CustomAttacks/ki/blast/Blast/S in usr.contents)
 		S.Update()
-	usr << "Created [A]!"
+	to_chat(usr, "Created [A]!")
 
 /verb/Remove_Blast()
 	set category = "Learning"
@@ -63,14 +63,14 @@ mob/var/maxcreatedblastamount = 8 //maximum custom blasts is eight, why not?
 		tempnumb+=1
 	var/obj/skill/CustomAttacks/ki/blast/Blast/choice = input(usr,"Which blast?")as null|anything in tempobjlist
 	if(isnull(choice))
-		usr <<"No blast."
+		to_chat(usr, "No blast.")
 	else
 		choice.removeverbs()
 		del(choice)
 		usr.createdblastamount-=1
 
 /datum/skill/CustomAttacks/ki/blast/Blast/after_learn()
-	savant << "You feel like you can modify a blast."
+	to_chat(savant, "You feel like you can modify a blast.")
 	var/obj/skill/CustomAttacks/ki/blast/Blast/A = new/obj/skill/CustomAttacks/ki/blast/Blast
 	A.savant = savant
 	savant.contents += A
@@ -81,7 +81,7 @@ mob/var/maxcreatedblastamount = 8 //maximum custom blasts is eight, why not?
 	savant.createdblastamount+=1
 
 /datum/skill/CustomAttacks/ki/blast/Blast/before_forget()
-	savant << "Your blasts feels unchangable and ridged in construction."
+	to_chat(savant, "Your blasts feels unchangable and ridged in construction.")
 	for(var/obj/skill/CustomAttacks/ki/blast/Blast/S in savant.contents)
 		S.removeverbs()
 		savant.contents -= S

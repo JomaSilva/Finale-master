@@ -56,7 +56,7 @@ mob/keyable/verb/Kiai()
 		kiaiing=0
 		kiaionCD=0
 	else
-		usr<<"You can't use this now!"
+		to_chat(usr, "You can't use this now!")
 
 mob/keyable/verb/Shockwave()
 	set category = "Skills"
@@ -85,7 +85,7 @@ mob/keyable/verb/Shockwave()
 		kiaiing=0
 		kiaionCD=0
 	else
-		usr<<"You can't use this now!"
+		to_chat(usr, "You can't use this now!")
 
 mob/keyable/verb/Deflection()
 	set category = "Skills"
@@ -123,14 +123,14 @@ mob/keyable/verb/Deflection()
 		kiaiing=0
 		kiaionCD=0
 	else
-		usr<<"You can't use this now!"
+		to_chat(usr, "You can't use this now!")
 mob/keyable/verb/Explosive_Roar()
 	set category = "Skills"
 	desc = "Charge your ki and unleash it as a massive shockwave to knock back targets"
 	var/kireq = 50*usr.BaseDrain
 	var/charge= 0
 	if(!usr.med&&!usr.train&&!usr.KO&&usr.Ki>=kireq&&!kiaionCD&&canfight&&!charging)
-		usr<<"You begin charging your roar! Use again to release!"
+		to_chat(usr, "You begin charging your roar! Use again to release!")
 		usr.charging = 1
 		kiaiing=1
 		emit_Sound('kame_charge.wav')
@@ -160,7 +160,7 @@ mob/keyable/verb/Explosive_Roar()
 		kiaiing=0
 		kiaionCD=0
 	else if(!usr.med&&!usr.train&&!usr.KO&&usr.Ki>=kireq&&!kiaionCD&&canfight&&usr.charging)
-		usr<<"You unleash your roar!"
+		to_chat(usr, "You unleash your roar!")
 		usr.charging = 0
 	else
-		usr<<"You can't use this now!"
+		to_chat(usr, "You can't use this now!")

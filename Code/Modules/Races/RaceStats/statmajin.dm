@@ -6,7 +6,7 @@ Often they absorb clothing, which is really just the mimicry they subconsciously
 	if(Class == "None") //class is RANDOM at birth (like the Saiyan class), not chosen
 		if(rand(1,100) <= 15) Class = "Corrupted Majin" //Class_Spread: Corrupted 15 / Majin 85
 		else Class = "Majin"
-		src << "<font color=#cda434><b>You were born a [Class].</b></font>"
+		to_chat(src, "<font color=#cda434><b>You were born a [Class].</b></font>")
 	if(!genome)
 		genome = new/datum/genetics/Majin(/datum/genetics/proto/Majin)
 		if(Class != "None")

@@ -29,7 +29,7 @@
 	expbarrier = 8000
 
 	after_learn()
-		savant<<"Whenever you meditate, and feel one with your power, a small pulse is felt."
+		to_chat(savant, "Whenever you meditate, and feel one with your power, a small pulse is felt.")
 		savant.MedMod*=2
 
 	effector()
@@ -43,20 +43,20 @@
 			if(1)
 				if(levelup)
 					levelup = 0
-					savant << "The small pulse felt when meditating grows larger. Perhaps if you meditate some more..."
+					to_chat(savant, "The small pulse felt when meditating grows larger. Perhaps if you meditate some more...")
 				if(savant.med)
 					exp+=1
 			if(2)
 				if(levelup)
 					levelup = 0
-					savant << "You're slowly getting used to the pulse, which is now releasing power at a fast rythmn..."
+					to_chat(savant, "You're slowly getting used to the pulse, which is now releasing power at a fast rythmn...")
 					savant.MedMod*=1.1
 				if(savant.med)
 					exp+=1
 			if(3)
 				if(levelup)
 					levelup = 0
-					savant << "The floodgates have opened. You've unlocked some monsterous power!"
+					to_chat(savant, "The floodgates have opened. You've unlocked some monsterous power!")
 					savant.genome.add_to_stat("Ascension Mod",3)
 					savant.genome.add_to_stat("Battle Power",3)
 					savant.genome.sub_to_stat("Potential",1)
@@ -75,7 +75,7 @@
 	expbarrier = 8000
 
 /datum/skill/gray/brainpower/after_learn()
-	savant<<"Your head hurts, as your brain slowly grows and elongates your inner skull. A flurry of power rushes out every pulse of brain-growth... perhaps you could take advantage of this?"
+	to_chat(savant, "Your head hurts, as your brain slowly grows and elongates your inner skull. A flurry of power rushes out every pulse of brain-growth... perhaps you could take advantage of this?")
 	savant.MedMod*=1.1
 	savant.genome.add_to_stat("Battle Power",0.1)
 

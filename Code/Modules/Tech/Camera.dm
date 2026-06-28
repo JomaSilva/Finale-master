@@ -52,12 +52,12 @@ obj/items/PDA
 				freqlist.Cut(input(usr,"Type a frequency") as text)
 			if("Check")
 				for(var/A in freqlist)
-					usr << "[A]"
+					to_chat(usr, "[A]")
 	verb/View_Cameras()
 		set category = null
 		set src in view(1)
 		if(!DNA == usr.signature)
-			usr << "Wrong signature!"
+			to_chat(usr, "Wrong signature!")
 			return
 		var/list/camera_list = list()
 		for(var/obj/items/Camera/A in item_list)
@@ -77,9 +77,9 @@ obj/items/PDA
 		set category = null
 		if(DNA)
 			DNA = null
-			usr << "DNA unlocked."
+			to_chat(usr, "DNA unlocked.")
 		else
-			usr << "DNA locked"
+			to_chat(usr, "DNA locked")
 			DNA = usr.signature
 	verb/Input()
 		set category=null
@@ -90,7 +90,7 @@ obj/items/PDA
 		for(var/obj/items/Book/B in usr.contents)
 			uploads+=B
 		if(isnull(uploads))
-			usr<<"You have no books to upload!"
+			to_chat(usr, "You have no books to upload!")
 			return
 		var/obj/items/Book/choice=input(usr,"You can upload a book to the global library for future generations. Choose which book you'd like to upload.","",null) as null|anything in uploads
 		if(!choice)
@@ -137,15 +137,15 @@ obj/items/Camera_Computer
 		set src in view(1)
 		if(DNA)
 			DNA = null
-			usr << "DNA unlocked."
+			to_chat(usr, "DNA unlocked.")
 		else
-			usr << "DNA locked"
+			to_chat(usr, "DNA locked")
 			DNA = usr.signature
 	verb/View_Cameras()
 		set category = null
 		set src in view(1)
 		if(!DNA == usr.signature)
-			usr << "Wrong signature!"
+			to_chat(usr, "Wrong signature!")
 			return
 		var/list/camera_list = list()
 		for(var/obj/items/Camera/A in item_list)

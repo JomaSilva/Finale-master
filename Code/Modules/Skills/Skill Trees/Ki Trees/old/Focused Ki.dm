@@ -30,10 +30,10 @@
 	maxlevel = 1
 	tier = 1
 /datum/skill/bfocus/after_learn()
-	savant<<"You could channel your ki down to a needlepoint if you felt like it."
+	to_chat(savant, "You could channel your ki down to a needlepoint if you felt like it.")
 	savant.kiskillBuff+=0.3
 /datum/skill/bfocus/before_forget()
-	savant<<"You lose a bit of focus."
+	to_chat(savant, "You lose a bit of focus.")
 	savant.kiskillBuff-=0.3
 
 /datum/skill/powerhouse
@@ -45,11 +45,11 @@
 	maxlevel = 1
 	tier = 1
 /datum/skill/powerhouse/after_learn()
-	savant<<"You begin to magnify your ki projection."
+	to_chat(savant, "You begin to magnify your ki projection.")
 	savant.kioffBuff+=0.3
 	savant.kiskillBuff-=0.1
 /datum/skill/powerhouse/before_forget()
-	savant<<"You regain a bit of focus."
+	to_chat(savant, "You regain a bit of focus.")
 	savant.kioffBuff-=0.3
 	savant.kiskillBuff+=0.1
 

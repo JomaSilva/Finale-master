@@ -26,7 +26,7 @@ mob/var/hassoulabsorb=1
 	skillcost=2
 	after_learn()
 		savant.snamek=1
-		savant<<"Power up past two million and let the sparks fly, baby!"
+		to_chat(savant, "Power up past two million and let the sparks fly, baby!")
 
 /datum/skill/namek/fusion
 	skilltype = "Form"
@@ -41,11 +41,11 @@ mob/var/hassoulabsorb=1
 		assignverb(/mob/keyable/verb/Namekian_Fusion)
 	after_learn()
 		assignverb(/mob/keyable/verb/Namekian_Fusion)
-		savant<<"You can fuse!"
+		to_chat(savant, "You can fuse!")
 
 	before_forget()
 		unassignverb(/mob/keyable/verb/Namekian_Fusion)
-		savant<<"You can't fuse!"
+		to_chat(savant, "You can't fuse!")
 
 /datum/skill/namek/Stretchy_Arms
 	skilltype = "Form"
@@ -57,7 +57,7 @@ mob/var/hassoulabsorb=1
 	skillcost=1
 	after_learn()
 		savant.can_stretch_arms=1
-		savant<<"Target a opponent, press grab, and your arms will fly at them! Block (alt) to let go, grab to bring them towards you, attack to do a grab-attack, turning the grab into a regular grab."
+		to_chat(savant, "Target a opponent, press grab, and your arms will fly at them! Block (alt) to let go, grab to bring them towards you, attack to do a grab-attack, turning the grab into a regular grab.")
 
 mob/var
 	can_stretch_arms = 0
@@ -100,17 +100,17 @@ mob/proc/stretch_arms(var/mob/M)
 					while(get_dist(src,M)>1 && grabbee)
 						justincase+=1
 						if(!canmove)
-							src<<"You're unable to move them any closer!"
+							to_chat(src, "You're unable to move them any closer!")
 							break
 						step(M,get_dir(M,src))
 						if(justincase==50 || !grabbee)
-							src<<"You're unable to move them any closer!"
+							to_chat(src, "You're unable to move them any closer!")
 							break
 						sleep(rushSpeed)
 					stretch_bring = 0
 					bringing = 0
 			if(KO||grabbee.z!=usr.z||totalTime==0)
-				view()<<"[usr] is forced to release [grabbee]!"
+				to_chat(view(), "[usr] is forced to release [grabbee]!")
 				emit_Sound('groundhit2.wav')
 				grabbee.grabberSTR=null
 				grabbee.attacking=0

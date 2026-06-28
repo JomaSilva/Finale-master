@@ -70,13 +70,13 @@ obj/items
 			if(x&&y&&z&&!Bolted)
 				switch(input("Are you sure you want to bolt this to the ground so nobody can ever pick it up? Not even you?","",text) in list("Yes","No",))
 					if("Yes")
-						view(src)<<"<font size=1>[usr] bolts the [src] to the ground."
+						to_chat(view(src), "<font size=1>[usr] bolts the [src] to the ground.")
 						Bolted=1
 						boltersig=usr.signature
 			else if(Bolted&&boltersig==usr.signature)
 				switch(input("Unbolt?","",text) in list("Yes","No",))
 					if("Yes")
-						view(src)<<"<font size=1>[usr] unbolts the [src] from the ground."
+						to_chat(view(src), "<font size=1>[usr] unbolts the [src] from the ground.")
 						Bolted=0
 	Wall_Upgrader
 		icon = 'upgrader.dmi'
@@ -118,13 +118,13 @@ obj/items
 			if(x&&y&&z&&!Bolted)
 				switch(input("Are you sure you want to bolt this to the ground so nobody can ever pick it up? Not even you?","",text) in list("Yes","No",))
 					if("Yes")
-						view(src)<<"<font size=1>[usr] bolts the [src] to the ground."
+						to_chat(view(src), "<font size=1>[usr] bolts the [src] to the ground.")
 						Bolted=1
 						boltersig=usr.signature
 			else if(Bolted&&boltersig==usr.signature)
 				switch(input("Unbolt?","",text) in list("Yes","No",))
 					if("Yes")
-						view(src)<<"<font size=1>[usr] unbolts the [src] from the ground."
+						to_chat(view(src), "<font size=1>[usr] unbolts the [src] from the ground.")
 						Bolted=0
 	Portable_Repairer
 		icon = 'Controller.dmi'
@@ -207,20 +207,20 @@ obj/items
 				reserve-=1
 				spawn(150/refire)
 				usr.blasting=0
-				if(reserve<1) usr<<"[src]: Out of energy!"
+				if(reserve<1) to_chat(usr, "[src]: Out of energy!")
 		verb/Bolt(var/obj/O in oview(1))
 			set category=null
 			if(O.proprietor == usr.ckey)
 				if(O.x&&O.y&&O.z&&!O.Bolted)
 					switch(input("Are you sure you want to bolt this to the ground so nobody can ever pick it up? Not even you?","",text) in list("Yes","No",))
 						if("Yes")
-							view(src)<<"<font size=1>[usr] bolts the [O] to the ground."
+							to_chat(view(src), "<font size=1>[usr] bolts the [O] to the ground.")
 							O.Bolted=1
 							O.boltersig=usr.signature
 				else if(O.Bolted&&O.boltersig==usr.signature)
 					switch(input("Unbolt?","",text) in list("Yes","No",))
 						if("Yes")
-							view(src)<<"<font size=1>[usr] unbolts the [O] from the ground."
+							to_chat(view(src), "<font size=1>[usr] unbolts the [O] from the ground.")
 							O.Bolted=0
 	Recreator
 		icon='Ki_Blaster.dmi'
@@ -242,13 +242,13 @@ obj/items
 			set category=null
 			if(savkey && savkey == usr.ckey || soverride)
 			else if(!savkey)
-				usr << "Recreator tuned to your soul. (Can be used on alts with same ckey.)"
+				to_chat(usr, "Recreator tuned to your soul. (Can be used on alts with same ckey.)")
 				savkey = usr.ckey
 			else
-				usr << "Recreator not tuned to your soul"
+				to_chat(usr, "Recreator not tuned to your soul")
 				return
 			if(can_load)
-				usr << "Loaded map recently."
+				to_chat(usr, "Loaded map recently.")
 				return
 			if(saving)
 				if(x1y1)
@@ -257,7 +257,7 @@ obj/items
 						if("Yes")
 							if(get_dist(x1y1,x2y2) > 30)
 								saving = 0
-								usr << "Too far away [get_dist(x1y1,x2y2)]"
+								to_chat(usr, "Too far away [get_dist(x1y1,x2y2)]")
 								return
 							saveloc = list(usr.x,usr.y,usr.z)
 							var/amount=0
@@ -278,13 +278,13 @@ obj/items
 							L["monee"] = moneecost
 							L["saveloc"] = saveloc
 							F<<L
-							usr<<"Tiles/Objs Saved ([amount]) (Zenni: )"
+							to_chat(usr, "Tiles/Objs Saved ([amount]) (Zenni: )")
 						if("No")
 							saving = 0
 							return
 				else
 					x1y1 = usr.loc
-					usr << "x1y1 set."
+					to_chat(usr, "x1y1 set.")
 					return
 			if(!fexists("Save/[savkey]/[id].objsav"))
 				var/list/oplist = list()
@@ -300,7 +300,7 @@ obj/items
 						x1y1 = null
 						x2y2 = null
 						saving=1
-						usr<<"Click on this again to set coordinates. Maximum distance between blocks is 30 tiles (about one view screen.)"
+						to_chat(usr, "Click on this again to set coordinates. Maximum distance between blocks is 30 tiles (about one view screen.)")
 					if("Upload")
 						var/savefile/F=new("Save/[savkey]/[id].objsav")
 						F << input(usr,"Upload a file.")
@@ -316,10 +316,10 @@ obj/items
 				switch(input("File exists. It costs [moneecost]. Load? Must be 40 tiles away or less to load.") in list("Yes","No","Delete file","Download"))
 					if("Yes")
 						if(get_dist(usr,locate(saveloc[1],saveloc[2],saveloc[3])) > 40 || saveloc[3] != usr.z)
-							usr << "Too far."
+							to_chat(usr, "Too far.")
 							return
 						if(usr.zenni < moneecost)
-							usr << "It costs [moneecost] zenni."
+							to_chat(usr, "It costs [moneecost] zenni.")
 							return
 						usr.zenni -= moneecost
 						var/savefile/F=new("Save/[savkey]/[id].objsav")

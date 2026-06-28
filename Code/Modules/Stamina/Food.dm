@@ -4,13 +4,13 @@ mob/Rank/verb
 		set category="Skills"
 		if(!GrowingBean)
 			GrowingBean=1
-			usr<<"You start growing a Senzu bean, this will take a minute..."
+			to_chat(usr, "You start growing a Senzu bean, this will take a minute...")
 			sleep(600)
 			var/obj/A=new/obj/items/food/Senzu
 			A.loc=locate(x,(y-1),z)
-			usr<<"All done."
+			to_chat(usr, "All done.")
 			GrowingBean=0
-		else usr<<"You must wait til you grow this one first."
+		else to_chat(usr, "You must wait til you grow this one first.")
 mob/var
 	Senzu
 	fishing
@@ -39,34 +39,34 @@ obj/items/food
 			if(!usr.KO&&usr.CanEat&&usr.Senzu+Increase<=4)
 				usr.Senzu+=Increase
 				sensuuse(usr)
-				usr<<"You eat a Senzu Bean"
-				view(usr)<<"[usr] pops a Senzu Bean into his mouth."
+				to_chat(usr, "You eat a Senzu Bean")
+				to_chat(view(usr), "[usr] pops a Senzu Bean into his mouth.")
 			else if(usr.Senzu+Increase<4)
-				usr<<"You have to wait a little bit."
-			else if(usr.KO) usr<<"You cant eat a Senzu while unconscious"
-			else if(!usr.CanEat) usr << "You can't digest food."
+				to_chat(usr, "You have to wait a little bit.")
+			else if(usr.KO) to_chat(usr, "You cant eat a Senzu while unconscious")
+			else if(!usr.CanEat) to_chat(usr, "You can't digest food.")
 			..()
 		verb
 			Throw(mob/M in oview(usr))
 				set category=null
-				view(usr)<<"[usr] throws a Senzu to [M]"
+				to_chat(view(usr), "[usr] throws a Senzu to [M]")
 				missile('Senzu.dmi',usr,M)
 				sleep(2)
-				view(usr)<<"[M] catches the Senzu"
+				to_chat(view(usr), "[M] catches the Senzu")
 				Move(M)
 			Use_on(mob/M in oview(1))
 				set category=null
 				if(M.KO)
-					view(usr)<<"[usr] gives a Senzu to [M]"
+					to_chat(view(usr), "[usr] gives a Senzu to [M]")
 					M.icon_state=""
 					M.Un_KO()
 					sensuuse(usr)
 					M.Senzu+=Increase
 					del(src)
-				else usr<<"You can only use this on an unconscious person."
+				else to_chat(usr, "You can only use this on an unconscious person.")
 			Split()
 				set category=null
-				view(usr)<<"[usr] Splits a senzu in half"
+				to_chat(view(usr), "[usr] Splits a senzu in half")
 				var/amount=2
 				while(amount)
 					var/obj/items/food/Senzu/A=new/obj/items/food/Senzu
@@ -79,7 +79,7 @@ obj/items/food
 			Plant()
 				set category=null
 				loc=locate(usr.x,usr.y,usr.z)
-				view(src)<<"[usr] Plants a senzu bean in the ground..."
+				to_chat(view(src), "[usr] Plants a senzu bean in the ground...")
 				while(x&&y&&z)
 					sleep(100)
 					if(prob(0.1))
@@ -90,7 +90,7 @@ obj/items/food
 						else
 							icon='Senzu.dmi'
 							name="Senzu"
-						view(src)<<"The [blarg] grows into a [name]..."
+						to_chat(view(src), "The [blarg] grows into a [name]...")
 	corpse
 		icon='corpse.dmi'
 		nutrition=10
@@ -130,13 +130,13 @@ obj/items/food
 			set category = null
 			set src in view(1)
 			if(!usr.eating&&usr.CanEat)
-				usr<<"[flavor]"
-				view(usr)<<"[usr] eats the [name]"
+				to_chat(usr, "[flavor]")
+				to_chat(view(usr), "[usr] eats the [name]")
 				usr.Hunger=0
 				usr.eating=1
 				usr.currentNutrition+=nutrition
 				if(usr.currentNutrition>usr.maxNutrition)
-					usr<<"You ate too much... and you throw up a little. It isn't visible, but it might be a good idea to eat a little lighter next time."
+					to_chat(usr, "You ate too much... and you throw up a little. It isn't visible, but it might be a good idea to eat a little lighter next time.")
 				if(planttype&&prob(25))
 					var/obj/items/food/A=new/obj/items/food/Seed
 					A.planttype=planttype
@@ -144,9 +144,9 @@ obj/items/food
 				del(src)
 			else
 				if(usr.eating)
-					usr<<"You need to wait to eat!"
+					to_chat(usr, "You need to wait to eat!")
 				if(!usr.CanEat)
-					usr<<"You can't digest food."
+					to_chat(usr, "You can't digest food.")
 
 		Cook()
 			set category=null
@@ -161,17 +161,17 @@ obj/items/food
 				if(nF.isFire)
 					fireNearby=1
 			if(!cookable)
-				usr<<"You don't think this can be cooked."
+				to_chat(usr, "You don't think this can be cooked.")
 				return
 			if(cookable&&usr.CookingSkill<cookskill)
-				usr<<"You are not skilled enough to cook this. You need [cookskill] cooking skill."
+				to_chat(usr, "You are not skilled enough to cook this. You need [cookskill] cooking skill.")
 				return
 			if(fireNearby)
 				cooking=1
-				usr<<"It'll take a minute to cook it."
+				to_chat(usr, "It'll take a minute to cook it.")
 				spawn(100)
 					if(prob(40+max(usr.CookingSkill-cookskill,0)))
-						usr<<"The [name] is cooked!"
+						to_chat(usr, "The [name] is cooked!")
 						var/obj/items/food/A=new cooktype
 						A.nutrition*=(1+(usr.CookingSkill/100))
 						if(mobkilled)
@@ -183,7 +183,7 @@ obj/items/food
 						cooking=0
 						del(src)
 					else
-						usr<<"You ended up burning the [name]..."
+						to_chat(usr, "You ended up burning the [name]...")
 						var/obj/A=new/obj/items/food/Charred_Food
 						usr.contents+=A
 						AddExp(usr,/datum/mastery/Life/Cooking,50)
@@ -243,13 +243,13 @@ obj/items/Fridge
 			if(x&&y&&z&&!Bolted)
 				switch(input("Are you sure you want to bolt this to the ground so nobody can ever pick it up? Not even you?","",text) in list("Yes","No",))
 					if("Yes")
-						view(src)<<"<font size=1>[usr] bolts the [src] to the ground."
+						to_chat(view(src), "<font size=1>[usr] bolts the [src] to the ground.")
 						Bolted=1
 						boltersig=usr.signiture
 			else if(Bolted&&boltersig==usr.signiture)
 				switch(input("Unbolt?","",text) in list("Yes","No",))
 					if("Yes")
-						view(src)<<"<font size=1>[usr] unbolts the [src] from the ground."
+						to_chat(view(src), "<font size=1>[usr] unbolts the [src] from the ground.")
 						Bolted=0
 		Customize()
 			set category = null

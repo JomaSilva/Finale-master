@@ -36,12 +36,12 @@
 	enabled = 0
 	var/attackcounter
 	after_learn()
-		savant<<"You think you understand ki-based buffs better!"
+		to_chat(savant, "You think you understand ki-based buffs better!")
 	effector()
 		..()
 		if(levelup)
 			levelup=0
-			savant<<"Your mastery over ki-based buffs grows! Basic Buff Mastery is now level [level]!"
+			to_chat(savant, "Your mastery over ki-based buffs grows! Basic Buff Mastery is now level [level]!")
 			expbarrier=(5000*1.03**level)
 			if(level % 5 == 0)
 				savant.kibuffskill+=1
@@ -67,22 +67,22 @@
 	enabled = 0
 	var/attackcounter
 	after_learn()
-		savant<<"You think you understand ki-based debuffs better!"
-		savant<<"You can now channel your ki into a blinding flash!"
+		to_chat(savant, "You think you understand ki-based debuffs better!")
+		to_chat(savant, "You can now channel your ki into a blinding flash!")
 		assignverb(/mob/keyable/verb/Solar_Flare)
 	effector()
 		..()
 		if(levelup)
 			levelup=0
-			savant<<"Your mastery over ki-based debuffs grows! Basic Debuff Mastery is now level [level]!"
+			to_chat(savant, "Your mastery over ki-based debuffs grows! Basic Debuff Mastery is now level [level]!")
 			expbarrier=(5000*1.03**level)
 			if(level % 5 == 0)
 				savant.kidebuffskill+=1
 			if(level == 20)
-				savant<<"You can now temporarily paralyze your opponent"
+				to_chat(savant, "You can now temporarily paralyze your opponent")
 				assignverb(/mob/keyable/verb/Paralysis)
 			if(level == 50)
-				savant<<"You can now bind your opponent's legs with ki, slowing them"
+				to_chat(savant, "You can now bind your opponent's legs with ki, slowing them")
 				assignverb(/mob/keyable/verb/Shackle)
 			if(level == 100)
 				savant.kidebuffskill+=5
@@ -111,19 +111,19 @@
 	enabled = 0
 	var/defensecounter
 	after_learn()
-		savant<<"You think you understand defending against ki better!"
+		to_chat(savant, "You think you understand defending against ki better!")
 	effector()
 		..()
 		if(levelup)
 			levelup=0
-			savant<<"Your mastery over defending against ki grows! Basic Defense Mastery is now level [level]!"
+			to_chat(savant, "Your mastery over defending against ki grows! Basic Defense Mastery is now level [level]!")
 			expbarrier=(5000*1.03**level)
 			if(level % 5 == 0)
 				savant.kidefenseskill+=1
 			if(level % 10 == 0)
 				savant.kidefBuff+=0.1
 			if(level == 10)
-				savant<<"You can now create a shield of ki to defend against attacks!"
+				to_chat(savant, "You can now create a shield of ki to defend against attacks!")
 				assignverb(/mob/keyable/verb/Energy_Shield)
 			if(level == 100)
 				savant.kidefenseskill+=5
@@ -149,13 +149,13 @@
 	enabled = 0
 	var/attackcounter
 	after_learn()
-		savant<<"You understand ki-based buffs better!"
+		to_chat(savant, "You understand ki-based buffs better!")
 		attackcounter=savant.kibuffcounter
 	effector()
 		..()
 		if(levelup)
 			levelup=0
-			savant<<"Your mastery over ki-based buffs grows! Advanced Buff Mastery is now level [level]!"
+			to_chat(savant, "Your mastery over ki-based buffs grows! Advanced Buff Mastery is now level [level]!")
 			expbarrier=(10000*1.03**level)
 			if(level % 5 == 0)
 				savant.kibuffskill+=2
@@ -183,13 +183,13 @@
 	enabled = 0
 	var/attackcounter
 	after_learn()
-		savant<<"You understand ki-based debuffs better!"
+		to_chat(savant, "You understand ki-based debuffs better!")
 		attackcounter=savant.kidebuffcounter
 	effector()
 		..()
 		if(levelup)
 			levelup=0
-			savant<<"Your mastery over ki-based debuffs grows! Advanced Debuff Mastery is now level [level]!"
+			to_chat(savant, "Your mastery over ki-based debuffs grows! Advanced Debuff Mastery is now level [level]!")
 			expbarrier=(10000*1.03**level)
 			if(level % 5 == 0)
 				savant.kidebuffskill+=2
@@ -217,13 +217,13 @@
 	enabled = 0
 	var/defensecounter
 	after_learn()
-		savant<<"You understand defending against ki better!"
+		to_chat(savant, "You understand defending against ki better!")
 		defensecounter=savant.kidefensecounter
 	effector()
 		..()
 		if(levelup)
 			levelup=0
-			savant<<"Your mastery over defending against ki grows! Advanced Defense Mastery is now level [level]!"
+			to_chat(savant, "Your mastery over defending against ki grows! Advanced Defense Mastery is now level [level]!")
 			expbarrier=(10000*1.03**level)
 			if(level % 5 == 0)
 				savant.kidefenseskill+=2
@@ -253,13 +253,13 @@
 	enabled = 0
 	var/attackcounter
 	after_learn()
-		savant<<"You've perfected ki-based buffs!"
+		to_chat(savant, "You've perfected ki-based buffs!")
 		attackcounter=savant.kibuffcounter
 	effector()
 		..()
 		if(levelup)
 			levelup=0
-			savant<<"Your mastery over ki-based buffs grows! Perfect Buff Mastery is now level [level]!"
+			to_chat(savant, "Your mastery over ki-based buffs grows! Perfect Buff Mastery is now level [level]!")
 			expbarrier=(20000*1.03**level)
 			if(level % 5 == 0)
 				savant.kibuffskill+=1
@@ -286,13 +286,13 @@
 	enabled = 0
 	var/attackcounter
 	after_learn()
-		savant<<"You've perfected ki-based debuffs!"
+		to_chat(savant, "You've perfected ki-based debuffs!")
 		attackcounter=savant.kidebuffcounter
 	effector()
 		..()
 		if(levelup)
 			levelup=0
-			savant<<"Your mastery over ki-based debuffs grows! Perfect Debuff Mastery is now level [level]!"
+			to_chat(savant, "Your mastery over ki-based debuffs grows! Perfect Debuff Mastery is now level [level]!")
 			expbarrier=(20000*1.03**level)
 			if(level % 5 == 0)
 				savant.kidebuffskill+=1
@@ -319,13 +319,13 @@
 	enabled = 0
 	var/defensecounter
 	after_learn()
-		savant<<"You've perfected defending against ki!"
+		to_chat(savant, "You've perfected defending against ki!")
 		defensecounter=savant.kidefensecounter
 	effector()
 		..()
 		if(levelup)
 			levelup=0
-			savant<<"Your mastery over defending against ki grows! Perfect Defense Mastery is now level [level]!"
+			to_chat(savant, "Your mastery over defending against ki grows! Perfect Defense Mastery is now level [level]!")
 			expbarrier=(20000*1.03**level)
 			if(level % 5 == 0)
 				savant.kidefenseskill+=1

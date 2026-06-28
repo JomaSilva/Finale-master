@@ -105,10 +105,10 @@ mob/var/permission=0
 
 /datum/skill/rank/Permission/after_learn()
 	assignverb(/mob/Rank/verb/Permission)
-	savant<<"You give permissions."
+	to_chat(savant, "You give permissions.")
 /datum/skill/rank/Permission/before_forget()
 	unassignverb(/mob/Rank/verb/Permission)
-	savant<<"You've forgotten how to give permission?"
+	to_chat(savant, "You've forgotten how to give permission?")
 /datum/skill/rank/Permission/login(var/mob/logger)
 	..()
 	assignverb(/mob/Rank/verb/Permission)
@@ -126,10 +126,10 @@ mob/var/permission=0
 
 /datum/skill/rank/Grow_Senzu/after_learn()
 	assignverb(/mob/Rank/verb/Grow_Senzu_Bean)
-	savant<<"You can make a bean!"
+	to_chat(savant, "You can make a bean!")
 /datum/skill/rank/Grow_Senzu/before_forget()
 	unassignverb(/mob/Rank/verb/Grow_Senzu_Bean)
-	savant<<"You've forgotten how to make beans!?"
+	to_chat(savant, "You've forgotten how to make beans!?")
 /datum/skill/rank/Grow_Senzu/login(var/mob/logger)
 	..()
 	assignverb(/mob/Rank/verb/Grow_Senzu_Bean)
@@ -139,13 +139,13 @@ mob/Rank/verb/Permission(mob/M in view(6))
 	set category="Other"
 	switch(input("Give permission for [M] to enter the tower and/or HBTC?", "", text) in list ("Tower","Tower and HBTC","Neither",))
 		if("Tower")
-			usr<<"You give [M] permission to enter the tower"
+			to_chat(usr, "You give [M] permission to enter the tower")
 			M.permission=2
 		if("Tower and HBTC")
-			usr<<"You give [M] permission to use the HBTC"
+			to_chat(usr, "You give [M] permission to use the HBTC")
 			M.permission=1
 		if("Neither")
-			usr<<"You deny [M] permission to enter the tower or use the HBTC"
+			to_chat(usr, "You deny [M] permission to enter the tower or use the HBTC")
 			M.permission=0
 
 obj/Portal_Jar
@@ -160,18 +160,18 @@ obj/Portal_Jar
 			if(!open)
 				open=1
 				icon_state="Open"
-				view(9)<<"[usr] opens the jar."
+				to_chat(view(9), "[usr] opens the jar.")
 				sleep(600)
 				icon_state="Closed"
 				open=0
-		else usr<<"You cant seem to open it, its locked by magic or something."
+		else to_chat(usr, "You cant seem to open it, its locked by magic or something.")
 	verb/Enter_Jar()
 		set category="Other"
 		set src in oview(1)
 		if(open)
-			view(9)<<"[usr] gets in the jar and is whisked away into another world."
+			to_chat(view(9), "[usr] gets in the jar and is whisked away into another world.")
 			usr.loc=locate(150,150,24)
-		else usr<<"You cant get in the jar, its closed."
+		else to_chat(usr, "You cant get in the jar, its closed.")
 mob/var/sacredwater
 obj/Sacred_Water
 	name="Sacred Water"
@@ -184,54 +184,54 @@ obj/Sacred_Water
 		if(!usr.sacredwater)
 			if(prob(50)||usr.Ephysdef>=1)
 				usr.sacredwater=1
-				usr<<"You drink the Sacred Water..."
+				to_chat(usr, "You drink the Sacred Water...")
 				sleep(30)
-				usr<<"Somethings happening..."
+				to_chat(usr, "Somethings happening...")
 				sleep(30)
-				usr<<"Hm, guess it was nothing!"
+				to_chat(usr, "Hm, guess it was nothing!")
 				sleep(30)
-				usr<<"Suddenly you fall over and feel as if you have been hit by a brick."
+				to_chat(usr, "Suddenly you fall over and feel as if you have been hit by a brick.")
 				usr.KO(null,1)
 				sleep(300)
 				usr.Un_KO()
-				usr<<"You wake up in Korin's Tower where you started and feel hurt."
-				usr<<"The fact that you feel so bad proves it wasnt a dream I guess."
+				to_chat(usr, "You wake up in Korin's Tower where you started and feel hurt.")
+				to_chat(usr, "The fact that you feel so bad proves it wasnt a dream I guess.")
 				sleep(30)
 
-				usr<<"<font color=yellow>!!*Stamina has increased*!!"
+				to_chat(usr, "<font color=yellow>!!*Stamina has increased*!!")
 				usr.maxstamina *=1.2
 				if(usr.BP<usr.relBPmax)
 					usr.BP+=usr.capcheck(usr.BPMod*usr.relBPmax)/5
-					usr<<"<font color=yellow>!!*Battle Power has increased*!!"
+					to_chat(usr, "<font color=yellow>!!*Battle Power has increased*!!")
 				else
-					usr<<"<font color=yellow>You're too strong to get anything out of the water..."
+					to_chat(usr, "<font color=yellow>You're too strong to get anything out of the water...")
 
 			else
-				usr<<"You drink the Sacred Water..."
+				to_chat(usr, "You drink the Sacred Water...")
 				sleep(30)
-				usr<<"Somethings happening..."
+				to_chat(usr, "Somethings happening...")
 				sleep(30)
-				usr<<"Hm, guess it was nothing!"
+				to_chat(usr, "Hm, guess it was nothing!")
 				sleep(30)
 				usr.Death()
-				usr<<"The Sacred Water suddenly kills you!"
+				to_chat(usr, "The Sacred Water suddenly kills you!")
 		else
-			usr<<"You drink the sacred water... Nothing happens."
-			usr<<"You've already drunk the sacred water. To you, this is now just regular water that tastes faintly of cat pee. Ugh."
+			to_chat(usr, "You drink the sacred water... Nothing happens.")
+			to_chat(usr, "You've already drunk the sacred water. To you, this is now just regular water that tastes faintly of cat pee. Ugh.")
 	verb/Description()
 		set src in oview(1)
 		set category = null
-		usr<<"The Sacred Water jar increases your BP and maximum stamina, however you must be above a certain level of durability to use it. Else, you have a 50% chance of dying."
-		usr<<"In future updates, the knockout may transport you to a dreamworld where that will decide your fate instead..."
+		to_chat(usr, "The Sacred Water jar increases your BP and maximum stamina, however you must be above a certain level of durability to use it. Else, you have a 50% chance of dying.")
+		to_chat(usr, "In future updates, the knockout may transport you to a dreamworld where that will decide your fate instead...")
 mob/ETax/verb
 	Earth_Taxes()
 		set category="Other"
-		usr<<"Earth's Taxe rates are at [EarthTax]z."
+		to_chat(usr, "Earth's Taxe rates are at [EarthTax]z.")
 		var/Mult=input("Enter a number for tax rate. This will increase or decrease across Earth. (1 = 1z)") as num
 		EarthTax=Mult
 	Collect_Earth_Taxes()
 		set category="Other"
-		usr<<"Earth's bank has [EarthBank]z."
+		to_chat(usr, "Earth's bank has [EarthBank]z.")
 		var/Mult=input("Enter a number to deduct from the bank. (1 = 1z)") as num
 		if(Mult<=EarthBank)
 			EarthBank-=Mult

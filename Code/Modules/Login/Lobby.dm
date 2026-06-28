@@ -26,12 +26,12 @@ client
 
 		LoadPlayer(Path)
 			if(fexists(Path))
-				src << "Loaded!"
+				to_chat(src, "Loaded!")
 				winshow(usr,"characterpane[usr]",0)
 				winset(usr,"characterpane[usr]","parent=none")
 				var savefile/save = new (Path)
 				if(save.name == 0)
-					usr << "Savefile corrupted! In later versions it may allow automatic recovery. For now, contact a admin and see if they can fix it. Path: [Path]"
+					to_chat(usr, "Savefile corrupted! In later versions it may allow automatic recovery. For now, contact a admin and see if they can fix it. Path: [Path]")
 					winshow(usr,"Login_Pane",1)
 					winshow(usr,"characterpane",0)
 					winshow(usr, "balancewin", 0)
@@ -55,10 +55,10 @@ mob/lobby
 		name = key
 		temporary = 1
 		lobby_list += src
-		world << "[src] has entered the lobby."
+		to_chat(world, "[src] has entered the lobby.")
 		client.show_verb_panel=0
 		client.screen -= client.screen
-		src << "<BIG>NEW! Report function! Check in the Other tab, available at any point!</BIG>"
+		to_chat(src, "<BIG>NEW! Report function! Check in the Other tab, available at any point!</BIG>")
 		client.Title_Music()
 		//player_list += src
 		loginTests()
@@ -76,19 +76,19 @@ mob/lobby
 		else savefiles[3] = FALSE
 
 	Logout()
-		world << "[src] has left the lobby."
+		to_chat(world, "[src] has left the lobby.")
 		lobby_list -= src
 		del(src) //deletes the lobby player mob. isn't needed anyway since they already either left or is switched to their player.
 
 	verb/loadwindow()
 		if(worldloading)
-			usr<<"The world is still loading"
+			to_chat(usr, "The world is still loading")
 			return
 		opencharacterwindow()
 
 	verb/startnewcharacter()
 		if(worldloading)
-			usr<<"The world is still loading"
+			to_chat(usr, "The world is still loading")
 			return
 		if(!savefiles[1])
 			create(1)
@@ -97,7 +97,7 @@ mob/lobby
 		else if(!savefiles[3])
 			create(3)
 		else
-			client << "Character creation failed! Delete a character!"
+			to_chat(client, "Character creation failed! Delete a character!")
 			return
 
 
@@ -106,13 +106,13 @@ mob/lobby
 
 	verb/dumpsave()
 		if(ckey)
-			usr << "[ckey(ckey)]"
-			usr << "This is your ckey ckey(ckey)-afied. Usually wanna send this toward a head admin's way if you're trying to recover saves or something."
+			to_chat(usr, "[ckey(ckey)]")
+			to_chat(usr, "This is your ckey ckey(ckey)-afied. Usually wanna send this toward a head admin's way if you're trying to recover saves or something.")
 
 
 	proc/load(var/N)
 		if(client.LoadPlayer(GetSavePath(N)))
-		else client << "Load failed!"
+		else to_chat(client, "Load failed!")
 
 	proc/create(var/N)
 		if(winexists(usr,"characterpane[usr]"))
@@ -151,7 +151,7 @@ mob
 		client.Music_Fade()
 		CHECK()
 		client.show_verb_panel=1
-		src << "[src] entered the game."
+		to_chat(src, "[src] entered the game.")
 		displaykey = ckey(ckey)
 		if(client.iscreating)
 			client.iscreating = 0
@@ -165,7 +165,7 @@ mob
 			if(client) client.show_verb_panel=1
 	Logout()
 		if(!isNPC && had_client)
-			src << "[src] left the game."
+			to_chat(src, "[src] left the game.")
 			player_list -= src
 			OnLogout()
 		//sleep OfflineSave()
@@ -216,7 +216,7 @@ mob
 				zco = z
 				storedname = name
 				if(client.SavePlayer(GetSavePath(save_path)))
-					src << "Saved!"
+					to_chat(src, "Saved!")
 				var savefile/save = new (GetSavePath(save_path))
 				save["name"] << name
 				save["icon"] << icon
@@ -237,7 +237,7 @@ mob
 				zco = z
 				storedname = name
 				if(client.SavePlayer(GetSaveBckup(save_path)))
-					src << "Saved!"
+					to_chat(src, "Saved!")
 			for(var/obj/A in artifactlist)
 				A.Move(src)
 		OfflineSave()

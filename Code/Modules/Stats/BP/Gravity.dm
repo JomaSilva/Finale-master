@@ -169,11 +169,11 @@ obj/items/Gravity
 							M.gravmult = 0
 						BB -= o
 						o.deleteMe()
-					view(src)<<"<font color=red>[src]: Battery is completely drained. Shutting down..."
+					to_chat(view(src), "<font color=red>[src]: Battery is completely drained. Shutting down...")
 
 			else if(prob(NanoCore))
 				Energy=MaxEnergy
-				view(src)<<"[src]: Nanites activated. Energy fully restored. This feature will only work if the [src] is off."
+				to_chat(view(src), "[src]: Nanites activated. Energy fully restored. This feature will only work if the [src] is off.")
 			sleep(100)
 	density=1
 	desc="Place this anywhere on the ground to use it, it will affect anything within its radius."
@@ -190,13 +190,13 @@ obj/items/Gravity
 	verb/Info()
 		set src in oview(1)
 		set category=null
-		usr<<"Field Strength: [Max]x"
-		usr<<"Battery: [Energy*100] / [MaxEnergy*100]"
-		usr<<"Field Range: [Range]"
-		usr<<"Field Fluctuation Control: [Stability]"
-		usr<<"Shutdown Protection: [Efficiency]"
-		if(NanoCore) usr<<"Nanite Energy Regeneration: [NanoCore]"
-		usr<<"Cost to make: [techcost]z"
+		to_chat(usr, "Field Strength: [Max]x")
+		to_chat(usr, "Battery: [Energy*100] / [MaxEnergy*100]")
+		to_chat(usr, "Field Range: [Range]")
+		to_chat(usr, "Field Fluctuation Control: [Stability]")
+		to_chat(usr, "Shutdown Protection: [Efficiency]")
+		if(NanoCore) to_chat(usr, "Nanite Energy Regeneration: [NanoCore]")
+		to_chat(usr, "Cost to make: [techcost]z")
 	verb/Upgrade()
 		set src in oview(1)
 		set category=null
@@ -214,48 +214,48 @@ obj/items/Gravity
 		if(A=="Cancel") return
 		if(A=="Field Strength ([5*Max]z)")
 			if(Max>gravitycap)
-				usr<<"You cannot upgrade this any further([gravitycap]."
+				to_chat(usr, "You cannot upgrade this any further([gravitycap].")
 			cost=5*Max
 			if(usr.zenni<cost)
-				usr<<"You do not have enough money ([cost]z)"
-			usr<<"Field Strength increased."
+				to_chat(usr, "You do not have enough money ([cost]z)")
+			to_chat(usr, "Field Strength increased.")
 			Max=round(Max*1.2)
 		if(A=="Battery Life ([50*(MaxEnergy)]z)")
 			cost=50*MaxEnergy
 			if(usr.zenni<cost)
-				usr<<"You do not have enough money ([cost]z)"
-			usr<<"Battery expanded and recharged. [50*MaxEnergy]"
+				to_chat(usr, "You do not have enough money ([cost]z)")
+			to_chat(usr, "Battery expanded and recharged. [50*MaxEnergy]")
 			MaxEnergy*=2
 			Energy=MaxEnergy
 		if(A=="Field Range ([500*(Range+1)]z)")
 			cost=500*(Range+1)
 			if(usr.zenni<cost)
-				usr<<"You do not have enough money ([cost]z)"
-			usr<<"Field Range increased."
+				to_chat(usr, "You do not have enough money ([cost]z)")
+			to_chat(usr, "Field Range increased.")
 			Range+=1
 		if(A=="Field Fluctuation (500000z)")
 			cost=500000
 			if(usr.zenni<cost)
-				usr<<"You do not have enough money ([cost]z)"
-			usr<<"Field stabilized."
+				to_chat(usr, "You do not have enough money ([cost]z)")
+			to_chat(usr, "Field stabilized.")
 			Stability=1
 		if(A=="Nanite Regeneration ([500*(NanoCore+1)]z)")
 			cost=500*(NanoCore+1)
 			if(usr.zenni<cost)
-				usr<<"You do not have enough money ([cost]z)"
-			usr<<"Nano Regeneration increased."
+				to_chat(usr, "You do not have enough money ([cost]z)")
+			to_chat(usr, "Nano Regeneration increased.")
 			NanoCore+=1
-		usr<<"Cost: [cost]z"
+		to_chat(usr, "Cost: [cost]z")
 		usr.zenni-=cost
 		tech+=1
 		techcost+=cost
 		goto thechoices
 	Click()
 		if(Energy<=0)
-			usr<<"The machine has no battery left..."
+			to_chat(usr, "The machine has no battery left...")
 			return
 		if(!Bolted)
-			usr<<"The machine has to be bolted."
+			to_chat(usr, "The machine has to be bolted.")
 			return
 		var/inview
 		for(var/mob/M in view(1,src)) if(M==usr)
@@ -266,7 +266,7 @@ obj/items/Gravity
 				choosinggrav=1
 				Grav=0
 				src.overlays.Cut()
-				view(src)<<"[src]: Gravity temporarily neutralized."
+				to_chat(view(src), "[src]: Gravity temporarily neutralized.")
 				for(var/obj/o in BB)
 					var/list/nL = bounds(o)
 					for(var/mob/M in nL)
@@ -275,16 +275,16 @@ obj/items/Gravity
 					o.deleteMe()
 				Grav=input(usr,"Current grav is [Grav]x. Range is [Range] meters. You can set the gravity multiplier by using this panel. Be aware that the level of gravity affects everyone in the room. Maxgrav is [Max]x. Current admin set maximum is [gravitycap]","",0) as num
 				WriteToLog("rplog","[usr] sets gravity to [Grav]x    ([time2text(world.realtime,"Day DD hh:mm")])")
-				view(src)<<"[src]: Gravity changing in <font color=gray>five seconds</font>."
+				to_chat(view(src), "[src]: Gravity changing in <font color=gray>five seconds</font>.")
 				sleep(50)
 				if(Grav>Max) Grav=Max
 				if(Grav<0) Grav=0
 				if(Grav>gravitycap)
 					Grav = gravitycap
 				if(!Grav)
-					view(src)<<"<center>[usr] sets the Gravity multiplier set to <font color=white>normal.</font></center>"
+					to_chat(view(src), "<center>[usr] sets the Gravity multiplier set to <font color=white>normal.</font></center>")
 				else
-					view(src)<<"<center>[usr] sets the Gravity multiplier set to <font color=red>[Grav]x</font></center>"
+					to_chat(view(src), "<center>[usr] sets the Gravity multiplier set to <font color=red>[Grav]x</font></center>")
 					src.overlays.Cut()
 					var/image/I=image('Gravity Field.dmi',layer=OBJ_LAYER)
 					I.transform *= Range
@@ -298,13 +298,13 @@ obj/items/Gravity
 		if(x&&y&&z&&!Bolted)
 			switch(input("Are you sure you want to bolt this to the ground so nobody can ever pick it up? Not even you?","",text) in list("Yes","No",))
 				if("Yes")
-					view(src)<<"<font size=1>[usr] bolts the [src] to the ground."
+					to_chat(view(src), "<font size=1>[usr] bolts the [src] to the ground.")
 					Bolted=1
 					boltersig=usr.signature
 		else if(Bolted&&boltersig==usr.signature)
 			switch(input("Unbolt?","",text) in list("Yes","No",))
 				if("Yes")
-					view(src)<<"<font size=1>[usr] unbolts the [src] from the ground."
+					to_chat(view(src), "<font size=1>[usr] unbolts the [src] from the ground.")
 					Bolted=0
 
 	BBCross(boundbox,O)

@@ -11,11 +11,11 @@ datum/skill/rank/Dodompa
 
 datum/skill/rank/Dodompa/after_learn()
 	assignverb(/mob/keyable/verb/Dodompa)
-	savant<<"You can use the Dodon Ray!"
+	to_chat(savant, "You can use the Dodon Ray!")
 
 datum/skill/rank/Dodompa/before_forget()
 	unassignverb(/mob/keyable/verb/Dodompa)
-	savant<<"You've forgotten how to use the Dodon Ray?"
+	to_chat(savant, "You've forgotten how to use the Dodon Ray?")
 datum/skill/rank/Dodompa/login(var/mob/logger)
 	..()
 	assignverb(/mob/keyable/verb/Dodompa)
@@ -52,4 +52,4 @@ mob/keyable/verb/Dodompa()
 			charging=1
 			spawn usr.addchargeoverlay()
 		return
-	else src << "You need at least [kireq] Ki!"
+	else to_chat(src, "You need at least [kireq] Ki!")

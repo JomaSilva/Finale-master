@@ -54,7 +54,7 @@ mob/proc/CheckNutrition()
 			spawn(eat/Metabolism)
 				usr.eating=0
 				usr.eat=0
-				usr<<"You feel you can eat more food again."
+				to_chat(usr, "You feel you can eat more food again.")
 		StamBPGainMod = min(max(stamina/(maxstamina*0.5),0.5),1.25)
 		///*
 		if(stamina/maxstamina < 0.05)
@@ -74,10 +74,10 @@ mob/proc/CheckNutrition()
 					stamina += 2
 				/*if(!KO)
 					spawn usr.KO(-1)
-					view()<<"[usr] is knocked out from hunger!!"
+					to_chat(view(), "[usr] is knocked out from hunger!!")
 					spawn(300)
 						if(stamina<=1)
-							view()<<"[usr] died from starvation!!"
+							to_chat(view(), "[usr] died from starvation!!")
 							stamina=maxstamina
 							usr.Death()
 						else

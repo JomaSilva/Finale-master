@@ -7,21 +7,21 @@ proc/HBTC()
 	if you do not exit before then you will be trapped until someone enters the time chamber a, \
 	and you will continue aging at ten times the normal rate until you exit"
 	sleep(6000)
-	for(var/mob/A in Players) if(A.z==13) A<<"The time chamber will be unlocked for 50 more minutes"
+	for(var/mob/A in Players) if(A.z==13) to_chat(A, "The time chamber will be unlocked for 50 more minutes")
 	sleep(6000)
-	for(var/mob/A in Players) if(A.z==13) A<<"The time chamber will be unlocked for 40 more minutes"
+	for(var/mob/A in Players) if(A.z==13) to_chat(A, "The time chamber will be unlocked for 40 more minutes")
 	sleep(6000)
-	for(var/mob/A in Players) if(A.z==13) A<<"The time chamber will be unlocked for 30 more minutes"
+	for(var/mob/A in Players) if(A.z==13) to_chat(A, "The time chamber will be unlocked for 30 more minutes")
 	sleep(6000)
-	for(var/mob/A in Players) if(A.z==13) A<<"The time chamber will be unlocked for 20 more minutes"
+	for(var/mob/A in Players) if(A.z==13) to_chat(A, "The time chamber will be unlocked for 20 more minutes")
 	sleep(6000)
-	for(var/mob/A in Players) if(A.z==13) A<<"The time chamber will be unlocked for 10 more minutes"
+	for(var/mob/A in Players) if(A.z==13) to_chat(A, "The time chamber will be unlocked for 10 more minutes")
 	sleep(3000)
-	for(var/mob/A in Players) if(A.z==13) A<<"The time chamber will be unlocked for 5 more minutes"
+	for(var/mob/A in Players) if(A.z==13) to_chat(A, "The time chamber will be unlocked for 5 more minutes")
 	sleep(2400)
-	for(var/mob/A in Players) if(A.z==13) A<<"The time chamber will remain unlocked for ONE more minute"
+	for(var/mob/A in Players) if(A.z==13) to_chat(A, "The time chamber will remain unlocked for ONE more minute")
 	sleep(600)
-	for(var/mob/A in Players) if(A.z==13) A<<"The time chamber exit disappears. You are now trapped"
+	for(var/mob/A in Players) if(A.z==13) to_chat(A, "The time chamber exit disappears. You are now trapped")
 	HBTC_Open=0
 //Idk where to put this stuff for the HBTC. It belongs in its own file but thats just one more .dm with barely any lines of code in it so idk
 
@@ -143,7 +143,7 @@ turf/Teleporters
 				usr.loc=locate(142,2,12)
 				return 1
 			else
-				usr<<"A mysterious force prevents you from entering"
+				to_chat(usr, "A mysterious force prevents you from entering")
 				return 0
 	fromeg
 		density=1
@@ -1091,7 +1091,7 @@ turf
 			icon_state = "clouds"
 			Enter()
 				if(!usr)return
-				usr << "You fall down through the clouds to Hell!"
+				to_chat(usr, "You fall down through the clouds to Hell!")
 				usr.loc = locate(22,222,3)
 				return
 		Planet

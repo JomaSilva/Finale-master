@@ -26,11 +26,11 @@ mob/Admin3/verb/Toggle_Spawnpoints()
 	set category = "Admin"
 	if(alert(usr,"This will toggle spawning at spawnpoints. This will cause would-be spawnees to be randomly placed around the world. If a race doesn't have a homeworld, they'll still spawn at the Large Spacestation spawn anyways.","","Toggle On","Toggle Off")=="Toggle On")
 		GotoSpawnpoint = 1
-		world << "Spawnpoints on."
+		to_chat(world, "Spawnpoints on.")
 		return
 	else
 		GotoSpawnpoint = 0
-		world << "Spawnpoints off."
+		to_chat(world, "Spawnpoints off.")
 		return
 
 mob/Admin3/verb/Return_Mob_To_Spawn(var/mob/M in view())
@@ -139,9 +139,9 @@ mob/proc/Locate()
 					//Body=1 don't need to set body, that's done dynamically by Stats.dm
 					SAge=1
 					spawnPlanet = M.spawnPlanet
-					view()<<"[src] just popped out of [M]!"
-					src << "You were born from [M]!"
-					M << "[src] was born from you!"
+					to_chat(view(), "[src] just popped out of [M]!")
+					to_chat(src, "You were born from [M]!")
+					to_chat(M, "[src] was born from you!")
 					if(M.Egg)
 						del(M)
 					else M.Pregnant=0

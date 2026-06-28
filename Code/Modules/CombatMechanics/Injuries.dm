@@ -4,7 +4,7 @@ mob/verb/Injure(var/mob/targetmob in view(1))
 	if(usr.KO)
 		return
 	if(!targetmob.KO&&usr!=targetmob)
-		usr<<"The target must be knocked out!"
+		to_chat(usr, "The target must be knocked out!")
 		return
 	if(alert(usr,"Injure [targetmob]? Cutting off a limb needs a much, much higher BP/offense advantage. If you get enough damage on a limb, it'll fall off anyways. You're selecting the [selectzone]","","Yes","No")=="Yes")
 		var/list/targetlimblist = list()
@@ -16,18 +16,18 @@ mob/verb/Injure(var/mob/targetmob in view(1))
 		if(!isnull(targetlimb)&&targetlimb!="Tail")
 			if(targetlimb.vital)
 				targetlimb.DamageMe(usr.Ephysoff*BPModulus(expressedBP,targetmob.expressedBP))
-				if(targetlimb.lopped) view(usr) << "[targetmob]'s [targetlimb] was ripped off by [usr]!!"
-				else view(usr) << "[targetmob]'s [targetlimb] was damaged by [usr]!!"
+				if(targetlimb.lopped) to_chat(view(usr), "[targetmob]'s [targetlimb] was ripped off by [usr]!!")
+				else to_chat(view(usr), "[targetmob]'s [targetlimb] was damaged by [usr]!!")
 			else //need a smaller oompf to rip off somebodys arm
 				targetlimb.DamageMe(usr.Ephysoff*BPModulus(expressedBP,targetmob.expressedBP)*5)
-				if(targetlimb.lopped) view(usr) << "[targetmob]'s [targetlimb] was ripped off by [usr]!!"
-				else view(usr) << "[targetmob]'s [targetlimb] was damaged by [usr]!!"
+				if(targetlimb.lopped) to_chat(view(usr), "[targetmob]'s [targetlimb] was ripped off by [usr]!!")
+				else to_chat(view(usr), "[targetmob]'s [targetlimb] was damaged by [usr]!!")
 		else if(targetlimb=="Tail")
 			if(BPModulus(expressedBP,targetmob.expressedBP) * (Ephysoff/targetmob.Ephysdef))
 				targetlimb = get_Tail()
 				targetlimb.DamageMe(usr.Ephysoff*BPModulus(expressedBP,targetmob.expressedBP)*5)
-				if(targetlimb.lopped) view(usr) << "[targetmob]'s [targetlimb] was ripped off by [usr]!!"
-				else view(usr) << "[targetmob]'s [targetlimb] was damaged by [usr]!!"
+				if(targetlimb.lopped) to_chat(view(usr), "[targetmob]'s [targetlimb] was ripped off by [usr]!!")
+				else to_chat(view(usr), "[targetmob]'s [targetlimb] was damaged by [usr]!!")
 				targetmob.Apeshit_Revert()
 
 mob/proc/DamageLimb(var/damage as num,var/theselection,var/enemymurderToggle as num,var/penetration as num)
@@ -286,11 +286,11 @@ mob/proc/HealthSync()
 		if(vitalKO>=1&&vitalKOd==0&&!KO)
 			KO(-1)
 			vitalKOd=1
-			src<<"You are in a coma, and will be until you heal."
+			to_chat(src, "You are in a coma, and will be until you heal.")
 		else if(vitalKO==0&&vitalKOd==1&&KO)
 			Un_KO()
 			vitalKOd=0
-			src<<"You are no longer in a coma."
+			to_chat(src, "You are no longer in a coma.")
 		else if(vitalKO==0&&vitalKOd==1&&!KO)
 			vitalKOd = 0
 		if(passiveRegen && (!combatTag || fastRegen)) //no passive healing while In Battle, UNLESS your race has a true regen passive

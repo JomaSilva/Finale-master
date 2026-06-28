@@ -11,10 +11,10 @@ obj/Creatables
 				var/obj/A=new/obj/items/Weapons/Sword(locate(usr.x,usr.y,usr.z))
 				A.techcost+=cost
 
-			else usr<<"You dont have enough money"
+			else to_chat(usr, "You dont have enough money")
 		verb/Description()
 			set category =null
-			usr<<"A weapon will commonly increase your attack while decreasing a stat in another area."
+			to_chat(usr, "A weapon will commonly increase your attack while decreasing a stat in another area.")
 	Axe
 		icon='Axe.dmi'
 		icon_state="Attack"
@@ -27,10 +27,10 @@ obj/Creatables
 				var/obj/A=new/obj/items/Weapons/Axe(locate(usr.x,usr.y,usr.z))
 				A.techcost+=cost
 
-			else usr<<"You dont have enough money"
+			else to_chat(usr, "You dont have enough money")
 		verb/Description()
 			set category =null
-			usr<<"A weapon will commonly increase your attack while decreasing a stat in another area. Axes can chop trees down."
+			to_chat(usr, "A weapon will commonly increase your attack while decreasing a stat in another area. Axes can chop trees down.")
 	Staff
 		icon='Roshi Stick.dmi'
 		cost=1000
@@ -42,10 +42,10 @@ obj/Creatables
 				var/obj/A=new/obj/items/Weapons/Staff(locate(usr.x,usr.y,usr.z))
 				A.techcost+=cost
 
-			else usr<<"You dont have enough money"
+			else to_chat(usr, "You dont have enough money")
 		verb/Description()
 			set category =null
-			usr<<"A weapon will commonly increase your attack while decreasing a stat in another area."
+			to_chat(usr, "A weapon will commonly increase your attack while decreasing a stat in another area.")
 
 	Spear
 		icon='spear.dmi'
@@ -59,10 +59,10 @@ obj/Creatables
 				var/obj/A=new/obj/items/Weapons/Spear(locate(usr.x,usr.y,usr.z))
 				A.techcost+=cost
 
-			else usr<<"You dont have enough money"
+			else to_chat(usr, "You dont have enough money")
 		verb/Description()
 			set category =null
-			usr<<"A weapon will commonly increase your attack while decreasing a stat in another area."
+			to_chat(usr, "A weapon will commonly increase your attack while decreasing a stat in another area.")
 	Club
 		icon='Club.dmi'
 		icon_state="Attack"
@@ -75,10 +75,10 @@ obj/Creatables
 				var/obj/A=new/obj/items/Weapons/Club(locate(usr.x,usr.y,usr.z))
 				A.techcost+=cost
 
-			else usr<<"You dont have enough money"
+			else to_chat(usr, "You dont have enough money")
 		verb/Description()
 			set category =null
-			usr<<"A weapon will commonly increase your attack while decreasing a stat in another area."
+			to_chat(usr, "A weapon will commonly increase your attack while decreasing a stat in another area.")
 	Hammer
 		icon='Hammer.dmi'
 		cost=1000
@@ -90,10 +90,10 @@ obj/Creatables
 				var/obj/A=new/obj/items/Weapons/Hammer(locate(usr.x,usr.y,usr.z))
 				A.techcost+=cost
 
-			else usr<<"You dont have enough money"
+			else to_chat(usr, "You dont have enough money")
 		verb/Description()
 			set category =null
-			usr<<"A weapon will commonly increase your attack while decreasing a stat in another area."
+			to_chat(usr, "A weapon will commonly increase your attack while decreasing a stat in another area.")
 
 	Cross
 		icon='Item Cross.dmi'
@@ -107,7 +107,7 @@ obj/Creatables
 				var/obj/A=new/obj/items/Weapons/Cross(locate(usr.x,usr.y,usr.z))
 				A.techcost+=cost
 
-			else usr<<"You dont have enough money"
+			else to_chat(usr, "You dont have enough money")
 		verb/Description()
 			set category =null
 			usr<<"A weapon will commonly increase your attack while decreasing a stat in another area."*/
@@ -131,15 +131,15 @@ obj/items/Weapons
 					icon = input(usr,"Input weapon icon.","",'Sword_Trunks.dmi') as icon
 				if("default")
 					icon = 'Sword_Trunks.dmi'
-		else usr<<"You can't change weapon appearance while it's equipped! (to avoid Overlay issues.)"
+		else to_chat(usr, "You can't change weapon appearance while it's equipped! (to avoid Overlay issues.)")
 	verb/Equip()
 		set category=null
 		set src in usr
 		for(var/obj/A in usr.contents) if(A.weapon&&A!=src&&(A.suffix=="*Equipped*"||A.equipped))
-			usr<<"You already have a weapon equipped."
+			to_chat(usr, "You already have a weapon equipped.")
 			return FALSE
 		if(usr.KiWeaponOn)
-			usr<<"You already have a weapon equipped."
+			to_chat(usr, "You already have a weapon equipped.")
 			return FALSE
 		if(!suffix)
 			suffix="*Equipped*"
@@ -148,7 +148,7 @@ obj/items/Weapons
 			usr.SwordEquipped=1
 			usr.weaponattackflavors = weaponattackflavors
 			usr.weaponcounterflavors = weaponcounterflavors
-			usr<<"You put on the [src]."
+			to_chat(usr, "You put on the [src].")
 			equipped=1
 		else if(suffix)
 			suffix=null
@@ -157,13 +157,13 @@ obj/items/Weapons
 			usr.SwordEquipped=0
 			usr.weaponattackflavors = initial(usr.weaponattackflavors)
 			usr.weaponcounterflavors = initial(usr.weaponcounterflavors)
-			usr<<"You take off the [src]."
+			to_chat(usr, "You take off the [src].")
 			equipped=0
 		return TRUE
 	verb/Flavor()
 		set category=null
 		set src in usr
-		usr << "You will need to re-equip your weapon in order to update the flavor text."
+		to_chat(usr, "You will need to re-equip your weapon in order to update the flavor text.")
 		switch(input(usr,"Which flavor?","","Attack") in list("Attack","Counter","Cancel"))
 			if("Attack")
 				switch(input(usr,"Remove or Add?","","Add") in list("Remove","Add","Cancel"))

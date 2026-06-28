@@ -35,11 +35,11 @@
 	skillcost = 2
 	tier = 2
 	after_learn()
-		savant<<"Your energy flow is overwhelming!"
+		to_chat(savant, "Your energy flow is overwhelming!")
 		savant.kicapacityMod*=2
 		savant.PDrainMod*=2
 	before_forget()
-		savant<<"Your maximum power is no longer maximum?"
+		to_chat(savant, "Your maximum power is no longer maximum?")
 		savant.kicapacityMod/=2
 		savant.PDrainMod/=2
 
@@ -53,12 +53,12 @@
 	skillcost = 2
 	tier = 2
 	after_learn()
-		savant<<"Your ki erupts!"
+		to_chat(savant, "Your ki erupts!")
 		savant.lssjenergymod *= 1.5
 		savant.lssjdrain *= 2
 		savant.lssjmult+=15
 	before_forget()
-		savant<<"Your ki is weak."
+		to_chat(savant, "Your ki is weak.")
 		savant.lssjenergymod /= 1.5
 		savant.lssjdrain /= 2
 		savant.lssjmult-=15
@@ -90,7 +90,7 @@
 		if(1)
 			if(levelup == 1)
 				levelup = 0
-				savant<<"You've almost mastered Legendary Super Saiyan!"
+				to_chat(savant, "You've almost mastered Legendary Super Saiyan!")
 				savant.lssjmult+=5
 				savant.lssjdrain-=0.002
 				savant.lssjenergymod *= 1.1
@@ -100,7 +100,7 @@
 		if(2)
 			if(levelup == 1)
 				levelup = 0
-				savant<<"You've mastered Legendary Super Saiyan!"
+				to_chat(savant, "You've mastered Legendary Super Saiyan!")
 				savant.lssjmult+=5
 				savant.lssjdrain-=0.003
 				savant.lssjenergymod *= 1.1
@@ -109,4 +109,4 @@
 		if(3)
 			if(levelup == 1)
 				levelup = 0
-				savant<<"You've done it!"
+				to_chat(savant, "You've done it!")

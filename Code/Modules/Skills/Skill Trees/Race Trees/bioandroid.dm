@@ -20,4 +20,4 @@
 
 /datum/skill/general/bioabsorb/after_learn()
 	savant.contents+=new/obj/Bio_Absorb
-	savant<<"You can absorb others!"
+	to_chat(savant, "You can absorb others!")

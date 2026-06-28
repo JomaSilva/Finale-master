@@ -17,7 +17,7 @@ mob/npc/Splitform
 			timelimit -= 10
 			checkState()
 			if(HP<=0||(HP<=8&&KO))
-				view(src)<<"[src] has been defeated."
+				to_chat(view(src), "[src] has been defeated.")
 				del(src)
 			if(isnull(master) || timelimit<=0)
 				del(src)
@@ -84,7 +84,7 @@ obj/SplitForm
 			usr.splitformCount+=1
 		if(Splitforms<Splitformskill)
 			if(prob(50/(Splitformskill*5)))
-				usr<<"Your Split form skill has increased.."
+				to_chat(usr, "Your Split form skill has increased..")
 				Splitformskill+=1
 				usr.splitformMastery+=0.2
 			usr.Ki-=usr.MaxKi*(0.5/Splitformskill)
@@ -93,7 +93,7 @@ obj/SplitForm
 			nS.checkState()
 			nS.loc = locate(usr.x,usr.y,usr.z)
 			step(nS,usr.dir)
-		else usr<<"You do not have the skill to create this many Splitforms."
+		else to_chat(usr, "You do not have the skill to create this many Splitforms.")
 
 mob/var/tmp/splitformCount
 mob/var/splitformMastery

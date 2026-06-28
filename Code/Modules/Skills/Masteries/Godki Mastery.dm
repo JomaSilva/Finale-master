@@ -19,20 +19,20 @@
 
 		levelstat()
 			..()
-			savant<<"Your martial training improves! Basic Training is now level [level]!"
+			to_chat(savant, "Your martial training improves! Basic Training is now level [level]!")
 			savant.godki.t_efficiency+=0.01
 			if(level % 10 == 0)
 				savant.godki.m_efficiency+=0.5
 			if(level == 20)
-				savant<<"You can use the skill God Ki Flare! This allows you to increase your God Ki multiplier at the cost of higher drain."
+				to_chat(savant, "You can use the skill God Ki Flare! This allows you to increase your God Ki multiplier at the cost of higher drain.")
 			if(level == 30)
-				savant<<"You can use the skill Conserve God Ki! This allows you to make your God Ki multiplier act as if you were always at 100% energy. However, the actual God Ki drain is increased."
+				to_chat(savant, "You can use the skill Conserve God Ki! This allows you to make your God Ki multiplier act as if you were always at 100% energy. However, the actual God Ki drain is increased.")
 			if(level == 45)
-				savant<<"You now can now master specializations of God Ki. Remember, you have 37 * God Ki Tier levels to distribute between the two. Choose which one to focus on wisely."
-				savant<<"The first God Ki Specialization is one of fortitude. Maximize efficiency and reduce drain to prolong your ability to use God Ki. At level 50, as long as you're at 100% Ki, you'll gain God Ki energy while using it."
-				savant<<"The second God Ki Specialization is one of power. Maximize your multiplier and maximum energy to ensure victory. At level 50, you can start using temporarily using the God of Destruction mode."
-				savant<<"The third God Ki Specialization is one of body. Increasing God Ki will improve your body itself, increasing all stats even further than what they are. At level 50, gain four extra Milestones."
-				savant<<"As a reminder, fighting other players will increase your God Ki tier."
+				to_chat(savant, "You now can now master specializations of God Ki. Remember, you have 37 * God Ki Tier levels to distribute between the two. Choose which one to focus on wisely.")
+				to_chat(savant, "The first God Ki Specialization is one of fortitude. Maximize efficiency and reduce drain to prolong your ability to use God Ki. At level 50, as long as you're at 100% Ki, you'll gain God Ki energy while using it.")
+				to_chat(savant, "The second God Ki Specialization is one of power. Maximize your multiplier and maximum energy to ensure victory. At level 50, you can start using temporarily using the God of Destruction mode.")
+				to_chat(savant, "The third God Ki Specialization is one of body. Increasing God Ki will improve your body itself, increasing all stats even further than what they are. At level 50, gain four extra Milestones.")
+				to_chat(savant, "As a reminder, fighting other players will increase your God Ki tier.")
 				make_visible(/datum/mastery/fortitude)
 				make_visible(/datum/mastery/power)
 				make_visible(/datum/mastery/body)
@@ -40,7 +40,7 @@
 				if(savant.biologicallyimmortal) wasimmortal = 1
 				savant.biologicallyimmortal = 1
 				savant.godki.naturalization = TRUE
-				savant<<"You've mastered all there is to God Ki!"
+				to_chat(savant, "You've mastered all there is to God Ki!")
 
 	fortitude
 		name = "God Fortitude"
@@ -56,12 +56,12 @@
 
 		levelstat()
 			..()
-			savant<<"Your fortitude with God Ki increases!! Level [level] reached."
+			to_chat(savant, "Your fortitude with God Ki increases!! Level [level] reached.")
 			savant.godki.energy_mod+=0.01
 			savant.godki.t_efficiency+=0.01
 			savant.godki.points--
 			if(level == 50)
-				savant<<"Your God Ki can regenerate even in usage!"
+				to_chat(savant, "Your God Ki can regenerate even in usage!")
 				savant.godki.godki_regen_go = 1
 		expgain(num,ovr)
 			if(savant.godki.points >= 1)
@@ -82,12 +82,12 @@
 
 		levelstat()
 			..()
-			savant<<"Your Power increases under the influence of God Ki!! Level [level] reached."
+			to_chat(savant, "Your Power increases under the influence of God Ki!! Level [level] reached.")
 			savant.godki.godki_mult+=0.01
 			savant.godki.energy_buff+=5
 			savant.godki.points--
 			if(level == 50)
-				savant<<"You can activate Hakaishin!! This is a temporary version of the God of Destruction exclusive transformation."
+				to_chat(savant, "You can activate Hakaishin!! This is a temporary version of the God of Destruction exclusive transformation.")
 				savant.godki.canhakaishin = 1
 		expgain(num,ovr)
 			if(savant.godki.points >= 1)
@@ -112,12 +112,12 @@
 
 		levelstat()
 			..()
-			savant<<"Your Body is empowered with God Ki!! Level [level] reached."
+			to_chat(savant, "Your Body is empowered with God Ki!! Level [level] reached.")
 			if(level % 10 == 0)
 				savant.godki.energy_mod+=0.01
 				savant.godki.godki_mult+=0.01
 				savant.godki.t_efficiency+=0.01
 			savant.godki.points--
 			if(level == 50)
-				savant<<"Your God Ki can regenerate even in usage!"
+				to_chat(savant, "Your God Ki can regenerate even in usage!")
 				savant.godki.godki_regen_go = 1

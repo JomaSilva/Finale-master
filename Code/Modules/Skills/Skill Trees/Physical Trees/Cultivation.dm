@@ -22,13 +22,13 @@
 	common_sense = FALSE
 	tier = 1
 	after_learn()
-		savant<<"Ki flows around you, making it slightly easier to shape and mold. Could you use this as a weapon?"
+		to_chat(savant, "Ki flows around you, making it slightly easier to shape and mold. Could you use this as a weapon?")
 		//eventually add Ki armor here.
 		savant.kioffBuff+=0.2
 		savant.physoffBuff+=0.2
 
 	before_forget()
-		savant<<"The ki that flowed around you is now waning, its power decreasing."
+		to_chat(savant, "The ki that flowed around you is now waning, its power decreasing.")
 		savant.kioffBuff-=0.2
 		savant.physoffBuff-=0.2
 
@@ -45,14 +45,14 @@
 	expbarrier = 10000
 	var/superdrain = 1
 	after_learn()
-		savant<<"The Ki flowing around you takes shape in the form of a small triangle, coming from your hand."
+		to_chat(savant, "The Ki flowing around you takes shape in the form of a small triangle, coming from your hand.")
 		//eventually add Ki armor here.
 		savant.kioffBuff+=0.1
 		savant.physoffBuff+=0.1
 		assignverb(/mob/keyable/verb/Ki_Blade)
 
 	before_forget()
-		savant<<"You can no longer create a blade with your Ki."
+		to_chat(savant, "You can no longer create a blade with your Ki.")
 		savant.kioffBuff-=0.1
 		savant.physoffBuff-=0.1
 		if(savant.KiBladeOn)
@@ -70,12 +70,12 @@
 					if(levelup)
 						superdrain = 0.5
 						levelup = 0
-						savant << "Due to your extensive usage of Ki blades, Ki blade drain has been halved!"
+						to_chat(savant, "Due to your extensive usage of Ki blades, Ki blade drain has been halved!")
 					exp+=1
 				if(2)
 					if(levelup)
 						superdrain = 0
-						savant << "Due to your extensive usage of Ki blades, Ki blade drain has been eliminated completely!"
+						to_chat(savant, "Due to your extensive usage of Ki blades, Ki blade drain has been eliminated completely!")
 						levelup =0
 		if(prob(10)) savant.KiBladeDrain = superdrain
 	login(var/mob/logger)
@@ -90,7 +90,7 @@ mob/var/tmp
 mob/keyable/verb/Ki_Blade()
 	set desc = "Form a blade from Ki, draining some Ki in the process."
 	if(weaponeq)
-		src << "You already have a weapon!"
+		to_chat(src, "You already have a weapon!")
 		return
 	if(KiBladeOn)
 		stopbuff(/obj/buff/Ki_Blade)
@@ -112,7 +112,7 @@ obj/overlay/effects/Ki_Blade
 	slot=sBUFF
 	Buff()
 		..()
-		view(container) << "[container] creates a Ki blade."
+		to_chat(view(container), "[container] creates a Ki blade.")
 		container.initbuff = max((log(8.3,container.Ekioff*10)),0)
 		container.Tphysoff += container.initbuff
 		container.Tkioff+=container.initbuff
@@ -132,7 +132,7 @@ obj/overlay/effects/Ki_Blade
 		container.Ki = 0
 		container.KiBladeOn = 0
 		container.WeaponUseTmp = 0
-		view(container) << "[container]'s Ki Blade dissapates."
+		to_chat(view(container), "[container]'s Ki Blade dissapates.")
 		..()
 
 /datum/skill/Cultivation/Sharpened_Ki
@@ -145,12 +145,12 @@ obj/overlay/effects/Ki_Blade
 	enabled=0
 	tier = 2
 	after_learn()
-		savant<<"The ki that resides within you sharpens."
+		to_chat(savant, "The ki that resides within you sharpens.")
 		//eventually add Ki armor here.
 		savant.kioffBuff+=0.2
 
 	before_forget()
-		savant<<"The ki that resides inside of you begins to dull."
+		to_chat(savant, "The ki that resides inside of you begins to dull.")
 		savant.kioffBuff-=0.2
 
 /datum/skill/Cultivation/Ki_Knight
@@ -166,12 +166,12 @@ obj/overlay/effects/Ki_Blade
 	expbarrier = 10000
 	var/superdrain = 1
 	after_learn()
-		savant<<"The Ki flowing around you takes shape in the form of a large longsword for you to grip."
+		to_chat(savant, "The Ki flowing around you takes shape in the form of a large longsword for you to grip.")
 		savant.physoffBuff+=0.1
 		assignverb(/mob/keyable/verb/Ki_Sword)
 
 	before_forget()
-		savant<<"You can no longer create a longsword with your Ki."
+		to_chat(savant, "You can no longer create a longsword with your Ki.")
 		savant.physoffBuff-=0.1
 		if(savant.KiSwordOn)
 			savant.stopbuff(/obj/buff/Ki_Sword)
@@ -188,12 +188,12 @@ obj/overlay/effects/Ki_Blade
 					if(levelup)
 						superdrain = 0.5
 						levelup = 0
-						savant << "Due to your extensive usage of Ki blades, Ki blade drain has been halved!"
+						to_chat(savant, "Due to your extensive usage of Ki blades, Ki blade drain has been halved!")
 					exp+=1
 				if(2)
 					if(levelup)
 						superdrain = 0
-						savant << "Due to your extensive usage of Ki blades, Ki blade drain has been eliminated completely!"
+						to_chat(savant, "Due to your extensive usage of Ki blades, Ki blade drain has been eliminated completely!")
 						levelup =0
 		if(prob(10)) savant.KiSwordDrain = superdrain
 	login(var/mob/logger)
@@ -209,7 +209,7 @@ mob/var
 mob/keyable/verb/Ki_Sword()
 	set desc = "Form a blade from Ki, draining some Ki in the process."
 	if(weaponeq)
-		src << "You already have a weapon!"
+		to_chat(src, "You already have a weapon!")
 		return
 	if(KiSwordOn)
 		stopbuff(/obj/buff/Ki_Sword)
@@ -234,7 +234,7 @@ obj/overlay/effects/Ki_Sword
 	slot=sBUFF
 	Buff()
 		..()
-		view(container) << "[container] creates a Ki Sword."
+		to_chat(view(container), "[container] creates a Ki Sword.")
 		container.initbuff = max((log(8,container.Ekioff*10)),0)
 		container.Tphysoff += container.initbuff
 		container.Tkioff+=container.initbuff
@@ -254,7 +254,7 @@ obj/overlay/effects/Ki_Sword
 		container.Ki = 0
 		container.KiSwordOn = 0
 		container.WeaponUseTmp = 0
-		view(container) << "[container]'s Ki Blade dissapates."
+		to_chat(view(container), "[container]'s Ki Blade dissapates.")
 		..()
 
 /datum/skill/Sword_Strike
@@ -271,10 +271,10 @@ obj/overlay/effects/Ki_Sword
 	enabled = 1
 	var/tmp/expbuffer = 0
 	after_learn()
-		savant<<"Your internal skills have been cultivated further! You've gained a new ability!"
+		to_chat(savant, "Your internal skills have been cultivated further! You've gained a new ability!")
 		assignverb(/mob/keyable/verb/Sword_Strike)
 	before_forget()
-		savant<<"Your cultivation vanishes, alongside a ability to release it."
+		to_chat(savant, "Your cultivation vanishes, alongside a ability to release it.")
 		unassignverb(/mob/keyable/verb/Sword_Strike)
 	login(var/mob/logger)
 		..()
@@ -303,13 +303,13 @@ mob/keyable/verb/Sword_Strike()
 	expbarrier = 10000
 	var/superdrain = 1
 	after_learn()
-		savant<<"The Ki flowing around you takes shape in the form of a small disc, coming from your hand."
+		to_chat(savant, "The Ki flowing around you takes shape in the form of a small disc, coming from your hand.")
 		//eventually add Ki armor here.
 		savant.kioffBuff+=0.1
 		assignverb(/mob/keyable/verb/Ki_Shield)
 
 	before_forget()
-		savant<<"You can no longer create a shield with your Ki."
+		to_chat(savant, "You can no longer create a shield with your Ki.")
 		savant.kioffBuff-=0.1
 		savant.KiShieldOn = 0
 		unassignverb(/mob/keyable/verb/Ki_Shield)
@@ -325,12 +325,12 @@ mob/keyable/verb/Sword_Strike()
 					if(levelup)
 						superdrain = 0.5
 						levelup = 0
-						savant << "Due to your extensive usage of Ki shields, Ki shield drain has been halved!"
+						to_chat(savant, "Due to your extensive usage of Ki shields, Ki shield drain has been halved!")
 					exp+=1
 				if(2)
 					if(levelup)
 						superdrain = 0
-						savant << "Due to your extensive usage of Ki shield, Ki shield drain has been eliminated completely!"
+						to_chat(savant, "Due to your extensive usage of Ki shield, Ki shield drain has been eliminated completely!")
 						levelup =0
 		if(prob(10)) savant.KiBladeDrain = superdrain
 	login(var/mob/logger)
@@ -353,7 +353,7 @@ mob/keyable/verb/Ki_Shield()
 			if(Ki >= (MaxKi/10) * KiShieldDrain / KiMod)
 				Ki -= (MaxKi/10) * KiShieldDrain / KiMod
 			else Ki = 0
-		view(usr) << "[usr] creates a Ki Shield."
+		to_chat(view(usr), "[usr] creates a Ki Shield.")
 		var/initbuff = max((log(8.3,container.Ekioff*10)),0)
 		Tphysdef += initbuff
 		Tkidef += initbuff
@@ -391,10 +391,10 @@ obj/overlay/effects/Ki_Shield
 	enabled = 1
 	var/tmp/expbuffer = 0
 	after_learn()
-		savant<<"Your internal skills have been cultivated further! You've gained a new ability!"
+		to_chat(savant, "Your internal skills have been cultivated further! You've gained a new ability!")
 		assignverb(/mob/keyable/verb/Shield_Bash)
 	before_forget()
-		savant<<"Your cultivation vanishes, alongside a ability to release it."
+		to_chat(savant, "Your cultivation vanishes, alongside a ability to release it.")
 		unassignverb(/mob/keyable/verb/Shield_Bash)
 	login(var/mob/logger)
 		..()

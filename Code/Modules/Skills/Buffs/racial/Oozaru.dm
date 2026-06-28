@@ -3,10 +3,10 @@ obj/ApeshitSetting/verb/ApeshitSetting()
 	set category="Other"
 	if(!usr.Osetting)
 		usr.Osetting=1
-		usr<<"You decide that if the moon is out, you will look at it."
+		to_chat(usr, "You decide that if the moon is out, you will look at it.")
 	else
 		usr.Osetting=0
-		usr<<"You decide that if the moon is out, you will -not- look at it."
+		to_chat(usr, "You decide that if the moon is out, you will -not- look at it.")
 mob
 	var
 		storedicon
@@ -29,7 +29,7 @@ mob
 			if(SaiyanLineage=="Primal Saiyan"&&hasssj&&!transing)
 				if(!Apeshit&&Tail&&!KO)
 					if(ssj) Revert()
-					src<<"You look at the moon and turn into a giant monkey!"
+					to_chat(src, "You look at the moon and turn into a giant monkey!")
 					golden=1
 					Revert()
 					startbuff(/obj/buff/Oozaru/SuperOozaru)
@@ -40,7 +40,7 @@ mob
 			if(genome.race_percent("Saiyan") >= 50)
 				if(!Apeshit&&Tail&&!KO)
 					if(!ssj)
-						src<<"You look at the moon and turn into a giant monkey!"
+						to_chat(src, "You look at the moon and turn into a giant monkey!")
 						Revert()
 						RegularApeshit()
 						spawn(3000)
@@ -50,7 +50,7 @@ mob
 						GoldenApeshit()
 			if(Race=="Saiyan")
 				if(!ssj&&!transing)
-					src<<"You look at the moon and turn into a giant monkey!"
+					to_chat(src, "You look at the moon and turn into a giant monkey!")
 					Revert()
 					RegularApeshit()
 					spawn(3000)
@@ -60,7 +60,7 @@ mob
 					GoldenApeshit()
 		Apeshit_Revert(var/N)
 			if(Apeshit||isBuffed(/obj/buff/Oozaru)||isBuffed(/obj/buff/Oozaru/SuperOozaru))
-				src<<"<font color=yellow>You come to your senses and return to your normal form."
+				to_chat(src, "<font color=yellow>You come to your senses and return to your normal form.")
 				emit_Sound('descend.wav')
 				stopbuff(/obj/buff/Oozaru)
 				stopbuff(/obj/buff/Oozaru/SuperOozaru)
@@ -69,30 +69,30 @@ obj/ApeshitRevert/verb/ApeshitRevert()
 	set category="Skills"
 	if(usr.Apeshit&&!usr.golden)
 		if(usr.Apeshitskill>=10)
-			usr<<"You try to revert your transformation. You have enough skill, so it succeeds."
+			to_chat(usr, "You try to revert your transformation. You have enough skill, so it succeeds.")
 			usr.Apeshit_Revert()
-		else usr<<"You try to revert your transformation. You don't have enough skill."
+		else to_chat(usr, "You try to revert your transformation. You don't have enough skill.")
 	else if(usr.golden&&usr.Apeshit&&usr.Race=="Saiyan")
 		if(usr.hasssj4)
-			usr<<"You try to revert your transformation, but end up being a Super Saiyan 4."
+			to_chat(usr, "You try to revert your transformation, but end up being a Super Saiyan 4.")
 			usr.Apeshit_Revert()
 			usr.SSj4()
 		else
 			if(usr.expressedBP>=usr.ssj4at&&usr.BP>=usr.rawssj4at&&!usr.canRevert)
 				sleep(5)
-				usr<<"You feel something coming from within you!"
+				to_chat(usr, "You feel something coming from within you!")
 				sleep(1)
 				usr.Apeshit_Revert()
 				usr.SSj4()
 			else if(usr.Apeshitskill>=10&&!usr.canRevert&&usr.expressedBP<usr.ssj4at/1.5&&usr.BP>=usr.rawssj4at)
 				sleep(5)
-				usr<<"You try to revert your transformation. You have enough skill, so it succeeds."
+				to_chat(usr, "You try to revert your transformation. You have enough skill, so it succeeds.")
 				usr.Apeshit_Revert()
 			else if(usr.Apeshitskill>=10&&!usr.canRevert&&usr.expressedBP>usr.ssj4at/1.5&&usr.BP>=usr.rawssj4at)
-				usr<<"You try to revert your transformation! Your control and calmness brings you to a new level!"
+				to_chat(usr, "You try to revert your transformation! Your control and calmness brings you to a new level!")
 				usr.Apeshit_Revert()
 				usr.SSj4()
-			else usr<<"You try to control it! It fights back- you're going to have to wait a bit!"
+			else to_chat(usr, "You try to control it! It fights back- you're going to have to wait a bit!")
 
 obj/buff/Oozaru
 	name = "Oozaru"
@@ -261,10 +261,10 @@ obj/overlay/oozarou_overlay
 /mob/keyable/verb/Wrathful_State()
 	set category = "Skills"
 	if(Apeshit)
-		usr << "Can't use this with Oozaru!"
+		to_chat(usr, "Can't use this with Oozaru!")
 		return
 	if(Class != "Legendary" || Tail)
-		usr << "Only Legendary Saiyans who have lost their tail can enter the Wrathful State!"
+		to_chat(usr, "Only Legendary Saiyans who have lost their tail can enter the Wrathful State!")
 		return
 	else if(isBuffed(/obj/buff/Wrathful_State)) stopbuff(/obj/buff/Wrathful_State)
 	else startbuff(/obj/buff/Wrathful_State)
@@ -282,8 +282,8 @@ obj/overlay/oozarou_overlay
 				if("Slightly Angry") container.SpreadDamage(5)
 				if("Angry") container.SpreadDamage(10)
 				if("Very Angry") container.SpreadDamage(15)
-		container << "You activate your wrathful state!"
-		view(container) << "<font color=yellow>[container]'s eyes glow a faint yellow as their energy and aura skyrockets!</font>"
+		to_chat(container, "You activate your wrathful state!")
+		to_chat(view(container), "<font color=yellow>[container]'s eyes glow a faint yellow as their energy and aura skyrockets!</font>")
 		container.OozaruBuff=container.Omult * 0.45
 		if(container.Class =="Legendary" || container.LSSJType) container.OozaruBuff=container.Omult * 0.65
 		container.Tphysoff+=1.2
@@ -309,8 +309,8 @@ obj/overlay/oozarou_overlay
 					if("Very Angry") container.SpreadDamage(0.06)
 	DeBuff()
 		//container.icon=container.storedicon
-		container << "Your wrath vanishes."
-		view(container) << "<font color=yellow>[container]'s eyes faint yellow glow fades...</font>"
+		to_chat(container, "Your wrath vanishes.")
+		to_chat(view(container), "<font color=yellow>[container]'s eyes faint yellow glow fades...</font>")
 		container.OozaruBuff = 1
 		container.giantFormbuff = 1
 		container.Tphysoff-=1.2

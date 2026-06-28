@@ -3,11 +3,11 @@ mob/Admin3/verb/TurnAutoReviveOn()
 	set name="Auto Revive On"
 	if(AutoReviveOn)
 		AutoReviveOn=0
-		world<<"Auto Revive Off"
+		to_chat(world, "Auto Revive Off")
 		return
 	if(!AutoReviveOn)
 		AutoReviveOn=1
-		world<<"Auto Revive On"
+		to_chat(world, "Auto Revive On")
 		return
 mob/Admin3/verb/Restart_Auto_Revive()
 	set category="Admin"
@@ -32,6 +32,6 @@ obj/Crandal/verb/CheckRevive()
 	if(AutoReviveOn)
 		if(autorevivetimer==18000)
 			world.AutoRevive()
-		usr<<"Revive in [autorevivetimer/10] seconds."
+		to_chat(usr, "Revive in [autorevivetimer/10] seconds.")
 	else
-		usr << "Auto revive turned off."
+		to_chat(usr, "Auto revive turned off.")

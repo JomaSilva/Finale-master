@@ -41,13 +41,13 @@ mob/verb
 			spawn while(spawncooldown)
 				spawncooldown-=1
 				sleep(1)
-		else usr<<"You must wait [spawncooldown/10] seconds before using this again."
+		else to_chat(usr, "You must wait [spawncooldown/10] seconds before using this again.")
 mob/keyable/verb/Telepathy(mob/M in player_list)
 	set category="Skills"
 	if(M==usr)
 		return
 	if(M.isconcealed||M.Race=="Android"||M.expressedBP <= 5)
-		usr<<"You can't find their energy!"
+		to_chat(usr, "You can't find their energy!")
 		return
 	if(M.seetelepathy)
 		var/message=input("Say what in telepathy?") as text
@@ -55,7 +55,7 @@ mob/keyable/verb/Telepathy(mob/M in player_list)
 		usr<<output("<font face=Old English Text MT><font color=red>[usr] says in telepathy, '[html_encode(message)]'","Chatpane.Chat")
 		chatcast(usr, "<font face=Old English Text MT><font color=red>[usr] says in telepathy, '[html_encode(message)]'", "system")
 		WriteToLog("rplog","(Telepathy to [M])[src]: [message]   ([time2text(world.realtime,"Day DD hh:mm")])")
-	else usr<<"They have their telepathy turned off."
+	else to_chat(usr, "They have their telepathy turned off.")
 mob/var/Who={"<html>
 <head><title></head></title><body>
 <body bgcolor="#000000"><font size=2><font color="#0099FF"><b><i>

@@ -20,13 +20,13 @@ also provide increases in various stats.*/
 			savant.physoffBuff+=0.2
 			savant.physdefBuff+=0.2
 			savant.speedBuff+=0.2
-			savant<<"Your blood boils as darkness taints your soul!"
+			to_chat(savant, "Your blood boils as darkness taints your soul!")
 			sleep(20)
-			savant<<"What a horrible night to have a curse."
+			to_chat(savant, "What a horrible night to have a curse.")
 		remove()
 			if(!savant)
 				return
-			savant<<"You manage to fight off your blood-stained curse and clinge to what humanity you still have..."
+			to_chat(savant, "You manage to fight off your blood-stained curse and clinge to what humanity you still have...")
 			savant.physoffBuff-=0.2*level
 			savant.physdefBuff-=0.2*level
 			savant.speedBuff-=0.2*level
@@ -45,40 +45,40 @@ also provide increases in various stats.*/
 
 		levelstat()
 			..()
-			savant<<"Your vampiric blood grows even stronger! Vampirism is now level [level]!"
+			to_chat(savant, "Your vampiric blood grows even stronger! Vampirism is now level [level]!")
 			savant.physoffBuff+=0.2
 			savant.physdefBuff+=0.2
 			savant.speedBuff+=0.2
 			if(level == 1)
-				savant<<"Sharp, pointed fangs burst from your gums, perfect for digging into a person's flesh. You can now use Bite!"
+				to_chat(savant, "Sharp, pointed fangs burst from your gums, perfect for digging into a person's flesh. You can now use Bite!")
 				addverb(/mob/keyable/verb/Bite)
 /*			if(level == 4)
-				savant<<"Using the blood you've acquired, you can now heal yourself from the brink of death! You've learned Vampiric Regeneration!"
+				to_chat(savant, "Using the blood you've acquired, you can now heal yourself from the brink of death! You've learned Vampiric Regeneration!")
 				addverb(/mob/keyable/verb/Vampiric_Regeneration)
 			if(level == 7)
-				savant<<"Your supernatural blood has bolstered your senses, allowing you to sniff out and detect nearby organisms. You learned Nocturnal Senses!"
+				to_chat(savant, "Your supernatural blood has bolstered your senses, allowing you to sniff out and detect nearby organisms. You learned Nocturnal Senses!")
 				addverb(/mob/keyable/verb/Nocturnal_Senses)
 			if(level == 10)
-				savant<<"By utuilizing dark magic inherited by your cursed blood, you can now Shapeshift into a creature of the night!"
+				to_chat(savant, "By utuilizing dark magic inherited by your cursed blood, you can now Shapeshift into a creature of the night!")
 				addverb(/mob/keyable/verb/Shapeshift)
 			if(level == 20)
-				savant<<"Ripple flows throughout the liquid around you, condensing it into a versatile weapon! You've learned Ripple Cutter!"
+				to_chat(savant, "Ripple flows throughout the liquid around you, condensing it into a versatile weapon! You've learned Ripple Cutter!")
 				addverb(/mob/keyable/verb/Blood_Drain)
 			if(level == 30)
-				savant<<"The Ripple is pulsating within your body, granting you the ability to launch an unyielding barrage of Ripple-charged punches! You've learned Sendo Overdrive!"
+				to_chat(savant, "The Ripple is pulsating within your body, granting you the ability to launch an unyielding barrage of Ripple-charged punches! You've learned Sendo Overdrive!")
 				addverb(/mob/keyable/verb/Vapor_Freeze)
 			if(level == 40)
-				savant<<"The Ripple is pulsating within your body, granting you the ability to launch an unyielding barrage of Ripple-charged punches! You've learned Sendo Overdrive!"
+				to_chat(savant, "The Ripple is pulsating within your body, granting you the ability to launch an unyielding barrage of Ripple-charged punches! You've learned Sendo Overdrive!")
 				addverb(/mob/keyable/verb/Space_Ripper_Stingy_Eyes)
 			if(level == 50)
-				savant<<"The Ripple is pulsating within your body, granting you the ability to launch an unyielding barrage of Ripple-charged punches! You've learned Sendo Overdrive!"
+				to_chat(savant, "The Ripple is pulsating within your body, granting you the ability to launch an unyielding barrage of Ripple-charged punches! You've learned Sendo Overdrive!")
 				addverb(/mob/keyable/verb/Zombification)
 			if(level == 60)
-				savant<<"The Ripple is pulsating within your body, granting you the ability to launch an unyielding barrage of Ripple-charged punches! You've learned Sendo Overdrive!"
+				to_chat(savant, "The Ripple is pulsating within your body, granting you the ability to launch an unyielding barrage of Ripple-charged punches! You've learned Sendo Overdrive!")
 				addverb(/mob/keyable/verb/Mist_Form)
 			if(level == 75)
-				savant<<"The Ripple is pulsating within your body, granting you the ability to launch an unyielding barrage of Ripple-charged punches! You've learned Sendo Overdrive!"
+				to_chat(savant, "The Ripple is pulsating within your body, granting you the ability to launch an unyielding barrage of Ripple-charged punches! You've learned Sendo Overdrive!")
 				addverb(/mob/keyable/verb/Flesh_Buds)
 			if(level == 100)
-				savant<<"The Ripple is pulsating within your body, granting you the ability to launch an unyielding barrage of Ripple-charged punches! You've learned Sendo Overdrive!"
+				to_chat(savant, "The Ripple is pulsating within your body, granting you the ability to launch an unyielding barrage of Ripple-charged punches! You've learned Sendo Overdrive!")
 				addverb(/mob/keyable/verb/Create_Blood_Chalice)*/

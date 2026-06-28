@@ -15,7 +15,7 @@ obj/buff/SuperPerfect/Loop()
 				if(prob(20)) container.Ki-=(container.MaxKi*container.cell4drain) //ki takes a small hit regardless.
 				if(container.Ki<=container.MaxKi*container.cell4drain)
 					container.Revert()
-					container<<"You are too tired to sustain your form."
+					to_chat(container, "You are too tired to sustain your form.")
 				container.stamina -= trans_drain*max(0.001,container.cell4drain)/2 //max statement ensures you won't be hitting exactly zero if drain changes mid drain.
 	if(lastForm!=container.ssj)
 		lastForm=container.ssj

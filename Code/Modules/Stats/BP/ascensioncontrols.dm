@@ -56,11 +56,11 @@ mob/Admin3
 			switch(choice)
 				if("Toggle ascension.")
 					if(TurnOffAscension)
-						world << "Ascension has been enabled."
+						to_chat(world, "Ascension has been enabled.")
 						TurnOffAscension = 0
 						WriteToLog("admin","[usr]([key]) turned on ascension.")
 					else
-						world << "Ascension has been disabled. Note: Leaving this on for too long will cause jumps in power if it gets turned back on."
+						to_chat(world, "Ascension has been disabled. Note: Leaving this on for too long will cause jumps in power if it gets turned back on.")
 						TurnOffAscension = 1
 						WriteToLog("admin","[usr]([key]) turned off ascension.")
 				if("Global non-transforming BP boosts.")

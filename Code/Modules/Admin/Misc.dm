@@ -88,7 +88,7 @@ mob/Admin3/verb
 				candroid=0
 			if("Gray")
 				cangray=0
-		world<<"<b><font color=yellow>Admins just made [Choice] an illegal race"
+		to_chat(world, "<b><font color=yellow>Admins just made [Choice] an illegal race")
 		Illegal.Add(Choice)
 		Save_Ban()
 	Make_Legal_Race()
@@ -148,7 +148,7 @@ mob/Admin3/verb
 				candroid=1
 			if("Gray")
 				cangray=1
-		world<<"<b><font color=yellow>Admins just made [Choice] a legal race"
+		to_chat(world, "<b><font color=yellow>Admins just made [Choice] a legal race")
 		Illegal.Remove(Choice)
 		Save_Ban()
 	View_Illegal_Races()
@@ -237,7 +237,7 @@ mob/Admin1/verb/cmd_admin_pm_context(mob/M as mob in view(usr))
 	set category = null
 	set name = "Admin PM Mob"
 	if(!Admin)
-		src << "<font color='red'>Error: Admin-PM-Context: Only administrators may use this command.</font>"
+		to_chat(src, "<font color='red'>Error: Admin-PM-Context: Only administrators may use this command.</font>")
 		return
 	if( !ismob(M) || !M.client )	return
 	cmd_admin_pm(M,null)
@@ -247,7 +247,7 @@ mob/Admin1/verb/cmd_admin_pm_panel()
 	set category = "Admin"
 	set name = "Admin PM"
 	if(!Admin)
-		src << "<font color='red'>Error: Admin-PM-Panel: Only administrators may use this command.</font>"
+		to_chat(src, "<font color='red'>Error: Admin-PM-Panel: Only administrators may use this command.</font>")
 		return
 	var/list/targetlist = list()
 	for(var/client/T)
@@ -258,7 +258,7 @@ mob/Admin1/verb/cmd_admin_pm_panel()
 
 mob/proc/cmd_ahelp_reply(var/mob/whom)
 	if(Mutes.Find(key))
-		src << "<font color='red'>Error: Admin-PM: You are unable to use admin PM-s (muted).</font>"
+		to_chat(src, "<font color='red'>Error: Admin-PM: You are unable to use admin PM-s (muted).</font>")
 		return
 	var/client/C
 	if(istype(whom,/mob))
@@ -268,7 +268,7 @@ mob/proc/cmd_ahelp_reply(var/mob/whom)
 			if(ckey(Cl.ckey) == ckey(whom))
 				C = Cl
 	if(!C)
-		if(Admin)	src << "<font color='red'>Error: Admin-PM: Client not found.</font>"
+		if(Admin)	to_chat(src, "<font color='red'>Error: Admin-PM: Client not found.</font>")
 		return
 	message_admins("[key_name_admin(src)] has started replying to [key_name(C, 0, 0)]'s admin help.")
 	var/msg = input(src,"Message:", "Private message to [key_name(C, 0, 0)]") as text|null
@@ -279,7 +279,7 @@ mob/proc/cmd_ahelp_reply(var/mob/whom)
 
 mob/proc/cmd_admin_pm(var/mob/whom, msg)
 	if(Mutes.Find(key))
-		src << "<font color='red'>Error: Admin-PM: You are unable to use admin PM-s (muted).</font>"
+		to_chat(src, "<font color='red'>Error: Admin-PM: You are unable to use admin PM-s (muted).</font>")
 		return
 
 	var/client/C
@@ -290,7 +290,7 @@ mob/proc/cmd_admin_pm(var/mob/whom, msg)
 			if(ckey(Cl.ckey) == ckey(whom))
 				C = Cl
 	if(!C)
-		if(Admin)	src << "<font color='red'>Error: Admin-PM: Client not found.</font>"
+		if(Admin)	to_chat(src, "<font color='red'>Error: Admin-PM: Client not found.</font>")
 		else		adminhelp(msg)	//admin we are replying to left. adminhelp instead
 		return
 
@@ -300,25 +300,25 @@ mob/proc/cmd_admin_pm(var/mob/whom, msg)
 
 		if(!msg)	return
 		if(!C)
-			if(Admin)	src << "<font color='red'>Error: Admin-PM: Client not found.</font>"
+			if(Admin)	to_chat(src, "<font color='red'>Error: Admin-PM: Client not found.</font>")
 			else		adminhelp(msg)	//admin we are replying to has vanished, adminhelp instead
 			return
 
 	if(C.mob.Admin)
 		if(Admin)	//both are admins
-			C << "<font color='red'>Admin PM from-<b>[key_name(src, C, 1)]</b>: [msg]</font>"
-			src << "<font color='blue'>Admin PM to-<b>[key_name(C, src, 1)]</b>: [msg]</font>"
+			to_chat(C, "<font color='red'>Admin PM from-<b>[key_name(src, C, 1)]</b>: [msg]</font>")
+			to_chat(src, "<font color='blue'>Admin PM to-<b>[key_name(C, src, 1)]</b>: [msg]</font>")
 
 		else		//recipient is an admin but sender is not
-			C << "<font color='red'>Reply PM from-<b>[key_name(src, C, 1)]</b>: [msg]</font>"
-			src << "<font color='blue'>PM to-<b>Admins</b>: [msg]</font>"
+			to_chat(C, "<font color='red'>Reply PM from-<b>[key_name(src, C, 1)]</b>: [msg]</font>")
+			to_chat(src, "<font color='blue'>PM to-<b>Admins</b>: [msg]</font>")
 
 	else
 		if(Admin)	//sender is an admin but recipient is not. Do BIG RED TEXT
-			C << "<font color='red' size='4'><b>-- Administrator private message --</b></font>"
-			C << "<font color='red'>Admin PM from-<b>[key_name(src, C, 0)]</b>: [msg]</font>"
-			C << "<font color='red'><i>Click on the administrator's name to reply.</i></font>"
-			src << "<font color='blue'>Admin PM to-<b>[key_name(C, src, 1)]</b>: [msg]</font>"
+			to_chat(C, "<font color='red' size='4'><b>-- Administrator private message --</b></font>")
+			to_chat(C, "<font color='red'>Admin PM from-<b>[key_name(src, C, 0)]</b>: [msg]</font>")
+			to_chat(C, "<font color='red'><i>Click on the administrator's name to reply.</i></font>")
+			to_chat(src, "<font color='blue'>Admin PM to-<b>[key_name(C, src, 1)]</b>: [msg]</font>")
 			spawn()	//so we don't hold the invoker proc up
 				var/sender = src
 				var/sendername = key
@@ -331,14 +331,14 @@ mob/proc/cmd_admin_pm(var/mob/whom, msg)
 				return
 
 		else		//neither are admins
-			src << "<font color='red'>Error: Admin-PM: Non-admin to non-admin PM communication is forbidden.</font>"
+			to_chat(src, "<font color='red'>Error: Admin-PM: Non-admin to non-admin PM communication is forbidden.</font>")
 			return
 	WriteToLog("admin","PM: [key_name(src)]->[key_name(C)]: [msg] [time2text(world.realtime,"Day DD hh:mm")]")
 
 	//we don't use message_admins here because the sender/receiver might get it too
 	for(var/mob/X in mob_list)
 		if(X.Admin && X.key!=key && X.key!=C.key)	//check client/X is an admin and isn't the sender or recipient
-			X << "<B><font color='blue'>PM: [key_name(src, X, 0)]-&gt;[key_name(C, X, 0)]:</B> \blue [msg]</font>" //inform X
+			to_chat(X, "<B><font color='blue'>PM: [key_name(src, X, 0)]-&gt;[key_name(C, X, 0)]:</B> \blue [msg]</font>") //inform X
 
 mob/proc/adminhelp(msg as text)
 	if(client)
@@ -350,7 +350,7 @@ mob/proc/adminhelp(msg as text)
 
 	//handle muting and automuting
 	if(Mutes.Find(key))
-		src << "<span class='danger'>Error: Admin-PM: You cannot send adminhelps (Muted).</span>"
+		to_chat(src, "<span class='danger'>Error: Admin-PM: You cannot send adminhelps (Muted).</span>")
 		return
 
 	if(!mob)	return						//this doesn't happen
@@ -366,7 +366,7 @@ mob/proc/adminhelp(msg as text)
 
 
 	//show it to the person adminhelping too
-	src << "<span class='adminnotice'>PM to-<b>Admins</b>: [original_msg]</span>"
+	to_chat(src, "<span class='adminnotice'>PM to-<b>Admins</b>: [original_msg]</span>")
 
 	//send it to irc if nobody is on and tell us how many were on
 
@@ -394,7 +394,7 @@ mob/proc/adminhelp(msg as text)
 
 mob/Admin3/verb/Create_Teleporter()
 	set category = "Admin"
-	usr << "Teleporter will be created where you are at. Please input the destination coordinates."
+	to_chat(usr, "Teleporter will be created where you are at. Please input the destination coordinates.")
 	var/obj/Teleporter/nT = new(loc)
 	nT.destinationx = input(usr,"Input coordinates for X.") as num
 	nT.destinationy = input(usr,"Input coordinates for Y.") as num
@@ -428,10 +428,10 @@ mob/Admin3/verb/OOC_Anonymous()
 	set category = "Admin"
 	if(OOC_anon)
 		OOC_anon = 0
-		world << "OOC is no longer anonymous"
+		to_chat(world, "OOC is no longer anonymous")
 	else
 		OOC_anon = 1
-		world << "OOC is now anonymous (you don't see charcter names in OOC)"
+		to_chat(world, "OOC is now anonymous (you don't see charcter names in OOC)")
 
 mob/Admin2/verb/Force_All_Backup_Save()
 	set category = "Admin"

@@ -19,11 +19,11 @@ obj/buff/LSSJ/Loop()
 					if(prob(20)) container.Ki-=(container.restssjdrain) //ki takes a small hit regardless.
 					if(container.Ki<=container.MaxKi*container.restssjdrain)
 						container.Revert()
-						container<<"You are too tired to sustain your form."
+						to_chat(container, "You are too tired to sustain your form.")
 					container.stamina -= trans_drain*max(0.001,container.restssjdrain)/2 //max statement ensures you won't be hitting exactly zero if drain changes mid drain.
 
 				else
-					container<<"You are too tired to sustain your form."
+					to_chat(container, "You are too tired to sustain your form.")
 					container.Revert()
 		//UnRestrained Super Saiyan Drain
 		if(container.lssj==2)
@@ -32,10 +32,10 @@ obj/buff/LSSJ/Loop()
 					if(prob(20)) container.Ki-=(container.unrestssjdrain) //ki takes a small hit regardless.
 					if(container.Ki<=container.MaxKi*container.unrestssjdrain)
 						container.Revert()
-						container<<"You are too tired to sustain your form."
+						to_chat(container, "You are too tired to sustain your form.")
 					container.stamina -= trans_drain*max(0.001,container.unrestssjdrain)/2 //max statement ensures you won't be hitting exactly zero if drain changes mid drain.
 				else
-					container<<"You are too tired to sustain your form."
+					to_chat(container, "You are too tired to sustain your form.")
 					container.Revert()
 		//Legendary Super Saiyan Drain
 		if(container.lssj==3)
@@ -45,10 +45,10 @@ obj/buff/LSSJ/Loop()
 					//lssj doesn't drain like normal. It adds a small amount of Ki.
 					if(container.Ki<=container.MaxKi*container.lssjdrain)
 						container.Revert()
-						container<<"You are too tired to sustain your form."
+						to_chat(container, "You are too tired to sustain your form.")
 					container.stamina -= trans_drain*max(0.001,container.lssjdrain)/2 //max statement ensures you won't be hitting exactly zero if drain changes mid drain.
 				else
-					container<<"You are too tired to sustain your form."
+					to_chat(container, "You are too tired to sustain your form.")
 					container.Revert()
 		if(container.lssj==4) //Super Saiyan Full Power (Controlled): mesmo comportamento do Full Power (ganha Ki)
 			if(container.lssjdrain)
@@ -56,10 +56,10 @@ obj/buff/LSSJ/Loop()
 					if(prob(20)) container.Ki+=(container.MaxKi*container.lssjdrain)
 					if(container.Ki<=container.MaxKi*container.lssjdrain)
 						container.Revert()
-						container<<"You are too tired to sustain your form."
+						to_chat(container, "You are too tired to sustain your form.")
 					container.stamina -= trans_drain*max(0.001,container.lssjdrain)/2
 				else
-					container<<"You are too tired to sustain your form."
+					to_chat(container, "You are too tired to sustain your form.")
 					container.Revert()
 		if(container.lssj) //Form Rising: maestria cresce em forma + mantem o ssjBuff vivo (maestria + bonus de combate)
 			switch(container.lssj)
@@ -230,14 +230,14 @@ mob/proc/Restrained_SSj()
 			overlayList-='SSj Aura.dmi'
 			overlayList+='SSj Aura.dmi'
 			overlaychanged=1
-			view(src)<<"<font color=yellow>*A great wave of power emanates from [src] as a yellow aura bursts around them!*"
+			to_chat(view(src), "<font color=yellow>*A great wave of power emanates from [src] as a yellow aura bursts around them!*")
 			emit_Sound('chargeaura.wav')
 			spawn Quake()
 			spawn Quake()
 			createShockwavemisc(loc,4)
 			createCrater(loc,5)
 			sleep(50)
-			view(src)<<"<font color=yellow>*[src]'s hair becomes more ridged and turns blue!*"
+			to_chat(view(src), "<font color=yellow>*[src]'s hair becomes more ridged and turns blue!*")
 			lssj=1
 			startbuff(/obj/buff/LSSJ,'SSJIcon.dmi')
 		transing=0
@@ -307,13 +307,13 @@ mob/proc/Unrestrained_SSj()
 		overlaychanged=1
 		var/ssjcolor = "yellow"
 		if(godki && godki.usage) ssjcolor = "blue"
-		view(6)<<"<font color=[ssjcolor]>*A great wave of power emanates from [src] as a [ssjcolor] aura bursts around them!*"
+		to_chat(view(6), "<font color=[ssjcolor]>*A great wave of power emanates from [src] as a [ssjcolor] aura bursts around them!*")
 		emit_Sound('chargeaura.wav')
 		createShockwavemisc(loc,1)
 		createCrater(loc,5)
 		spawn if(ssj2drain<250) Quake()
 		sleep(50)
-		view(6)<<"<font color=[ssjcolor]>*Blue sparks begin to burst around [src]!*"
+		to_chat(view(6), "<font color=[ssjcolor]>*Blue sparks begin to burst around [src]!*")
 		transing=0
 		attackable=1
 mob/proc/LSSj()
@@ -340,12 +340,12 @@ mob/proc/LSSj()
 		if(!isBuffed(/obj/buff/LSSJ)) startbuff(/obj/buff/LSSJ,'SSJIcon.dmi')
 		var/ssjcolor = "yellow"
 		if(godki && godki.usage) ssjcolor = "blue"
-		view(6)<<"<font color=[ssjcolor]>*[src]'s hair spikes even further and turns green!*"
+		to_chat(view(6), "<font color=[ssjcolor]>*[src]'s hair spikes even further and turns green!*")
 		overlayList-='Elec.dmi'
 		overlayList-='Electric_Blue.dmi'
 		overlayList+='Electric_Blue.dmi'
 		overlaychanged=1
-		view(6)<<"<font color=[ssjcolor]>*A great wave of power emanates from [src] as a green aura bursts around them!*"
+		to_chat(view(6), "<font color=[ssjcolor]>*A great wave of power emanates from [src] as a green aura bursts around them!*")
 		emit_Sound('chargeaura.wav')
 		createShockwavemisc(loc,2)
 		createCrater(loc,5)
@@ -354,7 +354,7 @@ mob/proc/LSSj()
 		Quake()
 		spawn Quake()
 		sleep(50)
-		view(6)<<"<font color=[ssjcolor]>*[src]'s aura spikes upward as their power becomes maximum!*"
+		to_chat(view(6), "<font color=[ssjcolor]>*[src]'s aura spikes upward as their power becomes maximum!*")
 		transing=0
 		attackable=1
 mob/proc/LSSj_Controlled() //Super Saiyan Full Power (Controlled): 50x; so apos masterizar 100% o Full Power (lssj=3)
@@ -366,7 +366,7 @@ mob/proc/LSSj_Controlled() //Super Saiyan Full Power (Controlled): 50x; so apos 
 		emit_Sound('chargeaura.wav')
 		createShockwavemisc(loc,2)
 		spawn Quake()
-		view(8)<<"<font color=green>*[src] reins in the wild legendary power - now perfectly controlled!*"
+		to_chat(view(8), "<font color=green>*[src] reins in the wild legendary power - now perfectly controlled!*")
 		sleep(8)
 		lssj=4
 		if(!isBuffed(/obj/buff/LSSJ)) startbuff(/obj/buff/LSSJ,'SSJIcon.dmi')

@@ -21,19 +21,19 @@ obj
 				if(x&&y&&z&&!Bolted)
 					switch(input("Are you sure you want to bolt this to the ground so nobody can ever pick it up? Not even you?","",text) in list("Yes","No",))
 						if("Yes")
-							view(src)<<"<font size=1>[usr] bolts the [src] to the ground."
+							to_chat(view(src), "<font size=1>[usr] bolts the [src] to the ground.")
 							Bolted=1
 							boltersig=usr.signature
 				else if(Bolted&&boltersig==usr.signature)
 					switch(input("Unbolt?","",text) in list("Yes","No",))
 						if("Yes")
-							view(src)<<"<font size=1>[usr] unbolts the [src] from the ground."
+							to_chat(view(src), "<font size=1>[usr] unbolts the [src] from the ground.")
 							Bolted=0
 			verb/Craft()
 				set category=null
 				set src in view(1)
 				if(!Bolted)
-					usr << "You need to bolt [name] before you can use it!"
+					to_chat(usr, "You need to bolt [name] before you can use it!")
 					return
 				switch(input(usr,"Which function of the crafting bench will you use?","","Cancel") in list("Clothes","Items","Cancel"))
 					if("Items")
@@ -43,25 +43,25 @@ obj
 									usr.zenni-=100
 									var/obj/A=new/obj/items/Comb(locate(usr.x,usr.y,usr.z))
 									A.techcost+=100
-								else usr<<"You dont have enough money"
+								else to_chat(usr, "You dont have enough money")
 							if("Eye Dye")
 								if(usr.zenni>=100)
 									usr.zenni-=100
 									var/obj/A=new/obj/items/Eye_Dye(locate(usr.x,usr.y,usr.z))
 									A.techcost+=100
-								else usr<<"You dont have enough money"
+								else to_chat(usr, "You dont have enough money")
 							if("Loom")
 								if(usr.zenni>=100)
 									usr.zenni-=100
 									var/obj/A=new/obj/items/Loom(locate(usr.x,usr.y,usr.z))
 									A.techcost+=100
-								else usr<<"You dont have enough money"
+								else to_chat(usr, "You dont have enough money")
 							if("Trash Bin")
 								if(usr.zenni>=100)
 									usr.zenni-=100
 									var/obj/A=new/obj/items/Trash_Bin(locate(usr.x,usr.y,usr.z))
 									A.techcost+=100
-								else usr<<"You dont have enough money"
+								else to_chat(usr, "You dont have enough money")
 					if("Clothes")
 						var/area/hopefulArea = GetArea()
 						if(!isarea(hopefulArea))
@@ -124,7 +124,7 @@ obj
 						trashList += A
 				var/obj/choice = input(usr,"Select a item to destroy. You will never be able to get this specific item back!","",null) as null|anything in trashList
 				if(isobj(choice))
-					view(usr)<<"[usr] threw the [choice] into the trash!"
+					to_chat(view(usr), "[usr] threw the [choice] into the trash!")
 					del(choice)
 
 turf/decor

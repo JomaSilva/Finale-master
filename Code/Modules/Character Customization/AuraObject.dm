@@ -240,7 +240,7 @@ mob/var/tmp/aurachoice=0
 obj/aurachoice/Click()
 	if(!usr.aurachoice)
 		usr.aurachoice=0
-		usr<<"Aura Chosen."
+		to_chat(usr, "Aura Chosen.")
 		usr.AURA=icon
 		usr.AURA+=rgb(usr.AuraR,usr.AuraG,usr.AuraB)
 		for(var/obj/aurachoice/A in usr.contents) if(A!=src) del(A)

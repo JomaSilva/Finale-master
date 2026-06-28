@@ -57,7 +57,7 @@ mob
 						hassealitem = 1
 				if(!hassealitem)
 					SealedContainerDur = 0.25
-				if(SealHP==100) src << "Your seal has weakened! You will return to the regular world if it isn't fixed!"
+				if(SealHP==100) to_chat(src, "Your seal has weakened! You will return to the regular world if it isn't fixed!")
 				if(SealHP>=1) SealHP -= 0.001/SealedContainerDur
 				else UnSealMob()
 			if(Planet!="Sealed")
@@ -145,10 +145,10 @@ obj/items
 //Mafuba
 /datum/skill/rank/Mafuba/after_learn()
 	assignverb(/mob/Rank/verb/Mafuba)
-	savant<<"You learned the Mafuba!!"
+	to_chat(savant, "You learned the Mafuba!!")
 /datum/skill/rank/Mafuba/before_forget()
 	unassignverb(/mob/Rank/verb/Mafuba)
-	savant<<"You've forgotten how to do the Mafuba?"
+	to_chat(savant, "You've forgotten how to do the Mafuba?")
 /datum/skill/rank/Mafuba/login(var/mob/logger)
 	..()
 	assignverb(/mob/Rank/verb/Mafuba)
@@ -160,11 +160,11 @@ obj/items
 		SealingItems.Add(A)
 	var/obj/items/SealingItem/choice = input(usr,"Select the sealing item.","") as null|anything in SealingItems
 	if(isnull(choice))
-		src << "Canceled Mafuba."
+		to_chat(src, "Canceled Mafuba.")
 		return
 	var/mob/thesealed = input(usr,"Who to seal? This will take much of your HP!") as null|mob in view()
 	if(isnull(thesealed))
-		src << "Canceled Mafuba"
+		to_chat(src, "Canceled Mafuba")
 		return
 	else
 		var/obj/attack/blast/MafubaBlast/A  = new
@@ -204,7 +204,7 @@ obj/attack/blast/MafubaBlast
 			M.SealedLocation = locate(M.x,M.y,M.z)
 			targetcontainer.Sealed = M
 			targetcontainer.SealedSig = M.signature
-			view()<<"[M] got sealed by the Mafuba!"
+			to_chat(view(), "[M] got sealed by the Mafuba!")
 			spawn(5) del(src)
 		sleep(2)
 		checkradius(M)
@@ -228,10 +228,10 @@ obj/MafubaEffect
 //Deadzone
 /datum/skill/rank/DeadZone/after_learn()
 	assignverb(/mob/Rank/verb/Open_Dead_Zone)
-	savant<<"You learn how to open the fabric of reality itself to banish evil."
+	to_chat(savant, "You learn how to open the fabric of reality itself to banish evil.")
 /datum/skill/rank/DeadZone/before_forget()
 	unassignverb(/mob/Rank/verb/Open_Dead_Zone)
-	savant<<"You've forgotten how to command reality to banish evil!"
+	to_chat(savant, "You've forgotten how to command reality to banish evil!")
 /datum/skill/rank/DeadZone/login(var/mob/logger)
 	..()
 	assignverb(/mob/Rank/verb/Open_Dead_Zone)
@@ -242,9 +242,9 @@ obj/MafubaEffect
 		return
 	if(usr.Ki>=MaxKi/1.1)
 	else
-		usr<<"You don't have enough Ki."
+		to_chat(usr, "You don't have enough Ki.")
 		return
-	view(6)<<"[usr] rips open reality and a portal to the dead zone appears!!"
+	to_chat(view(6), "[usr] rips open reality and a portal to the dead zone appears!!")
 	emit_Sound('NEWSKILL.WAV')
 	var/obj/DeadZone/A  = new
 	A.loc = locate(usr.x,usr.y+5,usr.z)
@@ -293,7 +293,7 @@ obj/DeadZone
 				M.move=1
 				step_towards(M,src)
 			for(var/mob/M in view(0,src))
-				view(12,src)<<"[M] is sucked into the dead zone!!"
+				to_chat(view(12,src), "[M] is sucked into the dead zone!!")
 				M.SealMob(makerBP,0)
 			spawn(100) del(src)
 
@@ -301,10 +301,10 @@ obj/DeadZone
 //Sealing
 /datum/skill/rank/SuperiorSeal/after_learn()
 	assignverb(/mob/Rank/verb/Seal_Mob)
-	savant<<"You learn how to make flexible seals. Seal by selecting a mob, and a ritual will be generated using your Ki as magic energy."
+	to_chat(savant, "You learn how to make flexible seals. Seal by selecting a mob, and a ritual will be generated using your Ki as magic energy.")
 /datum/skill/rank/SuperiorSeal/before_forget()
 	unassignverb(/mob/Rank/verb/Seal_Mob)
-	savant<<"You've forgotten how to make seals!?"
+	to_chat(savant, "You've forgotten how to make seals!?")
 /datum/skill/rank/SuperiorSeal/login(var/mob/logger)
 	..()
 	assignverb(/mob/Rank/verb/Seal_Mob)
@@ -313,7 +313,7 @@ obj/DeadZone
 	set category = "Skills"
 	var/choice = input(usr,"Select a mob in view. A ritual will target them. The sealing effect will be effective somewhat up to your BP, as long as the generated item is kept safe.") as null|mob in view()
 	if(isnull(choice))
-		usr << "You choose not to seal anything."
+		to_chat(usr, "You choose not to seal anything.")
 		return
 	var/obj/items/SealingItem/B = new
 	B.loc = locate(usr.x,usr.y,usr.z)

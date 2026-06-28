@@ -36,11 +36,11 @@ mob/var/pitted = 0
 	maxlevel = 1
 	expbarrier = 12000
 	after_learn()
-		savant<<"Your brain mass increases."
+		to_chat(savant, "Your brain mass increases.")
 		savant.pitted = 1
 		savant.genome.add_to_stat("Tech Modifier",5)
 	before_forget()
-		savant<<"Your brain mass decreases."
+		to_chat(savant, "Your brain mass decreases.")
 		savant.pitted = 0
 		savant.genome.sub_to_stat("Tech Modifier",5)
 
@@ -55,13 +55,13 @@ mob/var/pitted = 0
 	maxlevel = 1
 	expbarrier = 12000
 	after_learn()
-		savant<<"Your strength increases."
+		to_chat(savant, "Your strength increases.")
 		savant.genome.add_to_stat("Battle Power",0.4)
 		savant.genome.add_to_stat("Ascension Mod",0.5)
 		savant.genome.add_to_stat("Energy Level",0.2)
 		savant.pitted = 2
 	before_forget()
-		savant<<"Your strength decreases."
+		to_chat(savant, "Your strength decreases.")
 		savant.genome.sub_to_stat("Battle Power",0.1)
 		savant.genome.sub_to_stat("Ascension Mod",3)
 		savant.genome.sub_to_stat("Energy Level",0.2)
@@ -81,11 +81,11 @@ mob/var/pitted = 0
 	enabled=0
 	prereqs = list(new/datum/skill/tsujin/Biggest_Brain)
 	after_learn()
-		savant<<"Your brain mass increases."
+		to_chat(savant, "Your brain mass increases.")
 		savant.pitted = 1
 		savant.genome.add_to_stat("Tech Modifier",1)
 	before_forget()
-		savant<<"Your brain mass decreases."
+		to_chat(savant, "Your brain mass decreases.")
 		savant.pitted = 0
 		savant.genome.sub_to_stat("Tech Modifier",1)
 
@@ -102,7 +102,7 @@ mob/var/pitted = 0
 	enabled=0
 	prereqs = list(new/datum/skill/tsujin/Against)
 	after_learn()
-		savant<<"Your bodies capabilities begin to increase."
+		to_chat(savant, "Your bodies capabilities begin to increase.")
 		savant.genome.add_to_stat("Battle Power",0.1)
 		savant.genome.add_to_stat("Ascension Mod",0.5)
 		savant.genome.add_to_stat("Energy Level",0.1)
@@ -118,7 +118,7 @@ mob/var/pitted = 0
 		savant.genome.add_to_stat("Skillpoint Mod",0.1)
 	
 	before_forget()
-		savant<<"Your bodies capabilities decrease."
+		to_chat(savant, "Your bodies capabilities decrease.")
 		savant.genome.sub_to_stat("Battle Power",0.1)
 		savant.genome.sub_to_stat("Ascension Mod",0.5)
 		savant.genome.sub_to_stat("Energy Level",0.1)
@@ -146,7 +146,7 @@ mob/var/pitted = 0
 	prereqthreshold = 1
 	prereqs = list(new/datum/skill/tsujin/Monster_of_Tech,new/datum/skill/tsujin/Conditioning)
 	after_learn()
-		savant<<"Your life begins to take a turn."
+		to_chat(savant, "Your life begins to take a turn.")
 		savant.genome.add_to_stat("Battle Power",0.1)
 		savant.genome.add_to_stat("Ascension Mod",0.5)
 		savant.genome.add_to_stat("Energy Level",0.1)
@@ -162,7 +162,7 @@ mob/var/pitted = 0
 		savant.genome.add_to_stat("Skillpoint Mod",0.1)
 
 	before_forget()
-		savant<<"Your life slows down..."
+		to_chat(savant, "Your life slows down...")
 		savant.genome.sub_to_stat("Battle Power",0.1)
 		savant.genome.sub_to_stat("Ascension Mod",3)
 		savant.genome.sub_to_stat("Energy Level",0.1)

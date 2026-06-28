@@ -462,7 +462,7 @@ mob/proc/forgetcustomizableskill()
 				return
 		return
 	else
-		src << "You need at least [kireq] Ki!"
+		to_chat(src, "You need at least [kireq] Ki!")
 		src.custom1train = 0
 
 mob/proc/CustomChargeOverlay(var/icon/thisIcon, var/layermod) //copied from the mob handler, god willing it'll do the trick
@@ -828,7 +828,7 @@ obj/CreateAttackWindow/verb
 			S.customattack_minimum_chargetime = 1
 			UpdateCustomAttack(S)
 		else
-			usr << "You don't have enough points to do this!"
+			to_chat(usr, "You don't have enough points to do this!")
 			winset(usr, "CreateAttackWindow.chargeattackcheckbox", "is-checked=true")
 			return
 
@@ -847,10 +847,10 @@ obj/CreateAttackWindow/verb
 			S.customattack_custompoints_spent += 1
 			UpdateCustomAttack(S)
 		else if (!(S.customattack_custompoints_spent + 1 <= S.customattack_total_custompoints))
-			usr << "You don't have enough points to do this!"
+			to_chat(usr, "You don't have enough points to do this!")
 			return
 		else if (S.customattack_minimum_chargetime - 0.4 < 0.2)
-			usr << "You cannot lower your charge time any further!"
+			to_chat(usr, "You cannot lower your charge time any further!")
 			return
 
 	AttackPowerPlus()
@@ -861,7 +861,7 @@ obj/CreateAttackWindow/verb
 			S.customattack_custompoints_spent += 1
 			UpdateCustomAttack(S)
 		else if (!(S.customattack_custompoints_spent + 1 <= S.customattack_total_custompoints))
-			usr << "You don't have enough points to do this!"
+			to_chat(usr, "You don't have enough points to do this!")
 			return
 
 	AttackPowerMinus()
@@ -872,7 +872,7 @@ obj/CreateAttackWindow/verb
 			S.customattack_custompoints_spent -= 1
 			UpdateCustomAttack(S)
 		else if ((S.customattack_base_damage - 0.1 < 0.1))
-			usr << "You cannot lower your attack power any further!"
+			to_chat(usr, "You cannot lower your attack power any further!")
 			return
 
 	KiCostPlus()
@@ -890,10 +890,10 @@ obj/CreateAttackWindow/verb
 			S.customattack_custompoints_spent += 1
 			UpdateCustomAttack(S)
 		else if (!(S.customattack_custompoints_spent + 1 <= S.customattack_total_custompoints))
-			usr << "You don't have enough points to do this!"
+			to_chat(usr, "You don't have enough points to do this!")
 			return
 		else if ((S.customattack_ki_cost - 40 < 20))
-			usr << "You cannot lower your ki cost any further!"
+			to_chat(usr, "You cannot lower your ki cost any further!")
 			return
 
 	UseStaminaCheckmark()
@@ -912,7 +912,7 @@ obj/CreateAttackWindow/verb
 			S.customattack_stamina_cost = 0
 			UpdateCustomAttack(S)
 		else
-			usr << "You don't have enough points to do this!"
+			to_chat(usr, "You don't have enough points to do this!")
 			winset(usr, "CreateAttackWindow.usestaminacheckbox", "is-checked=true")
 			return
 
@@ -931,10 +931,10 @@ obj/CreateAttackWindow/verb
 			S.customattack_custompoints_spent += 1
 			UpdateCustomAttack(S)
 		else if (!(S.customattack_custompoints_spent + 1 <= S.customattack_total_custompoints))
-			usr << "You don't have enough points to do this!"
+			to_chat(usr, "You don't have enough points to do this!")
 			return
 		else if (S.customattack_stamina_cost - 1 < 1)
-			usr << "You cannot lower your stamina cost any further!"
+			to_chat(usr, "You cannot lower your stamina cost any further!")
 			return
 
 	SpeedPlus()
@@ -946,10 +946,10 @@ obj/CreateAttackWindow/verb
 				S.customattack_custompoints_spent += 1
 				UpdateCustomAttack(S)
 			else if (!(S.customattack_custompoints_spent + 1 <= S.customattack_total_custompoints))
-				usr << "You don't have enough points to do this!"
+				to_chat(usr, "You don't have enough points to do this!")
 				return
 			else if (S.customattack_speed + 1 > 5)
-				usr << "Your speed cannot be greater than five!"
+				to_chat(usr, "Your speed cannot be greater than five!")
 		else
 			S.customattack_speed += 0.2
 			S.customattack_custompoints_spent += 1
@@ -964,7 +964,7 @@ obj/CreateAttackWindow/verb
 				S.customattack_custompoints_spent -= 1
 				UpdateCustomAttack(S)
 			else if ((S.customattack_speed - 0.2 < 0.2))
-				usr << "You cannot lower your speed any further!"
+				to_chat(usr, "You cannot lower your speed any further!")
 				return
 		else
 			S.customattack_speed -= 1

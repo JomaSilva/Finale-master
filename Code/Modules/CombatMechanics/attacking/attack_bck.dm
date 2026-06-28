@@ -31,10 +31,10 @@ mob/verb/Dash_Flight_Toggle()
 	set category = "Other"
 	if(do_dash)
 		do_dash = 0
-		usr << "You won't fly during homing or rushes. --Speed"
+		to_chat(usr, "You won't fly during homing or rushes. --Speed")
 	else
 		do_dash = 1
-		usr << "You'll fly during homing or rushes. ++Speed (with drain)"
+		to_chat(usr, "You'll fly during homing or rushes. ++Speed (with drain)")
 //
 mob/verb/Attack()
 	set category="Skills"
@@ -43,7 +43,7 @@ mob/verb/Attack()
 	if(grabbee && !is_choking && !is_stretched && !choke_cooldown)
 		is_choking = 1
 		emit_Sound('mediumpunch.wav')
-		view(usr)<<"<b><font color=red>[usr] is choking [grabbee]!!!"
+		to_chat(view(usr), "<b><font color=red>[usr] is choking [grabbee]!!!")
 		choke_cooldown = 1
 		spawn(5) choke_cooldown = 0//because sometimes this goes by very fast
 		pressing_space=0
@@ -52,11 +52,11 @@ mob/verb/Attack()
 		is_choking = 0
 		choke_cooldown = 1
 		spawn(5) choke_cooldown = 0
-		view(usr)<<"<b><font color=red>[usr] is no longer choking [grabbee]!"
+		to_chat(view(usr), "<b><font color=red>[usr] is no longer choking [grabbee]!")
 		pressing_space=0
 		return
 	else if(is_stretched)
-		view(usr)<<"<b><font color=red>[usr] slams [grabbee] into the ground!!"
+		to_chat(view(usr), "<b><font color=red>[usr] slams [grabbee] into the ground!!")
 	if(KBcanCancel && KBParalysis && !kbcanceled)
 		if(Ki >= MaxKi * 0.05)
 			Ki -= MaxKi * 0.05
@@ -180,24 +180,24 @@ mob/proc/testAttack()
 /*mob/verb/Auto_Attack()
 	set category="Skills"
 	if(!usr.AutoAttack)
-		usr<<"<b><font color=yellow>You start auto attacking."
+		to_chat(usr, "<b><font color=yellow>You start auto attacking.")
 		usr.AutoAttack=1
 		return
 	if(usr.AutoAttack)
 		usr.AutoAttack=0
-		usr<<"<b><font color=yellow>You stop auto attacking."
+		to_chat(usr, "<b><font color=yellow>You stop auto attacking.")
 		return*/
 mob/verb/Knockback()
 	set category="Other"
 	if(!usr.knockbackon)
-		usr<<"<b><font color=yellow>Knockback on."
-		oview(usr)<<"[usr]'s fists shove with a bit more weight!"
+		to_chat(usr, "<b><font color=yellow>Knockback on.")
+		to_chat(oview(usr), "[usr]'s fists shove with a bit more weight!")
 		usr.knockbackon=1
 		return
 	if(usr.knockbackon)
 		usr.knockbackon=0
-		usr<<"<b><font color=yellow>Knockback off."
-		oview(usr)<<"[usr]'s fists shove with a bit less weight!"
+		to_chat(usr, "<b><font color=yellow>Knockback off.")
+		to_chat(oview(usr), "[usr]'s fists shove with a bit less weight!")
 		return
 
 mob/proc/RandLimbInjury()

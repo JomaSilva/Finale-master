@@ -186,18 +186,18 @@ obj/items/companion_obj
 			spawn(10) spmct--
 			if(spmct>1)return
 			if(mob_reference)
-				view(usr)<<"<font color=yellow>[mob_reference] disappears!</font>"
+				to_chat(view(usr), "<font color=yellow>[mob_reference] disappears!</font>")
 				usr.out_mobs-= mob_reference
 				remove_linked_mob()
 			else if(linked_mob_type && usr.out_mobs.len <= 1)
 				last_sig = usr.signature
 				if(add_linked_mob())
-					view(usr)<<"<font color=yellow>[mob_reference] appears!!</font>"
+					to_chat(view(usr), "<font color=yellow>[mob_reference] appears!!</font>")
 					mob_reference.owner_ref = usr
 					mob_reference.cur_own_sig = usr.signature
 					mob_reference.murderToggle = usr.murderToggle
 					usr.out_mobs+= mob_reference
-			else usr<<"No creature type linked or too many creatures out! For blank companion shards, link them using a knocked out creature!"
+			else to_chat(usr, "No creature type linked or too many creatures out! For blank companion shards, link them using a knocked out creature!")
 
 		Remote_Update()
 			set category = null
@@ -221,19 +221,19 @@ obj/items/companion_obj
 					if("Stop")
 						mob_reference.target = null
 						mob_reference.resetState()
-			else usr<<"No creature out!"
+			else to_chat(usr, "No creature out!")
 		Info()
 			set category = null
 			set src in view(1)
 			if(linked_mob_name)
-				usr << "<font color=orange>[linked_mob_name] is a [linked_mob_type] type creature. It's BP is [linked_mob_bp] with a [linked_bp_mod]x BP modifier.</font>"
+				to_chat(usr, "<font color=orange>[linked_mob_name] is a [linked_mob_type] type creature. It's BP is [linked_mob_bp] with a [linked_bp_mod]x BP modifier.</font>")
 				usr << "<font color=orange>[linked_mob_name]'s' relation/intelligence is [linked_mob_relation["[usr.signature]"]]/[linked_mob_intelligence]. (A bigger number is good.)</font>"
-				usr << "<font color=orange>[linked_mob_name] has [linked_phys_statboost] boosts to its Physicals.</font>"
-				usr << "<font color=orange>[linked_mob_name] has [linked_ki_statboost] boosts to its Ki.</font>"
-				usr << "<font color=orange>[linked_mob_name] has [linked_misc_statboost] boosts to its Misc. (Train mods.)</font>"
-				usr << "<font color=orange>[linked_mob_name]'s level is [linked_mob_lvl]/[linked_mob_max_lvl] with [linked_mob_exp] exp.</font>"
+				to_chat(usr, "<font color=orange>[linked_mob_name] has [linked_phys_statboost] boosts to its Physicals.</font>")
+				to_chat(usr, "<font color=orange>[linked_mob_name] has [linked_ki_statboost] boosts to its Ki.</font>")
+				to_chat(usr, "<font color=orange>[linked_mob_name] has [linked_misc_statboost] boosts to its Misc. (Train mods.)</font>")
+				to_chat(usr, "<font color=orange>[linked_mob_name]'s level is [linked_mob_lvl]/[linked_mob_max_lvl] with [linked_mob_exp] exp.</font>")
 			else
-				usr << "<font color=orange>[name]: Get a creature type in this!"
+				to_chat(usr, "<font color=orange>[name]: Get a creature type in this!")
 
 //----
 //now companion AI states
@@ -302,7 +302,7 @@ mob/npc/pet
 			if(Anger>(((MaxAnger-100)/1.25)+100)) Emotion="Very Angry"
 			if(CurrentAnger!=Emotion)
 				CurrentAnger=Emotion
-				view(usr)<<"<font color=#FF0000>[usr] appears [Emotion]"
+				to_chat(view(usr), "<font color=#FF0000>[usr] appears [Emotion]")
 
 		follow_state()
 			//set waitfor=0
@@ -325,7 +325,7 @@ mob/npc/pet
 			Emotion = "Very Angry"
 			Anger = MaxAnger * 4 //400% PISSED
 			behavior_vals_t[2] += 10 * behavior_vals_m[2]
-			view(10,src) << "<font color=red size=3>[src] gets EXTREMELY ANGRY!!</font>"
+			to_chat(view(10,src), "<font color=red size=3>[src] gets EXTREMELY ANGRY!!</font>")
 			if(BP > 10000)
 				for(var/mob/M in viewers(src))
 					if(M.client) M.Quake()

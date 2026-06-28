@@ -30,7 +30,7 @@ mob/proc/sayType(var/msg,var/typeversion)
 						else
 							M<<output("<font size=[M.TextSize]><[OOCColor]>[name]([displaykey]): <font color=white>[html_encode(msg)]</font></font>","Chatpane.Chat")
 							M.to_chat_html("<font size=[M.TextSize]><[OOCColor]>[name]([displaykey]): <font color=white>[html_encode(msg)]</font></font>", "ooc")
-			else src<<"OOC is disabled currently."
+			else to_chat(src, "OOC is disabled currently.")
 		if(2)
 			var/introduceflag=rand(1,30)
 			if(introduceflag==30)
@@ -90,6 +90,7 @@ mob/proc/sayType(var/msg,var/typeversion)
 			for(var/mob/C in mob_list)
 				if(C.Admin&&C.key!=src.key&&C.Spying)
 					C<<output("<font size=[C.TextSize]><font color=yellow>(RP Spy)*[name] [html_encode(msg)]*(RP Spy)</font></font>","Chatpane.Chat")
+					chatcast(C, "<font size=[C.TextSize]><font color=yellow>(RP Spy)*[name] [html_encode(msg)]*(RP Spy)</font></font>", "say")
 		if(6)
 			WriteToLog("rplog","[src]([src.key])(LOOC): [msg]   ([time2text(world.realtime,"Day DD hh:mm")])")
 			if(Fusee && !isnamekd)
@@ -234,8 +235,8 @@ mob/proc/TestListeners(var/MsgToOutput,type)
 		medruincount+=1
 		if(medruincount>=10)
 			medruincount=0
-			src << "The sounds around you are disrupting your meditation."
-			src << "You're pulled out of deep meditation."
+			to_chat(src, "The sounds around you are disrupting your meditation.")
+			to_chat(src, "You're pulled out of deep meditation.")
 			deepmeditation = 0
 
 

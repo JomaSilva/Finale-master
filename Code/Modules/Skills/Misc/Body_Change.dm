@@ -11,12 +11,12 @@
 	teacher=TRUE
 	after_learn()
 		savant.contents += new/obj/BodyswapOBJ
-		savant<<"You can swap bodies!"
+		to_chat(savant, "You can swap bodies!")
 	before_forget()
 		for(var/obj/O in savant.contents)
 			if(istype(O,/obj/BodyswapOBJ))
 				del(O)
-		savant<<"You've forgotten how to swap bodies?"
+		to_chat(savant, "You've forgotten how to swap bodies?")
 
 
 obj/BodyswapOBJ//reason why this is a object is because it needs to 'transfer' between players.
@@ -55,7 +55,7 @@ obj/BodyswapOBJ//reason why this is a object is because it needs to 'transfer' b
 					A.blasthoming(usr.target)
 			usr.icon_state="Blast"
 			spawn(3) usr.icon_state=""
-		else usr << "You need at least [kireq] Ki!"
+		else to_chat(usr, "You need at least [kireq] Ki!")
 
 
 /obj/attack/blast/bodyswapblast
@@ -65,7 +65,7 @@ obj/BodyswapOBJ//reason why this is a object is because it needs to 'transfer' b
 		if(!isswapping || M.mindswappable)
 			if(proprietor && M && M.client)
 				isswapping = 1
-				view(M)<<"[proprietor] activates the body change beam with [M]!"
+				to_chat(view(M), "[proprietor] activates the body change beam with [M]!")
 				proprietor.contents -= /obj/BodyswapOBJ
 				M.contents += new/obj/BodyswapOBJ
 				var/save_admin1 = proprietor.Admin

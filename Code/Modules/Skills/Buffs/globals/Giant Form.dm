@@ -12,12 +12,12 @@
 		savant.canbigform=1
 		savant.physoffBuff += 0.5
 		assignverb(/mob/keyable/verb/Giant_Form)
-		savant<<"You have learned how to expand your body to over 4 times its normal size."
+		to_chat(savant, "You have learned how to expand your body to over 4 times its normal size.")
 	before_forget()
 		savant.canbigform=0
 		savant.physoffBuff -= 0.5
 		unassignverb(/mob/keyable/verb/Giant_Form)
-		savant<<"You have forgotten how to expand your body to over 4 times its normal size."
+		to_chat(savant, "You have forgotten how to expand your body to over 4 times its normal size.")
 	login(var/mob/logger)
 		..()
 		assignverb(/mob/keyable/verb/Giant_Form)
@@ -35,14 +35,14 @@
 			if(1)
 				if(levelup)
 					levelup=0
-					savant<<"Your Giant Form has improved a bit!"
+					to_chat(savant, "Your Giant Form has improved a bit!")
 					savant.giant_form_efficiency = 0.5
 					expbarrier=60
 
 			if(2)
 				if(levelup)
 					levelup=0
-					savant<<"Your Giant Form has improved even more!"
+					to_chat(savant, "Your Giant Form has improved even more!")
 					savant.giant_form_efficiency = 0.15
 					expbarrier=60
 mob/var
@@ -73,7 +73,7 @@ mob/keyable/verb/Giant_Form()
 		container.Tphysdef+=1.5
 		container.Tspeed-=0.5
 		//container.transform = nM.Scale(3,3)
-		container<<"You concentrate on the power of your energy, increasing your size!"
+		to_chat(container, "You concentrate on the power of your energy, increasing your size!")
 		animate(container,transform = matrix()*2, time = 5)
 	Loop()
 		if(!container.transing)
@@ -89,5 +89,5 @@ mob/keyable/verb/Giant_Form()
 		container.Tphysoff-=1.5
 		container.Tphysdef-=1.5
 		container.Tspeed+=0.5
-		container<<"You release your energy... and your size!"
+		to_chat(container, "You release your energy... and your size!")
 		..()

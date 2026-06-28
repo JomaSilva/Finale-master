@@ -97,15 +97,15 @@ obj/items/Guns
 	verb/Info()
 		set src in oview(1)
 		set category=null
-		if(fireType=="Energy") usr<<"Energy: [reserve] / [maxreserve]"
-		else usr<<"Ammo: [ammo] / [maxammo]"
-		usr<<"Force: [power*powerlevel]"
-		usr<<"Refire: [refire]"
-		usr<<"Failure Chance: [round(20/failure)]%"
-		usr<<"Critical Hit: [critical]%"
-		if(knockback) usr<<"Knockback feature installed."
-		if(stun) usr<<"Stun feature installed."
-		usr<<"Cost to make: [techcost]z"
+		if(fireType=="Energy") to_chat(usr, "Energy: [reserve] / [maxreserve]")
+		else to_chat(usr, "Ammo: [ammo] / [maxammo]")
+		to_chat(usr, "Force: [power*powerlevel]")
+		to_chat(usr, "Refire: [refire]")
+		to_chat(usr, "Failure Chance: [round(20/failure)]%")
+		to_chat(usr, "Critical Hit: [critical]%")
+		if(knockback) to_chat(usr, "Knockback feature installed.")
+		if(stun) to_chat(usr, "Stun feature installed.")
+		to_chat(usr, "Cost to make: [techcost]z")
 
 	verb/fire()
 		set name="Shoot"
@@ -137,22 +137,22 @@ obj/items/Guns
 				suffix="[ammo]"
 				spawn(refire)
 				UsingMob.blasting=0
-				if(ammo<1) UsingMob<<"Out of ammo, reload."
+				if(ammo<1) to_chat(UsingMob, "Out of ammo, reload.")
 	Click()
 		Shoot(usr)
 	verb/Reload()
 		set category=null
 		if(fireType=="Energy")
-			usr<<"You don't need to reload."
+			to_chat(usr, "You don't need to reload.")
 			return
 		for(var/obj/items/Ammo/A in usr.contents)
 			ammo=maxammo
 			suffix="[ammo]"
 			del(A)
 			break
-		if(ammo!=maxammo) usr<<"You do not have any more ammo to reload with."
+		if(ammo!=maxammo) to_chat(usr, "You do not have any more ammo to reload with.")
 		else
-			view(usr) <<"[usr] reloads [src]"
+			to_chat(view(usr), "[usr] reloads [src]")
 	verb/Icon()
 		set category = null
 		set src in usr
@@ -188,47 +188,47 @@ obj/items/Guns
 		if(A=="Critical Chance ([500*critical]z)")
 			cost=500*critical
 			if(usr.zenni<cost)
-				usr<<"You do not have enough money ([cost]z)"
+				to_chat(usr, "You do not have enough money ([cost]z)")
 				return
-			usr<<"Critical hit chance increased."
+			to_chat(usr, "Critical hit chance increased.")
 			critical+=1
 		if(A=="Energy Refill ([5*maxreserve]z)")
 			cost=10*maxreserve
 			if(usr.zenni<cost)
-				usr<<"You do not have enough money ([cost]z)"
+				to_chat(usr, "You do not have enough money ([cost]z)")
 				return
-			usr<<"Energy fully restored."
+			to_chat(usr, "Energy fully restored.")
 			reserve=maxreserve
 		if(A=="Energy Reserve ([10*maxreserve]z)")
 			cost=10*maxreserve
 			if(usr.zenni<cost)
-				usr<<"You do not have enough money ([cost]z)"
+				to_chat(usr, "You do not have enough money ([cost]z)")
 				return
-			usr<<"Energy Reserve increased. Energy fully restored."
+			to_chat(usr, "Energy Reserve increased. Energy fully restored.")
 			maxreserve*=2
 			reserve=maxreserve
 		if(A=="Force (10000z)")
 			cost=10*power
 			if(usr.zenni<cost)
-				usr<<"You do not have enough money ([cost]z)"
+				to_chat(usr, "You do not have enough money ([cost]z)")
 				return
-			usr<<"Force increased."
+			to_chat(usr, "Force increased.")
 			powerlevel=usr.intBPcap
 		if(A=="Knockback effect (2000z)")
 			cost=2000
 			if(usr.zenni<cost)
-				usr<<"You do not have enough money ([cost]z)"
+				to_chat(usr, "You do not have enough money ([cost]z)")
 				return
-			usr<<"Knockback feature added."
+			to_chat(usr, "Knockback feature added.")
 			knockback=1
 		if(A=="Stun effect (3000z)")
 			cost=3000
 			if(usr.zenni<cost)
-				usr<<"You do not have enough money ([cost]z)"
+				to_chat(usr, "You do not have enough money ([cost]z)")
 				return
-			usr<<"Stun feature added."
+			to_chat(usr, "Stun feature added.")
 			stun=1
-		usr<<"Cost: [cost]z"
+		to_chat(usr, "Cost: [cost]z")
 		usr.zenni-=cost
 
 		tech+=1
@@ -322,7 +322,7 @@ obj/items/Guns
 					suffix="[ammo]"
 					spawn(refire)
 					usr.blasting=0
-					if(ammo<1) usr<<"Out of ammo, reload."
+					if(ammo<1) to_chat(usr, "Out of ammo, reload.")
 	Rifle
 		icon='GUNS.dmi'
 		icon_state="Rifle"
@@ -382,7 +382,7 @@ obj/items/Guns
 				reserve-=1
 				spawn(100/refire)
 				usr.blasting=0
-				if(reserve<1) usr<<"[src]: Out of energy!"
+				if(reserve<1) to_chat(usr, "[src]: Out of energy!")
 	G_Blaster
 		icon='gblaster.dmi'
 		fireType = "Ki"

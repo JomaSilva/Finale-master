@@ -107,10 +107,10 @@ obj/PlayerShip
 		if(M.ckey != owner_ckey && ship_pass && ship_pass != "") //owner is exempt; others must know the password
 			var/entered = input(M, "[name] is locked. Enter the password:", "Ship Password") as text|null
 			if(entered != ship_pass)
-				M << "<font color=red>Incorrect password.</font>"
+				to_chat(M, "<font color=red>Incorrect password.</font>")
 				return
 		place_in_interior(M)
-		if(M) M << "<font color=#88ccff>You board the [name]. The bridge is in the far corner.</font>"
+		if(M) to_chat(M, "<font color=#88ccff>You board the [name]. The bridge is in the far corner.</font>")
 
 	// --- put a mob inside the interior (no password) -- used by board() and return_to_interior() ---
 	proc/place_in_interior(mob/M)
@@ -133,7 +133,7 @@ obj/PlayerShip
 			M.client.eye = M
 			M.client.perspective = MOB_PERSPECTIVE
 			M.observingnow = 0
-		if(M.client) M << "<font color=#88ccff>You return to the bridge.</font>"
+		if(M.client) to_chat(M, "<font color=#88ccff>You return to the bridge.</font>")
 
 	proc/get_interior_z()
 		if(interior_z && interior_z <= world.maxz) return interior_z //already built this session
@@ -180,10 +180,10 @@ obj/PlayerShip
 		if(launching) return
 		var/area/nA = src.GetArea()
 		if(!nA || nA.Planet == "Space")
-			if(user) user << "[name]: The ship is already in space."
+			if(user) to_chat(user, "[name]: The ship is already in space.")
 			return
 		launching = 1
-		view(src) << "<font color=#88ccff>[name]: Launch sequence initiated. ETA 10 seconds.</font>"
+		to_chat(view(src), "<font color=#88ccff>[name]: Launch sequence initiated. ETA 10 seconds.</font>")
 		sleep(100) //10 seconds
 		var/launched = 0
 		for(var/obj/Planets/P in planet_list)
@@ -194,8 +194,8 @@ obj/PlayerShip
 					loc = pick(sT)
 					launched = 1
 				break
-		if(launched) view(src) << "<font color=#88ccff>[name]: Now in space. Take the bridge and pilot the ship.</font>"
-		else view(src) << "<font color=red>[name]: Launch aborted - no space lane to this planet.</font>"
+		if(launched) to_chat(view(src), "<font color=#88ccff>[name]: Now in space. Take the bridge and pilot the ship.</font>")
+		else to_chat(view(src), "<font color=red>[name]: Launch aborted - no space lane to this planet.</font>")
 		launching = 0
 
 	// --- PILOT: the ship follows the (invisible) pilot mob, who is co-located with it ---
@@ -229,7 +229,7 @@ obj/PlayerShip
 		if(!dest) dest = locate(src.x, src.y, src.z)
 		if(dest) M.loc = dest
 		M.current_ship = null //they're outside the ship now
-		M << "<font color=#88ccff>You step off the [name].</font>"
+		to_chat(M, "<font color=#88ccff>You step off the [name].</font>")
 
 	// --- HP / destruction: outsiders attack the ship; when it blows, everyone inside is thrown clear ---
 	verb/Destroy()
@@ -237,10 +237,10 @@ obj/PlayerShip
 		set category = null
 		set src in view(6)
 		if(usr.ckey == owner_ckey)
-			usr << "You won't attack your own ship. (Use it normally, or it can be destroyed by others.)"
+			to_chat(usr, "You won't attack your own ship. (Use it normally, or it can be destroyed by others.)")
 			return
 		takeDamage(usr.expressedBP / 7 * usr.Ephysoff)
-		view(src) << "<font color=red>[usr] strikes the [name]! (Hull [round(100 * armor / max(maxarmor,1))]%)</font>"
+		to_chat(view(src), "<font color=red>[usr] strikes the [name]! (Hull [round(100 * armor / max(maxarmor,1))]%)</font>")
 
 	testDestroy() //override: eject everyone inside before the hull blows
 		if(armor <= 0 && !isdestroying)
@@ -252,7 +252,7 @@ obj/PlayerShip
 					if(M.client && M.z == interior_z)
 						M.loc = blowout
 						M.current_ship = null
-						M << "<font color=red>The [name] is destroyed! You're thrown clear!</font>"
+						to_chat(M, "<font color=red>The [name] is destroyed! You're thrown clear!</font>")
 		..() //parent does the explosion + deleteMe
 
 	Del()
@@ -296,7 +296,7 @@ obj/ShipControl
 		usr.observingnow = 1
 		usr.client.perspective = EYE_PERSPECTIVE
 		usr.client.eye = ship_ref
-		usr << "<font color=#88ccff>You watch the ship from outside. Click the ship to return to the bridge.</font>"
+		to_chat(usr, "<font color=#88ccff>You watch the ship from outside. Click the ship to return to the bridge.</font>")
 
 	verb/Pilot()
 		set name = "pilot"
@@ -304,7 +304,7 @@ obj/ShipControl
 		set category = null
 		if(!ship_ref) return
 		if(ship_ref.pilot_mob && ship_ref.pilot_mob != usr)
-			usr << "Someone else is already at the helm."
+			to_chat(usr, "Someone else is already at the helm.")
 			return
 		usr.pilot_old_invis = usr.invisibility
 		usr.pilot_old_spacesuit = usr.spacesuit
@@ -322,7 +322,7 @@ obj/ShipControl
 		usr.client.eye = ship_ref
 		usr.loc = locate(ship_ref.x, ship_ref.y, ship_ref.z) //ride the ship
 		ship_ref.pilot_mob = usr
-		usr << "<font color=#88ccff>You take the helm. Move to steer the ship; fly into a planet to land. Click the ship to return to the bridge.</font>"
+		to_chat(usr, "<font color=#88ccff>You take the helm. Move to steer the ship; fly into a planet to land. Click the ship to return to the bridge.</font>")
 		spawn ship_ref.pilot_follow()
 
 	verb/Launch()

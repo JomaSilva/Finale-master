@@ -805,5 +805,5 @@ mob/proc/Clothes(var/clthcost,var/obj/items/objtype)
 				objtype.icon += rgb(oldrgb[1],oldrgb[2],oldrgb[3])
 				usr.contents+=objtype
 			else
-				usr<<"You do not have enough money."
+				to_chat(usr, "You do not have enough money.")
 				del(objtype)

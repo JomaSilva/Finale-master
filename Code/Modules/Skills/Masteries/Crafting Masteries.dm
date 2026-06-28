@@ -19,7 +19,7 @@ datum/mastery/Crafting
 
 		levelstat()
 			..()
-			savant<<"Your smithing skill improves! Your Smithing is now level [level]!"
+			to_chat(savant, "Your smithing skill improves! Your Smithing is now level [level]!")
 
 	Handicraft
 		name = "Handicraft"
@@ -29,7 +29,7 @@ datum/mastery/Crafting
 
 		levelstat()
 			..()
-			savant<<"Your handicraft skill improves! Your Handicraft is now level [level]!"
+			to_chat(savant, "Your handicraft skill improves! Your Handicraft is now level [level]!")
 
 	Alchemy
 		name = "Alchemy"
@@ -39,7 +39,7 @@ datum/mastery/Crafting
 
 		levelstat()
 			..()
-			savant<<"Your alchemy skill improves! Your Alchemy is now level [level]!"
+			to_chat(savant, "Your alchemy skill improves! Your Alchemy is now level [level]!")
 
 	Enchanting
 		name = "Enchanting"
@@ -49,7 +49,7 @@ datum/mastery/Crafting
 
 		levelstat()
 			..()
-			savant<<"Your enchanting skill improves! Your Enchanting is now level [level]!"
+			to_chat(savant, "Your enchanting skill improves! Your Enchanting is now level [level]!")
 
 	Technology
 		name = "Technology"
@@ -67,5 +67,5 @@ datum/mastery/Crafting
 
 		levelstat()
 			..()
-			savant<<"Your technology skill improves! Your Technology is now level [level]!"
+			to_chat(savant, "Your technology skill improves! Your Technology is now level [level]!")
 			savant.techskill++

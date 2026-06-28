@@ -24,7 +24,7 @@ obj/Creatables
 		create_type = /obj/Spacepod
 		Click()
 			if(count)
-				usr<<"This doesn't work anymore..."
+				to_chat(usr, "This doesn't work anymore...")
 				return
 			if(..()) count++
 	Nav_System
@@ -78,7 +78,7 @@ obj/items
 				mooning=1
 				flick("Turning",src)
 				icon_state="On"
-				view(usr)<<"[usr] activates the emitter!"
+				to_chat(view(usr), "[usr] activates the emitter!")
 				while(mooning)
 					sleep(5)
 					for(var/mob/M in view(src))
@@ -86,15 +86,15 @@ obj/items
 							if(!M.has_Tail()) M.Tail_Grow()
 							if(!M.Apeshit&&M.hasssj)
 								M.GoldenApeshit()
-								usr<<"You feel angry!"
+								to_chat(usr, "You feel angry!")
 								usr.canRevert=1
 								spawn(200)
 								if(M.expressedBP>=M.ssj4at&&M.BP>=M.rawssj4at&&!M.transing)
 									M.Apeshit_Revert()
 									M.SSj4()
-									usr<<"You feel calmer..."
+									to_chat(usr, "You feel calmer...")
 					spawn(300) del(src)
-			else usr<<"It has already been activated..."
+			else to_chat(usr, "It has already been activated...")
 	Bio_Field
 		icon='BioField.dmi'
 		SaveItem=1
@@ -109,7 +109,7 @@ obj/items
 			for(var/mob/M in range(20))
 				if(M.HP<100)
 					M.SpreadHeal(20)
-					M<<"You feel healthier thanks to the bio field"
+					to_chat(M, "You feel healthier thanks to the bio field")
 			sleep(300)
 			spawn Ticker()
 		verb/Bolt()
@@ -119,12 +119,12 @@ obj/items
 				switch(input("Bolt this to the ground so nobody can pick it up?","",text) in list("Yes","No"))
 					if("Yes")
 						Bolted=1
-						view(src)<<"[usr] bolts the [src] to the ground."
+						to_chat(view(src), "[usr] bolts the [src] to the ground.")
 						boltersig=usr.signature
 			else if(Bolted&&boltersig==usr.signature)
 				switch(input("Unbolt?","",text) in list("Yes","No",))
 					if("Yes")
-						view(src)<<"<font size=1>[usr] unbolts the [src] from the ground."
+						to_chat(view(src), "<font size=1>[usr] unbolts the [src] from the ground.")
 						Bolted=0
 	Equalizer_Field
 		icon='BioField.dmi'
@@ -149,7 +149,7 @@ obj/Super_Computer
 		set category=null
 		if(!controller)
 			controller=input(usr,"Put in the control key. Don't forget this!","","1") as text
-		else usr<<"The Super Computer has already been encrypted."
+		else to_chat(usr, "The Super Computer has already been encrypted.")
 	verb/Use()
 		set src in oview(1)
 		set category=null
@@ -183,9 +183,9 @@ obj/Super_Computer
 				if("Bolt")
 					if(canGrab)
 						canGrab = 0
-						view(src) << "[src] has been bolted."
+						to_chat(view(src), "[src] has been bolted.")
 					else
-						view(src) << "[src] has been unbolted."
+						to_chat(view(src), "[src] has been unbolted.")
 						canGrab = 1
 				if("Upgrade")
 					var/list/upgrades=new/list
@@ -201,7 +201,7 @@ obj/Super_Computer
 									usr.zenni-=25000
 									superrename=1
 								else
-									usr<<"You don't have enough Zenni."
+									to_chat(usr, "You don't have enough Zenni.")
 									return
 						if("Android Resurrection")
 							if(alert(usr,"This takes 75000 zenni. You will be able to resurrect androids, or be resurrected by this computer. This is automatic, and it only happens upon death.","","Yes","No")=="Yes")
@@ -209,7 +209,7 @@ obj/Super_Computer
 									usr.zenni-=75000
 									resurrection=1
 								else
-									usr<<"You don't have enough Zenni."
+									to_chat(usr, "You don't have enough Zenni.")
 									return
 						if("Repair")
 							if(alert(usr,"This takes no zenni. You will be able to repair this machine.","","Yes","No")=="Yes")
@@ -220,7 +220,7 @@ obj/Super_Computer
 									usr.zenni-=50000
 									maxarmor = usr.intBPcap*1.2
 								else
-									usr<<"You don't have enough Zenni."
+									to_chat(usr, "You don't have enough Zenni.")
 									return
 		else
-			usr<<"You do not know the encryption key."
+			to_chat(usr, "You do not know the encryption key.")

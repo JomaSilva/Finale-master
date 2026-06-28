@@ -20,12 +20,12 @@
 	expbarrier = 100
 	maxlevel = 2
 	after_learn()
-		savant<<"The moves of other animals and creatures influence your art."
+		to_chat(savant, "The moves of other animals and creatures influence your art.")
 		savant.physdefBuff += 0.1
 		savant.physoffBuff += 0.1
 		savant.techniqueBuff += 0.3
 	before_forget()
-		savant<<"The world around you has no hold on your movements."
+		to_chat(savant, "The world around you has no hold on your movements.")
 		savant.physdefBuff -= 0.1
 		savant.physoffBuff -= 0.1
 		savant.techniqueBuff -= 0.3
@@ -36,7 +36,7 @@
 		switch(level)
 			if(2)
 				if(levelup)
-					savant << "You're able to hold an opponent! You can use Hold!"
+					to_chat(savant, "You're able to hold an opponent! You can use Hold!")
 					assignverb(/mob/keyable/verb/Hold)
 					levelup=0
 	login(mob/logger)
@@ -53,11 +53,11 @@
 	expbarrier = 100
 	maxlevel = 2
 	after_learn()
-		savant<<"The moves of other animals and creatures influence your art."
+		to_chat(savant, "The moves of other animals and creatures influence your art.")
 		savant.physoffBuff += 0.1
 		savant.techniqueBuff += 0.4
 	before_forget()
-		savant<<"The world around you has no hold on your movements."
+		to_chat(savant, "The world around you has no hold on your movements.")
 		savant.physoffBuff -= 0.1
 		savant.techniqueBuff -= 0.4
 		unassignverb(/mob/keyable/verb/Clench)
@@ -67,7 +67,7 @@
 		switch(level)
 			if(2)
 				if(levelup)
-					savant << "You're able to damage opponents better in grabs! You can use Clench!"
+					to_chat(savant, "You're able to damage opponents better in grabs! You can use Clench!")
 					assignverb(/mob/keyable/verb/Clench)
 					levelup=0
 	login(mob/logger)
@@ -84,11 +84,11 @@
 	expbarrier = 100
 	maxlevel = 2
 	after_learn()
-		savant<<"The moves of other animals and creatures influence your art."
+		to_chat(savant, "The moves of other animals and creatures influence your art.")
 		savant.physoffBuff += 0.2
 		savant.techniqueBuff += 0.3
 	before_forget()
-		savant<<"The world around you has no hold on your movements."
+		to_chat(savant, "The world around you has no hold on your movements.")
 		savant.physoffBuff -= 0.2
 		savant.techniqueBuff -= 0.3
 		unassignverb(/mob/keyable/verb/Power_Slam)
@@ -98,7 +98,7 @@
 		switch(level)
 			if(2)
 				if(levelup)
-					savant << "You're able to severely slam opponents in a grab! You can use Power Slam!"
+					to_chat(savant, "You're able to severely slam opponents in a grab! You can use Power Slam!")
 					assignverb(/mob/keyable/verb/Power_Slam)
 					levelup=0
 	login(mob/logger)
@@ -115,11 +115,11 @@
 	expbarrier = 100
 	maxlevel = 2
 	after_learn()
-		savant<<"Your body begins to itch... It itches for your enemies lying broken on the ground!!"
+		to_chat(savant, "Your body begins to itch... It itches for your enemies lying broken on the ground!!")
 		savant.physoffBuff += 0.2
 		savant.techniqueBuff += 0.3
 	before_forget()
-		savant<<"You no longer begin to itch... the Suplex is no more..."
+		to_chat(savant, "You no longer begin to itch... the Suplex is no more...")
 		savant.physoffBuff -= 0.2
 		savant.techniqueBuff -= 0.3
 		unassignverb(/mob/keyable/verb/Suplex)
@@ -129,7 +129,7 @@
 		switch(level)
 			if(2)
 				if(levelup)
-					savant << "IIIIITS THE MAIN EVENT! THE WWE SUPER STAR... HE'S PICKING UP HIS OPPONENT... OH! OH! ITS A FUCKIN SUPLEX! You can Suplex!"
+					to_chat(savant, "IIIIITS THE MAIN EVENT! THE WWE SUPER STAR... HE'S PICKING UP HIS OPPONENT... OH! OH! ITS A FUCKIN SUPLEX! You can Suplex!")
 					assignverb(/mob/keyable/verb/Suplex)
 					levelup=0
 	login(mob/logger)

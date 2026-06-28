@@ -9,11 +9,11 @@
 	maxlevel = 1
 	tier = 1
 	after_learn()
-		savant<<"You start circulating your Ki to your arms."
+		to_chat(savant, "You start circulating your Ki to your arms.")
 		savant.kiskillBuff+=0.15
 		savant.physoffBuff+=1
 	before_forget()
-		savant<<"You stop circulating your Ki..."
+		to_chat(savant, "You stop circulating your Ki...")
 		savant.kiskillBuff-=0.15
 		savant.physoffBuff-=1
 
@@ -30,11 +30,11 @@
 	tier = 3
 	skillcost = 5
 	after_learn()
-		savant<<"You can now increase your fighting power!"
+		to_chat(savant, "You can now increase your fighting power!")
 		savant.physoffBuff+=2
 		assignverb(/mob/keyable/verb/Fighting_Power)
 	before_forget()
-		savant<<"You lose the ability to increase your offense further."
+		to_chat(savant, "You lose the ability to increase your offense further.")
 		savant.physoffBuff-=2
 		unassignverb(/mob/keyable/verb/Fighting_Power)
 	login(mob/logger)
@@ -44,10 +44,10 @@ mob/keyable/verb/Fighting_Power()
 	set category = "Skills"
 	desc = "Increase your fighting power even further beyond!"
 	if(!isBuffed(/obj/buff/Fighting_Power)&&!usr.KO)
-		usr<<"You start increasing your fighting power!"
+		to_chat(usr, "You start increasing your fighting power!")
 		usr.startbuff(/obj/buff/Fighting_Power)
 	else if(isBuffed(/obj/buff/Fighting_Power))
-		usr<<"You let your power slack."
+		to_chat(usr, "You let your power slack.")
 		usr.stopbuff(/obj/buff/Fighting_Power)
 
 /obj/buff/Fighting_Power
@@ -78,8 +78,8 @@ mob/keyable/verb/Fighting_Power()
 	prereqs = list(new/datum/skill/Power)
 	tier = 4
 	after_learn()
-		savant<<"Your power has reached the endgame."
+		to_chat(savant, "Your power has reached the endgame.")
 		savant.physoffBuff+=5
 	before_forget()
-		savant<<"You stop your strength from increasing further..."
+		to_chat(savant, "You stop your strength from increasing further...")
 		savant.physoffBuff-=5

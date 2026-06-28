@@ -70,13 +70,13 @@ mob/proc
 				mobTime = 0
 				if(med || train)
 					if(med)
-						src<<"You stop meditating."
+						to_chat(src, "You stop meditating.")
 						med=0
 						deepmeditation = 0
 						canfight=1
 						icon_state=""
 					if(train)
-						src<<"You stop meditating."
+						to_chat(src, "You stop meditating.")
 						train=0
 						canfight=1
 						icon_state=""
@@ -208,7 +208,7 @@ mob/proc
 				totalTime -= OMEGA_RATE
 				if(totalTime > MAXIMUM_TIME) totalTime = MAXIMUM_TIME //wipes out excessive fastboys speed buffer
 				if(curdir)
-					if(outToWork>=10&&paralyzed) src<<"You manage to move despite your paralysis."
+					if(outToWork>=10&&paralyzed) to_chat(src, "You manage to move despite your paralysis.")
 					src.Deoccupy()
 					src.removeOverlay(/obj/overlay/AFK)
 					stillTimer=0
@@ -277,12 +277,12 @@ mob/proc
 				usr.density=1
 				usr.swim=0
 				if(usr.Savable) usr.icon_state=""
-				usr<<"You stop swimming."
+				to_chat(usr, "You stop swimming.")
 			if(!T.Water&&boat)
 				density = 1
 				usr.boat = 0
 				if(usr.Savable) usr.icon_state=""
-				usr<<"You stop sailing."
+				to_chat(usr, "You stop sailing.")
 			unitimerend
 			sleep(1)//values under 1 don't work. it's rounded up back to 1.
 

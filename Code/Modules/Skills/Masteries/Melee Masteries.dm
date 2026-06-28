@@ -33,14 +33,14 @@
 
 		levelstat()
 			..()
-			savant<<"Your martial training improves! Basic Training is now level [level]!"
+			to_chat(savant, "Your martial training improves! Basic Training is now level [level]!")
 			savant.tactics+=0.2
 			savant.weaponry+=0.2
 			savant.styling+=0.2
 			if(level % 5 == 0)
 				savant.healthmod+=0.01
 			if(level == 50 || (level >= 50 && !added))
-				savant<<"Your martial training improves! You can now train by placing shadows on the ground and fighting them!"
+				to_chat(savant, "Your martial training improves! You can now train by placing shadows on the ground and fighting them!")
 				added = 1
 				addverb(/mob/keyable/verb/Shadowboxing)
 			if(level == 75)
@@ -77,7 +77,7 @@
 
 		levelstat()
 			..()
-			savant<<"Your martial training improves! Body Mastery is now level [level]!"
+			to_chat(savant, "Your martial training improves! Body Mastery is now level [level]!")
 			savant.physoffBuff+=0.1*round(level/2)
 			savant.physdefBuff+=0.1*round(level/2)
 			savant.speedBuff+=0.1*round(level/2)
@@ -100,7 +100,7 @@
 
 		acquire(mob/M)
 			..()
-			savant<<"You begin to fight tactically!"
+			to_chat(savant, "You begin to fight tactically!")
 			savant.tactics+=0.3
 			savant.weaponry+=0.1
 			savant.styling+=0.1
@@ -123,12 +123,12 @@
 
 		levelstat()
 			..()
-			savant<<"Your understanding of tactical combat deepens. Tactical Fighting is now level [level]!"
+			to_chat(savant, "Your understanding of tactical combat deepens. Tactical Fighting is now level [level]!")
 			savant.tactics+=0.3
 			savant.weaponry+=0.1
 			savant.styling+=0.1
 			if(level == 30)
-				savant<<"You've learned to take advantage of openings in your opponent's attacks. You may now riposte after dodging, using the opening to launch your own attack."
+				to_chat(savant, "You've learned to take advantage of openings in your opponent's attacks. You may now riposte after dodging, using the opening to launch your own attack.")
 				addverb(/mob/keyable/verb/Riposte_Toggle)
 				savant.riposteon=1
 			if(level == 50)
@@ -138,7 +138,7 @@
 				enable(/datum/mastery/Melee/One_Handed_Fighting)
 			if(level == 75)
 				savant.willpowerMod+=0.1
-				savant<<"You can now do a tactical kickflip, knocking your opponent back and launching you back as well."
+				to_chat(savant, "You can now do a tactical kickflip, knocking your opponent back and launching you back as well.")
 				addverb(/mob/keyable/combo/verb/Kickflip)
 			//if(level == 100)
 				//savant<<"Your mastery of Tactical Fighting allows your to attack twice in the span of an instant! You may now strike multiple times at once!"
@@ -155,7 +155,7 @@
 
 		acquire(mob/M)
 			..()
-			savant<<"Your practice with weaponry improves!"
+			to_chat(savant, "Your practice with weaponry improves!")
 			savant.tactics+=0.1
 			savant.weaponry+=0.3
 			savant.styling+=0.1
@@ -170,7 +170,7 @@
 
 		levelstat()
 			..()
-			savant<<"Your skill with weapons improves. Armed Combat is now level [level]!"
+			to_chat(savant, "Your skill with weapons improves. Armed Combat is now level [level]!")
 			savant.tactics+=0.1
 			savant.weaponry+=0.3
 			savant.styling+=0.1
@@ -192,7 +192,7 @@
 
 		acquire(mob/M)
 			..()
-			savant<<"Your proficiency with dual wielding improves!"
+			to_chat(savant, "Your proficiency with dual wielding improves!")
 			savant.dualwieldskill+=0.4
 
 		remove()
@@ -203,7 +203,7 @@
 
 		levelstat()
 			..()
-			savant<<"You better understand fighting with two weapons! Dual Wielding is now level [level]!"
+			to_chat(savant, "You better understand fighting with two weapons! Dual Wielding is now level [level]!")
 			savant.dualwieldskill+=0.4
 
 	Two_Handed_Mastery
@@ -216,7 +216,7 @@
 
 		acquire(mob/M)
 			..()
-			savant<<"Your proficiency with two handed fighting improves!"
+			to_chat(savant, "Your proficiency with two handed fighting improves!")
 			savant.twohandskill+=0.4
 
 		remove()
@@ -227,7 +227,7 @@
 
 		levelstat()
 			..()
-			savant<<"You better understand fighting with two handed weapons! Two Handed Mastery is now level [level]!"
+			to_chat(savant, "You better understand fighting with two handed weapons! Two Handed Mastery is now level [level]!")
 			savant.twohandskill+=0.4
 
 	One_Handed_Fighting
@@ -240,7 +240,7 @@
 
 		acquire(mob/M)
 			..()
-			savant<<"Your proficiency with one handed fighting improves!"
+			to_chat(savant, "Your proficiency with one handed fighting improves!")
 			savant.onehandskill+=0.4
 
 		remove()
@@ -253,10 +253,10 @@
 
 		levelstat()
 			..()
-			savant<<"You better understand fighting with one handed weapons! One Handed Fighting is now level [level]!"
+			to_chat(savant, "You better understand fighting with one handed weapons! One Handed Fighting is now level [level]!")
 			savant.onehandskill+=0.4
 			if(level == 75)
-				savant<<"You can now use your free hand to launch an extra unarmed blow alongside your regular attacks!"
+				to_chat(savant, "You can now use your free hand to launch an extra unarmed blow alongside your regular attacks!")
 				savant.ohmulti+=1
 
 	Unarmed_Fighting
@@ -269,7 +269,7 @@
 
 		acquire(mob/M)
 			..()
-			savant<<"Your proficiency with unarmed fighting improves!"
+			to_chat(savant, "Your proficiency with unarmed fighting improves!")
 			savant.unarmedskill+=0.4
 
 		remove()
@@ -288,19 +288,19 @@
 
 		levelstat()
 			..()
-			savant<<"You better understand fighting unarmed! Unarmed Fighting is now level [level]!"
+			to_chat(savant, "You better understand fighting unarmed! Unarmed Fighting is now level [level]!")
 			savant.unarmedskill+=0.4
 			if(level == 30)
-				savant<<"Your mighty fists harden through training. Your blows now penetrate armor slightly."
+				to_chat(savant, "Your mighty fists harden through training. Your blows now penetrate armor slightly.")
 				savant.unarmedpen+=1
 			if(level == 50)
-				savant<<"The speed of your fists has become immense! You may now strike an additional time when striking multiple times and unarmed!"
+				to_chat(savant, "The speed of your fists has become immense! You may now strike an additional time when striking multiple times and unarmed!")
 				savant.umulti+=1
 			if(level == 75)
-				savant<<"Your fists are like iron. Your unarmed penetration has increased!"
+				to_chat(savant, "Your fists are like iron. Your unarmed penetration has increased!")
 				savant.unarmedpen+=1
 			if(level == 100)
-				savant<<"Your punches have become a blur! You strike an additional time when striking multiple times and unarmed!"
+				to_chat(savant, "Your punches have become a blur! You strike an additional time when striking multiple times and unarmed!")
 				savant.umulti+=1
 
 	Sword_Mastery
@@ -313,7 +313,7 @@
 
 		acquire(mob/M)
 			..()
-			savant<<"Your proficiency with swords improves!"
+			to_chat(savant, "Your proficiency with swords improves!")
 			savant.swordskill+=0.4
 
 		remove()
@@ -328,19 +328,19 @@
 
 		levelstat()
 			..()
-			savant<<"You better understand fighting with swords! Sword Mastery is now level [level]!"
+			to_chat(savant, "You better understand fighting with swords! Sword Mastery is now level [level]!")
 			savant.swordskill+=0.4
 			if(level == 20)
-				savant<<"You can now dash through your opponent, blade first. You learned Blade Rush!"
+				to_chat(savant, "You can now dash through your opponent, blade first. You learned Blade Rush!")
 				addverb(/mob/keyable/combo/sword/verb/Blade_Rush)
 			if(level == 40)
-				savant<<"You can now slash fast enough to create a blast of wind! You learned Wind Slice!"
+				to_chat(savant, "You can now slash fast enough to create a blast of wind! You learned Wind Slice!")
 				addverb(/mob/keyable/combo/sword/verb/Wind_Slice)
 			if(level == 60)
-				savant<<"You can now strike all opponents around you in the blink of an eye! You learned Whirling Blades!"
+				to_chat(savant, "You can now strike all opponents around you in the blink of an eye! You learned Whirling Blades!")
 				addverb(/mob/keyable/combo/sword/verb/Whirling_Blades)
 			if(level == 90)
-				savant<<"You can now knock a single foe into a brutal knockback combo. You learned Bladestorm!"
+				to_chat(savant, "You can now knock a single foe into a brutal knockback combo. You learned Bladestorm!")
 				addverb(/mob/keyable/combo/sword/verb/Bladestorm)
 
 	Axe_Mastery
@@ -353,7 +353,7 @@
 
 		acquire(mob/M)
 			..()
-			savant<<"Your proficiency with axes improves!"
+			to_chat(savant, "Your proficiency with axes improves!")
 			savant.axeskill+=0.4
 
 		remove()
@@ -368,19 +368,19 @@
 
 		levelstat()
 			..()
-			savant<<"You better understand fighting with axes! Axe Mastery is now level [level]!"
+			to_chat(savant, "You better understand fighting with axes! Axe Mastery is now level [level]!")
 			savant.axeskill+=0.4
 			if(level == 20)
-				savant<<"You can now slice your opponents with a heavy downward chop, causing them to bleed. You learned Logsplitter!"
+				to_chat(savant, "You can now slice your opponents with a heavy downward chop, causing them to bleed. You learned Logsplitter!")
 				addverb(/mob/keyable/combo/axe/verb/Logsplitter)
 			if(level == 40)
-				savant<<"You can now cleave opponents in an arc in front of you, doing more damage the heavier their bleeding! You learned Reaver!"
+				to_chat(savant, "You can now cleave opponents in an arc in front of you, doing more damage the heavier their bleeding! You learned Reaver!")
 				addverb(/mob/keyable/combo/axe/verb/Reaver)
 			if(level == 60)
-				savant<<"You can now chop an opponent three times in rapid succession, stunning them then sending them flying! You learned Headsman!"
+				to_chat(savant, "You can now chop an opponent three times in rapid succession, stunning them then sending them flying! You learned Headsman!")
 				addverb(/mob/keyable/combo/axe/verb/Headsman)
 			if(level == 90)
-				savant<<"You can now hurl an axe at your opponent, then instantly appear next to them to unleash a heavy blow. You learned Brutal Cleaver!"
+				to_chat(savant, "You can now hurl an axe at your opponent, then instantly appear next to them to unleash a heavy blow. You learned Brutal Cleaver!")
 				addverb(/mob/keyable/combo/axe/verb/Brutal_Cleaver)
 
 	Staff_Mastery
@@ -393,7 +393,7 @@
 
 		acquire(mob/M)
 			..()
-			savant<<"Your proficiency with staffs improves!"
+			to_chat(savant, "Your proficiency with staffs improves!")
 			savant.staffskill+=0.4
 
 		remove()
@@ -408,19 +408,19 @@
 
 		levelstat()
 			..()
-			savant<<"You better understand fighting with staffs! Staff Mastery is now level [level]!"
+			to_chat(savant, "You better understand fighting with staffs! Staff Mastery is now level [level]!")
 			savant.staffskill+=0.4
 			if(level == 20)
-				savant<<"You can now confuse your opponents with a spinning staff attack, making them dizzy. You learned Spinning Strike!"
+				to_chat(savant, "You can now confuse your opponents with a spinning staff attack, making them dizzy. You learned Spinning Strike!")
 				addverb(/mob/keyable/combo/staff/verb/Spinning_Strike)
 			if(level == 40)
-				savant<<"You can now leap to a nearby opponent with your staff, doing more damage and stunning if they are dizzy or not facing you! You learned Pole Vault!"
+				to_chat(savant, "You can now leap to a nearby opponent with your staff, doing more damage and stunning if they are dizzy or not facing you! You learned Pole Vault!")
 				addverb(/mob/keyable/combo/staff/verb/Pole_Vault)
 			if(level == 60)
-				savant<<"You can now adopt a defensive posture, automatically countering up to 5 attacks for 5 seconds! You learned Flexible Defense!"
+				to_chat(savant, "You can now adopt a defensive posture, automatically countering up to 5 attacks for 5 seconds! You learned Flexible Defense!")
 				addverb(/mob/keyable/combo/staff/verb/Flexible_Defense)
 			if(level == 90)
-				savant<<"You can now swing your staff in a circle, dealing heavy damage and shunting back foes who are dizzy or facing away. You learned Around The World!"
+				to_chat(savant, "You can now swing your staff in a circle, dealing heavy damage and shunting back foes who are dizzy or facing away. You learned Around The World!")
 				addverb(/mob/keyable/combo/staff/verb/Around_The_World)
 
 	Spear_Mastery
@@ -433,7 +433,7 @@
 
 		acquire(mob/M)
 			..()
-			savant<<"Your proficiency with spears improves!"
+			to_chat(savant, "Your proficiency with spears improves!")
 			savant.spearskill+=0.4
 
 		remove()
@@ -448,19 +448,19 @@
 
 		levelstat()
 			..()
-			savant<<"You better understand fighting with spears! Spear Mastery is now level [level]!"
+			to_chat(savant, "You better understand fighting with spears! Spear Mastery is now level [level]!")
 			savant.spearskill+=0.4
 			if(level == 20)
-				savant<<"You can now lunge at your opponents, slowing their movements. You learned Lunge!"
+				to_chat(savant, "You can now lunge at your opponents, slowing their movements. You learned Lunge!")
 				addverb(/mob/keyable/combo/spear/verb/Lunge)
 			if(level == 40)
-				savant<<"You can now throw spears at your opponent that home in if they're slowed! You learned Javelin Toss!"
+				to_chat(savant, "You can now throw spears at your opponent that home in if they're slowed! You learned Javelin Toss!")
 				addverb(/mob/keyable/combo/spear/verb/Javelin_Toss)
 			if(level == 60)
-				savant<<"You can thrust spears in all four cardinal directions! You learned Compass Rose!"
+				to_chat(savant, "You can thrust spears in all four cardinal directions! You learned Compass Rose!")
 				addverb(/mob/keyable/combo/spear/verb/Compass_Rose)
 			if(level == 90)
-				savant<<"You can swiftly leap at your opponent, impaling and slowing them. You learned High Jump!"
+				to_chat(savant, "You can swiftly leap at your opponent, impaling and slowing them. You learned High Jump!")
 				addverb(/mob/keyable/combo/spear/verb/High_Jump)
 
 	Club_Mastery
@@ -473,7 +473,7 @@
 
 		acquire(mob/M)
 			..()
-			savant<<"Your proficiency with clubs improves!"
+			to_chat(savant, "Your proficiency with clubs improves!")
 			savant.clubskill+=0.4
 
 		remove()
@@ -488,19 +488,19 @@
 
 		levelstat()
 			..()
-			savant<<"You better understand fighting with clubs! Club Mastery is now level [level]!"
+			to_chat(savant, "You better understand fighting with clubs! Club Mastery is now level [level]!")
 			savant.clubskill+=0.4
 			if(level == 20)
-				savant<<"You can now slam your club into your opponent, staggering them. You learned Staggering Impact!"
+				to_chat(savant, "You can now slam your club into your opponent, staggering them. You learned Staggering Impact!")
 				addverb(/mob/keyable/combo/club/verb/Staggering_Impact)
 			if(level == 40)
-				savant<<"You can now smash the foes in front of you, dealing extra damage and knocking back staggered foes! You learned Grand Slam!"
+				to_chat(savant, "You can now smash the foes in front of you, dealing extra damage and knocking back staggered foes! You learned Grand Slam!")
 				addverb(/mob/keyable/combo/club/verb/Grand_Slam)
 			if(level == 60)
-				savant<<"You can leap at your foes, doing extra damage if they are staggered or knocked back! You learned Leaping Smash!"
+				to_chat(savant, "You can leap at your foes, doing extra damage if they are staggered or knocked back! You learned Leaping Smash!")
 				addverb(/mob/keyable/combo/club/verb/Leaping_Smash)
 			if(level == 90)
-				savant<<"You can slam the ground in front of you, creating a massive crater and shunting foes back. You learned Earthquake!"
+				to_chat(savant, "You can slam the ground in front of you, creating a massive crater and shunting foes back. You learned Earthquake!")
 				addverb(/mob/keyable/combo/club/verb/Earthquake)
 
 	Hammer_Mastery
@@ -513,7 +513,7 @@
 
 		acquire(mob/M)
 			..()
-			savant<<"Your proficiency with hammers improves!"
+			to_chat(savant, "Your proficiency with hammers improves!")
 			savant.hammerskill+=0.4
 
 		remove()
@@ -528,17 +528,17 @@
 
 		levelstat()
 			..()
-			savant<<"You better understand fighting with hammers! Hammer Mastery is now level [level]!"
+			to_chat(savant, "You better understand fighting with hammers! Hammer Mastery is now level [level]!")
 			savant.hammerskill+=0.4
 			if(level == 20)
-				savant<<"You can now strike your opponent with great force, stunning them. You learned Driving The Nail!"
+				to_chat(savant, "You can now strike your opponent with great force, stunning them. You learned Driving The Nail!")
 				addverb(/mob/keyable/combo/hammer/verb/Driving_The_Nail)
 			if(level == 40)
-				savant<<"You can now jump to your target with a mighty swing, making them vulnerable to physical damage if they are stunned or staggered. You learned Toll The Bell!"
+				to_chat(savant, "You can now jump to your target with a mighty swing, making them vulnerable to physical damage if they are stunned or staggered. You learned Toll The Bell!")
 				addverb(/mob/keyable/combo/hammer/verb/Toll_The_Bell)
 			if(level == 60)
-				savant<<"You can viciously hammer your foe, knocking them back and dealing damage to all foes in a line if your target is vulnerable! You learned Crushing Blow!"
+				to_chat(savant, "You can viciously hammer your foe, knocking them back and dealing damage to all foes in a line if your target is vulnerable! You learned Crushing Blow!")
 				addverb(/mob/keyable/combo/hammer/verb/Crushing_Blow)
 			if(level == 90)
-				savant<<"You can now devastate your opponent with an immense swing, ignoring a significant amount of armor. You learned Shatter Armor!"
+				to_chat(savant, "You can now devastate your opponent with an immense swing, ignoring a significant amount of armor. You learned Shatter Armor!")
 				addverb(/mob/keyable/combo/hammer/verb/Shatter_Armor)

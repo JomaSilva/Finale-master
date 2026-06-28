@@ -11,11 +11,11 @@ datum/skill/rank/GalicGun
 
 datum/skill/rank/GalicGun/after_learn()
 	assignverb(/mob/keyable/verb/GalicGun)
-	savant<<"You can use the Galick Gun!"
+	to_chat(savant, "You can use the Galick Gun!")
 
 datum/skill/rank/GalicGun/before_forget()
 	unassignverb(/mob/keyable/verb/GalicGun)
-	savant<<"You've forgotten how to use the Galick Gun?"
+	to_chat(savant, "You've forgotten how to use the Galick Gun?")
 datum/skill/rank/GalicGun/login(var/mob/logger)
 	..()
 	assignverb(/mob/keyable/verb/GalicGun)
@@ -81,4 +81,4 @@ mob/keyable/verb/GalicGun()
 				charging=1
 			spawn usr.addchargeoverlay()
 		return
-	else src << "You need at least [kireq] Ki!"
+	else to_chat(src, "You need at least [kireq] Ki!")

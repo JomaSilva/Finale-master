@@ -21,14 +21,14 @@ mob/default/verb
 			return
 		if(Choice == "Nobody") usr.target=null
 		usr.target=Choice
-		usr << "Your target is now [Choice]"
+		to_chat(usr, "Your target is now [Choice]")
 mob/verb
 	Set_Target()
 		set category=null
 		set src in view(30)
 		usr.target=src
 		if(usr != src)
-			usr<<"Your target is now [src]."
+			to_chat(usr, "Your target is now [src].")
 
 mob/default/verb
 	Dash()
@@ -44,7 +44,7 @@ mob/default/verb
 				candash=0
 				sleep(15)
 				candash=1
-		else src<<"You can't do that yet."
+		else to_chat(src, "You can't do that yet.")
 mob/verb
 	SttDash()
 		set hidden = 1
@@ -100,12 +100,12 @@ mob/verb
 				lastdir = savant.dir
 				expbarrier = 1000
 				if(levelup == 1)
-					savant << "You've finished familiarizing yourself with your new speed. What if you add some Ki?"
+					to_chat(savant, "You've finished familiarizing yourself with your new speed. What if you add some Ki?")
 					levelup = 0
 					assignverb(/mob/keyable/verb/Rapid_Movement)
 			if(2)
 				if(levelup == 1)
-					savant << "You've become even faster, capable of moving around an enemy after dashing into them."
+					to_chat(savant, "You've become even faster, capable of moving around an enemy after dashing into them.")
 					levelup = 0
 					assignverb(/mob/keyable/verb/Zanzoken_Dash)
 	login(var/mob/logger) //Don't forget to refresh all conditional/nonrepeating verbs!
@@ -118,11 +118,11 @@ mob/verb
 		if(level>0)
 			unassignverb(/mob/keyable/verb/Rapid_Movement)
 			unassignverb(/mob/keyable/verb/Zanzoken_Dash)
-			usr << "You feel dumber."
+			to_chat(usr, "You feel dumber.")
 	after_learn() //What should happen if they learn it?
 		savant.speed+=0.1
 		switch(level)
-			if(0) savant << "You feel as though you could go even faster, if only you knew how..."
+			if(0) to_chat(savant, "You feel as though you could go even faster, if only you knew how...")
 			if(1) assignverb(/mob/keyable/verb/Rapid_Movement)
 			if(2) assignverb(/mob/keyable/verb/Zanzoken_Dash)
 
@@ -139,12 +139,12 @@ mob/keyable/verb
 
 mob/proc/rapidProc()
 	if(usr.dashtired)
-		usr << "You can't use this right now. (Either the Lariat is happening, or the dash cooldown is going.)"
+		to_chat(usr, "You can't use this right now. (Either the Lariat is happening, or the dash cooldown is going.)")
 	var/kiReq = 10*BaseDrain/(speed)
 	if(usr.Ki>=kiReq&&usr.target&&usr.target!=usr&&get_dist(usr,usr.target)<20&&!usr.KO&&!usr.dashtired)
 		usr.Ki-=kiReq*BaseDrain
 		usr.emit_Sound('chainswoop.wav')
-		usr << "You pump Ki into your body and accelerate rapidly towards [usr.target]."
+		to_chat(usr, "You pump Ki into your body and accelerate rapidly towards [usr.target].")
 		//rapidmovement=1
 		step(src,get_dir(src,src.target))
 		step(src,get_dir(src,src.target))
@@ -154,7 +154,7 @@ mob/proc/rapidProc()
 		//spawn(5) src.testRM()
 		//rapidmovement=0
 	if(!usr.target||get_dist(usr,usr.target)>=20||usr.target==usr)
-		usr << "You need a valid target..."
+		to_chat(usr, "You need a valid target...")
 
 mob/proc/testRM()
 	while(1)
@@ -163,11 +163,11 @@ mob/proc/testRM()
 			break
 		sleep(1)
 mob/proc/stopDashing()
-		usr << "You stop flitting around."
+		to_chat(usr, "You stop flitting around.")
 		usr.dashtired=1
 		var/timer=200/usr.speed
 		spawn(timer)
-				if(timer>15)usr<<"You're ready to use Rapid Movement again."
+				if(timer>15)to_chat(usr, "You're ready to use Rapid Movement again.")
 				usr.dashtired=0
 
 mob/keyable/verb
@@ -175,7 +175,7 @@ mob/keyable/verb
 		set category="Skills"
 		var/staminaReq = angerBuff*1.5/(Ephysoff+Etechnique)*BaseDrain
 		if(usr.Ki>=staminaReq&&usr.target&&usr.target!=usr&&get_dist(usr,usr.target)<35&&!usr.KO&&!usr.dashtired)
-			usr << "You ignite your energy and launch into a rush attack!"
+			to_chat(usr, "You ignite your energy and launch into a rush attack!")
 			Ki-=staminaReq
 			usr.dashtired=1
 			RushAttack(target)
@@ -185,10 +185,10 @@ mob/keyable/verb
 			if(get_dist(src,target)>1&&canmove)
 				step(src,get_dir(src,target))
 			if(get_dist(src,target)>1)
-				src<<"Your rush failed..."
+				to_chat(src, "Your rush failed...")
 			else
 				for(var/mob/M in view(3))
-					M<<"[src] slams into [target]!"
+					to_chat(M, "[src] slams into [target]!")
 				emit_Sound('ARC_BTL_CMN_DrgnRush_Fnsh.ogg')
 				usr.icon_state="Attack"
 				spawn(3) usr.icon_state=""
@@ -196,9 +196,9 @@ mob/keyable/verb
 			sleep(30)
 			usr.dashtired=0
 		else if(!usr.target||get_dist(usr,usr.target)>=12||usr.target==usr)
-			usr << "You need a valid target..."
+			to_chat(usr, "You need a valid target...")
 		else if(usr.Ki<=staminaReq)
-			usr << "You need at least [staminaReq] Ki to use this skill."
+			to_chat(usr, "You need at least [staminaReq] Ki to use this skill.")
 
 mob/proc/RushAttack(var/mob/M,speed_mult)
 	RushComplete=0
@@ -218,12 +218,12 @@ mob/proc/RushAttack(var/mob/M,speed_mult)
 	while(get_dist(src,M)>1)
 		justincase+=1
 		if(!canmove)
-			src<<"Your rush fails since you can't move!"
+			to_chat(src, "Your rush fails since you can't move!")
 			RushComplete=1
 			break
 		step(src,get_dir(src,M))
 		if((justincase==45 && !flighted)||justincase==50)
-			src<<"All this running is exhausting..."
+			to_chat(src, "All this running is exhausting...")
 			RushComplete=1
 			break
 		sleep(rushSpeed)

@@ -39,14 +39,14 @@ obj/buff/Alien_Trans/Loop()
 				if(prob(20)) container.Ki-=(container.MaxKi*container.ayyform1drain) //ki takes a small hit regardless.
 				if(container.Ki<=container.MaxKi*container.ayyform1drain)
 					container.Revert()
-					container<<"You are too tired to sustain your form."
+					to_chat(container, "You are too tired to sustain your form.")
 				container.stamina -= trans_drain*max(0.001,container.ayyform1drain)/2 //max statement ensures you won't be hitting exactly zero if drain changes mid drain.
 		if(container.ssj==2) if(container.ayyform2drain)
 			if(container.stamina>=container.maxstamina-container.ayyform2drain)
 				if(prob(20)) container.Ki-=(container.MaxKi*container.ayyform2drain||container.dead) //ki takes a small hit regardless.
 				if(container.Ki<=container.MaxKi*container.ayyform2drain)
 					container.Revert()
-					container<<"You are too tired to sustain your form."
+					to_chat(container, "You are too tired to sustain your form.")
 				container.stamina -= trans_drain*max(0.001,container.ayyform2drain)/2 //max statement ensures you won't be hitting exactly zero if drain changes mid drain.
 	if(lastForm!=container.ssj)
 		lastForm=container.ssj

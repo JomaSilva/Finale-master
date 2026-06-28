@@ -11,11 +11,11 @@
 
 /datum/skill/rank/KillDriver/after_learn()
 	assignverb(/mob/keyable/verb/KillDriver)
-	savant<<"You can fire an [name]!"
+	to_chat(savant, "You can fire an [name]!")
 
 /datum/skill/rank/KillDriver/before_forget()
 	unassignverb(/mob/keyable/verb/KillDriver)
-	savant<<"You've forgotten how to fire an [name]!?"
+	to_chat(savant, "You've forgotten how to fire an [name]!?")
 datum/skill/rank/KillDriver/login(var/mob/logger)
 	..()
 	assignverb(/mob/keyable/verb/KillDriver)
@@ -24,7 +24,7 @@ mob/var/KillDrivericon='BasenioBlast.dmi'
 /mob/keyable/verb/KillDriver()
 	set category = "Skills"
 	if(usr.Ki<50)
-		usr<<"You do not yet have enough energy."
+		to_chat(usr, "You do not yet have enough energy.")
 		return
 	if(!usr.med&&!usr.train)
 		if(!usr.KO&&usr.Ki>=50&&!usr.blasting)

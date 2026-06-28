@@ -11,11 +11,11 @@
 
 /datum/skill/rank/DeathBall/after_learn()
 	assignverb(/mob/keyable/verb/Death_Ball)
-	savant<<"You can fire an [name]!"
+	to_chat(savant, "You can fire an [name]!")
 
 /datum/skill/rank/DeathBall/before_forget()
 	unassignverb(/mob/keyable/verb/Death_Ball)
-	savant<<"You've forgotten how to fire an [name]!?"
+	to_chat(savant, "You've forgotten how to fire an [name]!?")
 datum/skill/rank/DeathBall/login(var/mob/logger)
 	..()
 	assignverb(/mob/keyable/verb/Death_Ball)

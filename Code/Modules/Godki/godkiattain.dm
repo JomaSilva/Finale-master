@@ -79,33 +79,33 @@ mob/Admin3/verb
 					if("Naturalization")
 						if(M.godki.naturalization)
 							M.godki.naturalization = 0
-							usr << "God naturalization off."
+							to_chat(usr, "God naturalization off.")
 						else
 							M.godki.naturalization = 1
-							usr << "God naturalization on."
+							to_chat(usr, "God naturalization on.")
 					if("GT Mode")
 						if(M.godki_gt_mode)
 							M.godki_gt_mode = 0
-							usr << "God Ki GT mode disabled"
+							to_chat(usr, "God Ki GT mode disabled")
 						else
 							M.godki_gt_mode = 1
 							M.lose_godki()
-							usr << "God Ki GT mode enabled"
+							to_chat(usr, "God Ki GT mode enabled")
 			if("GT Mode")
 				if(gt_mode)
-					world << "<font color=yellow size=4>GT Mode turned off... God Ki attainable.</font>"
+					to_chat(world, "<font color=yellow size=4>GT Mode turned off... God Ki attainable.</font>")
 					gt_mode=0
 				else
 					gt_mode=1
-					world << "<font color=yellow size=4>GT Mode turned on... No way to gain God Ki!</font>"
+					to_chat(world, "<font color=yellow size=4>GT Mode turned on... No way to gain God Ki!</font>")
 			if("Max Attainable God Ki Tier")
 				max_godki_tier = input(usr,"The maximum amount of God Ki Tier players can level up to.","",max_godki_tier) as num
-				world << "<font color=yellow size=4>Players can level God Ki up to a max of [max_godki_tier]! The absolute cap is [godki_cap]</font>"
+				to_chat(world, "<font color=yellow size=4>Players can level God Ki up to a max of [max_godki_tier]! The absolute cap is [godki_cap]</font>")
 			if("God Ki Tier Cap")
 				godki_cap = input(usr,"The absolute cap of God Ki tiers. This determines when players can get into Angel and GoD.","",godki_cap) as num
-				world << "<font color=yellow size=4>Players can level God Ki up to a max of [max_godki_tier]! The absolute cap is [godki_cap]</font>"
+				to_chat(world, "<font color=yellow size=4>Players can level God Ki up to a max of [max_godki_tier]! The absolute cap is [godki_cap]</font>")
 			if("God Ki SSJ cap")
 				godki_ssj_cap = input(usr,"The maximum level of SSJ players can get to while in God Ki. SSJ4 Blue is not supported.", godki_ssj_cap) as num
-				world << "<font color=yellow size=4>Players can use only up to SSJ [godki_ssj_cap] while in God Ki.</font>"
+				to_chat(world, "<font color=yellow size=4>Players can use only up to SSJ [godki_ssj_cap] while in God Ki.</font>")
 
 

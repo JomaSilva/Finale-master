@@ -12,11 +12,11 @@
 
 /datum/skill/rank/SpiritBomb/after_learn()
 	assignverb(/mob/keyable/verb/SpiritBomb)
-	savant<<"You can fire an [name]!"
+	to_chat(savant, "You can fire an [name]!")
 
 /datum/skill/rank/SpiritBomb/before_forget()
 	unassignverb(/mob/keyable/verb/SpiritBomb)
-	savant<<"You've forgotten how to fire an [name]!?"
+	to_chat(savant, "You've forgotten how to fire an [name]!?")
 /datum/skill/rank/SpiritBomb/login(var/mob/logger)
 	..()
 	assignverb(/mob/keyable/verb/SpiritBomb)
@@ -54,7 +54,7 @@ obj/proc/spin()
 			A.icon=I
 			A.spin()
 			A.plane = 6
-			usr<<"You feel the life force of the planet flood into the Spirit Bomb!"
+			to_chat(usr, "You feel the life force of the planet flood into the Spirit Bomb!")
 			flick("Forming",A)
 			A.icon_state="Formed"
 			sleep(30)
@@ -84,8 +84,8 @@ obj/proc/spin()
 							M.overlaychanged=1
 							A.BP+=M.expressedBP*(M.Ki*0.1)
 							M.Ki*=0.9
-							M<<"You feel a tenth of your energy slip away."
-							usr<<"You just got some more energy from accross the planet!"
+							to_chat(M, "You feel a tenth of your energy slip away.")
+							to_chat(usr, "You just got some more energy from accross the planet!")
 							PeopleGivenPower += 1
 							spawn(30) M.overlayList-='SBombGivePower.dmi'
 							M.overlaychanged=1
@@ -125,10 +125,10 @@ obj/proc/spin()
 					switch(presetiterations)
 						if(3)
 							sleep(300)
-							usr<<"You've just got energy from the entire solar system's worth of plants and animals!"
+							to_chat(usr, "You've just got energy from the entire solar system's worth of plants and animals!")
 						if(2)
 							sleep(1100)
-							usr<<"You've just got energy from the entire universe's worth of plants and animals! You can't grow the Bomb any further!"
+							to_chat(usr, "You've just got energy from the entire universe's worth of plants and animals! You can't grow the Bomb any further!")
 			spawn while(holding&&A)
 				sleep(10)
 				if(PeopleGivenPower>=1)
@@ -177,4 +177,4 @@ obj/proc/spin()
 			spawn
 				A.Burnout(1000)
 				usr.beamisrunning = 0
-		else usr<<"You need 90% Energy to do this."
+		else to_chat(usr, "You need 90% Energy to do this.")

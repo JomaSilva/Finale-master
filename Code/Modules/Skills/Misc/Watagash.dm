@@ -10,10 +10,10 @@
 	teacher=TRUE
 	after_learn()
 		assignverb(/mob/keyable/verb/Watagashi)
-		savant<<"You can give others your body and power!"
+		to_chat(savant, "You can give others your body and power!")
 	before_forget()
 		unassignverb(/mob/keyable/verb/Watagashi)
-		savant<<"You're no longer able to give up your body for somebody else to recieve power."
+		to_chat(savant, "You're no longer able to give up your body for somebody else to recieve power.")
 	login(mob/logger)
 		..()
 		assignverb(/mob/keyable/verb/Watagashi)
@@ -70,7 +70,7 @@ obj/buff/Watagash
 		container.Tspeed-=0.2
 		var/matrix/nM = new
 		container.transform = nM.Scale(2,2)
-		container<<"You mysteriously increase in size and power!!"
+		to_chat(container, "You mysteriously increase in size and power!!")
 	DeBuff()
 		var/matrix/nM = new
 		container.transform = nM.Scale(1,1)
@@ -78,5 +78,5 @@ obj/buff/Watagash
 		container.Tphysoff-=1.1
 		container.Tphysdef-=1.1
 		container.Tspeed+=0.2
-		container<<"You mysteriously decrease in size and power..."
+		to_chat(container, "You mysteriously decrease in size and power...")
 		..()

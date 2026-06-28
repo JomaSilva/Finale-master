@@ -61,34 +61,34 @@
 						if(usr.zenni>=100000)
 							usr.zenni-=100000
 							megaphone = 1
-						else usr<<"You dont have enough money"
+						else to_chat(usr, "You dont have enough money")
 			if("Broadcaster")
 				switch(input("The broadcaster upgrade makes messages be shouted out loud at the console. Costs 100000 zenni.","",text) in list("Yes","No",))
 					if("Yes")
 						if(usr.zenni>=100000)
 							usr.zenni-=100000
 							hasbroadcaster = 1
-						else usr<<"You dont have enough money"
+						else to_chat(usr, "You dont have enough money")
 			if("Camera")
 				switch(input("The broadcaster upgrade makes messages be shouted out loud at the console. Costs 100000 zenni.","",text) in list("Yes","No",))
 					if("Yes")
 						if(usr.zenni>=150000)
 							usr.zenni-=150000
 							hascamera = 1
-						else usr<<"You dont have enough money"
+						else to_chat(usr, "You dont have enough money")
 	verb/Bolt()
 		set category=null
 		set src in oview(1)
 		if(x&&y&&z&&!Bolted)
 			switch(input("Are you sure you want to bolt this to the ground so nobody can ever pick it up? Not even you?","",text) in list("Yes","No",))
 				if("Yes")
-					view(src)<<"<font size=1>[usr] bolts the [src] to the ground."
+					to_chat(view(src), "<font size=1>[usr] bolts the [src] to the ground.")
 					Bolted=1
 					boltersig=usr.signature
 		else if(Bolted&&boltersig==usr.signature)
 			switch(input("Unbolt?","",text) in list("Yes","No",))
 				if("Yes")
-					view(src)<<"<font size=1>[usr] unbolts the [src] from the ground."
+					to_chat(view(src), "<font size=1>[usr] unbolts the [src] from the ground.")
 					Bolted=0
 	verb/Frequencies()
 		set category = null
@@ -100,7 +100,7 @@
 				freqlist.Cut(input(usr,"Type a frequency") as text)
 			if("Check")
 				for(var/A in freqlist)
-					usr << "[A]"
+					to_chat(usr, "[A]")
 	verb/DNA_Lock()
 		set category = null
 		set src in oview(1)
@@ -116,36 +116,36 @@
 				var/obj/items/Omniwatch/nO = O
 				if(ismob(nO.loc)&&nO.omnichannel in freqlist)
 					var/mob/M = nO.loc
-					M<<"(Communications)<[usr.SayColor]>[usr] says, '[msg]'"
+					to_chat(M, "(Communications)<[usr.SayColor]>[usr] says, '[msg]'")
 					return
 			if(istype(O,/obj/Rocketship))
 				var/obj/Rocketship/nO = O
 				if(nO.channel in freqlist)
-					view(nO)<<"(Communications)<[usr.SayColor]>[usr] says, '[msg]'"
+					to_chat(view(nO), "(Communications)<[usr.SayColor]>[usr] says, '[msg]'")
 					return
 			if(istype(O,/obj/items/clothes/Spacesuit))
 				var/obj/items/clothes/Spacesuit/nO = O
 				if(nO.suffix&&ismob(nO.loc)&&nO.channel in freqlist)
 					var/mob/M = nO.loc
-					M<<"(Communications)<[usr.SayColor]>[usr] says, '[msg]'"
+					to_chat(M, "(Communications)<[usr.SayColor]>[usr] says, '[msg]'")
 					return
 			if(istype(O,/obj/items/Scouter))
 				var/obj/items/Scouter/nO = O
 				if(nO.suffix&&ismob(nO.loc)&&nO.channel in freqlist)
 					var/mob/M = nO.loc
-					M<<"(Communications)<[usr.SayColor]>[usr] says, '[msg]'"
+					to_chat(M, "(Communications)<[usr.SayColor]>[usr] says, '[msg]'")
 					return
 			if(istype(O,/obj/Spacepod))
 				var/obj/Spacepod/nO = O
 				if(nO.link in freqlist)
-					view(O)<<"(Communications)<[usr.SayColor]>[usr] says, '[msg]'"
+					to_chat(view(O), "(Communications)<[usr.SayColor]>[usr] says, '[msg]'")
 					return
 			if(istype(O,/obj/items/Communicator))
 				var/obj/items/Communicator/nO = O
 				for(var/n in freqlist)
 					if(n in nO.freqlist)
 						messagelist+={"<html><head><title></title></head><body><body bgcolor="#000000"><font size=1><font color="#0099FF"><b><i>(Communications)<[usr.SayColor]>[usr] says, '[msg]'</font><br></body><html>"}
-						if(hasbroadcaster) view(nO) << "(Communications)<[usr.SayColor]>[usr] says, '[msg]'"
+						if(hasbroadcaster) to_chat(view(nO), "(Communications)<[usr.SayColor]>[usr] says, '[msg]'")
 						break
 	verb/Megaphone(var/msg as text)
 		set category = null
@@ -154,19 +154,19 @@
 			if(canmegaphone)
 				canmegaphone = 0
 				for(var/mob/M in player_list)
-					M << "(Communications)<[usr.SayColor]>[usr] says, '[msg]'"
+					to_chat(M, "(Communications)<[usr.SayColor]>[usr] says, '[msg]'")
 				cooldownstack += 1
 				megaphonecooldown = 600 * cooldownstack
 				cooldowndown = 600
 		else
-			usr << "You need the upgrade."
+			to_chat(usr, "You need the upgrade.")
 			return
 	verb/Camera()
 		set category = null
 		set src in oview(1)
 		if(hascamera)
 			if(!siglock == usr.signature)
-				usr << "Wrong signature!"
+				to_chat(usr, "Wrong signature!")
 				return
 			var/list/camera_list = list()
 			for(var/obj/items/Camera/A in item_list)
@@ -177,7 +177,7 @@
 			usr.client.perspective=EYE_PERSPECTIVE
 			usr.client.eye=nA
 		else
-			usr << "No upgrade!"
+			to_chat(usr, "No upgrade!")
 			return
 
 	verb/Communication_History()

@@ -38,12 +38,12 @@ obj/items/clothes
 			suffix="*Equipped*"
 			usr.updateOverlaycID(/obj/overlay/clothes/clothes_handler,icon,null,null,null,"[clothid]")
 			usr.overlayStats(/obj/overlay/clothes/clothes_handler,"[clothid]",plane,pixel_x,pixel_y)
-			usr<<"You put on the [src]."
+			to_chat(usr, "You put on the [src].")
 		else
 			equipped=0
 			suffix=""
 			usr.removeOverlayID(/obj/overlay/clothes/clothes_handler,"[clothid]")
-			usr<<"You take off the [src]."
+			to_chat(usr, "You take off the [src].")
 	turtleshell
 		dropProbability=0.5
 		icon='Turtle Shell 2.dmi'

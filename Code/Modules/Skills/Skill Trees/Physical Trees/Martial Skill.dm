@@ -29,10 +29,10 @@
 	level=1
 	maxlevel = 2
 	after_learn()
-		savant<<"The moves of other animals and creatures influence your art."
+		to_chat(savant, "The moves of other animals and creatures influence your art.")
 		savant.techniqueBuff += 0.3
 	before_forget()
-		savant<<"The world around you has no hold on your movements."
+		to_chat(savant, "The world around you has no hold on your movements.")
 		savant.techniqueBuff -= 0.3
 		unassignverb(/mob/keyable/verb/Dash_Attack)
 	effector()
@@ -41,7 +41,7 @@
 		switch(level)
 			if(2)
 				if(levelup)
-					savant << "You're able to pick up faster movements! You can use Dash Attack!"
+					to_chat(savant, "You're able to pick up faster movements! You can use Dash Attack!")
 					assignverb(/mob/keyable/verb/Dash_Attack)
 					levelup=0
 	login(mob/logger)
@@ -59,12 +59,12 @@
 	enabled = 0
 	maxlevel = 2
 	after_learn()
-		savant<<"The moves of the cat seep into your dodges and weavings."
+		to_chat(savant, "The moves of the cat seep into your dodges and weavings.")
 		savant.techniqueBuff += 0.2
 		savant.speedBuff += 0.1
 		savant.dodgeflavors += "whips away from"
 	before_forget()
-		savant<<"No longer can 'catlike' be a moniker of your movements."
+		to_chat(savant, "No longer can 'catlike' be a moniker of your movements.")
 		savant.techniqueBuff -= 0.2
 		savant.speedBuff -= 0.1
 		savant.dodgeflavors -= "whips away from"
@@ -75,7 +75,7 @@
 		switch(level)
 			if(2)
 				if(levelup)
-					savant << "You're able to dodge grabs!"
+					to_chat(savant, "You're able to dodge grabs!")
 					assignverb(/mob/keyable/verb/Flip)
 					levelup=0
 	login(mob/logger)
@@ -93,13 +93,13 @@
 	enabled = 0
 	maxlevel = 2
 	after_learn()
-		savant<<"The moves of the tiger seep into your attacks and techniques."
+		to_chat(savant, "The moves of the tiger seep into your attacks and techniques.")
 		savant.techniqueBuff += 0.2
 		savant.physoffBuff += 0.1
 		savant.attackflavors += "strikes, Ki claws out at"
 		savant.dodgeflavors += "heavily dodges"
 	before_forget()
-		savant<<"No longer are you similar to a tiger in movements."
+		to_chat(savant, "No longer are you similar to a tiger in movements.")
 		savant.techniqueBuff -= 0.2
 		savant.physoffBuff -= 0.1
 		savant.attackflavors -= "strikes, Ki claws out at"
@@ -111,7 +111,7 @@
 		switch(level)
 			if(2)
 				if(levelup)
-					savant << "You're able to takedown people (deals bonus damage to flying opponents)!"
+					to_chat(savant, "You're able to takedown people (deals bonus damage to flying opponents)!")
 					assignverb(/mob/keyable/verb/Takedown)
 					levelup=0
 	login(mob/logger)
@@ -129,12 +129,12 @@
 	enabled = 0
 	maxlevel = 2
 	after_learn()
-		savant<<"The dragon's sweep has been ingrained into you."
+		to_chat(savant, "The dragon's sweep has been ingrained into you.")
 		savant.techniqueBuff += 0.2
 		savant.physoffBuff += 0.1
 		savant.attackflavors += "sweeps outwards, leg catching"
 	before_forget()
-		savant<<"You no longer need the Dragon's Sweep."
+		to_chat(savant, "You no longer need the Dragon's Sweep.")
 		savant.techniqueBuff -= 0.2
 		savant.physoffBuff -= 0.1
 		savant.attackflavors -= "sweeps outwards, leg catching"
@@ -145,7 +145,7 @@
 		switch(level)
 			if(2)
 				if(levelup)
-					savant << "You're able to stun people!!"
+					to_chat(savant, "You're able to stun people!!")
 					assignverb(/mob/keyable/verb/Stun_Attack)
 					levelup=0
 	login(mob/logger)
@@ -161,14 +161,14 @@
 	tier = 1
 	maxlevel = 2
 	after_learn()
-		savant<<"Your dodges and attacks become more flexible."
+		to_chat(savant, "Your dodges and attacks become more flexible.")
 		savant.techniqueBuff += 0.1
 		savant.physoffBuff += 0.1
 		savant.speedBuff += 0.1
 		savant.attackflavors += "bends skillfully, arm flying at"
 		savant.dodgeflavors += "bends away from"
 	before_forget()
-		savant<<"Your dodges and attacks become less flexible."
+		to_chat(savant, "Your dodges and attacks become less flexible.")
 		savant.techniqueBuff -= 0.1
 		savant.physoffBuff -= 0.1
 		savant.speedBuff -= 0.1
@@ -181,7 +181,7 @@
 		switch(level)
 			if(2)
 				if(levelup)
-					savant << "You're able to spin around in a circle!"
+					to_chat(savant, "You're able to spin around in a circle!")
 					assignverb(/mob/keyable/verb/Spin_Attack)
 					levelup=0
 	login(mob/logger)
@@ -198,11 +198,11 @@
 	maxlevel = 1
 	tier = 1
 	after_learn()
-		savant<<"You start circulating your Ki."
+		to_chat(savant, "You start circulating your Ki.")
 		savant.kiskillBuff+=0.15
 		savant.techniqueBuff+=1
 	before_forget()
-		savant<<"You stop circulating your Ki."
+		to_chat(savant, "You stop circulating your Ki.")
 		savant.kiskillBuff-=0.15
 		savant.techniqueBuff-=1
 
@@ -218,11 +218,11 @@
 	tier = 3
 	skillcost = 5
 	after_learn()
-		savant<<"You start circulating your Ki."
+		to_chat(savant, "You start circulating your Ki.")
 		savant.techniqueBuff+=2
 		assignverb(/mob/keyable/verb/Brutal_Clarity)
 	before_forget()
-		savant<<"You stop circulating your Ki."
+		to_chat(savant, "You stop circulating your Ki.")
 		savant.techniqueBuff-=2
 		unassignverb(/mob/keyable/verb/Brutal_Clarity)
 	login(mob/logger)
@@ -233,10 +233,10 @@ mob/keyable/verb/Brutal_Clarity()
 	set category = "Skills"
 	desc = "Bring your power inside yourself, increasing technique and strength!"
 	if(!isBuffed(/obj/buff/Brutal_Clarity)&&!usr.KO)
-		usr<<"You start to flow!"
+		to_chat(usr, "You start to flow!")
 		usr.startbuff(/obj/buff/Brutal_Clarity)
 	else if(isBuffed(/obj/buff/Brutal_Clarity))
-		usr<<"Your flow fades."
+		to_chat(usr, "Your flow fades.")
 		usr.stopbuff(/obj/buff/Brutal_Clarity)
 
 /obj/buff/Brutal_Clarity
@@ -267,8 +267,8 @@ mob/keyable/verb/Brutal_Clarity()
 	prereqs = list(new/datum/skill/Brutal_Clarity)
 	tier = 4
 	after_learn()
-		savant<<"Your technique has reached the endgame."
+		to_chat(savant, "Your technique has reached the endgame.")
 		savant.techniqueBuff+=5
 	before_forget()
-		savant<<"Your body lessens its flow..."
+		to_chat(savant, "Your body lessens its flow...")
 		savant.techniqueBuff-=5

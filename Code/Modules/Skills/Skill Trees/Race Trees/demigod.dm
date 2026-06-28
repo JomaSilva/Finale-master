@@ -29,11 +29,11 @@
 	common_sense = TRUE
 	teacher=FALSE
 	after_learn()
-		savant << "You figured out how to tear open reality to travel places!"
+		to_chat(savant, "You figured out how to tear open reality to travel places!")
 		assignverb(/mob/keyable/verb/RiftTeleport)
 
 	before_forget()
-		savant <<"You've forgotten how to tear open reality!"
+		to_chat(savant, "You've forgotten how to tear open reality!")
 		unassignverb(/mob/keyable/verb/RiftTeleport)
 
 	login(var/mob/logger)
@@ -45,23 +45,23 @@ mob/keyable/verb/RiftTeleport()
 	var/image/I=image(icon='Black Hole.dmi',icon_state="full")
 	if(!usr.canmove || usr.KO || usr.deathregening || usr.grabParalysis || usr.stagger) return
 	if(canfight&&!usr.med&&!usr.train&&usr.Ki>=usr.MaxKi&&usr.Planet!="Sealed"&&!usr.inteleport)
-		view(6)<<"[usr] seems to be concentrating"
+		to_chat(view(6), "[usr] seems to be concentrating")
 		var/choice = input("Where would you like to go? Your rift abilities only extend to the following places.", "", text) in list ("Earth", "Namek", "Vegeta", "Icer Planet", "Arconia", "Desert", "Arlia", "Large Space Station", "Small Space Station", "Afterlife", "Heaven", "Nevermind",)
 		if(choice!="Nevermind")
-			usr<<"Pick your target coordinates."
+			to_chat(usr, "Pick your target coordinates.")
 			var/xx=input("X Location?") as num
 			var/yy=input("Y Location?") as num
 			usr.Ki=0
-			oview(usr)<<"[usr] disappears into a  rift that closes in on itself."
+			to_chat(oview(usr), "[usr] disappears into a  rift that closes in on itself.")
 			spawn flick(I,usr)
 			usr.inteleport=1
 			sleep(10)
 			GotoPlanet(choice)
 			usr.loc=locate(xx,yy, usr.z)
-			oview(usr)<<"[usr] appears out of a rift in time-space."
+			to_chat(oview(usr), "[usr] appears out of a rift in time-space.")
 			usr.inteleport=0
 		else return
-	else usr<<"You need full ki and total concentration to use this."
+	else to_chat(usr, "You need full ki and total concentration to use this.")
 
 
 /datum/skill/demigod/Elemental
@@ -76,7 +76,7 @@ mob/keyable/verb/RiftTeleport()
 	common_sense = FALSE
 	var/tmp/choosingtype=0
 	after_learn()
-		savant <<"The element that once rested inside of you... what was it called again?"
+		to_chat(savant, "The element that once rested inside of you... what was it called again?")
 		assignverb(/mob/keyable/verb/Elemental)
 		savant.demi_element_type = input(savant,"What is your basic Demigod type? The more complex it is, the more estoric the effect, but it's overall less effective.") in list("Fire","Earth","Air","Water","Lightning","Mud","Lava","Sand","Steam","Cloud")
 	login(var/mob/logger)
@@ -136,65 +136,65 @@ obj/buff/elemental
 		switch(container.demi_element_type)
 			if("Fire")
 				container.Tphysoff += 1
-				container << "The raw power of Fire increases the damage you do!"
+				to_chat(container, "The raw power of Fire increases the damage you do!")
 			if("Earth")
 				container.Tphysdef += 1
-				container << "Earth's mighty rumble increases your defence..."
+				to_chat(container, "Earth's mighty rumble increases your defence...")
 			if("Air")
 				container.Tspeed += 1
-				container << "The brisk pace of the Air around you makes you dance!"
+				to_chat(container, "The brisk pace of the Air around you makes you dance!")
 			if("Water")
 				container.Ttechnique += 1
-				container << "Water's gentle and smoothing motions infuses yourself- you no longer fight, you flow."
+				to_chat(container, "Water's gentle and smoothing motions infuses yourself- you no longer fight, you flow.")
 			if("Lightning")
 				container.Tphysoff += 0.5
 				container.Tspeed += 0.5
-				container << "Lightning's extreme heat flows into you with a <font color=#FF3333>shocking</font> passion!"
+				to_chat(container, "Lightning's extreme heat flows into you with a <font color=#FF3333>shocking</font> passion!")
 			if("Mud")
 				container.Ttechnique += 0.5
 				container.Tphysdef += 0.5
-				container << "Mud does not submit to the mere elements. It may be the lowest... <b>but it is not the weakest.</b>"
+				to_chat(container, "Mud does not submit to the mere elements. It may be the lowest... <b>but it is not the weakest.</b>")
 			if("Lava")
 				container.Tphysoff += 0.5
 				container.Tphysdef += 0.5
-				container << "You call to the Earth's scorching reserves... <i>and it voices back in approval.</i>"
+				to_chat(container, "You call to the Earth's scorching reserves... <i>and it voices back in approval.</i>")
 			if("Sand")
 				container.Tphysdef += 0.5
 				container.Tspeed += 0.5
-				container << "You shift, the sand around you becoming both a hard shell and a movement enabler."
+				to_chat(container, "You shift, the sand around you becoming both a hard shell and a movement enabler.")
 			if("Steam")
 				container.Tspeed += 0.5
 				container.Ttechnique += 0.5
-				container << "Steam's whispy and burning qualities emobolden your body."
+				to_chat(container, "Steam's whispy and burning qualities emobolden your body.")
 			if("Cloud")
 				container.Ttechnique += 0.5
 				container.Tspeed += 0.5
-				container << "The old elements often forget us. <b>We'll remind them why we're above them all.</b>"
+				to_chat(container, "The old elements often forget us. <b>We'll remind them why we're above them all.</b>")
 		switch(container.demi_true_type)
 			if("Hellfire")
 				container.Tphysoff += 1
 				container.Tkioff += 1
 				container.aurasBuff = 1.5
-				container << "Your scorching heat reaches the peak... <font color=#FF3333>The element of Fire refuses to let you fight alone!</font>!"
-				oview(container) << "<font color=#FF3333>The element of Fire refuses to let [container] fight alone!</font>"
+				to_chat(container, "Your scorching heat reaches the peak... <font color=#FF3333>The element of Fire refuses to let you fight alone!</font>!")
+				to_chat(oview(container), "<font color=#FF3333>The element of Fire refuses to let [container] fight alone!</font>")
 			if("Steel Ice")
 				container.Ttechnique += 1
 				container.Tkioff += 1
 				container.aurasBuff = 1.5
-				container << "Water's arctic touch lets you carve mountains like glaciers... <font color=#0B86F3>The element of Water refuses to let you fight alone!</font>"
-				oview(container) << "<font color=#0B86F3>The element of Water refuses to let [container] fight alone!</font>"
+				to_chat(container, "Water's arctic touch lets you carve mountains like glaciers... <font color=#0B86F3>The element of Water refuses to let you fight alone!</font>")
+				to_chat(oview(container), "<font color=#0B86F3>The element of Water refuses to let [container] fight alone!</font>")
 			if("Atmosphere")
 				container.Tspeed += 1
 				container.Ttechnique += 1
 				container.aurasBuff = 1.5
-				container << "Air is all encompassing, it's bearing reassuring... <font color=#E0E0E0>The element of Air refuses to let you fight alone!</font>"
-				oview(container) << "<font color=#E0E0E0>The element of Air refuses to let [container] fight alone!</font>"
+				to_chat(container, "Air is all encompassing, it's bearing reassuring... <font color=#E0E0E0>The element of Air refuses to let you fight alone!</font>")
+				to_chat(oview(container), "<font color=#E0E0E0>The element of Air refuses to let [container] fight alone!</font>")
 			if("Primordial")
 				container.Tphysdef += 1
 				container.Tphysoff += 1
 				container.aurasBuff = 1.5
-				container << "The planet itself rumbles... The ground beneath your feet providing you extra ability... <font color=#70460E>The element of Earth refuses to let you fight alone!</font>"
-				oview(container) << "<font color=#70460E>The element of Earth refuses to let [container] fight alone!</font>"
+				to_chat(container, "The planet itself rumbles... The ground beneath your feet providing you extra ability... <font color=#70460E>The element of Earth refuses to let you fight alone!</font>")
+				to_chat(oview(container), "<font color=#70460E>The element of Earth refuses to let [container] fight alone!</font>")
 		..()
 	Loop()
 		if(!container.transing)
@@ -202,7 +202,7 @@ obj/buff/elemental
 				if(prob(20)) container.Ki-=(0.1/container.Emagiskill)*container.BaseDrain //ki takes a small hit regardless.
 				if(container.Ki<=container.MaxKi*(0.001/container.Emagiskill))
 					DeBuff()
-					container<<"You are too tired to sustain your form."
+					to_chat(container, "You are too tired to sustain your form.")
 				container.stamina -= trans_drain*max(0.001,0.01/container.Emagiskill) //max statement ensures you won't be hitting exactly zero if drain changes mid drain.
 			else container.Revert()
 		..()

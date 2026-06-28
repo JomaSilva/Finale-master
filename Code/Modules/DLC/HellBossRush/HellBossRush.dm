@@ -139,10 +139,10 @@ mob/npc/Enemy/Bosses/BossRush
 		mobDrops = newlist(/obj/Artifacts/Boosters/SealedGems/Armor_Gem)
 		icon='Guard1.dmi'
 		mobDeath()
-			view(8)<<"<font size=[TextSize]><[SayColor]>[src]: I used to be an adventurer like you. Then I took an arrow in the knee..."
+			to_chat(view(8), "<font size=[TextSize]><[SayColor]>[src]: I used to be an adventurer like you. Then I took an arrow in the knee...")
 			sleep(30)
 			icon_state=""
-			view(6)<<"<font color=yellow>*[src] takes an arrow to the knee!*"
+			to_chat(view(6), "<font color=yellow>*[src] takes an arrow to the knee!*")
 			sleep(10)
 			..()
 		physdef = 8
@@ -161,10 +161,10 @@ mob/npc/Enemy/Bosses/BossRush
 
 	Gatekeeper
 		mobDeath()
-			view(8)<<"<font size=[TextSize]><[SayColor]>[src]: Not yet...no one else shall bear this Devil Sword!!"
+			to_chat(view(8), "<font size=[TextSize]><[SayColor]>[src]: Not yet...no one else shall bear this Devil Sword!!")
 			sleep(30)
 			icon_state=""
-			view(6)<<"<font color=yellow>*[src] forces himself back up, and lets out a blood curling scream as his entire body transforms!*"
+			to_chat(view(6), "<font color=yellow>*[src] forces himself back up, and lets out a blood curling scream as his entire body transforms!*")
 			sleep(10)
 			emit_Sound('DTshout.wav')
 			icon='Vergil DT.dmi'
@@ -176,7 +176,7 @@ mob/npc/Enemy/Bosses/BossRush
 				if(prob(1)) createLightningmisc(T,9)
 				if(prob(1)) createLightningmisc(T,5)
 			sleep(50)
-			view(8)<<"<font size=[TextSize]><[SayColor]>[src]: You're going down..."
+			to_chat(view(8), "<font size=[TextSize]><[SayColor]>[src]: You're going down...")
 			emit_Sound('VergilDT1.wav')
 			var/mob/npc/Enemy/Bosses/BossRush/Gatekeeper_DT/A=new/mob/npc/Enemy/Bosses/BossRush/Gatekeeper_DT
 			A.loc=locate(src.x,src.y,src.z)
@@ -203,9 +203,9 @@ mob/npc/Enemy/Bosses/BossRush
 					localmobs[1] = worthyopponent
 			if(localmobs[1])
 				var/mob/worthyopponent = localmobs[1]
-				view(8)<<"<font size=[TextSize]><[SayColor]>[src]: [worthyopponent]..."
+				to_chat(view(8), "<font size=[TextSize]><[SayColor]>[src]: [worthyopponent]...")
 			sleep(20)
-			view(8)<<"<font color=yellow>*[src] falls to the ground, dropping his sword as he fades away*"
+			to_chat(view(8), "<font color=yellow>*[src] falls to the ground, dropping his sword as he fades away*")
 			var/obj/items/Equipment/Weapon/Sword/Yamato/C = new
 			C.loc = locate(src.x,src.y-1,src.z)
 			..()
@@ -257,7 +257,7 @@ obj/HellBossRush/Gatekeeper
 							else
 								alert(usr, "I envy your optimism. May you reign victorious over the accursed one, or die in glory.")
 								emit_Sound('YamatoJudgementCut.wav')
-								view(usr) << "The gatekeeper slashes an object through the air at lightning speed, opening a small rift that sucks in [usr]!"
+								to_chat(view(usr), "The gatekeeper slashes an object through the air at lightning speed, opening a small rift that sucks in [usr]!")
 								sleep(30)
 								usr.BRAllowed=1
 								usr.loc=locate(460,280,9)
@@ -288,7 +288,7 @@ obj/Artifacts/Boosters/SealedGems
 		resistance = 2
 		teq = 3
 		Click()
-			usr<<"The gemstone responds to your touch with somber ocean waves."
+			to_chat(usr, "The gemstone responds to your touch with somber ocean waves.")
 			sleep(10)
 			usr.GotoPlanet("Earth")
 	Lava_Gem
@@ -299,7 +299,7 @@ obj/Artifacts/Boosters/SealedGems
 		spd = 2
 		willpower = 3
 		Click()
-			usr<<"The gemstone responds to your touch with a raging blaze."
+			to_chat(usr, "The gemstone responds to your touch with a raging blaze.")
 			sleep(10)
 			usr.GotoPlanet("Vegeta")
 	Desert_Gem
@@ -310,7 +310,7 @@ obj/Artifacts/Boosters/SealedGems
 		spd = 2
 		defense = 3
 		Click()
-			usr<<"The gemstone responds to your touch with the endless sands of time."
+			to_chat(usr, "The gemstone responds to your touch with the endless sands of time.")
 			sleep(10)
 			usr.GotoPlanet("Desert")
 	Jungle_Gem
@@ -321,7 +321,7 @@ obj/Artifacts/Boosters/SealedGems
 		spd = 2
 		strength = 3
 		Click()
-			usr<<"The gemstone responds to your touch with the adventurous scents of the jungle."
+			to_chat(usr, "The gemstone responds to your touch with the adventurous scents of the jungle.")
 			sleep(10)
 			usr.GotoPlanet("Arconia")
 	Forgotten_Gem
@@ -332,10 +332,10 @@ obj/Artifacts/Boosters/SealedGems
 		ki = 3
 		resistance = 3
 		Click()
-			usr<<"The gemstone responds to your touch with a melody of the past."
+			to_chat(usr, "The gemstone responds to your touch with a melody of the past.")
 			sleep(10)
 			usr.Move(locate(440,387,9))
-			usr<<"The gem returns you to the False Paradise."
+			to_chat(usr, "The gem returns you to the False Paradise.")
 	Ice_Gem
 		icon_state="Ligh Blue Gem"
 		name="Ice Gem"
@@ -344,7 +344,7 @@ obj/Artifacts/Boosters/SealedGems
 		kiskl = 2
 		ki = 3
 		Click()
-			usr<<"The gemstone responds to your touch with the chills of the frozen tundra."
+			to_chat(usr, "The gemstone responds to your touch with the chills of the frozen tundra.")
 			sleep(10)
 			usr.GotoPlanet("Icer Planet")
 	Anguish_Gem
@@ -355,7 +355,7 @@ obj/Artifacts/Boosters/SealedGems
 		resistance = 2
 		defense = 3
 		Click()
-			usr<<"The gemstone responds to your touch with dark premonitions."
+			to_chat(usr, "The gemstone responds to your touch with dark premonitions.")
 			sleep(10)
 			usr.GotoPlanet("Hell")
 	

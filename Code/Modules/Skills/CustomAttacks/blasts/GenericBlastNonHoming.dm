@@ -34,4 +34,4 @@
 		savant.Blast_Gain()
 		//savant.canfight=1
 		savant.speedMod*=1.3
-	else if(savant.Ki<=kireq) savant<<"This requires atleast [kireq] energy to use."
+	else if(savant.Ki<=kireq) to_chat(savant, "This requires atleast [kireq] energy to use.")

@@ -21,10 +21,10 @@
 	skillcost=2
 	after_learn()
 		assignverb(/mob/keyable/verb/Acid_Spit)
-		savant<<"You feel poisonous"
+		to_chat(savant, "You feel poisonous")
 	before_forget()
 		unassignverb(/mob/keyable/verb/Acid_Spit)
-		savant<<"Your poison fades..."
+		to_chat(savant, "Your poison fades...")
 	login()
 		..()
 		assignverb(/mob/keyable/verb/Acid_Spit)
@@ -41,11 +41,11 @@
 	after_learn()
 		savant.genome.add_to_stat("Energy Level",0.5)
 		assignverb(/mob/keyable/verb/Growth_Spurt)
-		savant<<"You feel ready to grow even further! You've learned Growth Spurt!"
+		to_chat(savant, "You feel ready to grow even further! You've learned Growth Spurt!")
 	before_forget()
 		savant.genome.sub_to_stat("Energy Level",0.05)
 		unassignverb(/mob/keyable/verb/Growth_Spurt)
-		savant<<"Your intent to grow lessens."
+		to_chat(savant, "Your intent to grow lessens.")
 	login()
 		..()
 		assignverb(/mob/keyable/verb/Growth_Spurt)
@@ -55,7 +55,7 @@ mob/keyable/verb/Growth_Spurt()//extreme fuckin shanagians here.
 	switch(input(usr,"This will cost you a month of age, in exchange you will gain roughly two times you Max Ki and get some gains to boot.") in list("Yes","No"))
 		if("Yes")
 			if(IsAVampire||immortal||biologicallyimmortal||dead||DeathRegen<2)
-				usr << "You have some circumstance blocking you from using this! (Immortal, dead, or large amounts of Death Regeneration.)"
+				to_chat(usr, "You have some circumstance blocking you from using this! (Immortal, dead, or large amounts of Death Regeneration.)")
 				return
 			Age+=0.1
 			Ki+=MaxKi*2
@@ -73,11 +73,11 @@ mob/keyable/verb/Growth_Spurt()//extreme fuckin shanagians here.
 	after_learn()
 		savant.techniqueBuff+= 0.5
 		assignverb(/mob/keyable/verb/Rock_Paper_Scissors)
-		savant<<"You feel mischievous"
+		to_chat(savant, "You feel mischievous")
 	before_forget()
 		savant.techniqueBuff-= 0.5
 		unassignverb(/mob/keyable/verb/Rock_Paper_Scissors)
-		savant<<"Your intent to cause mischief fades..."
+		to_chat(savant, "Your intent to cause mischief fades...")
 	login()
 		..()
 		assignverb(/mob/keyable/verb/Rock_Paper_Scissors)
@@ -127,10 +127,10 @@ mob/keyable/verb/Rock_Paper_Scissors()
 	skillcost=2
 	after_learn()
 		assignverb(/mob/keyable/verb/Falcon_Punch)
-		savant<<"You feel fire in your hands!"
+		to_chat(savant, "You feel fire in your hands!")
 	before_forget()
 		unassignverb(/mob/keyable/verb/Falcon_Punch)
-		savant<<"Your firey hands fade..."
+		to_chat(savant, "Your firey hands fade...")
 	login()
 		..()
 		assignverb(/mob/keyable/verb/Falcon_Punch)
@@ -146,9 +146,11 @@ mob/keyable/verb/Falcon_Punch()
 		if(!usr.med&&!usr.train&&!usr.KO&&usr.stamina>=kireq&&!usr.basicCD&&usr.canfight)
 			usr.basicCD+=30
 			view(usr)<<output("<font size=[usr.TextSize+1]><font color=red><font face=Old English Text MT>-[usr] yells, 'FALCON...!'","Chatpane.Chat")
+			chatcast(view(usr), "<font size=[usr.TextSize+1]><font color=red><font face=Old English Text MT>-[usr] yells, 'FALCON...!'", "say")
 			emit_Sound('chargepn.wav',2)
 			sleep(10)
 			view(usr)<<output("<font size=[usr.TextSize+1]><font color=red><font face=Old English Text MT>-[usr] yells, 'PUUUUUUUNCH!!'","Chatpane.Chat")
+			chatcast(view(usr), "<font size=[usr.TextSize+1]><font color=red><font face=Old English Text MT>-[usr] yells, 'PUUUUUUUNCH!!'", "say")
 			emit_Sound('falcon.wav',2)
 			emit_Sound('thud.wav',2)
 			usr.stamina-=kireq

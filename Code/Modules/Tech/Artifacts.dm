@@ -12,7 +12,7 @@ obj/Artifacts
 
 obj/Artifacts/proc/OnGrab()
 	Move(container)
-	view(container)<<"<font color=teal><font size=1>[container] picks up [src]."
+	to_chat(view(container), "<font color=teal><font size=1>[container] picks up [src].")
 	WriteToLog("rplog","[container] picks up [src]    ([time2text(world.realtime,"Day DD hh:mm")])")
 	return
 
@@ -21,7 +21,7 @@ obj/Artifacts/proc/OnRelease()
 	container.overlayList-=icon
 	loc=locate(container.x,container.y,container.z)
 	step(src,container.dir)
-	view(container)<<"<font size=1><font color=teal>[container] drops [src]."
+	to_chat(view(container), "<font size=1><font color=teal>[container] drops [src].")
 	container = null
 	return
 
@@ -52,16 +52,16 @@ obj/Artifacts
 			set category=null
 			set src in oview(1)
 			if(Bolted)
-				src<<"It is bolted to the ground, you cannot get it."
+				to_chat(src, "It is bolted to the ground, you cannot get it.")
 				return
 			if(Unmovable)
-				src<<"It is still. You cannot get it."
+				to_chat(src, "It is still. You cannot get it.")
 				return
 			if(usr&&!container)
 				if(!usr.KO)
 					container = usr
 					OnGrab()
-				else usr<<"You cant, you are knocked out."
+				else to_chat(usr, "You cant, you are knocked out.")
 		Drop()
 			set category=null
 			set src in usr

@@ -11,11 +11,11 @@
 
 /datum/skill/Enkumei/after_learn()
 	assignverb(/mob/keyable/verb/Enkumei)
-	savant<<"You can fire an Dark Fire wave!"
+	to_chat(savant, "You can fire an Dark Fire wave!")
 
 /datum/skill/Enkumei/before_forget()
 	unassignverb(/mob/keyable/verb/Enkumei)
-	savant<<"You've forgotten how to fire an Dark Fire wave!?"
+	to_chat(savant, "You've forgotten how to fire an Dark Fire wave!?")
 datum/skill/Enkumei/login(var/mob/logger)
 	..()
 	assignverb(/mob/keyable/verb/Enkumei)
@@ -85,4 +85,4 @@ mob/keyable/verb/Enkumei()
 			charging=1
 			spawn usr.addchargeoverlay()
 		return
-	else src << "You need at least [kireq] Ki!"
+	else to_chat(src, "You need at least [kireq] Ki!")

@@ -11,11 +11,11 @@
 	expbarrier=10000
 
 /datum/skill/general/Hardened_Body/after_learn()
-	savant<<"Your body grows a thick layer of leather or padding over the top of your regular skin."
+	to_chat(savant, "Your body grows a thick layer of leather or padding over the top of your regular skin.")
 	savant.physdefBuff += 0.2
 
 /datum/skill/general/Hardened_Body/before_forget()
-	savant<<"The thick layer of leather that once laid on top of your skin disintergrates, leaving somewhat vunerable skin underneath."
+	to_chat(savant, "The thick layer of leather that once laid on top of your skin disintergrates, leaving somewhat vunerable skin underneath.")
 	switch(level)
 		if(0)
 			savant.physdefBuff -= 0.2
@@ -34,13 +34,13 @@
 		if(1)
 			if(levelup)
 				levelup = 0
-				savant << "Your skin becomes even thicker!."
+				to_chat(savant, "Your skin becomes even thicker!.")
 				savant.physdefBuff += 0.2
 			exp+=1
 		if(2)
 			if(levelup)
 				levelup = 0
-				savant << "Your skin is as tough as armor now, what have you been eating?"
+				to_chat(savant, "Your skin is as tough as armor now, what have you been eating?")
 				savant.physdefBuff += 0.2
 
 /datum/skill/general/LankyLegs
@@ -54,12 +54,12 @@
 	expbarrier=10000
 
 /datum/skill/general/LankyLegs/after_learn()
-	savant<<"Your legs contort into a taller shape, and vague definitions of muscle ripple underneath"
+	to_chat(savant, "Your legs contort into a taller shape, and vague definitions of muscle ripple underneath")
 	savant.speedBuff += 0.1
 	savant.techniqueBuff += 0.1
 
 /datum/skill/general/LankyLegs/before_forget()
-	savant<<"The legs that once supported you proudly wither into their previous smaller and weaker shape."
+	to_chat(savant, "The legs that once supported you proudly wither into their previous smaller and weaker shape.")
 	switch(level)
 		if(0)
 			savant.speedBuff -= 0.1
@@ -82,14 +82,14 @@
 		if(1)
 			if(levelup)
 				levelup = 0
-				savant << "Your legs become even stronger!."
+				to_chat(savant, "Your legs become even stronger!.")
 				savant.speedBuff += 0.1
 				savant.techniqueBuff += 0.1
 			exp+=1
 		if(2)
 			if(levelup)
 				levelup = 0
-				savant << "Your legs have become finely tuned running machines."
+				to_chat(savant, "Your legs have become finely tuned running machines.")
 				savant.speedBuff += 0.1
 				savant.techniqueBuff += 0.1
 
@@ -102,11 +102,11 @@
 	tier = 1
 
 /datum/skill/general/ProudArms/after_learn()
-	savant<<"Your arms shake outwards, muscle flailing to the surface as your limbs become defined."
+	to_chat(savant, "Your arms shake outwards, muscle flailing to the surface as your limbs become defined.")
 	savant.physoffBuff += 0.2
 
 /datum/skill/general/ProudArms/before_forget()
-	savant<<"The arms that once supported you proudly wither into their previous smaller and weaker shape."
+	to_chat(savant, "The arms that once supported you proudly wither into their previous smaller and weaker shape.")
 	savant.physoffBuff -= 0.2
 
 /datum/skill/general/Willed
@@ -118,13 +118,13 @@
 	tier = 1
 
 /datum/skill/general/Willed/after_learn()
-	savant<<"Your mind hardens as the tasks before you become smaller. What was once a insurmountable mountain looks now like a peaceful trail, dotting up a hill."
+	to_chat(savant, "Your mind hardens as the tasks before you become smaller. What was once a insurmountable mountain looks now like a peaceful trail, dotting up a hill.")
 	savant.willpowerMod += 0.1
 	savant.staminagainMod += 0.1
 	savant.satiationMod += 0.1
 
 /datum/skill/general/Willed/before_forget()
-	savant<<"Your mind weakens, and the tasks before you become larger than life."
+	to_chat(savant, "Your mind weakens, and the tasks before you become larger than life.")
 	savant.willpowerMod -= 0.1
 	savant.staminagainMod -= 0.1
 	savant.satiationMod -= 0.1

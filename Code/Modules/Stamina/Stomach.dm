@@ -4,14 +4,14 @@ mob/proc/CheckStomach()
 	currentNutrition = max(0,currentNutrition)
 	if(currentNutrition>maxNutrition)
 		currentNutrition=maxNutrition
-		usr<<"You ate too much... and you throw up a little. It isn't visible, but it might be a good idea to eat a little lighter next time."
+		to_chat(usr, "You ate too much... and you throw up a little. It isn't visible, but it might be a good idea to eat a little lighter next time.")
 	if(stamina / (max(1,maxstamina)) <= 0.25 && Hunger == 0)
-		view()<<"[usr]'s belly growls. [usr] needs food!"
-		usr<<"<font color=red> You need food BAD!!!"
+		to_chat(view(), "[usr]'s belly growls. [usr] needs food!")
+		to_chat(usr, "<font color=red> You need food BAD!!!")
 		Hunger=1
 	if(currentNutrition==0&&Hunger==0&&stamina<maxstamina*0.6)
-		view()<<"[usr]'s belly growls. [usr] could probably eat more!"
-		usr<<"<font color=red> You might wanna eat."
+		to_chat(view(), "[usr]'s belly growls. [usr] could probably eat more!")
+		to_chat(usr, "<font color=red> You might wanna eat.")
 		Hunger=1
 	if(stamina<maxstamina*0.96)
 		NutritionFilled = 0

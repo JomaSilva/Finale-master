@@ -18,7 +18,7 @@ mob/proc/TestDeathRegen() //true if dead, false if not dead.
 				overlaychanged=1
 				if(zenkaiStore)
 					zenkaiStore /= 5
-				src<<"<font color=red>Your memories have been saved and implanted into a new body. Your old body was terminated or reached expiration."
+				to_chat(src, "<font color=red>Your memories have been saved and implanted into a new body. Your old body was terminated or reached expiration.")
 				ReviveMe()
 				WriteToLog("rplog","[src] was rebuilt. ([time2text(world.realtime,"Day DD hh:mm")])")
 				loc = locate(A.x,A.y,A.z)
@@ -32,7 +32,7 @@ mob/proc/TestDeathRegen() //true if dead, false if not dead.
 			overlaychanged=1
 			if(zenkaiStore)
 				zenkaiStore /= 5
-			src<<"<font color=red>[CC]: Your memories have been saved and implanted into a new body. Your old body was terminated or reached expiration."
+			to_chat(src, "<font color=red>[CC]: Your memories have been saved and implanted into a new body. Your old body was terminated or reached expiration.")
 			ReviveMe()
 			S.controller = signature
 			WriteToLog("rplog","[src] was rebuilt. ([time2text(world.realtime,"Day DD hh:mm")])")
@@ -128,7 +128,7 @@ mob/proc/TestDeathRegen() //true if dead, false if not dead.
 				B.icon_state="Torso"
 				C.icon='Body Parts.dmi'
 				C.icon_state="Guts"
-		src<<"You will regenerate in 10 seconds."
+		to_chat(src, "You will regenerate in 10 seconds.")
 		WriteToLog("rplog","[src] will regenerate in 10 seconds    ([time2text(world.realtime,"Day DD hh:mm")])")
 		deathregentimer=100
 		sleep(100)
@@ -161,7 +161,7 @@ mob/proc/TestDeathRegen() //true if dead, false if not dead.
 			A.icon='Majin1.dmi'
 			A.icon_state="chunk1"
 			A.loc=locate(x+rand(-5,5),y+rand(-5,5),z)
-		src<<"You will regenerate in 30 seconds."
+		to_chat(src, "You will regenerate in 30 seconds.")
 		WriteToLog("rplog","[src] will regenerate in 30 seconds    ([time2text(world.realtime,"Day DD hh:mm")])")
 		deathregentimer=300
 		sleep(300)
@@ -175,7 +175,7 @@ mob/proc/TestDeathRegen() //true if dead, false if not dead.
 		return FALSE //End the cycle and do not continue
 	else if(DeathRegen>=4)
 		loc=locate(250,250,25)
-		src<<"You will regenerate in 1 minutes."
+		to_chat(src, "You will regenerate in 1 minutes.")
 		WriteToLog("rplog","[src] will regenerate in 1 minute    ([time2text(world.realtime,"Day DD hh:mm")])")
 		deathregentimer=600
 		sleep(600)
@@ -183,7 +183,7 @@ mob/proc/TestDeathRegen() //true if dead, false if not dead.
 		deathregening=0 //
 		return FALSE
 	else if(DeathRegen>=2)
-		src<<"You will regenerate in 2 minutes."
+		to_chat(src, "You will regenerate in 2 minutes.")
 		WriteToLog("rplog","[src] will regenerate in 2 minutes    ([time2text(world.realtime,"Day DD hh:mm")])")
 		deathregentimer=1200
 		sleep(1200)
@@ -191,7 +191,7 @@ mob/proc/TestDeathRegen() //true if dead, false if not dead.
 		deathregening=0 //
 		return FALSE
 	else if(DeathRegen)
-		src<<"You will regenerate in 4 minutes."
+		to_chat(src, "You will regenerate in 4 minutes.")
 		WriteToLog("rplog","[src] will regenerate in 4 minutes    ([time2text(world.realtime,"Day DD hh:mm")])")
 		deathregentimer=2400
 		sleep(2400)

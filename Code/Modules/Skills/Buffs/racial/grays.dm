@@ -36,14 +36,14 @@ mob/var
 		if(1)
 			if(levelup == 1)
 				levelup = 0
-				savant << "After much practice, you have mastered Full Power!"
+				to_chat(savant, "After much practice, you have mastered Full Power!")
 				assignverb(/mob/keyable/verb/Full_Power)
 			if(savant.isBuffed(/obj/buff/FullPower))
 				if(savant.jirenskill<100)
 					savant.jirenskill+=0.5
 				savant.Ki-=round(100/savant.jirenskill,1)*savant.BaseDrain
 				if(savant.Ki<=(savant.MaxKi/20))
-					savant<<"You're too tired to concentrate your aura."
+					to_chat(savant, "You're too tired to concentrate your aura.")
 					savant.stopbuff(/obj/buff/FullPower)
 
 datum/skill/fullpower/login(var/mob/logger)
@@ -54,7 +54,7 @@ datum/skill/fullpower/login(var/mob/logger)
 
 /datum/skill/fullpower/after_learn()
 	switch(level)
-		if(0) savant << "You are on the verge of learning to focus your power. You should try burning up Ki to get a grip on this skill."
+		if(0) to_chat(savant, "You are on the verge of learning to focus your power. You should try burning up Ki to get a grip on this skill.")
 		if(1)
 			assignverb(/mob/keyable/verb/Full_Power)
 			savant.jirenskill = 1
@@ -66,10 +66,10 @@ mob/keyable/verb/Full_Power()
 	set category="Skills"
 	if(isBuffed(/obj/buff/FullPower)) stopbuff(/obj/buff/FullPower)
 	else if(src.Ki<(MaxKi/20))
-		src<<"You're too tired to concentrate your aura."
+		to_chat(src, "You're too tired to concentrate your aura.")
 		return
 	else
-		usr<<"You begin intensely concentrating your aura using strange alien powers."
+		to_chat(usr, "You begin intensely concentrating your aura using strange alien powers.")
 		animate(usr,time=7,color=rgb(233, 93, 93))
 		startbuff(/obj/buff/FullPower,'Aura FullPower.dmi')
 		usr.color = null
@@ -91,7 +91,7 @@ mob/keyable/verb/Full_Power()
 		container.Tkioff+=1.2
 		container.Tspeed+=1.2
 	DeBuff()
-		container<<"You relax your aura."
+		to_chat(container, "You relax your aura.")
 		container.overlayList-=icon
 		container.overlayList-=icon
 		container.overlaychanged=1

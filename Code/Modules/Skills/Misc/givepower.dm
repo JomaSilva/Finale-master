@@ -12,11 +12,11 @@
 /datum/skill/GivePower/after_learn()
 	savant.cangivepower=1
 	assignverb(/mob/keyable/verb/Give_Power)
-	savant<<"You have the ability to temporarily transfer your health and energy to others to boost their power."
+	to_chat(savant, "You have the ability to temporarily transfer your health and energy to others to boost their power.")
 /datum/skill/GivePower/before_forget()
 	savant.cangivepower=0
 	unassignverb(/mob/keyable/verb/Give_Power)
-	savant<<"You have forgone the ability to temporarily transfer your health and energy to others to boost their power."
+	to_chat(savant, "You have forgone the ability to temporarily transfer your health and energy to others to boost their power.")
 
 /datum/skill/GivePower/login()
 	..()
@@ -35,7 +35,7 @@ mob/keyable/verb/Give_Power()
 	else M = input(usr, "Select a player or pet.") in oview(5)
 	if(usr.cangivepower&&!usr.KO&&!gavepower) if(M.client || istype(M,/mob/npc/pet))
 		givingpower=1
-		view(usr,12)<<"[usr] transfers their energy to [M]!!"
+		to_chat(view(usr,12), "[usr] transfers their energy to [M]!!")
 		usr.gavepower=100
 		var/gaveamount = 0
 		while(givingpower && Ki >= 0.01*MaxKi)

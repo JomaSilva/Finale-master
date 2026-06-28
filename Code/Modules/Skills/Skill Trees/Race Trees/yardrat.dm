@@ -29,11 +29,11 @@
 	tier = 2
 	maxlevel = 1
 	after_learn()
-		savant<<"Your body's speed changes, you start to 'flit' every so often in terms of movement."
+		to_chat(savant, "Your body's speed changes, you start to 'flit' every so often in terms of movement.")
 		savant.speedBuff += 1
 		savant.pitted = 1
 	before_forget()
-		savant<<"Your body's speed returns to normal."
+		to_chat(savant, "Your body's speed returns to normal.")
 		savant.speedBuff -= 1
 		savant.pitted = 0
 
@@ -47,14 +47,14 @@
 	tier = 2
 	maxlevel = 1
 	after_learn()
-		savant<<"Your body begins to take in Light."
+		to_chat(savant, "Your body begins to take in Light.")
 		savant.willpowerMod += 1
 		savant.kiregenMod += 0.5
 		savant.staminagainMod += 0.3
 		savant.satiationMod += 0.3
 		savant.pitted = 2
 	before_forget()
-		savant<<"Your body returns to normal."
+		to_chat(savant, "Your body returns to normal.")
 		savant.willpowerMod -= 1
 		savant.kiregenMod -= 0.5
 		savant.staminagainMod -= 0.3
@@ -81,15 +81,15 @@ mob/var
 	common_sense = TRUE
 
 /datum/skill/shunkanido/after_learn()
-	savant<<"You feel ready to teleport"
+	to_chat(savant, "You feel ready to teleport")
 	if(savant.Race=="Yardrat")
-		savant<<"You were born for this."
+		to_chat(savant, "You were born for this.")
 		savant.teleskill=70
-	else savant<<"You feel nervous."
+	else to_chat(savant, "You feel nervous.")
 	assignverb(/mob/keyable/verb/Instant_Transmission)
 /datum/skill/shunkanido/before_forget()
-	savant<<"You don't remember how to teleport."
-	if(!teacher)savant<<"It's probably for the best."
+	to_chat(savant, "You don't remember how to teleport.")
+	if(!teacher)to_chat(savant, "It's probably for the best.")
 	savant.teleskill=1
 	unassignverb(/mob/keyable/verb/Instant_Transmission)
 /datum/skill/shunkanido/login()
@@ -108,7 +108,7 @@ mob/keyable/verb/Instant_Transmission()
 		Choices.Add(generateShunkanList())
 		var/Selection=input("What ki signature do you want to teleport to?") in Choices
 		if(Choices.len==1)
-			usr<<"You have no valid targets. Add targets to your Contacts list to teleport to them, or get closer to them."
+			to_chat(usr, "You have no valid targets. Add targets to your Contacts list to teleport to them, or get closer to them.")
 			return
 		if(Selection=="Cancel")return
 		for(var/mob/nM in player_list)
@@ -132,7 +132,7 @@ mob/keyable/verb/Instant_Transmission()
 				var/loctest=src.loc
 				//usr.canfight=0
 				src.move=0
-				src<<"You're teleporting, don't move..."
+				to_chat(src, "You're teleporting, don't move...")
 				sleep(max(600/usr.teleskill,15))
 				if(src.loc==loctest)
 					//src.canfight=1
@@ -145,26 +145,26 @@ mob/keyable/verb/Instant_Transmission()
 						src.teleskill=min(300,src.teleskill)
 					Ki-=kireq*BaseDrain
 					src.Ki=max(Ki,0)
-					usr<<"You successfully located your target..."
-					oview(usr)<<"[usr] disappears in a flash!"
+					to_chat(usr, "You successfully located your target...")
+					to_chat(oview(usr), "[usr] disappears in a flash!")
 					emit_Sound('Instant_Pop.wav')
 					for(var/mob/nnM in oview(1)) if(M.client)
 						nnM.loc=M.loc
-						nnM<<"[usr] brings you with them using Instant Transmission."
+						to_chat(nnM, "[usr] brings you with them using Instant Transmission.")
 						flick('Zanzoken.dmi',nnM)
 					usr.loc=M.loc
 					flick('Zanzoken.dmi',src)
 					emit_Sound('Instant_Pop.wav')
-					view(usr)<<"[usr] appears in an instant!"
+					to_chat(view(usr), "[usr] appears in an instant!")
 					return
 				else
 					//src.canfight=1
 					src.move=1
-					src<<"You moved!"
+					to_chat(src, "You moved!")
 					return
 			else return
 	else
-		src<<"You can't do that right now!"
+		to_chat(src, "You can't do that right now!")
 		return
 
 mob/proc/generateShunkanList()
@@ -209,12 +209,12 @@ datum/skill/yardrat/Light_Buster
 	common_sense = TRUE
 
 	after_learn()
-		savant<<"You feel ready to MOVE"
+		to_chat(savant, "You feel ready to MOVE")
 		if(savant.Race=="Yardrat")
-			savant<<"You were born for this."
+			to_chat(savant, "You were born for this.")
 		assignverb(/mob/keyable/verb/Light_Buster)
 	before_forget()
-		savant<<"You don't remember how to teleport."
+		to_chat(savant, "You don't remember how to teleport.")
 		unassignverb(/mob/keyable/verb/Light_Buster)
 	login()
 		..()
@@ -227,7 +227,7 @@ datum/skill/yardrat/Light_Buster
 					levelup=0
 			if(2)
 				if(levelup)
-					savant << "Your skill at blitzing people got better..."
+					to_chat(savant, "Your skill at blitzing people got better...")
 					levelup=0
 
 mob/keyable/verb/Light_Buster()
@@ -243,4 +243,4 @@ mob/keyable/verb/Light_Buster()
 		doAttack(target,2,0,0,"instantly strikes",0,1)
 		doAttack(target,2,0,0,"instantly strikes",0,1)
 		Skill_EXP_Add(/datum/skill/yardrat/Light_Buster,1)
-	else usr << "Need a target."
+	else to_chat(usr, "Need a target.")

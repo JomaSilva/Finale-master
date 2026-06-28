@@ -11,11 +11,11 @@
 
 /datum/skill/rank/GuidedBall/after_learn()
 	assignverb(/mob/keyable/verb/GuidedBall)
-	savant<<"You can fire an [name]!"
+	to_chat(savant, "You can fire an [name]!")
 
 /datum/skill/rank/GuidedBall/before_forget()
 	unassignverb(/mob/keyable/verb/GuidedBall)
-	savant<<"You've forgotten how to fire an [name]!?"
+	to_chat(savant, "You've forgotten how to fire an [name]!?")
 datum/skill/rank/GuidedBall/login(var/mob/logger)
 	..()
 	assignverb(/mob/keyable/verb/GuidedBall)*/
@@ -87,7 +87,7 @@ mob/var/GuideBombIcon='30.dmi'
 				step(A,A.dir)
 			usr.Guiding = 0
 			A.Burnout()
-		else usr<<"You dont have enough energy."
+		else to_chat(usr, "You dont have enough energy.")
 	else if(usr.Guiding)
 		usr.Guiding=0
 

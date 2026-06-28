@@ -11,11 +11,11 @@ datum/skill/rank/Makkankosappo
 
 datum/skill/rank/Makkankosappo/after_learn()
 	assignverb(/mob/keyable/verb/Makkankosappo)
-	savant<<"You can use Final Flash!"
+	to_chat(savant, "You can use Final Flash!")
 
 datum/skill/rank/Makkankosappo/before_forget()
 	unassignverb(/mob/keyable/verb/Makkankosappo)
-	savant<<"You've forgotten how to use the Final Flash?"
+	to_chat(savant, "You've forgotten how to use the Final Flash?")
 
 datum/skill/rank/Makkankosappo/login(var/mob/logger)
 	..()

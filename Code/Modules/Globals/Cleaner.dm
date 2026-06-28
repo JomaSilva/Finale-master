@@ -48,7 +48,7 @@ var/legend_override=0
 proc/Cleaner()
 	set waitfor=0
 	set background = 1
-	world << "Maid-kun is cleaning up the map!"
+	to_chat(world, "Maid-kun is cleaning up the map!")
 	if(!firstcleaner)
 		for(var/obj/attack/A in attack_list) A.deleteMe()
 		for(var/obj/Crater/D in obj_list) D.deleteMe()
@@ -101,4 +101,4 @@ proc/CleanTurfOverlays()
 			T.overlays-=T.overlays //this needs to be redone eventually, but this is essentially there to wipe annoying transformation artifacts.
 			//also, uh, this is really slow.
 			//like freezith gameith for fucking 5 whole entire minutes dwarfing the SSJ3 transformation
-		world << "Turf overlays cleared."
+		to_chat(world, "Turf overlays cleared.")

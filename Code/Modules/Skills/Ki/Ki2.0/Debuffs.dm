@@ -73,8 +73,8 @@ mob/var
 			spawn(debuffCD)
 			debuffCD=0
 		else if(debuffCD)
-			usr<<"You can't do this yet!"
+			to_chat(usr, "You can't do this yet!")
 		else if(!usr.target)
-			usr<<"You need a target to use this."
+			to_chat(usr, "You need a target to use this.")
 		else
-			usr<<"You cannot do this right now."
+			to_chat(usr, "You cannot do this right now.")

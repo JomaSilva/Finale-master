@@ -240,7 +240,7 @@ obj/buildwindow
 					return
 				if(testW!=32||testH!=32)
 					usr.CTileSelection = null
-					usr << "Tile icons can't be bigger or smaller than 32 by 32."
+					to_chat(usr, "Tile icons can't be bigger or smaller than 32 by 32.")
 					return
 			usr.CTileSelection.icon_state = input(usr,"Icon state?") as text
 			if(alert(usr,"Is this tile a door? Doors need a 'Open' state and a 'Closed' state! ","","Yes","No")=="Yes")
@@ -264,7 +264,7 @@ obj/buildwindow
 					return
 				if(testW>512||testH>=512)
 					usr.CDecorSelection = null
-					usr << "Decor icons can't be bigger than 512 pixels."
+					to_chat(usr, "Decor icons can't be bigger than 512 pixels.")
 					return
 			usr.CDecorSelection.icon_state = input(usr,"Icon state?") as text
 			usr.CDecorSelection.name = input(usr,"Name?") as text
@@ -284,7 +284,7 @@ obj/buildwindow
 					return
 				if(testW>512||testH>=512)
 					usr.CBarrierSelection = null
-					usr << "Barrier icons can't be bigger than 512 pixels."
+					to_chat(usr, "Barrier icons can't be bigger than 512 pixels.")
 					return
 			switch(input(usr,"Select a direction for the barrier. (Note: North/South are basically the same. Use south if you know what you're doing.)") in list("Cancel","North","West","East","South"))
 				if("North")
@@ -309,42 +309,42 @@ obj/buildwindow
 			set hidden = 1
 			usr.iscustombuilding = 0
 			usr.buildpath = usr.TileSelection.buildtype
-			usr << "Building on! Set!"
+			to_chat(usr, "Building on! Set!")
 			usr.isbuilding = 1
 
 		buildwindow2()
 			set hidden = 1
 			usr.iscustombuilding = 0
 			usr.buildpath = usr.DecorSelection.buildtype
-			usr << "Building on! Set!"
+			to_chat(usr, "Building on! Set!")
 			usr.isbuilding = 1
 
 		buildwindow3()
 			set hidden = 1
 			usr.iscustombuilding = 0
 			usr.buildpath = usr.BarrierSelection.buildtype
-			usr << "Building on! Set!"
+			to_chat(usr, "Building on! Set!")
 			usr.isbuilding = 1
 
 		buildwindow4()
 			set hidden = 1
 			usr.buildpath = /turf/build/wall
 			usr.iscustombuilding = 1
-			usr << "Building on! Set!"
+			to_chat(usr, "Building on! Set!")
 			usr.isbuilding = 1
 
 		buildwindow5()
 			set hidden = 1
 			usr.buildpath = /obj/buildables/flowers
 			usr.iscustombuilding = 2
-			usr << "Building on! Set!"
+			to_chat(usr, "Building on! Set!")
 			usr.isbuilding = 1
 
 		buildwindow6()
 			set hidden = 1
 			usr.buildpath = /obj/barrier
 			usr.iscustombuilding = 3
-			usr << "Building on! Set!"
+			to_chat(usr, "Building on! Set!")
 			usr.isbuilding = 1
 
 		Change_Layer()

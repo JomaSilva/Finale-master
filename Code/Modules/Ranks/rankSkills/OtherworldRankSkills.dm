@@ -11,10 +11,10 @@
 
 /datum/skill/rank/Restore_Youth/after_learn()
 	assignverb(/mob/Rank/verb/Restore_Youth)
-	savant<<"You can restore somebody's youth!"
+	to_chat(savant, "You can restore somebody's youth!")
 /datum/skill/rank/Restore_Youth/before_forget()
 	unassignverb(/mob/Rank/verb/Restore_Youth)
-	savant<<"You've forgotten how to restore a peron's youth!"
+	to_chat(savant, "You've forgotten how to restore a peron's youth!")
 /datum/skill/rank/Restore_Youth/login(var/mob/logger)
 	..()
 	assignverb(/mob/Rank/verb/Restore_Youth)
@@ -31,10 +31,10 @@
 
 /datum/skill/rank/Keep_Body/after_learn()
 	assignverb(/mob/Rank/verb/Keep_Body)
-	savant<<"You can let someone keep their body while dead!"
+	to_chat(savant, "You can let someone keep their body while dead!")
 /datum/skill/rank/Keep_Body/before_forget()
 	unassignverb(/mob/Rank/verb/Keep_Body)
-	savant<<"You've forgotten how to make someone able to keep their body!"
+	to_chat(savant, "You've forgotten how to make someone able to keep their body!")
 /datum/skill/rank/Keep_Body/login(var/mob/logger)
 	..()
 	assignverb(/mob/Rank/verb/Keep_Body)
@@ -51,10 +51,10 @@
 
 /datum/skill/rank/Dead/after_learn()
 	assignverb(/mob/Admin1/verb/Dead)
-	savant<<"You can keep track of the dead!"
+	to_chat(savant, "You can keep track of the dead!")
 /datum/skill/rank/Dead/before_forget()
 	unassignverb(/mob/Admin1/verb/Dead)
-	savant<<"You've forgotten how to keep track of the dead?"
+	to_chat(savant, "You've forgotten how to keep track of the dead?")
 /datum/skill/rank/Dead/login(var/mob/logger)
 	..()
 	assignverb(/mob/Admin1/verb/Dead)
@@ -72,10 +72,10 @@
 
 /datum/skill/rank/Unlock_Potential/after_learn()
 	assignverb(/mob/Rank/verb/Unlock_Potential)
-	savant<<"You can unlock potential!"
+	to_chat(savant, "You can unlock potential!")
 /datum/skill/rank/Unlock_Potential/before_forget()
 	unassignverb(/mob/Rank/verb/Unlock_Potential)
-	savant<<"You've forgotten how to unlock potential!"
+	to_chat(savant, "You've forgotten how to unlock potential!")
 /datum/skill/rank/Unlock_Potential/login(var/mob/logger)
 	..()
 	assignverb(/mob/Rank/verb/Unlock_Potential)
@@ -92,10 +92,10 @@
 
 /datum/skill/rank/Reincarnate/after_learn()
 	assignverb(/mob/Rank/verb/Reincarnate_Mob)
-	savant<<"You can reincarnate!"
+	to_chat(savant, "You can reincarnate!")
 /datum/skill/rank/Reincarnate/before_forget()
 	unassignverb(/mob/Rank/verb/Reincarnate_Mob)
-	savant<<"You've forgotten how to reincarnate!?"
+	to_chat(savant, "You've forgotten how to reincarnate!?")
 /datum/skill/rank/Reincarnate/login(var/mob/logger)
 	..()
 	assignverb(/mob/Rank/verb/Reincarnate_Mob)
@@ -112,10 +112,10 @@
 
 /datum/skill/rank/Judge/after_learn()
 	assignverb(/mob/Rank/verb/Go_To_Heaven_Or_Hell)
-	savant<<"You can judge!"
+	to_chat(savant, "You can judge!")
 /datum/skill/rank/Judge/before_forget()
 	unassignverb(/mob/Rank/verb/Go_To_Heaven_Or_Hell)
-	savant<<"You've forgotten how to judge!?"
+	to_chat(savant, "You've forgotten how to judge!?")
 /datum/skill/rank/Judge/login(var/mob/logger)
 	..()
 	assignverb(/mob/Rank/verb/Go_To_Heaven_Or_Hell)
@@ -131,10 +131,10 @@
 	enabled=0
 	after_learn()
 		assignverb(/mob/Rank/verb/Revive)
-		savant<<"You can Revive!"
+		to_chat(savant, "You can Revive!")
 	before_forget()
 		unassignverb(/mob/Rank/verb/Revive)
-		savant<<"You've forgotten how to Revive!?"
+		to_chat(savant, "You've forgotten how to Revive!?")
 	login(var/mob/logger)
 		..()
 		assignverb(/mob/Rank/verb/Revive)
@@ -149,13 +149,13 @@
 	skillcost =2
 	enabled=0
 	after_learn()
-		savant<<"You feel your magic well up inside you!."
+		to_chat(savant, "You feel your magic well up inside you!.")
 		savant.known_ritual_dm_types += /obj/Ritual/Ritual_of_Might_Creation
 		savant.magiBuff+=0.5
-		savant<<"You can now create the Fruit of the Tree of Might!"
-		savant<<"The magic words are 'minmax'. You need the Essence of Space and Silverush."
+		to_chat(savant, "You can now create the Fruit of the Tree of Might!")
+		to_chat(savant, "The magic words are 'minmax'. You need the Essence of Space and Silverush.")
 	before_forget()
-		savant<<"Your magic vanishes..."
+		to_chat(savant, "Your magic vanishes...")
 		savant.known_ritual_dm_types += /obj/Ritual/Ritual_of_Might_Creation
 		savant.magiBuff-=0.5
 
@@ -171,7 +171,7 @@ mob/Rank/verb/Restore_Youth()
 		if("Yes")
 			M.Age=age
 			M.Body=age
-		if("No") usr<<"[M] declined your offer."
+		if("No") to_chat(usr, "[M] declined your offer.")
 //All Kais
 mob/Rank/verb/
 	Go_To_Planet()
@@ -183,7 +183,7 @@ mob/Rank/verb/
 			if("West") loc=locate(100,180,9)
 			if("Grand")
 				if(Grand_Kai==key|Supreme_Kai==key) loc=locate(90,250,8)
-				else usr<<"Only Supreme or Grand Kai can teleport there."
+				else to_chat(usr, "Only Supreme or Grand Kai can teleport there.")
 //King Yemma
 mob/Rank/verb/
 	Go_To_Heaven_Or_Hell()
@@ -196,29 +196,29 @@ mob/Rank/verb/Keep_Body(mob/M in view(src))
 	set category="Other"
 	if(!M.KeepsBody)
 		M.KeepsBody=1
-		usr<<"You have made it so [M] will keep their body when they die."
+		to_chat(usr, "You have made it so [M] will keep their body when they die.")
 	else
 		M.KeepsBody=0
-		usr<<"You have made it so [M] will not keep their body when they die."
+		to_chat(usr, "You have made it so [M] will not keep their body when they die.")
 mob/Rank/verb/Reincarnate_Mob(mob/M in oview(usr))
 	set name = "Reincarnate"
 	set category="Skills"
 	if(M.dead)
 		switch(input(M,"[usr] has offered to help reincarnate you into another body and mind, this will purify your spirit and erase your memories, starting your life in the living world all over a. Do you want to do this?", "", text) in list ("Yes", "No",))
 			if("Yes") spawn M.Reincarnate()
-			if("No") view(M)<<"[M] declines being reincarnated."
-	else usr<<"They are not dead..."
+			if("No") to_chat(view(M), "[M] declines being reincarnated.")
+	else to_chat(usr, "They are not dead...")
 
 mob/Admin1/verb
 	Dead()
 		set category="Admin"
-		for(var/mob/M) if(M.dead) usr<<"<font color=green>[M] is dead."
+		for(var/mob/M) if(M.dead) to_chat(usr, "<font color=green>[M] is dead.")
 
 mob/Rank/verb/Revive()
 	set name = "Revive"
 	set category = "Skills"
 	if(usr.dead)
-		usr << "You can't be dead to use this!"
+		to_chat(usr, "You can't be dead to use this!")
 		return
 	var/list/rezList = list()
 	for(var/mob/M in get_step(usr,usr.dir))
@@ -228,7 +228,7 @@ mob/Rank/verb/Revive()
 	if(rezList.len==1)
 		var/mob/M = rezList[1]
 		WriteToLog("admin","[usr]([key]) revived [M.name]([M.key]) at [time2text(world.realtime,"Day DD hh:mm")]")
-		view(usr)<<"[usr] has resurrected [M.name] from the dead!"
+		to_chat(view(usr), "[usr] has resurrected [M.name] from the dead!")
 		M.ReviveMe()
 		M.KO=0
 		M.SpreadHeal(100)
@@ -239,7 +239,7 @@ mob/Rank/verb/Revive()
 		M.overlayList-='Halo.dmi'
 		M.overlaychanged=1
 		if(M.ResurrectedCount>1)
-			view(usr)<<"[usr] trades [usr]'s life for the resurrection!"
+			to_chat(view(usr), "[usr] trades [usr]'s life for the resurrection!")
 			usr.dead=1
 			usr.overlayList+='Halo.dmi'
 			usr.overlaychanged=1
@@ -249,7 +249,7 @@ mob/Rank/verb/Revive()
 		if(ismob(choice))
 			var/mob/M = choice
 			WriteToLog("admin","[usr]([key]) revived [M.name]([M.key]) at [time2text(world.realtime,"Day DD hh:mm")]")
-			view(usr)<<"[usr] has resurrected [M.name] from the dead!"
+			to_chat(view(usr), "[usr] has resurrected [M.name] from the dead!")
 			M.ReviveMe()
 			M.KO=0
 			M.SpreadHeal(100)
@@ -260,7 +260,7 @@ mob/Rank/verb/Revive()
 			M.overlayList-='Halo.dmi'
 			M.overlaychanged=1
 			if(M.ResurrectedCount>1)
-				view(usr)<<"[usr] trades [usr]'s life for the resurrection!"
+				to_chat(view(usr), "[usr] trades [usr]'s life for the resurrection!")
 				usr.dead=1
 				usr.overlayList+='Halo.dmi'
 				usr.overlaychanged=1

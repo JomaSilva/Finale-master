@@ -23,7 +23,7 @@ mob/keyable/verb //assassin skills (precise)
 				target.stagger -= 1
 			sleep(15)
 			attacking = 0
-		else usr<<"You must be combat ready (not be stunned, be able to attack, and not have a cooldown happening (Basic CD = -[basicCD/10]- seconds)) and have at least [kireq] ki."
+		else to_chat(usr, "You must be combat ready (not be stunned, be able to attack, and not have a cooldown happening (Basic CD = -[basicCD/10]- seconds)) and have at least [kireq] ki.")
 	Reverb() //An attack, that on success, causes more damage to the opponent over time.
 		set category="Skills"
 		var/kireq=usr.Ephysoff*BaseDrain*12
@@ -48,7 +48,7 @@ mob/keyable/verb //assassin skills (precise)
 				target.stagger -= 1
 			sleep(20)
 			attacking = 0
-		else usr<<"You must be combat ready (not be stunned, be able to attack, and not have a cooldown happening (Basic CD = -[basicCD/10]- seconds)) and have at least [kireq] ki."
+		else to_chat(usr, "You must be combat ready (not be stunned, be able to attack, and not have a cooldown happening (Basic CD = -[basicCD/10]- seconds)) and have at least [kireq] ki.")
 	Precise_Explosion() //Attacks the targeted limb with a attack that may axplode it
 		set category="Skills"
 		var/kireq=usr.Ephysoff*BaseDrain*15
@@ -69,18 +69,18 @@ mob/keyable/verb //assassin skills (precise)
 				target.stagger -= 1
 			sleep(20)
 			attacking = 0
-		else usr<<"You must be combat ready (not be stunned, be able to attack, and not have a cooldown happening (Basic CD = -[basicCD/10]- seconds)) and have at least [kireq] ki."
+		else to_chat(usr, "You must be combat ready (not be stunned, be able to attack, and not have a cooldown happening (Basic CD = -[basicCD/10]- seconds)) and have at least [kireq] ki.")
 	Hokuto_Hyakuretsu_Ken() //ATATATATATATATATATATATATATATATA-wawawa. Barrages an enemy with attacks. If success, a small probability check happens and MORE DAMAGE is delivered.
 		set category="Skills"
 		set desc = "Rapidly strike a foe based on your unarmed skill. Unarmed skill. Special skill."
 		if(!unarmed&&(weaponeq>1||twohanding))
-			usr<<"You need a free hand to use this!"
+			to_chat(usr, "You need a free hand to use this!")
 			return
 		if(usr.ultiCD)
-			usr<<"Melee special skills on CD for [ultiCD/10] seconds."
+			to_chat(usr, "Melee special skills on CD for [ultiCD/10] seconds.")
 			return
 		if(usr.canfight<=0||usr.KO||usr.med||usr.stamina<18)
-			usr<<"You can't use this now!"
+			to_chat(usr, "You can't use this now!")
 			return
 		if(!usr.target||get_dist(usr,target)>1)
 			for(var/mob/M in oview(1))
@@ -88,11 +88,11 @@ mob/keyable/verb //assassin skills (precise)
 					target=M
 					break
 		if(!usr.target)
-			usr<<"You have no target."
+			to_chat(usr, "You have no target.")
 			return
 		else
 			if(get_dist(usr,target)>1)
-				usr<<"You must be next to your target to use this!"
+				to_chat(usr, "You must be next to your target to use this!")
 				return
 		target.AddEffect(/effect/stun/Hundred_Fists)
 		var/beatdown = round(usr.unarmedskill/5)
@@ -116,7 +116,7 @@ mob/keyable/verb //assassin skills (precise)
 					damage_mob(target,70)
 			sleep(30)
 			attacking = 0
-		else usr<<"You must be combat ready (not be stunned, be able to attack, and not have a cooldown happening (Basic CD = -[basicCD/10]- seconds)) and have at least [kireq] ki."
+		else to_chat(usr, "You must be combat ready (not be stunned, be able to attack, and not have a cooldown happening (Basic CD = -[basicCD/10]- seconds)) and have at least [kireq] ki.")
 
 mob/keyable/verb //assassin skills (brutal/stealthy. Relies on not being in combat and deals bonus damage if invisible)
 	Cutthroat() //simple surprise skill, deals more damage if not in combat
@@ -137,7 +137,7 @@ mob/keyable/verb //assassin skills (brutal/stealthy. Relies on not being in comb
 				target.stagger -= 1
 			sleep(25)
 			attacking = 0
-		else usr<<"You must be combat ready (not be stunned, be able to attack, and not have a cooldown happening (Basic CD = -[basicCD/10]- seconds)) and have at least [kireq] ki."
+		else to_chat(usr, "You must be combat ready (not be stunned, be able to attack, and not have a cooldown happening (Basic CD = -[basicCD/10]- seconds)) and have at least [kireq] ki.")
 	Backstab() //another surprise skill, relies on being behind a opponent.
 		set category="Skills"
 		var/kireq=usr.Ephysoff*BaseDrain*15
@@ -161,7 +161,7 @@ mob/keyable/verb //assassin skills (brutal/stealthy. Relies on not being in comb
 				target.stagger -= 1
 			sleep(30)
 			attacking = 0
-		else usr<<"You must be combat ready (not be stunned, be able to attack, and not have a cooldown happening (Basic CD = -[basicCD/10]- seconds)) and have at least [kireq] ki."
+		else to_chat(usr, "You must be combat ready (not be stunned, be able to attack, and not have a cooldown happening (Basic CD = -[basicCD/10]- seconds)) and have at least [kireq] ki.")
 	Sneak() //Not actually doing any damage, it temporarily gives you an invisiblity buff. 10 seconds + technique
 		set category="Skills"
 		var/kireq=usr.Ephysoff*BaseDrain*12
@@ -171,7 +171,7 @@ mob/keyable/verb //assassin skills (brutal/stealthy. Relies on not being in comb
 			TempBuff(list("invisibility"),10 + Etechnique)
 			sleep(60)
 			//attacking = 0
-		else usr<<"You must be combat ready (not be stunned, be able to attack, and not have a cooldown happening (Basic CD = -[basicCD/10]- seconds)) and have at least [kireq] ki."
+		else to_chat(usr, "You must be combat ready (not be stunned, be able to attack, and not have a cooldown happening (Basic CD = -[basicCD/10]- seconds)) and have at least [kireq] ki.")
 	Trip() //Stuns and debuffs a opponent if they're on the ground, doesn't count as being in combat.
 		set category="Skills"
 		var/kireq=usr.Ephysoff*BaseDrain*15
@@ -186,8 +186,8 @@ mob/keyable/verb //assassin skills (brutal/stealthy. Relies on not being in comb
 					if(!target.flight)
 						target.stunCount+=30
 						target.SpreadDamage(1+Etechnique,0)
-						view(src)<<"<font color=red size=2>[src] trips [target]!!!</font>"
+						to_chat(view(src), "<font color=red size=2>[src] trips [target]!!!</font>")
 					target.stagger -= 1
 			sleep(15)
 			attacking = 0
-		else usr<<"You must be combat ready (not be stunned, be able to attack, and not have a cooldown happening (Basic CD = -[basicCD/10]- seconds)) and have at least [kireq] ki."
+		else to_chat(usr, "You must be combat ready (not be stunned, be able to attack, and not have a cooldown happening (Basic CD = -[basicCD/10]- seconds)) and have at least [kireq] ki.")

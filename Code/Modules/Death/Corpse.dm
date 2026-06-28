@@ -6,30 +6,30 @@ obj/mobCorpse
 		set category = null
 		set src in view(1)
 		if(usr.CanEat)
-			view()<<"[usr] eats the corpse."
+			to_chat(view(), "[usr] eats the corpse.")
 			if(usr.HP<=100)
 				usr.SpreadHeal(5,0,0)
 			usr.currentNutrition += 30
 			del(src)
 		else if(!usr.CanEat)
-			usr<<"You can't digest food."
+			to_chat(usr, "You can't digest food.")
 	verb/Bury()
 		set category = null
 		set src in view(1)
-		view()<<"[usr] buries [name]"
+		to_chat(view(), "[usr] buries [name]")
 		GenerateCross(input(usr,"Grave text.","","Here lies [name]") as text)
 		del(src)
 	verb/Destroy()
 		set category = null
 		set src in view(1)
-		view()<<"[usr] destroys [name]"
+		to_chat(view(), "[usr] destroys [name]")
 		del(src)
 	verb/Skin_Corpse()
 		set category = null
 		set src in view(1)
 		for(var/datum/mastery/Life/Skinning/S in usr.learnedmasteries)
 			if(S.level>=src.masterylevel)
-				usr<<"You skin the [name]!"
+				to_chat(usr, "You skin the [name]!")
 				var/count = rand(1,3)
 				var/list/tlist = list()
 				for(var/turf/T in oview(1))
@@ -46,7 +46,7 @@ obj/mobCorpse
 				S.expgain(masterylevel*10)
 				del(src)
 				break
-		usr<<"You lack the skill to skin this!"
+		to_chat(usr, "You lack the skill to skin this!")
 	proc/GenerateCross(var/text as text)
 		var/obj/A  = new
 		A.name = "Grave"

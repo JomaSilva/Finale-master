@@ -20,11 +20,11 @@
 	common_sense = FALSE
 	tier = 1
 	after_learn()
-		savant<<"Your willpower increases a bunch."
+		to_chat(savant, "Your willpower increases a bunch.")
 		savant.willpowerMod += 0.3
 		savant.staminagainMod += 0.3
 	before_forget()
-		savant<<"Your willpower finds itself weak."
+		to_chat(savant, "Your willpower finds itself weak.")
 		savant.willpowerMod -= 0.3
 		savant.staminagainMod -= 0.3
 
@@ -39,7 +39,7 @@
 	maxlevel = 2
 	expbarrier = 15000
 	after_learn()
-		savant<<"Your abilities increase."
+		to_chat(savant, "Your abilities increase.")
 		savant.physoffBuff += 0.1
 		savant.physdefBuff += 0.1
 		savant.techniqueBuff += 0.1
@@ -49,7 +49,7 @@
 		savant.speedBuff += 0.1
 		savant.magiBuff += 0.1
 	before_forget()
-		savant<<"Your abilities find themselves a bit weaker."
+		to_chat(savant, "Your abilities find themselves a bit weaker.")
 		switch(level)
 			if(0)
 				savant.physoffBuff -= 0.1
@@ -90,7 +90,7 @@
 		if(1)
 			if(levelup)
 				levelup = 0
-				savant << "You have gained insight into the world! As a human, you can do anything. Likewise, your ability to do everything increases even further."
+				to_chat(savant, "You have gained insight into the world! As a human, you can do anything. Likewise, your ability to do everything increases even further.")
 				savant.physoffBuff += 0.2
 				savant.physdefBuff += 0.2
 				savant.techniqueBuff += 0.2
@@ -104,7 +104,7 @@
 		if(2)
 			if(levelup)
 				levelup = 0
-				savant << "Your insight has reached its peak! As a human, you can do anything. Likewise, your ability to do everything increases even beyond normal."
+				to_chat(savant, "Your insight has reached its peak! As a human, you can do anything. Likewise, your ability to do everything increases even beyond normal.")
 				savant.physoffBuff += 0.3
 				savant.physdefBuff += 0.3
 				savant.techniqueBuff += 0.3
@@ -125,12 +125,12 @@
 	skillcost = 2
 	tier = 2
 	after_learn()
-		savant<<"Your intelligence reaches a new maximum."
+		to_chat(savant, "Your intelligence reaches a new maximum.")
 		savant.genome.add_to_stat("Tech Modifier",2)
 		savant.physdefBuff -= 0.1
 		savant.kioffBuff -= 0.1
 	before_forget()
-		savant<<"The world feels a bit dimmer."
+		to_chat(savant, "The world feels a bit dimmer.")
 		savant.genome.sub_to_stat("Tech Modifier",2)
 		savant.physdefBuff += 0.1
 		savant.kioffBuff += 0.1
@@ -146,10 +146,10 @@
 	maxlevel = 3
 	expbarrier = 10000
 	after_learn()
-		savant<<"Your martial technique increases."
+		to_chat(savant, "Your martial technique increases.")
 		savant.technique += 0.1
 	before_forget()
-		savant<<"Your martial technique decreases."
+		to_chat(savant, "Your martial technique decreases.")
 		switch(level)
 			if(0)
 				savant.technique -= 0.1
@@ -171,21 +171,21 @@
 		if(1)
 			if(levelup)
 				levelup = 0
-				savant << "Your martial technique increases further!"
+				to_chat(savant, "Your martial technique increases further!")
 				savant.technique += 0.15
 			if(savant.med)
 				exp+=1
 		if(2)
 			if(levelup)
 				levelup = 0
-				savant << "Your martial technique increases to new heights!."
+				to_chat(savant, "Your martial technique increases to new heights!.")
 				savant.technique += 0.2
 			if(savant.med)
 				exp+=1
 		if(3)
 			if(levelup)
 				levelup = 0
-				savant << "Your martial technique increases even further beyond!."
+				to_chat(savant, "Your martial technique increases even further beyond!.")
 				savant.technique += 0.3
 			if(savant.med)
 				exp+=1

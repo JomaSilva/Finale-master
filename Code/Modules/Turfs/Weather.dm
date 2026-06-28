@@ -154,54 +154,54 @@ mob/proc/CheckTime()
 		spawn(10)	messageDelay = 0
 		if(!current_area.HasNight && !current_area.HasDay)
 			if(!current_area.AlwaysDay)
-				src<<"<font color=#663300>It's twilight..."
+				to_chat(src, "<font color=#663300>It's twilight...")
 			else
-				src << "<font color=#663300>It's light out."
+				to_chat(src, "<font color=#663300>It's light out.")
 		else if(currentDaylight>=6)
 			if(currentMoonlight==5)
-				if(currentDaylight == 6) src<<"<font color=red>The full moon is rising..."
-				else if(currentDaylight == 10) src<<"<font color=red>The full moon is setting..."
-				else src<<"<font color=red>The full moon is out..."
+				if(currentDaylight == 6) to_chat(src, "<font color=red>The full moon is rising...")
+				else if(currentDaylight == 10) to_chat(src, "<font color=red>The full moon is setting...")
+				else to_chat(src, "<font color=red>The full moon is out...")
 				if(Osetting && !Apeshit && Tail && Race == "Saiyan")
 					if(current_area.name!="Inside")
-						view(src)<<"[src] looks at the full moon!"
+						to_chat(view(src), "[src] looks at the full moon!")
 						if(hasssj && prob(60) && (Race=="Saiyan" || canSSJ || Parent_Race=="Saiyan"))//canSSJ is a var ticked by Baby absorbs.
 							GoldenApeshit()
 						else
 							Apeshit()
-				else src<<"You try your best not to look..."
+				else to_chat(src, "You try your best not to look...")
 			else if(currentMoonlight!=1)
-				if(currentDaylight == 6) src<<"<font color=red>The moon is rising..."
-				else if(currentDaylight == 10) src<<"<font color=red>The moon is setting..."
-				else src<<"<font color=red>The moon is out..."
+				if(currentDaylight == 6) to_chat(src, "<font color=red>The moon is rising...")
+				else if(currentDaylight == 10) to_chat(src, "<font color=red>The moon is setting...")
+				else to_chat(src, "<font color=red>The moon is out...")
 			if(currentDaylight==7||currentDaylight==9)
-				src<<"<font color=#001a66>It's nighttime..."
+				to_chat(src, "<font color=#001a66>It's nighttime...")
 			switch(currentDaylight)
 				if(8)
-					src<<"<font color=#001a66>It's midnight..."
+					to_chat(src, "<font color=#001a66>It's midnight...")
 				if(6)
-					src<<"<font color=#001a66>It's early nighttime..."
+					to_chat(src, "<font color=#001a66>It's early nighttime...")
 				if(10)
-					src<<"<font color=#001a66>It's late nighttime..."
+					to_chat(src, "<font color=#001a66>It's late nighttime...")
 		else
 			switch(currentDaylight)
 				if(1)
-					src<<"<font color=blue>Sun is rising."
+					to_chat(src, "<font color=blue>Sun is rising.")
 				if(2)
-					src<<"<font color=blue>It's the early morning."
+					to_chat(src, "<font color=blue>It's the early morning.")
 				if(3)
-					src<<"<font color=blue>It's high noon."
+					to_chat(src, "<font color=blue>It's high noon.")
 				if(4)
-					src<<"<font color=blue>It's the afternoon."
+					to_chat(src, "<font color=blue>It's the afternoon.")
 				if(5)
-					src<<"<font color=red>Sun is setting."
+					to_chat(src, "<font color=red>Sun is setting.")
 		switch(HellStar)
 			if(1)
-				src<<"<font size=2><font color=red>The Makyo Star begins to pass by the Planet..."
+				to_chat(src, "<font size=2><font color=red>The Makyo Star begins to pass by the Planet...")
 			if(2)
-				src<<"<font size=2><font color=red>The Makyo Star is passing by the planet..."
+				to_chat(src, "<font size=2><font color=red>The Makyo Star is passing by the planet...")
 			if(3)
-				src<<"<font size=2><font color=red>The Makyo Star is leaving the reach of the Planet..."
+				to_chat(src, "<font size=2><font color=red>The Makyo Star is leaving the reach of the Planet...")
 
 	doWeatherEffects()
 

@@ -2,7 +2,7 @@ mob/proc/statdemi()
 	Race="Demigod"
 	if(Class=="None") //class is RANDOM at birth (like the Saiyan class), not chosen
 		Class = pick("Ogre","Demigod","Genie")
-		src << "<font color=#cda434><b>You were born a [Class].</b></font>"
+		to_chat(src, "<font color=#cda434><b>You were born a [Class].</b></font>")
 	switch(Class)
 		if("Demigod")
 			givepowerchance=1

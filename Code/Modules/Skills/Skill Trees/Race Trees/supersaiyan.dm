@@ -29,7 +29,7 @@ mob/var
 					savant.futureSSJExp = 0
 					savant.futureSSJStage += 1
 					savant.ssjBuff = min(2 + savant.futureSSJStage * 2, 20)
-					savant << "<font color=#66ccff>Your Future Super Saiyan grows stronger! Stage [savant.futureSSJStage]/10 reached (power x[min(2 + savant.futureSSJStage * 2, 20)])!</font>"
+					to_chat(savant, "<font color=#66ccff>Your Future Super Saiyan grows stronger! Stage [savant.futureSSJStage]/10 reached (power x[min(2 + savant.futureSSJStage * 2, 20)])!</font>")
 		if(!savant.ssjmasteryMigrated && savant.Class != "Legendary") //rework %: migra (SSJ1 dominado) e remove as antigas skills de maestria de SSJ. So Saiyajin normal -- Legendary usa a arvore lssj (la forms/ssj/mssj mexem so no lssjmult orfao).
 			savant.ssjmasteryMigrated = 1
 			if(savant.ismssj) savant.ssj1mastery = 100
@@ -118,15 +118,15 @@ mob/var
 				switch(savant.Emotion)
 					if("Very Angry")
 						savant.ssj3able=1
-						savant << "<font color=#ffcc00>A new limit shatters within you - Super Saiyan 3 is within reach!</font>"
+						to_chat(savant, "<font color=#ffcc00>A new limit shatters within you - Super Saiyan 3 is within reach!</font>")
 					if("Angry")
 						if((savant.ssj3at*1.3)<=savant.expressedBP)
 							savant.ssj3able=1
-							savant << "<font color=#ffcc00>A new limit shatters within you - Super Saiyan 3 is within reach!</font>"
+							to_chat(savant, "<font color=#ffcc00>A new limit shatters within you - Super Saiyan 3 is within reach!</font>")
 					if("Annoyed")
 						if((savant.ssj3at*2.2)<=savant.expressedBP)
 							savant.ssj3able=1
-							savant << "<font color=#ffcc00>A new limit shatters within you - Super Saiyan 3 is within reach!</font>"
+							to_chat(savant, "<font color=#ffcc00>A new limit shatters within you - Super Saiyan 3 is within reach!</font>")
 
 
 
@@ -179,11 +179,11 @@ mob/var/ismssj
 	tier = 1
 	enabled=0
 	after_learn()
-		savant << "You're able to go instantly to whatever form you desire."
+		to_chat(savant, "You're able to go instantly to whatever form you desire.")
 		assignverb(/mob/keyable/verb/DirectSSJ)
-		savant << "Remember: 1 is regular SSJ, 1.5 is USSJ, 2 is SSJ2, 3 is SSJ3, and 4 is SSJ4."
+		to_chat(savant, "Remember: 1 is regular SSJ, 1.5 is USSJ, 2 is SSJ2, 3 is SSJ3, and 4 is SSJ4.")
 	before_forget()
-		savant << "How the fuck did you forget this? (Direct SSJ unlearned, either a bug or a unupdated description.)"
+		to_chat(savant, "How the fuck did you forget this? (Direct SSJ unlearned, either a bug or a unupdated description.)")
 		unassignverb(/mob/keyable/verb/DirectSSJ)
 	login(var/mob/logger)
 		..()
@@ -247,7 +247,7 @@ mob/keyable
 							usr.goingssj4=1
 							if(usr.hasssj4&&!usr.Apeshit&&BP>=rawssj4at) usr.SSj4()
 							spawn(10) usr.goingssj4=0
-			else if(usr.Apeshit) usr<<"You're currently Oozaru, and golden/brown Oozaru is automatic. No need for this verb until you're normal again."
+			else if(usr.Apeshit) to_chat(usr, "You're currently Oozaru, and golden/brown Oozaru is automatic. No need for this verb until you're normal again.")
 			else if(usr.hasssj)
 				usr.Revert()
 				switch(SSJchoice)
@@ -277,10 +277,10 @@ mob/keyable
 				isenabledussj="is enabled"
 				usr.ultrassjenabled=1
 			else
-				usr<<"You do not meet the requirements for USSJ, you need [usr.ssj2at*0.5/usr.ssjmult] BP"
+				to_chat(usr, "You do not meet the requirements for USSJ, you need [usr.ssj2at*0.5/usr.ssjmult] BP")
 				isenabledussj="is disabled"
 				usr.ultrassjenabled=0
-			usr<<"USSJ [isenabledussj]"
+			to_chat(usr, "USSJ [isenabledussj]")
 mob/var/activatedUSSJ
 
 /datum/skill/forms/ussj
@@ -310,7 +310,7 @@ mob/var/activatedUSSJ
 				savant.ultrassjdrain = 0.033
 		if(1)
 			if(levelup)
-				usr<<"You just mastered USSJ!"
+				to_chat(usr, "You just mastered USSJ!")
 				levelup = 0
 				savant.ultrassjdrain = 0.027 //USSJ sempre drena: forma insustentavel (boost temporario), NUNCA fica 0
 
@@ -327,15 +327,15 @@ mob/var/activatedUSSJ
 	enabled=0
 
 /datum/skill/forms/ussj/after_learn()
-	savant << "You feel like you are able to go somewhat beyond the regular Super Saiyan."
+	to_chat(savant, "You feel like you are able to go somewhat beyond the regular Super Saiyan.")
 	savant.ultrassjenabled=1
-	savant << "USSJ is enabled"
+	to_chat(savant, "USSJ is enabled")
 	savant.hasussj=1
 	assignverb(/mob/keyable/verb/Toggle_USSJ)
-	savant << "In order to access Ultra Super Saiyan, power up past 750 million as a Super Saiyan, and have more than [savant.ssj2at*0.5/savant.ssjmult] BP."
+	to_chat(savant, "In order to access Ultra Super Saiyan, power up past 750 million as a Super Saiyan, and have more than [savant.ssj2at*0.5/savant.ssjmult] BP.")
 
 /datum/skill/forms/ussj/before_forget()
-	savant << "Super Saiyan seems fine enough, no need for Ultra Super Saiyan anymore, right?"
+	to_chat(savant, "Super Saiyan seems fine enough, no need for Ultra Super Saiyan anymore, right?")
 	savant.ultrassjenabled=0
 	savant.hasussj=0
 	unassignverb(/mob/keyable/verb/Toggle_USSJ)
@@ -345,7 +345,7 @@ mob/var/activatedUSSJ
 	assignverb(/mob/keyable/verb/Toggle_USSJ)
 
 /datum/skill/forms/mssj/after_learn()
-	savant << "You've mastered Super Saiyan completely!"
+	to_chat(savant, "You've mastered Super Saiyan completely!")
 	savant.ismssj=1
 	savant.ssjmult=6
 	savant.ssjdrain=0
@@ -357,7 +357,7 @@ mob/var/activatedUSSJ
 	savant.restssjmult+=5
 	savant.ssj2mod=10
 	if(savant.hasssj2&&savant.ssj2drain<300)
-		savant << "In addition, your Super Saiyan 2 form will improve faster."
+		to_chat(savant, "In addition, your Super Saiyan 2 form will improve faster.")
 
 /datum/skill/forms/mssj2
 	skilltype = "Super Saiyan Form"
@@ -390,9 +390,9 @@ mob/var/activatedUSSJ
 	expbarrier=1000
 
 /datum/skill/forms/ssj3/after_learn()
-	savant << "AND THIS... IS TO GO EVEN FURTHER BEYOND!"
+	to_chat(savant, "AND THIS... IS TO GO EVEN FURTHER BEYOND!")
 	savant.ssj3able=1
-	savant << "In order to access Super Saiyan 3, power up past 400 million."
+	to_chat(savant, "In order to access Super Saiyan 3, power up past 400 million.")
 
 /datum/skill/forms/ssj3/effector()
 	..()
@@ -410,7 +410,7 @@ mob/var/activatedUSSJ
 	enabled=0
 
 /datum/skill/forms/ssj3m/after_learn()
-	savant << "You just mastered Super Saiyan 3!"
+	to_chat(savant, "You just mastered Super Saiyan 3!")
 	savant.ssj3mastery = 100 //a forma SSJ3 agora escala por % (16x->20x); aprender isto = 100% de maestria
 	savant.recompute_saiyan_form_mults()
 
@@ -425,7 +425,7 @@ mob/var/activatedUSSJ
 	tier = 3
 	enabled=0
 	after_learn()
-		savant << "You feel you can shatter the very limits of Super Saiyan 4!"
+		to_chat(savant, "You feel you can shatter the very limits of Super Saiyan 4!")
 		savant.hasFPLB=1
 	before_forget()
 		savant.hasFPLB=0

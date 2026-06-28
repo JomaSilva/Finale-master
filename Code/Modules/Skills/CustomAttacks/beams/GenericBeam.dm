@@ -39,7 +39,7 @@
 
 mob/proc/teachBeam(var/mob/Tm)
 	if(Tm.createdbeamamount>=Tm.maxcreatedbeamamount)
-		Tm <<"Your maximum beam count is [Tm.maxcreatedbeamamount]! You currently have [Tm.createdbeamamount]! Delete a few old beams."
+		to_chat(Tm, "Your maximum beam count is [Tm.maxcreatedbeamamount]! You currently have [Tm.createdbeamamount]! Delete a few old beams.")
 		return
 	var/list/tempobjlist = list() //Code is lifted a bit from Yota (http://www.byond.com/forum/?post=164966, look at the bottom!)
 	for(var/obj/skill/CustomAttacks/ki/beam/Beam/S in src.contents)
@@ -49,8 +49,8 @@ mob/proc/teachBeam(var/mob/Tm)
 		tempnumb+=1
 	var/obj/skill/CustomAttacks/ki/beam/Beam/choice = input(src,"You can directly teach custom attacks. Teach which beam?")as null|anything in tempobjlist
 	if(isnull(choice))
-		src <<"No beam."
-		Tm <<"[src] didn't give you any preset beams."
+		to_chat(src, "No beam.")
+		to_chat(Tm, "[src] didn't give you any preset beams.")
 		return
 	else 
 		var/obj/skill/CustomAttacks/ki/beam/Beam/A = new/obj/skill/CustomAttacks/ki/beam/Beam
@@ -61,7 +61,7 @@ mob/proc/teachBeam(var/mob/Tm)
 		Tm.createdbeamamount+=1
 		for(var/obj/skill/CustomAttacks/ki/beam/Beam/S in Tm.contents)
 			S.Update()
-		Tm << "Created [A]!"
+		to_chat(Tm, "Created [A]!")
 
 mob/var/createdbeamamount
 mob/var/maxcreatedbeamamount = 8 //maximum custom beams is eight, why not?
@@ -69,7 +69,7 @@ mob/var/maxcreatedbeamamount = 8 //maximum custom beams is eight, why not?
 /verb/Create_Beam()
 	set category = "Learning"
 	if(usr.createdbeamamount>=usr.maxcreatedbeamamount)
-		usr <<"Your maximum beam count is [usr.maxcreatedbeamamount]! You currently have [usr.createdbeamamount]! Delete a few old beams."
+		to_chat(usr, "Your maximum beam count is [usr.maxcreatedbeamamount]! You currently have [usr.createdbeamamount]! Delete a few old beams.")
 		return
 	var/obj/skill/CustomAttacks/ki/beam/Beam/A = new/obj/skill/CustomAttacks/ki/beam/Beam
 	A.savant = usr
@@ -81,7 +81,7 @@ mob/var/maxcreatedbeamamount = 8 //maximum custom beams is eight, why not?
 	usr.createdbeamamount+=1
 	for(var/obj/skill/CustomAttacks/ki/beam/Beam/S in usr.contents)
 		S.Update()
-	usr << "Created [A]!"
+	to_chat(usr, "Created [A]!")
 
 /verb/Remove_Beam()
 	set category = "Learning"
@@ -93,14 +93,14 @@ mob/var/maxcreatedbeamamount = 8 //maximum custom beams is eight, why not?
 		tempnumb+=1
 	var/obj/skill/CustomAttacks/ki/beam/Beam/choice = input(usr,"Which beam?")as null|anything in tempobjlist
 	if(isnull(choice))
-		usr <<"No beam."
+		to_chat(usr, "No beam.")
 	else
 		choice.removeverbs()
 		del(choice)
 		usr.createdbeamamount-=1
 
 /datum/skill/CustomAttacks/ki/beam/Beam/after_learn()
-	savant << "You feel like you can modify a beam."
+	to_chat(savant, "You feel like you can modify a beam.")
 	var/obj/skill/CustomAttacks/ki/beam/Beam/A = new/obj/skill/CustomAttacks/ki/beam/Beam
 	A.savant = savant
 	savant.contents += A
@@ -111,7 +111,7 @@ mob/var/maxcreatedbeamamount = 8 //maximum custom beams is eight, why not?
 	savant.createdbeamamount+=1
 
 /datum/skill/CustomAttacks/ki/beam/Beam/before_forget()
-	savant << "Your beam feels unchangable and ridged in construction."
+	to_chat(savant, "Your beam feels unchangable and ridged in construction.")
 	for(var/obj/skill/CustomAttacks/ki/beam/Beam/S in savant.contents)
 		S.removeverbs()
 		savant.contents -= S

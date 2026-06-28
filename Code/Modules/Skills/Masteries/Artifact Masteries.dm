@@ -23,13 +23,13 @@ mob/var
 		acquire(mob/M)
 			..()
 			visible=1
-			savant<<"Your soul resonates with the Master Sword, unlocking some of its true power!"
+			to_chat(savant, "Your soul resonates with the Master Sword, unlocking some of its true power!")
 			savant.MSPower+=1.1
 
 		remove()
 			if(!savant)
 				return
-			savant<<"Your bond with the Blade of Evil's Bane diminishes, and it alongside its true splendor return to rest..."
+			to_chat(savant, "Your bond with the Blade of Evil's Bane diminishes, and it alongside its true splendor return to rest...")
 			savant.MSPower=0
 			savant.swordskill-=0.1*round(level/10)
 			removeverb(/mob/keyable/combo/sword/verb/Skyward_Strike)
@@ -40,21 +40,21 @@ mob/var
 
 		levelstat()
 			..()
-			savant<<"The Master Sword brimmers with a flashing aura! The Soul of the Hero is now level [level]!"
+			to_chat(savant, "The Master Sword brimmers with a flashing aura! The Soul of the Hero is now level [level]!")
 			savant.MSPower+=0.05
 			if(level % 10 == 0)
 				savant.swordskill+=0.1
 			if(level == 10)
-				savant<<"Your fortitude shines through the Master Sword, bursting holy power through the air! You learned Skyward Strike!"
+				to_chat(savant, "Your fortitude shines through the Master Sword, bursting holy power through the air! You learned Skyward Strike!")
 				addverb(/mob/keyable/combo/sword/verb/Skyward_Strike)
 			if(level == 20)
-				savant<<"You feel you can execute an ancient sword technique combined with the might of the Master Sword. You learned Hurricane Blade!"
+				to_chat(savant, "You feel you can execute an ancient sword technique combined with the might of the Master Sword. You learned Hurricane Blade!")
 				addverb(/mob/keyable/combo/sword/verb/Hurricane_Blade)
 			if(level == 90)
-				savant<<"'Wielding the Blade of Evil's Bane, he sealed the dark one away and gave the land light.' You learned Seal the Darkness!"
+				to_chat(savant, "'Wielding the Blade of Evil's Bane, he sealed the dark one away and gave the land light.' You learned Seal the Darkness!")
 				addverb(/mob/keyable/verb/Seal_the_Darkness)
 			if(level == 100)
-				savant<<"At long last, your soul and the Master Sword resonate as one; the true, ultimate power of the Master Sword is finally yours! You learned Blade of Evil's Bane!"
+				to_chat(savant, "At long last, your soul and the Master Sword resonate as one; the true, ultimate power of the Master Sword is finally yours! You learned Blade of Evil's Bane!")
 				addverb(/mob/keyable/verb/Blade_of_Evils_Bane)
 				savant.MSPower-=0.05 //Look I did the math the max level wouldve ended in a 6.05 that extra .05 wouldve bothered me please understand
 
@@ -68,13 +68,13 @@ mob/keyable/combo/sword/verb/Skyward_Strike()
 		if(A.equipped)
 			counter=1
 	if(!counter)
-		usr<<"You must have the Master Sword equipped to use this skill!"
+		to_chat(usr, "You must have the Master Sword equipped to use this skill!")
 		return
 	if(usr.rangedCD)
-		usr<<"Ranged skills are on CD for [rangedCD/10] seconds."
+		to_chat(usr, "Ranged skills are on CD for [rangedCD/10] seconds.")
 		return
 	if(usr.canfight<=0||usr.KO||usr.med||usr.stamina<4||usr.HP<(100-usr.MSPower*2))
-		usr<<"You can't use this now!"
+		to_chat(usr, "You can't use this now!")
 		return
 	var/passbp = usr.MSPower * usr.expressedBP //MSPower goes hand-in-hand with BP here
 	usr.ki-=20
@@ -114,7 +114,7 @@ mob/keyable/combo/sword/verb/Hurricane_Blade()
 		if(A.equipped)
 			counter=1
 	if(!counter)
-		usr<<"You must have the Master Sword equipped to use this skill!"
+		to_chat(usr, "You must have the Master Sword equipped to use this skill!")
 		return
 	 
 	var/kireq=usr.Ephysoff*BaseDrain*0.4*10
@@ -122,7 +122,7 @@ mob/keyable/combo/sword/verb/Hurricane_Blade()
 		usr.ki-=kireq
 		usr.basicCD = 13*usr.Eactspeed
 	else
-		usr<<"You must be combat ready (not be stunned, be able to attack, and not have a cooldown happening (Basic CD = -[basicCD/10]- seconds)) and have at least [kireq] ki."
+		to_chat(usr, "You must be combat ready (not be stunned, be able to attack, and not have a cooldown happening (Basic CD = -[basicCD/10]- seconds)) and have at least [kireq] ki.")
 		return
 	usr.canmove=0
 	animate(usr, color = "white", time = 10)
@@ -145,23 +145,23 @@ mob/keyable/verb/Seal_the_Darkness()
 		if(A.equipped)
 			counter=1
 	if(!counter)
-		usr<<"You must have the Master Sword equipped to use this skill!"
+		to_chat(usr, "You must have the Master Sword equipped to use this skill!")
 	if(usr.specialCD)
-		usr<<"Special skills on CD for [specialCD/10] seconds."
+		to_chat(usr, "Special skills on CD for [specialCD/10] seconds.")
 		return
 	if(usr.canfight<=0||usr.KO||usr.med||usr.stamina<50)
-		usr<<"You can't use this now!"
+		to_chat(usr, "You can't use this now!")
 		return
 	var/kireq=usr.Ephysoff*BaseDrain*0.4*10
 	if(!usr.med&&!usr.train&&!usr.KO&&usr.Ki>=kireq&&!usr.basicCD&&usr.canfight)
 		usr.ki-=kireq
 		usr.basicCD = 13*usr.Eactspeed
 	else
-		usr<<"You must be combat ready (not be stunned, be able to attack, and not have a cooldown happening (Basic CD = -[basicCD/10]- seconds)) and have at least [kireq] ki."
+		to_chat(usr, "You must be combat ready (not be stunned, be able to attack, and not have a cooldown happening (Basic CD = -[basicCD/10]- seconds)) and have at least [kireq] ki.")
 		return
 	var/choice = input(usr,"Select a mob in view. A mafuba will be sent towards them. The sealing effect will be effective up to your BP, as long as the generated item is kept safe.") as null|mob in view()
 	if(isnull(choice))
-		usr << "You choose not to seal anything."
+		to_chat(usr, "You choose not to seal anything.")
 		return
 	var/obj/items/SealingItem/B = new
 	B.loc = locate(usr.x,usr.y,usr.z)
@@ -191,16 +191,16 @@ mob/keyable/verb/Blade_of_Evils_Bane()
 		if(A.equipped)
 			counter=1
 	if(!counter)
-		usr<<"You must have the Master Sword equipped to use this skill!"
+		to_chat(usr, "You must have the Master Sword equipped to use this skill!")
 	if(usr.canfight<=0||usr.KO||usr.med)
-		usr<<"You can't use this now!"
+		to_chat(usr, "You can't use this now!")
 		return
 	desc = "Tap into the full power of the Master Sword, dealing more damage with your blade and Master Sword skills. This buff does even more damage to evil beings."
 	if(!usr.buffOn)
-		view() << "<font color=yellow>[usr] calls upon the true power of the Master Sword to banish evil!"
+		to_chat(view(), "<font color=yellow>[usr] calls upon the true power of the Master Sword to banish evil!")
 		usr.AddEffect(/effect/buff/artifact/bladeofevilsbane) //the buffOn var is ticked to 1 inside where bladeofevilsbane is created (Damage Effects.dm)
 	else if (usr.buffOn)
-		usr << "This buff is already active!"
+		to_chat(usr, "This buff is already active!")
 		return
 
 obj/overlay/effects/flickeffects/BoEB/EffectStart()

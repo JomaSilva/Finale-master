@@ -34,7 +34,7 @@
 	tier = 1
 	var/premagiskill = 0
 	after_learn()
-		savant<<"You feel your magic well up inside you!. To activate a freeform ritual, say 'Ritual of reality, activate'."
+		to_chat(savant, "You feel your magic well up inside you!. To activate a freeform ritual, say 'Ritual of reality, activate'.")
 		savant.magiBuff = 1.5
 		savant.word_power=1
 		savant.ritual_power=1
@@ -63,15 +63,15 @@
 	prereqs = list()
 	tier = 2
 	after_learn()
-		savant<<"You feel your magic well up inside you!."
+		to_chat(savant, "You feel your magic well up inside you!.")
 		savant.known_ritual_de_types += /obj/Ritual/Fuel_Ritual
 		savant.magiBuff+=0.1
-		savant<<"You can now make burn stuff into energy!"
-		savant<<"The magic words are 'burn energy'"
+		to_chat(savant, "You can now make burn stuff into energy!")
+		to_chat(savant, "The magic words are 'burn energy'")
 		savant.known_words += "burn energy"
 		savant.known_words["burn energy"] = "Ritual of Give Energy. All ingredients are turned into energy. Gives it's energy to other rituals."
 	before_forget()
-		savant<<"Your magic vanishes..."
+		to_chat(savant, "Your magic vanishes...")
 		savant.known_words -= "burn energy"
 		savant.known_ritual_de_types -= /obj/Ritual/Fuel_Ritual
 		savant.magiBuff-=0.1
@@ -88,15 +88,15 @@
 	prereqs = list()
 	tier = 2
 	after_learn()
-		savant<<"You feel your magic well up inside you!."
+		to_chat(savant, "You feel your magic well up inside you!.")
 		savant.known_ritual_de_types += /obj/Ritual/Mana_Gathering
 		savant.magiBuff+=0.1
 		savant.known_words += "give energy"
 		savant.known_words["give energy"] = "Ritual of Gain Energy. All ingredients are turned into energy."
-		savant<<"You can now get magical energy!"
-		savant<<"The magic words are 'give energy'"
+		to_chat(savant, "You can now get magical energy!")
+		to_chat(savant, "The magic words are 'give energy'")
 	before_forget()
-		savant<<"Your magic vanishes..."
+		to_chat(savant, "Your magic vanishes...")
 		savant.known_words -= "give energy"
 		savant.known_ritual_de_types -= /obj/Ritual/Mana_Gathering
 		savant.magiBuff-=0.1
@@ -113,7 +113,7 @@
 	tier = 2
 	var/premagiskill = 0
 	after_learn()
-		savant<<"You feel your magic well up inside you! You can store more mana within you now."
+		to_chat(savant, "You feel your magic well up inside you! You can store more mana within you now.")
 		savant.magiBuff += 1.5
 		savant.mana_cap_mod += 1
 
@@ -135,12 +135,12 @@
 	tier = 3
 	var/premagiskill = 0
 	after_learn()
-		savant<<"You feel your magic well up inside you! You can store more mana within you now."
+		to_chat(savant, "You feel your magic well up inside you! You can store more mana within you now.")
 		savant.magiBuff += 0.5
 		savant.mana_cap_mod += 1
 
 	before_forget()
-		savant<<"You feel your magic dwindling..."
+		to_chat(savant, "You feel your magic dwindling...")
 		savant.magiBuff -= 0.5
 		savant.mana_cap_mod -= 1
 		switch(level)
@@ -159,7 +159,7 @@
 			else
 				if(levelup)
 					levelup=0
-					savant<<"Your magic rises up inside of you, and your body makes it its own."
+					to_chat(savant, "Your magic rises up inside of you, and your body makes it its own.")
 					savant.mana_cap_mod += 1
 
 
@@ -175,11 +175,11 @@
 	maxlevel = 1
 	tier = 3
 	after_learn()
-		savant<<"You feel your magic well up inside you!."
+		to_chat(savant, "You feel your magic well up inside you!.")
 		assignverb(/mob/keyable/verb/Word_Power)
 		savant.magiBuff+=0.5
 	before_forget()
-		savant<<"Your magic vanishes..."
+		to_chat(savant, "Your magic vanishes...")
 		savant.magiBuff-=0.5
 		unassignverb(/mob/keyable/verb/Word_Power)
 	login(mob/logger)
@@ -200,15 +200,15 @@
 	maxlevel = 1
 	tier = 4
 	after_learn()
-		savant<<"You feel your magic well up inside you!."
+		to_chat(savant, "You feel your magic well up inside you!.")
 		savant.known_ritual_ma_types += /obj/Ritual/Research_Word
 		savant.magiBuff+=0.2
 		savant.known_words += "cerebrus"
 		savant.known_words["cerebrus"] = "Research Word. Req: Frog Brain and Essence of Time"
-		savant<<"You can now research magic words!!"
-		savant<<"The magic words are 'cerebrus'. You need to use a Frog Brain and Essence of Time"
+		to_chat(savant, "You can now research magic words!!")
+		to_chat(savant, "The magic words are 'cerebrus'. You need to use a Frog Brain and Essence of Time")
 	before_forget()
-		savant<<"Your magic vanishes..."
+		to_chat(savant, "Your magic vanishes...")
 		savant.known_words -= "cerebrus"
 		savant.known_ritual_ma_types -= /obj/Ritual/Research_Word
 		savant.magiBuff-=0.2
@@ -226,15 +226,15 @@
 	maxlevel = 1
 	tier = 4
 	after_learn()
-		savant<<"You feel your magic well up inside you!."
+		to_chat(savant, "You feel your magic well up inside you!.")
 		savant.known_ritual_ma_types += /obj/Ritual/Research_Ingredient
 		savant.magiBuff+=0.2
 		savant.known_words += "ingredious"
 		savant.known_words["ingredious"] = "Research Ingredient. Req: Frog Brain and Beetle Eye"
-		savant<<"You can now research ingredients!"
-		savant<<"The magic words are 'ingredious'. You need to use a Frog Brain and Beetle Eye."
+		to_chat(savant, "You can now research ingredients!")
+		to_chat(savant, "The magic words are 'ingredious'. You need to use a Frog Brain and Beetle Eye.")
 	before_forget()
-		savant<<"Your magic vanishes..."
+		to_chat(savant, "Your magic vanishes...")
 		savant.known_words -= "ingredious"
 		savant.known_ritual_ma_types -= /obj/Ritual/Research_Ingredient
 		savant.magiBuff-=0.2
@@ -250,17 +250,17 @@
 	tier = 1
 
 /datum/skill/general/materialization/after_learn()
-	savant<<"You feel your magic well up inside you!."
+	to_chat(savant, "You feel your magic well up inside you!.")
 	savant.magiBuff+=1
 	savant.known_ritual_ma_types += /obj/Ritual/Materialize_Item
 	savant.known_words += "energy collesque"
 	savant.known_words["energy collesque"] = "Materialization. Req: Gillyweed and Aconite."
-	savant<<"You can now make stuff through energy!"
-	savant<<"The magic words are 'energy collesque'. You need Gillyweed and Aconite."
+	to_chat(savant, "You can now make stuff through energy!")
+	to_chat(savant, "The magic words are 'energy collesque'. You need Gillyweed and Aconite.")
 /datum/skill/general/materialization/before_forget()
 	savant.known_ritual_ma_types -= /obj/Ritual/Materialize_Item
 	savant.known_words -= "energy collesque"
-	savant<<"You've forgotten how to make stuff through energy!?"
+	to_chat(savant, "You've forgotten how to make stuff through energy!?")
 	savant.magiBuff-=1
 
 /datum/skill/conjure
@@ -273,17 +273,17 @@
 	tier = 1
 
 /datum/skill/conjure/after_learn()
-	savant<<"You feel your magic well up inside you!."
+	to_chat(savant, "You feel your magic well up inside you!.")
 	savant.magiBuff+=1
 	savant.known_ritual_dm_types += /obj/Ritual/Ritual_of_Conjure_Demon
 	savant.known_words += "Xisxisxis"
 	savant.known_words["Xisxisxis"] = "Demon Conjure. Req: Dragon Blood and Essence of Space."
-	savant<<"You've learned how to conjure Demons!!"
-	savant<<"The magic words are 'Xisxisxis'. You need Dragon Blood and Essence of Space."
+	to_chat(savant, "You've learned how to conjure Demons!!")
+	to_chat(savant, "The magic words are 'Xisxisxis'. You need Dragon Blood and Essence of Space.")
 /datum/skill/conjure/before_forget()
 	savant.known_ritual_dm_types -= /obj/Ritual/Ritual_of_Conjure_Demon
 	savant.known_words -= "Xisxisxis"
-	savant<<"You've forgotten how to conjure Demons!?"
+	to_chat(savant, "You've forgotten how to conjure Demons!?")
 	savant.magiBuff-=1
 
 
@@ -299,15 +299,15 @@
 	prereqs = list(new/datum/skill/Research_Ingredient,new/datum/skill/Mana_Gathering,new/datum/skill/Fuel_Ritual)
 	skillcost=2
 	after_learn()
-		savant<<"You feel your magic well up inside you!."
+		to_chat(savant, "You feel your magic well up inside you!.")
 		savant.magiBuff+=1
 		savant.known_ritual_dm_types += /obj/Ritual/Research_Ritual
 		savant.known_words += "ars cerebrus cortex magnifica magica"
 		savant.known_words["ars cerebrus cortex magnifica magica"] = "Ritual Research. Req: Microchip, Essence of Time, Angel Tear, Moonseed, and a Eel Eye."
-		savant<<"You've learned how to research Rituals!!"
-		savant<<"The magic words are 'ars cerebrus cortex magnifica magica'. You need a Microchip, Essence of Time, Angel Tear, Moonseed, and a Eel Eye."
+		to_chat(savant, "You've learned how to research Rituals!!")
+		to_chat(savant, "The magic words are 'ars cerebrus cortex magnifica magica'. You need a Microchip, Essence of Time, Angel Tear, Moonseed, and a Eel Eye.")
 	before_forget()
 		savant.known_ritual_dm_types -= /obj/Ritual/Research_Ritual
 		savant.known_words -= "ars cerebrus cortex magnifica magica"
-		savant<<"You've forgotten how to conjure Demons!?"
+		to_chat(savant, "You've forgotten how to conjure Demons!?")
 		savant.magiBuff-=1

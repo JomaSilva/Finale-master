@@ -39,11 +39,11 @@ mob/verb/Dig()
 	set category="Skills"
 	if(!beaming&&!charging&&!flight&&!KO&&canfight)
 		if(!dig&&Ki>=1)
-			usr<<"You begin digging for resources (see Items tab)."
+			to_chat(usr, "You begin digging for resources (see Items tab).")
 			dig=1
 			return
 	if(dig)
-		usr<<"You stop digging."
+		to_chat(usr, "You stop digging.")
 		dig=0
 		return*/
 
@@ -53,13 +53,13 @@ mob/verb/Dig()
 		if(med)
 			Meditate()
 		if(!train&&Ki>=1)
-			usr<<"You begin training."
+			to_chat(usr, "You begin training.")
 			dir=SOUTH
 			train=1
 			canfight=0
 			if(Savable) icon_state="Train"
 		else
-			usr<<"You stop training."
+			to_chat(usr, "You stop training.")
 			train=0
 			canfight=1
 			if(Savable) icon_state=""
@@ -71,12 +71,12 @@ mob/default/verb/Train()
 		if(med)
 			Meditate()
 		if(!train&&Ki>=1)
-			usr<<"You begin training. Press ctrl + a directional key (facing a different direction) continue training."
+			to_chat(usr, "You begin training. Press ctrl + a directional key (facing a different direction) continue training.")
 			train=1
 			//canfight=0
 			dir = SOUTH
 		else
-			usr<<"You stop training."
+			to_chat(usr, "You stop training.")
 			train=0
 			//canfight=1
 mob/var/tmp/lastdir = 0
@@ -102,7 +102,7 @@ mob/proc/trainproc() if(client)
 				spawn(40)
 				training=0
 		else
-			usr<<"You stop training."
+			to_chat(usr, "You stop training.")
 			if(icon_state=="Train") icon_state=""
 			train=0
 			move=1
@@ -113,15 +113,15 @@ mob/var/tmp/shdboxcl=0
 mob/keyable/verb/Shadowboxing()
 	set category = "Skills"
 	if(shdboxcl)
-		usr<<"A cooldown for shadowboxing is set. [shdboxcl/10] seconds."
+		to_chat(usr, "A cooldown for shadowboxing is set. [shdboxcl/10] seconds.")
 		return
 	if(shdbox)
 		shdbox = 0
 		shdboxcl = 35
-		usr << "You are no longer shadowboxing||Ki targeting."
+		to_chat(usr, "You are no longer shadowboxing||Ki targeting.")
 		return
 	if(!move || !hasTime) return
-	usr << "You are shadowboxing. Shadows around you will appear. Every time you hit one, you'll get more gains than from regular training."
+	to_chat(usr, "You are shadowboxing. Shadows around you will appear. Every time you hit one, you'll get more gains than from regular training.")
 	shdbox=1
 	while(shdbox)
 		if(!move || !hasTime) break

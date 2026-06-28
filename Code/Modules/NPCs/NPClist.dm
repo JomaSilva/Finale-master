@@ -380,7 +380,7 @@ mob/npc
 				..()
 				if(targetmob==usr&&!client)
 					del(src)
-					usr<<"Simulations cancelled."
+					to_chat(usr, "Simulations cancelled.")
 					return
 			resetState()
 				..()

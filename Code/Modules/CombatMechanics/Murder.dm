@@ -1,6 +1,6 @@
 mob/proc/MurderTheFollowing(var/isFinishing,var/mob/M as mob) //isFinishing means if the other player is like up close, I.E. finish proc and attack proc.
 	if(finishing)
-		usr <<"You're already finishing someone."
+		to_chat(usr, "You're already finishing someone.")
 		return
 	if(M&&!M.Player&&!M.client)
 		finishing=1
@@ -21,7 +21,7 @@ mob/proc/MurderTheFollowing(var/isFinishing,var/mob/M as mob) //isFinishing mean
 		return
 	if(isFinishing==0)
 		finishing = 1
-		view(6)<<"[usr] is threatening [M]'s life! (Even if [M] moves or gets away, in ten seconds [usr] can choose to kill.)"
+		to_chat(view(6), "[usr] is threatening [M]'s life! (Even if [M] moves or gets away, in ten seconds [usr] can choose to kill.)")
 		for(var/mob/A in oview()) //A being the friend looking...
 			var/DyerIsGood=0
 			if(A.check_relation(M,list("Good","Very Good")) == TRUE) DyerIsGood=1
@@ -33,7 +33,7 @@ mob/proc/MurderTheFollowing(var/isFinishing,var/mob/M as mob) //isFinishing mean
 				continue
 		sleep(100)
 		if(alert("Kill [M]?","Kill [M]","Yes","No")=="No"||KO||!move)
-			usr << "You either chose not to kill, or you were forced out of it."
+			to_chat(usr, "You either chose not to kill, or you were forced out of it.")
 			return
 		if(!M.immortal)
 			killer_stuff(M)
@@ -85,20 +85,20 @@ mob/proc/killer_stuff(var/mob/M)
 		M.friend_harmed_by(usr, ENMITY_FRIEND_KILL) //a rival killing you embitters your nearby friends
 		if(!dead) if(King_of_Vegeta==M.key)
 			if(Race=="Saiyan")
-				usr<<"By killing the former King Vegeta, you have become the new King Vegeta!"
-				M<<"You have lost your throne and [usr] becomes the new King Vegeta."
+				to_chat(usr, "By killing the former King Vegeta, you have become the new King Vegeta!")
+				to_chat(M, "You have lost your throne and [usr] becomes the new King Vegeta.")
 				King_of_Vegeta=key
 				Rank_Verb_Assign()
 			else for(var/mob/A) if(A.Race=="Saiyan"&&!A.dead) if(A.Prince|A.Princess)
 				King_of_Vegeta=A.key
-				A<<"<font color=yellow>The King of Vegeta has been murdered, you have inherited the throne because you are the next in line of the Royal Family of Vegeta!"
+				to_chat(A, "<font color=yellow>The King of Vegeta has been murdered, you have inherited the throne because you are the next in line of the Royal Family of Vegeta!")
 				A.Rank_Verb_Assign()
 				break
 			else King_of_Vegeta=null
 		if(!dead) if(Race=="Frost Demon"|Class=="Frost Demon")
 			if(Frost_Demon_Lord==M.key)
-				usr<<"You have become the new Frost Demon Lord!"
-				M<<"You have lost your status as Frost Demon Lord to [usr]."
+				to_chat(usr, "You have become the new Frost Demon Lord!")
+				to_chat(M, "You have lost your status as Frost Demon Lord to [usr].")
 				Frost_Demon_Lord=key
 	else if(M) if(isNPC)
 		emit_Sound('groundhit2.wav')

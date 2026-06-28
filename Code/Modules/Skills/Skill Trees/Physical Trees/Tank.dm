@@ -9,11 +9,11 @@
 	maxlevel = 1
 	tier = 1
 	after_learn()
-		savant<<"You start circulating your Ki."
+		to_chat(savant, "You start circulating your Ki.")
 		savant.kiskillBuff+=0.15
 		savant.physdefBuff+=1
 	before_forget()
-		savant<<"You stop circulating your Ki."
+		to_chat(savant, "You stop circulating your Ki.")
 		savant.kiskillBuff-=0.15
 		savant.physdefBuff-=1
 
@@ -29,11 +29,11 @@
 	tier = 3
 	skillcost = 5
 	after_learn()
-		savant<<"You start making your body even more dense."
+		to_chat(savant, "You start making your body even more dense.")
 		savant.physdefBuff+=2
 		assignverb(/mob/keyable/verb/Ultradense_Body)
 	before_forget()
-		savant<<"Your body loses its density."
+		to_chat(savant, "Your body loses its density.")
 		savant.physdefBuff-=2
 		unassignverb(/mob/keyable/verb/Ultradense_Body)
 	login(mob/logger)
@@ -43,10 +43,10 @@ mob/keyable/verb/Ultradense_Body()
 	set category = "Skills"
 	desc = "Make your torso even more dense, increasing your defense even further beyond!"
 	if(!isBuffed(/obj/buff/Ultradense_Body)&&!usr.KO)
-		usr<<"You turn your body into something like steel!"
+		to_chat(usr, "You turn your body into something like steel!")
 		usr.startbuff(/obj/buff/Ultradense_Body)
 	else if(isBuffed(/obj/buff/Ultradense_Body))
-		usr<<"You let your defense slack."
+		to_chat(usr, "You let your defense slack.")
 		usr.stopbuff(/obj/buff/Ultradense_Body)
 
 /obj/buff/Ultradense_Body
@@ -77,8 +77,8 @@ mob/keyable/verb/Ultradense_Body()
 	maxlevel = 1
 	tier = 4
 	after_learn()
-		savant<<"Your defense has reached the endgame."
+		to_chat(savant, "Your defense has reached the endgame.")
 		savant.physdefBuff+=5
 	before_forget()
-		savant<<"Your body expands from its collapsed point..."
+		to_chat(savant, "Your body expands from its collapsed point...")
 		savant.physdefBuff-=5

@@ -7,11 +7,11 @@ mob/proc/CheckIncarnate()
 			BP += max((client.ReincarnationBonus.oldBP/(100/BPMod)),2*BPMod) //self-based: bonus de BP baseado so no seu BP anterior (oldBP), sem a media do servidor
 			hiddenpotential += client.ReincarnationBonus.oldBP
 			if(godki) godki.naturalization = client.ReincarnationBonus.naturalization
-			src << "You just had a reincarnation bonus applied to this character!"
+			to_chat(src, "You just had a reincarnation bonus applied to this character!")
 
 mob/proc/Reincarnate()
 	if(Fusee&&!FuseTimer)
-		Fusee << "[src] made the fusion permanent."
+		to_chat(Fusee, "[src] made the fusion permanent.")
 		Fusee.BP += BP
 		for(var/datum/Fusion/F)
 			if(F.KeeperSig==signature||F.LoserSig==signature)
@@ -19,9 +19,9 @@ mob/proc/Reincarnate()
 					F.OtherReincarnated = 1
 					F.IsActiveForLoser = 0
 	else if(FuseTimer)
-		usr << "The fusion is temporary! Wait until it's over."
+		to_chat(usr, "The fusion is temporary! Wait until it's over.")
 		return
-	src << "Don't log off. You may lose some bonuses you'd normally have. You must create a new character to claim these bonuses within this login session."
+	to_chat(src, "Don't log off. You may lose some bonuses you'd normally have. You must create a new character to claim these bonuses within this login session.")
 	do_reincarnation()
 mob/proc/do_reincarnation()
 	var/Reincarnator/A = new

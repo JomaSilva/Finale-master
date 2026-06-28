@@ -39,12 +39,12 @@
 	enabled = 0
 	var/attackcounter = 0//running counter of effusion attacks done for exp purposes
 	after_learn()
-		savant<<"You begin to master the art of effusing ki."
+		to_chat(savant, "You begin to master the art of effusing ki.")
 	effector()
 		..()
 		if(levelup)
 			levelup=0
-			savant<<"You feel your ki erupt from you! Basic Effusion is now level [level]!"
+			to_chat(savant, "You feel your ki erupt from you! Basic Effusion is now level [level]!")
 			expbarrier=(5000*1.03**level)
 			if(level % 5 == 0)
 				savant.kieffusionskill+=1
@@ -57,12 +57,12 @@
 				savant.genome.add_to_stat("Energy Level",0.05)
 				savant.kiskillBuff+=0.05
 			if(level == 25)//learn beam
-				savant<<"You have learned to focus your ki into a single point before effusing it. You have learned the basic Beam!"
+				to_chat(savant, "You have learned to focus your ki into a single point before effusing it. You have learned the basic Beam!")
 				assignverb(/mob/keyable/verb/Ki_Wave)
 			if(level == 50) //learn Give Power
 				savant.kioffBuff+=0.1
 				savant.kidefBuff+=0.1
-				savant<<"You have learned to focus your Ki into somebody else, healing and increasing their power!"
+				to_chat(savant, "You have learned to focus your Ki into somebody else, healing and increasing their power!")
 				assignverb(/mob/keyable/verb/Give_Power)
 			if(level == 75)
 				savant.genome.add_to_stat("Energy Level",0.05)
@@ -94,13 +94,13 @@
 	var/attackcounter = 0//running counter of effusion attacks done for exp purposes
 	var/effusioncounter= 0
 	after_learn()
-		savant<<"You are becoming adept at effusing ki."
+		to_chat(savant, "You are becoming adept at effusing ki.")
 		effusioncounter = savant.blastcounter+savant.beamcounter+savant.chargedcounter+savant.kiaicounter+savant.guidedcounter+savant.homingcounter+savant.targetedcounter+savant.volleycounter
 	effector()
 		..()
 		if(levelup)
 			levelup=0
-			savant<<"You feel your ki explode from you! Advanced Effusion is now level [level]!"
+			to_chat(savant, "You feel your ki explode from you! Advanced Effusion is now level [level]!")
 			expbarrier=(10000*1.03**level)
 			if(level % 5 == 0)
 				savant.kieffusionskill+=2
@@ -111,7 +111,7 @@
 				savant.kiskillBuff+=0.05
 				savant.kidefBuff+=0.05
 			if(level == 25)
-				savant<<"You think you've discovered how to alter your effusion! You can now learn an effusion specialty!"
+				to_chat(savant, "You think you've discovered how to alter your effusion! You can now learn an effusion specialty!")
 				savant.effusionspecial=1
 			if(level == 50)
 				savant.kioffBuff+=0.2
@@ -146,13 +146,13 @@
 	var/attackcounter = 0//running counter of effusion attacks done for exp purposes
 	var/effusioncounter= 0
 	after_learn()
-		savant<<"You are a master at effusing ki."
+		to_chat(savant, "You are a master at effusing ki.")
 		effusioncounter = savant.blastcounter+savant.beamcounter+savant.chargedcounter+savant.kiaicounter+savant.guidedcounter+savant.homingcounter+savant.targetedcounter+savant.volleycounter
 	effector()
 		..()
 		if(levelup)
 			levelup=0
-			savant<<"You feel your ki explode from you! Perfect Effusion is now level [level]!"
+			to_chat(savant, "You feel your ki explode from you! Perfect Effusion is now level [level]!")
 			expbarrier=(20000*1.03**level)
 			if(level % 5 == 0)
 				savant.kieffusionskill+=1
@@ -195,26 +195,26 @@
 	enabled = 0
 	var/attackcounter
 	after_learn()
-		savant<<"You think you understand blasts better!"
+		to_chat(savant, "You think you understand blasts better!")
 	effector()
 		..()
 		if(levelup)
 			levelup=0
-			savant<<"Your mastery over blasts grows! Basic Blast Mastery is now level [level]!"
+			to_chat(savant, "Your mastery over blasts grows! Basic Blast Mastery is now level [level]!")
 			expbarrier=(5000*1.03**level)
 			if(level % 5 == 0)
 				savant.blastskill+=1
 			if(level == 30)//learn Energy Barrage
-				savant<<"You think you can rapidly fire blasts now!"
+				to_chat(savant, "You think you can rapidly fire blasts now!")
 				assignverb(/mob/keyable/verb/Energy_Barrage)
 				savant.volleyskill+=1
 				savant.bonusShots+=1
 			if(level == 50)//learn Charged Shot
-				savant <<"You think you can make a more powerful blast!"
+				to_chat(savant, "You think you can make a more powerful blast!")
 				assignverb(/mob/keyable/verb/Charged_Shot)
 				savant.chargedskill+=1
 			if(level == 75)//learn Scattershot
-				savant <<"You've learned to fire many blasts at once!"
+				to_chat(savant, "You've learned to fire many blasts at once!")
 				assignverb(/mob/keyable/verb/Scattershot)
 				savant.homingskill+=1
 			if(level == 100)
@@ -246,23 +246,23 @@
 	enabled = 0
 	var/attackcounter
 	after_learn()
-		savant<<"You think you understand beams better!"
+		to_chat(savant, "You think you understand beams better!")
 	effector()
 		..()
 		if(levelup)
 			levelup=0
-			savant<<"Your mastery over beams grows! Basic Beam Mastery is now level [level]!"
+			to_chat(savant, "Your mastery over beams grows! Basic Beam Mastery is now level [level]!")
 			expbarrier=(5000*1.03**level)
 			if(level % 5 == 0)
 				savant.beamskill+=1
 			if(level == 30)//learn Masenko
-				savant<<"You think you can create a beam that's stronger up close!"
+				to_chat(savant, "You think you can create a beam that's stronger up close!")
 				assignverb(/mob/keyable/verb/Masenko)
 			if(level == 50)//learn Makkankosappo
-				savant <<"You think you can make a beam that grows in power as it travels!"
+				to_chat(savant, "You think you can make a beam that grows in power as it travels!")
 				assignverb(/mob/keyable/verb/Makkankosappo)
 			if(level == 75)//learn Energy Wave Volley
-				savant <<"You've learned to fire many beams at once!"
+				to_chat(savant, "You've learned to fire many beams at once!")
 				assignverb(/mob/keyable/verb/Energy_Wave_Volley)
 				savant.volleyskill+=1
 				savant.chargedskill+=1
@@ -294,23 +294,23 @@
 	enabled = 0
 	var/attackcounter
 	after_learn()
-		savant<<"You think you understand kiai attacks better!"
+		to_chat(savant, "You think you understand kiai attacks better!")
 	effector()
 		..()
 		if(levelup)
 			levelup=0
-			savant<<"Your mastery over kiai attacks grows! Basic Kiai Mastery is now level [level]!"
+			to_chat(savant, "Your mastery over kiai attacks grows! Basic Kiai Mastery is now level [level]!")
 			expbarrier=(5000*1.03**level)
 			if(level % 5 == 0)
 				savant.kiaiskill+=1
 			if(level == 30)//learn Shockwave
-				savant<<"You think you can knock back opponents in all directions!"
+				to_chat(savant, "You think you can knock back opponents in all directions!")
 				assignverb(/mob/keyable/verb/Shockwave)
 			if(level == 50)//learn Deflection
-				savant <<"You think you can knock back projectiles fired at you from the front!"
+				to_chat(savant, "You think you can knock back projectiles fired at you from the front!")
 				assignverb(/mob/keyable/verb/Deflection)
 			if(level == 75)//learn Explosive Roar
-				savant <<"You've learned charge a massive kiai attack!"
+				to_chat(savant, "You've learned charge a massive kiai attack!")
 				assignverb(/mob/keyable/verb/Explosive_Roar)
 				savant.chargedskill+=1
 			if(level == 100)
@@ -341,22 +341,22 @@
 	enabled = 0
 	var/attackcounter
 	after_learn()
-		savant<<"You think you understand rapid attacks better!"
+		to_chat(savant, "You think you understand rapid attacks better!")
 	effector()
 		..()
 		if(levelup)
 			levelup=0
-			savant<<"Your mastery over volley attacks grows! Basic Volley Mastery is now level [level]!"
+			to_chat(savant, "Your mastery over volley attacks grows! Basic Volley Mastery is now level [level]!")
 			expbarrier=(5000*1.03**level)
 			if(level % 5 == 0)
 				savant.volleyskill+=1
 			if(level % 20 == 0)
 				savant.bonusShots+=1
 			if(level == 20)
-				savant<<"You can now rapidly fire a continous stream of blasts. The longer you fire, the longer the recharge time."
+				to_chat(savant, "You can now rapidly fire a continous stream of blasts. The longer you fire, the longer the recharge time.")
 				assignverb(/mob/keyable/verb/Continuous_Energy_Bullets)
 			if(level == 50)
-				savant<<"You can now expel energy blasts in all directions!"
+				to_chat(savant, "You can now expel energy blasts in all directions!")
 				assignverb(/mob/keyable/verb/Spin_Blast)
 			if(level == 100)
 				savant.volleyskill+=5
@@ -385,20 +385,20 @@
 	enabled = 0
 	var/attackcounter
 	after_learn()
-		savant<<"You think you understand guided attacks better!"
+		to_chat(savant, "You think you understand guided attacks better!")
 	effector()
 		..()
 		if(levelup)
 			levelup=0
-			savant<<"Your mastery over guided attacks grows! Basic Guided Mastery is now level [level]!"
+			to_chat(savant, "Your mastery over guided attacks grows! Basic Guided Mastery is now level [level]!")
 			expbarrier=(5000*1.03**level)
 			if(level % 5 == 0)
 				savant.guidedskill+=1
 			if(level == 30)
-				savant<<"You can now form your guided blast into a sharp, spinning disc!."
+				to_chat(savant, "You can now form your guided blast into a sharp, spinning disc!.")
 				assignverb(/mob/keyable/verb/Kienzan)
 			if(level == 75)
-				savant<<"You can gather a frightening amount of energy into a large, guidable orb."
+				to_chat(savant, "You can gather a frightening amount of energy into a large, guidable orb.")
 				assignverb(/mob/keyable/verb/Death_Ball)
 			if(level == 100)
 				savant.guidedskill+=5
@@ -427,13 +427,13 @@
 	enabled = 0
 	var/attackcounter
 	after_learn()
-		savant<<"You think you understand homing attacks better!"
-		savant<<"Your blast attacks now have a chance to home in on your target!"
+		to_chat(savant, "You think you understand homing attacks better!")
+		to_chat(savant, "Your blast attacks now have a chance to home in on your target!")
 	effector()
 		..()
 		if(levelup)
 			levelup=0
-			savant<<"Your mastery over homing attacks grows! Basic Homing Mastery is now level [level]!"
+			to_chat(savant, "Your mastery over homing attacks grows! Basic Homing Mastery is now level [level]!")
 			expbarrier=(5000*1.03**level)
 			if(level % 5 == 0)
 				savant.homingskill+=1
@@ -461,17 +461,17 @@
 	enabled = 0
 	var/attackcounter
 	after_learn()
-		savant<<"You think you understand targeted attacks better!"
+		to_chat(savant, "You think you understand targeted attacks better!")
 	effector()
 		..()
 		if(levelup)
 			levelup=0
-			savant<<"Your mastery over homing attacks grows! Basic Targeted Mastery is now level [level]!"
+			to_chat(savant, "Your mastery over homing attacks grows! Basic Targeted Mastery is now level [level]!")
 			expbarrier=(5000*1.03**level)
 			if(level % 5 == 0)
 				savant.targetedskill+=1
 			if(level == 30)
-				savant<<"You can now direct your Ki Bomb skill to converge on your target! You've learned the Hellzone Grenade!"
+				to_chat(savant, "You can now direct your Ki Bomb skill to converge on your target! You've learned the Hellzone Grenade!")
 				assignverb(/mob/keyable/verb/Hellzone_Grenade)
 				savant.homingskill+=1
 			if(level == 100)
@@ -498,13 +498,13 @@
 	enabled = 0
 	var/attackcounter
 	after_learn()
-		savant<<"You understand blasts better!"
+		to_chat(savant, "You understand blasts better!")
 		attackcounter=savant.blastcounter
 	effector()
 		..()
 		if(levelup)
 			levelup=0
-			savant<<"Your mastery over blasts grows! Advanced Blast Mastery is now level [level]!"
+			to_chat(savant, "Your mastery over blasts grows! Advanced Blast Mastery is now level [level]!")
 			expbarrier=(10000*1.03**level)
 			if(level % 5 == 0)
 				savant.blastskill+=2
@@ -536,18 +536,18 @@
 	enabled = 0
 	var/attackcounter
 	after_learn()
-		savant<<"You understand beams better!"
+		to_chat(savant, "You understand beams better!")
 		attackcounter=savant.beamcounter
 	effector()
 		..()
 		if(levelup)
 			levelup=0
-			savant<<"Your mastery over beams grows! Advanced Beam Mastery is now level [level]!"
+			to_chat(savant, "Your mastery over beams grows! Advanced Beam Mastery is now level [level]!")
 			expbarrier=(10000*1.03**level)
 			if(level % 5 == 0)
 				savant.beamskill+=2
 			if(level == 30)
-				savant<<"You can now fire an enormous beam of energy!"
+				to_chat(savant, "You can now fire an enormous beam of energy!")
 				assignverb(/mob/keyable/verb/Massive_Beam)
 			if(level == 75)
 				savant.beamskill+=5
@@ -575,13 +575,13 @@
 	enabled = 0
 	var/attackcounter
 	after_learn()
-		savant<<"You understand kiai attacks better!"
+		to_chat(savant, "You understand kiai attacks better!")
 		attackcounter=savant.kiaicounter
 	effector()
 		..()
 		if(levelup)
 			levelup=0
-			savant<<"Your mastery over kiai attacks grows! Advanced Kiai Mastery is now level [level]!"
+			to_chat(savant, "Your mastery over kiai attacks grows! Advanced Kiai Mastery is now level [level]!")
 			expbarrier=(10000*1.03**level)
 			if(level % 5 == 0)
 				savant.kiaiskill+=2
@@ -609,13 +609,13 @@
 	enabled = 0
 	var/attackcounter
 	after_learn()
-		savant<<"You think you understand rapid attacks better!"
+		to_chat(savant, "You think you understand rapid attacks better!")
 		attackcounter=savant.volleycounter
 	effector()
 		..()
 		if(levelup)
 			levelup=0
-			savant<<"Your mastery over volley attacks grows! Advanced Volley Mastery is now level [level]!"
+			to_chat(savant, "Your mastery over volley attacks grows! Advanced Volley Mastery is now level [level]!")
 			expbarrier=(10000*1.03**level)
 			if(level % 5 == 0)
 				savant.volleyskill+=2
@@ -646,13 +646,13 @@
 	enabled = 0
 	var/attackcounter
 	after_learn()
-		savant<<"You think you understand guided attacks better!"
+		to_chat(savant, "You think you understand guided attacks better!")
 		attackcounter=savant.guidedcounter
 	effector()
 		..()
 		if(levelup)
 			levelup=0
-			savant<<"Your mastery over guided attacks grows! Advanced Guided Mastery is now level [level]!"
+			to_chat(savant, "Your mastery over guided attacks grows! Advanced Guided Mastery is now level [level]!")
 			expbarrier=(10000*1.03**level)
 			if(level % 5 == 0)
 				savant.guidedskill+=2
@@ -680,13 +680,13 @@
 	enabled = 0
 	var/attackcounter
 	after_learn()
-		savant<<"You understand homing attacks better!"
+		to_chat(savant, "You understand homing attacks better!")
 		attackcounter=savant.homingcounter
 	effector()
 		..()
 		if(levelup)
 			levelup=0
-			savant<<"Your mastery over homing attacks grows! Advanced Homing Mastery is now level [level]!"
+			to_chat(savant, "Your mastery over homing attacks grows! Advanced Homing Mastery is now level [level]!")
 			expbarrier=(10000*1.03**level)
 			if(level % 5 == 0)
 				savant.homingskill+=2
@@ -714,12 +714,12 @@
 	enabled = 0
 	var/attackcounter
 	after_learn()
-		savant<<"You understand targeted attacks better!"
+		to_chat(savant, "You understand targeted attacks better!")
 	effector()
 		..()
 		if(levelup)
 			levelup=0
-			savant<<"Your mastery over homing attacks grows! Advanced Targeted Mastery is now level [level]!"
+			to_chat(savant, "Your mastery over homing attacks grows! Advanced Targeted Mastery is now level [level]!")
 			expbarrier=(10000*1.03**level)
 			if(level % 5 == 0)
 				savant.targetedskill+=2
@@ -749,13 +749,13 @@
 	enabled = 0
 	var/attackcounter
 	after_learn()
-		savant<<"You've perfected blasts!"
+		to_chat(savant, "You've perfected blasts!")
 		attackcounter=savant.blastcounter
 	effector()
 		..()
 		if(levelup)
 			levelup=0
-			savant<<"Your mastery over blasts grows! Perfect Blast Mastery is now level [level]!"
+			to_chat(savant, "Your mastery over blasts grows! Perfect Blast Mastery is now level [level]!")
 			expbarrier=(20000*1.03**level)
 			if(level % 5 == 0)
 				savant.blastskill+=1
@@ -786,13 +786,13 @@
 	enabled = 0
 	var/attackcounter
 	after_learn()
-		savant<<"You've perfected beams!"
+		to_chat(savant, "You've perfected beams!")
 		attackcounter=savant.beamcounter
 	effector()
 		..()
 		if(levelup)
 			levelup=0
-			savant<<"Your mastery over beams grows! Perfect Beam Mastery is now level [level]!"
+			to_chat(savant, "Your mastery over beams grows! Perfect Beam Mastery is now level [level]!")
 			expbarrier=(20000*1.03**level)
 			if(level % 5 == 0)
 				savant.beamskill+=1
@@ -819,13 +819,13 @@
 	enabled = 0
 	var/attackcounter
 	after_learn()
-		savant<<"You've perfected kiai attacks!"
+		to_chat(savant, "You've perfected kiai attacks!")
 		attackcounter=savant.kiaicounter
 	effector()
 		..()
 		if(levelup)
 			levelup=0
-			savant<<"Your mastery over kiai attacks grows! Perfect Kiai Mastery is now level [level]!"
+			to_chat(savant, "Your mastery over kiai attacks grows! Perfect Kiai Mastery is now level [level]!")
 			expbarrier=(20000*1.03**level)
 			if(level % 5 == 0)
 				savant.kiaiskill+=1
@@ -851,13 +851,13 @@
 	enabled = 0
 	var/attackcounter
 	after_learn()
-		savant<<"You've perfected rapid attacks!"
+		to_chat(savant, "You've perfected rapid attacks!")
 		attackcounter=savant.volleycounter
 	effector()
 		..()
 		if(levelup)
 			levelup=0
-			savant<<"Your mastery over volley attacks grows! Perfect Volley Mastery is now level [level]!"
+			to_chat(savant, "Your mastery over volley attacks grows! Perfect Volley Mastery is now level [level]!")
 			expbarrier=(20000*1.03**level)
 			if(level % 5 == 0)
 				savant.volleyskill+=1
@@ -887,13 +887,13 @@
 	enabled = 0
 	var/attackcounter
 	after_learn()
-		savant<<"You've perfected guided attacks!"
+		to_chat(savant, "You've perfected guided attacks!")
 		attackcounter=savant.guidedcounter
 	effector()
 		..()
 		if(levelup)
 			levelup=0
-			savant<<"Your mastery over guided attacks grows! Perfect Guided Mastery is now level [level]!"
+			to_chat(savant, "Your mastery over guided attacks grows! Perfect Guided Mastery is now level [level]!")
 			expbarrier=(20000*1.03**level)
 			if(level % 5 == 0)
 				savant.guidedskill+=1
@@ -920,13 +920,13 @@
 	enabled = 0
 	var/attackcounter
 	after_learn()
-		savant<<"You understand homing attacks better!"
+		to_chat(savant, "You understand homing attacks better!")
 		attackcounter=savant.homingcounter
 	effector()
 		..()
 		if(levelup)
 			levelup=0
-			savant<<"Your mastery over homing attacks grows! Advanced Homing Mastery is now level [level]!"
+			to_chat(savant, "Your mastery over homing attacks grows! Advanced Homing Mastery is now level [level]!")
 			expbarrier=(10000*1.03**level)
 			if(level % 5 == 0)
 				savant.homingskill+=2
@@ -953,12 +953,12 @@
 	enabled = 0
 	var/attackcounter
 	after_learn()
-		savant<<"You've perfected targeted attacks!"
+		to_chat(savant, "You've perfected targeted attacks!")
 	effector()
 		..()
 		if(levelup)
 			levelup=0
-			savant<<"Your mastery over homing attacks grows! Perfect Targeted Mastery is now level [level]!"
+			to_chat(savant, "Your mastery over homing attacks grows! Perfect Targeted Mastery is now level [level]!")
 			expbarrier=(20000*1.03**level)
 			if(level % 5 == 0)
 				savant.targetedskill+=1

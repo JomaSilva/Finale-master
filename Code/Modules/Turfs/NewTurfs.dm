@@ -190,7 +190,7 @@ turf/HDTurfs
 				if(M.isflying|!M.density)
 					return ..()
 				else
-					usr << "You fall through the clouds and land in Hell!"
+					to_chat(usr, "You fall through the clouds and land in Hell!")
 					M.loc=locate(63,260,9)
 					return 1
 			else return ..()

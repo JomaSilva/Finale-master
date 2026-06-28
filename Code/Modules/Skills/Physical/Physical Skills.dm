@@ -1,7 +1,7 @@
 /*
-savant << "You can use Zanzoken Combo now! (use the skill to teleport behind a person and attack.)"
-savant << "You can use Zanzoken Dodge now! (use the skill to immediately teleport to a free tile around you.)"
-savant << "You can use Zanzoken Afterimage now! (use the skill to start producing afterimages which may confuse the enemy.)"
+to_chat(savant, "You can use Zanzoken Combo now! (use the skill to teleport behind a person and attack.)")
+to_chat(savant, "You can use Zanzoken Dodge now! (use the skill to immediately teleport to a free tile around you.)")
+to_chat(savant, "You can use Zanzoken Afterimage now! (use the skill to start producing afterimages which may confuse the enemy.)")
 */
 mob/var/tmp/afterimaging=0
 mob/keyable/verb
@@ -22,7 +22,7 @@ mob/keyable/verb
 				else
 					Move(target.loc,target.dir)
 			attacking = 0
-		else usr<<"You must be combat ready and have at least [kireq] ki. Also, your maximum zanzoken combo distance is [zanzorange + 2]."
+		else to_chat(usr, "You must be combat ready and have at least [kireq] ki. Also, your maximum zanzoken combo distance is [zanzorange + 2].")
 	Zanzoken_Dodge()
 		set category="Skills"
 		var/kireq=usr.Ephysoff*BaseDrain*4
@@ -33,26 +33,26 @@ mob/keyable/verb
 			Move(tele_rand_turf_in_view(src,zanzorange),dir)
 			usr.emit_Sound('teleport.wav')
 			//attacking = 0
-		else usr<<"You must be combat ready (not be stunned, be able to attack, and not have a cooldown happening (Basic CD = -[basicCD/10]- seconds)) and have at least [kireq] ki."
+		else to_chat(usr, "You must be combat ready (not be stunned, be able to attack, and not have a cooldown happening (Basic CD = -[basicCD/10]- seconds)) and have at least [kireq] ki.")
 	Zanzoken_Afterimage()
 		set category="Skills"
 		var/kireq=usr.Ephysoff*BaseDrain*0.4
 		if(!usr.med&&!usr.train&&!usr.KO&&usr.Ki>=kireq&&!usr.basicCD&&usr.canfight)
 			if(!unarmed&&(weaponeq>1||twohanding))
-				usr<<"You need a free hand to use this!"
+				to_chat(usr, "You need a free hand to use this!")
 				return
 			if(usr.buffCD)
-				usr<<"Melee buff skills on CD for [buffCD/10] seconds."
+				to_chat(usr, "Melee buff skills on CD for [buffCD/10] seconds.")
 				return
 			if(usr.canfight<=0||usr.KO||usr.med||usr.stamina<15)
-				usr<<"You can't use this now!"
+				to_chat(usr, "You can't use this now!")
 				return
 			flick('Zanzoken.dmi',usr)
 			usr.emit_Sound('teleport.wav')
 			basicCD += 15
 			usr.AddEffect(/effect/illusion/Afterimage)
 			usr.Ki-=kireq
-		else usr<<"You must be combat ready (not be stunned, be able to attack, and not have a cooldown happening (Basic CD = -[basicCD/10]- seconds)) and have at least [kireq] ki."
+		else to_chat(usr, "You must be combat ready (not be stunned, be able to attack, and not have a cooldown happening (Basic CD = -[basicCD/10]- seconds)) and have at least [kireq] ki.")
 
 obj/temp_obj
 	IsntAItem = 1
@@ -85,7 +85,7 @@ mob/keyable/verb //boxing skills
 				target.stagger -= 1
 			sleep(15)
 			attacking = 0
-		else usr<<"You must be combat ready (not be stunned, be able to attack, and not have a cooldown happening (Basic CD = -[basicCD/10]- seconds)) and have at least [kireq] ki."
+		else to_chat(usr, "You must be combat ready (not be stunned, be able to attack, and not have a cooldown happening (Basic CD = -[basicCD/10]- seconds)) and have at least [kireq] ki.")
 	One_Two_Five() //boxing skill, jab + cross + uppercut
 		set category="Skills"
 		var/kireq=usr.Ephysoff*BaseDrain*12
@@ -109,7 +109,7 @@ mob/keyable/verb //boxing skills
 				target.stagger -= 1
 			sleep(15)
 			attacking = 0
-		else usr<<"You must be combat ready (not be stunned, be able to attack, and not have a cooldown happening (Basic CD = -[basicCD/10]- seconds)) and have at least [kireq] ki."
+		else to_chat(usr, "You must be combat ready (not be stunned, be able to attack, and not have a cooldown happening (Basic CD = -[basicCD/10]- seconds)) and have at least [kireq] ki.")
 	KO_Punch() //boxing skill, just a uppercut, does a bunch of damage.
 		set category="Skills"
 		var/kireq=usr.Ephysoff*BaseDrain*15
@@ -125,7 +125,7 @@ mob/keyable/verb //boxing skills
 				target.stagger -= 1
 			sleep(15)
 			attacking = 0
-		else usr<<"You must be combat ready (not be stunned, be able to attack, and not have a cooldown happening (Basic CD = -[basicCD/10]- seconds)) and have at least [kireq] ki."
+		else to_chat(usr, "You must be combat ready (not be stunned, be able to attack, and not have a cooldown happening (Basic CD = -[basicCD/10]- seconds)) and have at least [kireq] ki.")
 	Two_One_Four() //boxing skill, cross + jab + uppercut
 		set category="Skills"
 		var/kireq=usr.Ephysoff*BaseDrain*9
@@ -149,7 +149,7 @@ mob/keyable/verb //boxing skills
 				target.stagger -= 1
 			sleep(15)
 			attacking = 0
-		else usr<<"You must be combat ready (not be stunned, be able to attack, and not have a cooldown happening (Basic CD = -[basicCD/10]- seconds)) and have at least [kireq] ki."
+		else to_chat(usr, "You must be combat ready (not be stunned, be able to attack, and not have a cooldown happening (Basic CD = -[basicCD/10]- seconds)) and have at least [kireq] ki.")
 
 mob/keyable/verb //Kicking skills
 	Dropkick() //dash- on success it stuns the opponent, on failure it stuns you. 4 tile range, semi-straight line. (tracks)
@@ -172,7 +172,7 @@ mob/keyable/verb //Kicking skills
 				dist--
 				dmg--
 				if(!canmove)
-					src<<"Your rush fails since you can't move!"
+					to_chat(src, "Your rush fails since you can't move!")
 					break
 				step(src,rushdir)
 				if(target in view(1))
@@ -184,7 +184,7 @@ mob/keyable/verb //Kicking skills
 						succ=1
 						break
 				if(dist==0)
-					src<<"All this moving is exhausting..."
+					to_chat(src, "All this moving is exhausting...")
 					break
 				sleep(rushSpeed)
 			if(succ)
@@ -194,12 +194,12 @@ mob/keyable/verb //Kicking skills
 					doAttack(m_rf,20+dmg,1,null,"dropkicks",null,3)
 			else
 				stagger += 1
-				src<<"You fell because you missed the enemy. You're stunned!"
+				to_chat(src, "You fell because you missed the enemy. You're stunned!")
 				sleep(4)
 				stagger -= 1
 			sleep(15)
 			attacking = 0
-		else usr<<"You must be combat ready (not be stunned, be able to attack, and not have a cooldown happening (Basic CD = -[basicCD/10]- seconds)) and have at least [kireq] ki."
+		else to_chat(usr, "You must be combat ready (not be stunned, be able to attack, and not have a cooldown happening (Basic CD = -[basicCD/10]- seconds)) and have at least [kireq] ki.")
 	Falling_Kick() //attack, that on success grounds you and the opponent with extra damage.
 		set category="Skills"
 		var/kireq=usr.Ephysoff*BaseDrain*12
@@ -220,7 +220,7 @@ mob/keyable/verb //Kicking skills
 					target.stagger -= 1
 			sleep(15)
 			attacking = 0
-		else usr<<"You must be combat ready (not be stunned, be able to attack, and not have a cooldown happening (Basic CD = -[basicCD/10]- seconds)) and have at least [kireq] ki."
+		else to_chat(usr, "You must be combat ready (not be stunned, be able to attack, and not have a cooldown happening (Basic CD = -[basicCD/10]- seconds)) and have at least [kireq] ki.")
 	Kickup() //if the person is grounded, staggers them.
 		set category="Skills"
 		var/kireq=usr.Ephysoff*BaseDrain*12
@@ -237,4 +237,4 @@ mob/keyable/verb //Kicking skills
 				target.stagger -= 1
 			sleep(15)
 			attacking = 0
-		else usr<<"You must be combat ready (not be stunned, be able to attack, and not have a cooldown happening (Basic CD = -[basicCD/10]- seconds)) and have at least [kireq] ki."
+		else to_chat(usr, "You must be combat ready (not be stunned, be able to attack, and not have a cooldown happening (Basic CD = -[basicCD/10]- seconds)) and have at least [kireq] ki.")

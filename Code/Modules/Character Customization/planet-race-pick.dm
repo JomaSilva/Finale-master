@@ -235,7 +235,7 @@ obj/race_window_proceed
 			else usr.parentpar(m)
 			usr.Race("Pregnant")
 			del(src)
-		else usr<<"Pick a race and planet."
+		else to_chat(usr, "Pick a race and planet.")
 mob/var/tmp/tmp_parent
 mob/proc/race_window_proceed_remove()
 	verbs -= typesof(/obj/race_window_proceed/verb)

@@ -32,7 +32,7 @@
 			spawn savant.addchargeoverlay()
 		return
 	else
-		savant << "You need at least [kireq] Ki!"
+		to_chat(savant, "You need at least [kireq] Ki!")
 		return
 	..()
 //stop() and charge() isn't modified since the beam code in beams.dm do it for us.
@@ -60,7 +60,7 @@
 	savant = source
 	switch(input(savant,"Pick what to customize. Note: While Icons are usually fine, sound files can only be changed by admins.") in customizelist)
 		if("Current Customization Points")
-			savant << "The available customization points are [CustomizationPoints]."
+			to_chat(savant, "The available customization points are [CustomizationPoints].")
 		if("Name")
 			name=input(savant,"Choose the name.","Attack name.",name)
 		if("Outloud Name")
@@ -79,7 +79,7 @@
 						UndoPoints(((storeddamage - basedamage)/2))
 					else if(storeddamage < basedamage)
 						if(!(EnoughPoints((basedamage - storeddamage)/2)))
-							savant<<"You do not have enough unallocated Milestones (You gain Milestones through raw BP increases or other means.)"
+							to_chat(savant, "You do not have enough unallocated Milestones (You gain Milestones through raw BP increases or other means.)")
 							basedamage = storeddamage
 						else
 							SubtractPoints((basedamage - storeddamage)/2)
@@ -100,7 +100,7 @@
 						UndoPoints((storedspeed - MoveDelay)/2)
 					else if(storedspeed < MoveDelay)
 						if(EnoughPoints((MoveDelay - storedspeed)/2))
-							savant<<"You do not have enough unallocated Milestones (You gain Milestones through raw BP increases or other means.)"
+							to_chat(savant, "You do not have enough unallocated Milestones (You gain Milestones through raw BP increases or other means.)")
 							MoveDelay = storedspeed
 						else
 							SubtractPoints((MoveDelay - storedspeed)/2)
@@ -118,7 +118,7 @@
 							Piercer = 1
 							SubtractPoints(1)
 						else
-							savant <<"Not enough points."
+							to_chat(savant, "Not enough points.")
 				if("No")
 					if(Piercer)
 						Piercer = 0

@@ -23,7 +23,7 @@
 			lastdir = savant.dir
 		if(1)
 			if(levelup == 1)
-				savant << "You feel like you could fly if you tried hard enough. It seems like it'll be hard to do, at first."
+				to_chat(savant, "You feel like you could fly if you tried hard enough. It seems like it'll be hard to do, at first.")
 				levelup = 0
 				assignverb(/mob/keyable/verb/Fly)
 			if(savant.flight == TRUE)
@@ -31,7 +31,7 @@
 				if(savant.flightability < 50) savant.flightability += 0.1
 		if(2)
 			if(levelup == 1)
-				savant << "You feel ready to fly at greater speeds, though it may be taxing on your Ki... Seems like you wont get any more out of training normal flight."
+				to_chat(savant, "You feel ready to fly at greater speeds, though it may be taxing on your Ki... Seems like you wont get any more out of training normal flight.")
 				assignverb(/mob/keyable/verb/Superflight)
 				levelup = 0
 			if(savant.flight == TRUE && savant.flightspeed == TRUE && savant.flightability < 100) savant.flightability += 0.1
@@ -39,7 +39,7 @@
 				exp+=0.01
 		if(3)
 			if(levelup == 1)
-				savant<<"You feel as though you can fly with enough speed to leave the planet!"
+				to_chat(savant, "You feel as though you can fly with enough speed to leave the planet!")
 				assignverb(/mob/keyable/verb/Space_Flight)
 				levelup = 0
 
@@ -60,10 +60,10 @@
 		savant.flightability = 1
 		if(level >= 3)
 			unassignverb(/mob/keyable/verb/Space_Flight)
-		savant << "You can't seem to remember how to fly."
+		to_chat(savant, "You can't seem to remember how to fly.")
 /datum/skill/flying/after_learn()
 	switch(level)
-		if(0) savant << "Your Ki makes your steps feel light."
+		if(0) to_chat(savant, "Your Ki makes your steps feel light.")
 		if(1)
 			assignverb(/mob/keyable/verb/Fly)
 			savant.flightability = 25
@@ -79,22 +79,22 @@ mob/keyable/verb
 		if(kiReq < 1) kiReq = 0
 		if(usr.flight)
 			stop_flying()
-			usr<<"You land back on the ground."
+			to_chat(usr, "You land back on the ground.")
 			usr.emit_Sound('buku_land.wav')
 		else if(usr.Ki>=kiReq&&!usr.KO)
 			start_flying()
-			usr<<"You start to hover."
+			to_chat(usr, "You start to hover.")
 			usr.emit_Sound('buku.wav')
-		else usr<<"You are too tired to fly."
+		else to_chat(usr, "You are too tired to fly.")
 mob/keyable/verb
 	Superflight()
 		set category="Skills"
 		if(!usr.flightspeed)
 			start_superflight()
-			usr<<"Flight speed set to fast."
+			to_chat(usr, "Flight speed set to fast.")
 		else
 			stop_superflight()
-			usr<<"Flight speed set to normal."
+			to_chat(usr, "Flight speed set to normal.")
 
 mob/proc/start_flying()
 	Deoccupy()

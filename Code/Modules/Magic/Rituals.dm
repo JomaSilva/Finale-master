@@ -113,7 +113,7 @@
 						usr.Magic -= amount
 						Magic += amount
 			else
-				usr<<"You don't have any magic to give to this ritual."
+				to_chat(usr, "You don't have any magic to give to this ritual.")
 				return
 
 	proc/
@@ -241,9 +241,9 @@
 				var/list/newlist = ingredienttypelist
 				newlist &= req_ingredients
 				/*for(var/a in req_ingredients)
-					world<<"req [a]"
+					to_chat(world, "req [a]")
 				for(var/a in ingredienttypelist)
-					world<<"have [a]"
+					to_chat(world, "have [a]")
 				for(var/a in newlist)
 					world<<"res [a]"*/
 				if(newlist.len == req_ingredients.len)

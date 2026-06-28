@@ -32,10 +32,10 @@
 	common_sense = FALSE
 	tier = 1
 	after_learn()
-		savant<<"Your body grows a thick layer of padding over the top of your regular skin."
+		to_chat(savant, "Your body grows a thick layer of padding over the top of your regular skin.")
 		savant.physdefBuff += 0.3
 	before_forget()
-		savant<<"The thick layer of padding that once laid on top of your skin disintergrates, leaving somewhat vunerable skin underneath."
+		to_chat(savant, "The thick layer of padding that once laid on top of your skin disintergrates, leaving somewhat vunerable skin underneath.")
 		savant.physdefBuff -= 0.3
 
 /datum/skill/Bodybuilding/God_Bod
@@ -46,12 +46,12 @@
 	common_sense = FALSE
 	tier = 2
 	after_learn()
-		savant<<"Your body molds into it's utter peak."
+		to_chat(savant, "Your body molds into it's utter peak.")
 		savant.physdefBuff += 0.1
 		savant.physoffBuff += 0.1
 		savant.speedBuff += 0.1
 	before_forget()
-		savant<<"Your body falls from the peak, and you feel intense sorrow. /fit/ disapproves."
+		to_chat(savant, "Your body falls from the peak, and you feel intense sorrow. /fit/ disapproves.")
 		savant.physdefBuff -= 0.1
 		savant.physoffBuff -= 0.1
 		savant.speedBuff -= 0.1
@@ -65,12 +65,12 @@
 	maxlevel = 0
 	tier = 2
 	after_learn()
-		savant<<"You feel your stamina slowly rising..."
+		to_chat(savant, "You feel your stamina slowly rising...")
 		savant.staminagainMod += 0.1
 		savant.willpowerMod += 0.1
 		savant.satiationMod += 0.1
 	before_forget()
-		savant<<"Your workout routine no longer seems to do the trick anymore."
+		to_chat(savant, "Your workout routine no longer seems to do the trick anymore.")
 		savant.staminagainMod -= 0.1
 		savant.willpowerMod -= 0.1
 		savant.satiationMod -= 0.1
@@ -85,7 +85,7 @@
 	var/storedBP
 	var/hiddenpot
 	after_learn()
-		savant<<"Whatever stamina issues you had, you no longer have. Also, you seem a bit stronger?"
+		to_chat(savant, "Whatever stamina issues you had, you no longer have. Also, you seem a bit stronger?")
 		storedBP = max(1,savant.BP*0.01)
 		savant.BP+=storedBP
 		hiddenpot = (savant.relBPmax*2)
@@ -115,31 +115,31 @@
 	expbarrier = 100
 	var/TrinityType = null
 	after_learn()
-		savant<<"Choose which of the Trinity you wish to represent."
+		to_chat(savant, "Choose which of the Trinity you wish to represent.")
 		switch(input(savant,"Which Trinity do you represent? All: Stamina+, Van-sama: Physdef+++, Physoff+, Decline+, Ricardo: Physdef++, Physoff++, Decline++,Aniki: Physdef+, Physoff+++, Decline+","Trinity Selection","Van-sama") in list("Van-sama","Ricardo","Aniki"))
 			if("Van-sama")
-				savant << "The effects of Van-sama's wisdom have been imparted onto you."
+				to_chat(savant, "The effects of Van-sama's wisdom have been imparted onto you.")
 				savant.staminagainMod += 0.1
 				savant.physdefBuff += 0.3
 				savant.physoffBuff += 0.1
 				savant.genome.add_to_stat("Lifespan",0.10)
 				TrinityType = "Van-sama"
 			if("Ricardo")
-				savant << "The effects of Ricardo's youthfulness have been imparted onto you."
+				to_chat(savant, "The effects of Ricardo's youthfulness have been imparted onto you.")
 				savant.staminagainMod += 0.1
 				savant.physdefBuff += 0.2
 				savant.physoffBuff += 0.2
 				savant.genome.add_to_stat("Lifespan",0.15)
 				TrinityType = "Ricardo"
 			if("Aniki")
-				savant << "The effects of Aniki's wisdom have been imparted onto you."
+				to_chat(savant, "The effects of Aniki's wisdom have been imparted onto you.")
 				savant.staminagainMod += 0.1
 				savant.physdefBuff += 0.1
 				savant.physoffBuff += 0.3
 				savant.genome.add_to_stat("Lifespan",0.10)
 				TrinityType = "Aniki"
 	before_forget()
-		savant<<"The effects of your chosen Trinity vanish."
+		to_chat(savant, "The effects of your chosen Trinity vanish.")
 		switch(TrinityType)
 			if("Van-sama")
 				savant.staminagainMod -= 0.1
@@ -183,7 +183,7 @@
 						if("Van-sama") assignverb(/mob/keyable/verb/Taunt)
 						if("Aniki") assignverb(/mob/keyable/verb/Counter_Taunt)
 						if("Ricardo") assignverb(/mob/keyable/verb/Slap)
-					savant << "The Trinity has bestowed upon you a gift."
+					to_chat(savant, "The Trinity has bestowed upon you a gift.")
 		return
 
 mob/var
@@ -193,41 +193,41 @@ mob/keyable/verb/Taunt()
 	var/kireq=usr.Ephysoff*usr.BaseDrain
 	if(!usr.med&&!usr.train&&!usr.KO&&usr.Ki>=kireq&&!usr.basicCD&&usr.canfight)
 		usr.basicCD += 10
-		viewers(usr) << "<font color=red><font size = 3>[usr]: Fuck you!</font></font>"
+		to_chat(viewers(usr), "<font color=red><font size = 3>[usr]: Fuck you!</font></font>")
 		for(var/mob/M in view(10))
 			if(M.target && M != usr && prob(100 - (M.Ewillpower * 20)))
 				M.target = usr
-				M << "<font color=red><font size = 3>[usr] irritates you too much! Your target is them!"
+				to_chat(M, "<font color=red><font size = 3>[usr] irritates you too much! Your target is them!")
 		sleep(10)
-	else usr<<"You must be combat ready (not be stunned, be able to attack, and not have a cooldown happening (Basic CD = -[basicCD/10]- seconds)) and have at least [kireq] ki."
+	else to_chat(usr, "You must be combat ready (not be stunned, be able to attack, and not have a cooldown happening (Basic CD = -[basicCD/10]- seconds)) and have at least [kireq] ki.")
 
 mob/keyable/verb/Slap()
 	set category = "Skills"
 	var/kireq=usr.Ephysoff*usr.BaseDrain
 	if(!usr.med&&!usr.train&&!usr.KO&&usr.Ki>=kireq&&!usr.basicCD&&usr.canfight)
 		usr.basicCD += 10
-		viewers(usr) << "<font color=red><font size = 3>[usr]: You like this, baby?</font></font>"
+		to_chat(viewers(usr), "<font color=red><font size = 3>[usr]: You like this, baby?</font></font>")
 		for(var/mob/M in view(10))
 			if(M.target && M != usr && prob(100 - (M.Ewillpower * 25)))
 				M.stagger+=1
 				spawn(15) M.stagger-=1
-				M << "<font color=red><font size = 3>[usr] slaps his bum, stunning you for a second!"
+				to_chat(M, "<font color=red><font size = 3>[usr] slaps his bum, stunning you for a second!")
 		sleep(10)
-	else usr<<"You must be combat ready (not be stunned, be able to attack, and not have a cooldown happening (Basic CD = -[basicCD/10]- seconds)) and have at least [kireq] ki."
+	else to_chat(usr, "You must be combat ready (not be stunned, be able to attack, and not have a cooldown happening (Basic CD = -[basicCD/10]- seconds)) and have at least [kireq] ki.")
 
 mob/keyable/verb/Counter_Taunt()
 	set category = "Skills"
 	var/kireq=usr.Ephysoff*usr.BaseDrain
 	if(!usr.med&&!usr.train&&!usr.KO&&usr.Ki>=kireq&&!usr.basicCD&&usr.canfight)
 		usr.basicCD += 10
-		viewers(usr) << "<font color=red><font size = 3>[usr]: Oh yeah? Well fuck you too buddy!</font></font>"
+		to_chat(viewers(usr), "<font color=red><font size = 3>[usr]: Oh yeah? Well fuck you too buddy!</font></font>")
 		for(var/mob/M in view(10))
 			if(M == usr.target && prob(100 - (M.Ewillpower * 22)))
-				M << "<font color=red><font size = 3>[usr] deals some mental damage to you!!"
+				to_chat(M, "<font color=red><font size = 3>[usr] deals some mental damage to you!!")
 				var/dmg = attackCalcs(M,0,0,0,2) * BPModulus(expressedBP,M.expressedBP) * 0.25
 				damage_mob(M,dmg)
 		sleep(10)
-	else usr<<"You must be combat ready (not be stunned, be able to attack, and not have a cooldown happening (Basic CD = -[basicCD/10]- seconds)) and have at least [kireq] ki."
+	else to_chat(usr, "You must be combat ready (not be stunned, be able to attack, and not have a cooldown happening (Basic CD = -[basicCD/10]- seconds)) and have at least [kireq] ki.")
 
 /datum/skill/Bodybuilding/Grace
 	skilltype = "Physical"
@@ -242,26 +242,26 @@ mob/keyable/verb/Counter_Taunt()
 	after_learn()
 		switch(savant.trinitytype)
 			if("Van-sama")
-				savant << "The effects of Van-sama's wisdom have been imparted onto you."
+				to_chat(savant, "The effects of Van-sama's wisdom have been imparted onto you.")
 				savant.willpowerMod += 0.05
 				savant.staminagainMod += 0.1
 				savant.genome.add_to_stat("Lifespan",0.5)
 				TrinityType = "Van-sama"
 			if("Ricardo")
-				savant << "The effects of Ricardo's youthfulness have been imparted onto you."
+				to_chat(savant, "The effects of Ricardo's youthfulness have been imparted onto you.")
 				savant.staminagainMod += 0.05
 				savant.willpowerMod += 0.05
 				savant.genome.add_to_stat("Regeneration",1)
 				savant.genome.add_to_stat("Lifespan",0.10)
 				TrinityType = "Ricardo"
 			if("Aniki")
-				savant << "The effects of Aniki's wisdom have been imparted onto you."
+				to_chat(savant, "The effects of Aniki's wisdom have been imparted onto you.")
 				savant.staminagainMod += 0.05
 				savant.willpowerMod += 0.1
 				savant.genome.add_to_stat("Lifespan",0.5)
 				TrinityType = "Aniki"
 	before_forget()
-		savant<<"The effects of your chosen Trinity vanish."
+		to_chat(savant, "The effects of your chosen Trinity vanish.")
 		switch(TrinityType)
 			if("Van-sama")
 				savant.willpowerMod -= 0.05
@@ -331,7 +331,7 @@ mob/keyable/verb/Counter_Taunt()
 	var/tmp/booster
 	var/tmp/delay
 	after_learn()
-		savant<<"You seem a bit stronger."
+		to_chat(savant, "You seem a bit stronger.")
 		storedBP = max(1,savant.BP*0.01)
 		savant.BP+=storedBP
 		hiddenpot = (savant.relBPmax*0.5)
@@ -377,7 +377,7 @@ mob/keyable/verb/Counter_Taunt()
 	var/tmp/delay
 	var/booster
 	after_learn()
-		savant<<"You seem a bit stronger."
+		to_chat(savant, "You seem a bit stronger.")
 		storedBP = max(1,savant.BP*0.01)
 		savant.BP+=storedBP
 		hiddenpot = (savant.relBPmax*0.5)
@@ -416,12 +416,12 @@ mob/keyable/verb/Counter_Taunt()
 	prereqs = list(new/datum/skill/Bodybuilding/Workout_Routine)
 	var/boost
 	after_learn()
-		savant<<"You feel your stamina slowly rising..."
+		to_chat(savant, "You feel your stamina slowly rising...")
 		savant.staminagainMod += 0.1
 		savant.willpowerMod += 0.1
 		savant.satiationMod += 0.1
 	before_forget()
-		savant<<"Your workout routine no longer seems to do the trick anymore."
+		to_chat(savant, "Your workout routine no longer seems to do the trick anymore.")
 		savant.staminagainMod -= 0.1
 		savant.willpowerMod -= 0.1
 		savant.satiationMod -= 0.1
@@ -442,14 +442,14 @@ mob/keyable/verb/Counter_Taunt()
 			if(2)
 				if(levelup)
 					levelup = 0
-					savant << "Your muscles feel stronger."
+					to_chat(savant, "Your muscles feel stronger.")
 					savant.physdefBuff += 0.5
 					savant.physoffBuff += 0.5
 					savant.speedBuff += 0.5
 			if(3)
 				if(levelup)
 					levelup = 0
-					savant << "Your muscles feel stronger."
+					to_chat(savant, "Your muscles feel stronger.")
 					savant.physdefBuff += 0.5
 					savant.physoffBuff += 0.5
 					savant.speedBuff += 0.5
@@ -462,7 +462,7 @@ mob/keyable/verb/Counter_Taunt()
 	skillcost = 1
 	prereqs = list(new/datum/skill/Bodybuilding/Workout_Routine_Two)
 	before_forget()
-		savant<<"Your workout routine no longer seems to do the trick anymore."
+		to_chat(savant, "Your workout routine no longer seems to do the trick anymore.")
 		switch(level)
 			if(2)
 				savant.physdefBuff -= 1
@@ -480,14 +480,14 @@ mob/keyable/verb/Counter_Taunt()
 			if(2)
 				if(levelup)
 					levelup = 0
-					savant << "Your muscles feel stronger."
+					to_chat(savant, "Your muscles feel stronger.")
 					savant.physdefBuff += 1
 					savant.physoffBuff += 1
 					savant.speedBuff += 1
 			if(3)
 				if(levelup)
 					levelup = 0
-					savant << "Your muscles feel stronger."
+					to_chat(savant, "Your muscles feel stronger.")
 					savant.physdefBuff += 1
 					savant.physoffBuff += 1
 					savant.speedBuff += 1

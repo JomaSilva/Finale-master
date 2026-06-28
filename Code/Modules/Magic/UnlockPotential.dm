@@ -9,10 +9,10 @@ mob/Rank/verb/Unlock_Potential()
 	if(M) switch(input(M,"[usr] wants to unlock your hidden powers. Do you want to do this?", "",text) in list("No","Yes"))
 		if("Yes")
 			if(M.unlockPotential!=1)
-				view()<<"[usr] uses Unlock Potential on [M]!"
+				to_chat(view(), "[usr] uses Unlock Potential on [M]!")
 				M.UnlockPotential(UPMod)
-			else usr<<"They've already had their potential unlocked!"
-		if("No") usr<<"[M] declined your offer."
+			else to_chat(usr, "They've already had their potential unlocked!")
+		if("No") to_chat(usr, "[M] declined your offer.")
 
 mob/proc/UnlockPotential(rUPMod)
 	if(unlockPotential==0)

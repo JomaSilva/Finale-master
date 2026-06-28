@@ -34,7 +34,7 @@
 	savant = source
 	switch(input(savant,"Pick what to customize. Note: While Icons are usually fine, sound files can only be changed by admins.") in customizelist)
 		if("Current Customization Points")
-			savant << "The available customization points are [CustomizationPoints]."
+			to_chat(savant, "The available customization points are [CustomizationPoints].")
 		if("Name")
 			name=input(savant,"Choose the name.","Attack name.",name)
 		if("Outloud Name")
@@ -56,7 +56,7 @@
 						if(EnoughPoints((basedamage - storeddamage)/2))
 							SubtractPoints((basedamage - storeddamage)/2)
 						else
-							savant<<"You do not have enough Customization Points"
+							to_chat(savant, "You do not have enough Customization Points")
 							basedamage = storeddamage
 				if("Default")
 					var/storeddamage = basedamage
@@ -75,7 +75,7 @@
 						UndoPoints((storedspeed - MoveDelay)/2)
 					else if(storedspeed < MoveDelay)
 						if(!(EnoughPoints((MoveDelay - storedspeed)/2)))
-							savant<<"You do not have enough Customization Points"
+							to_chat(savant, "You do not have enough Customization Points")
 							MoveDelay = storedspeed
 						else
 							SubtractPoints((MoveDelay - storedspeed)/2)
@@ -89,14 +89,14 @@
 				if("Cancel")
 				if("Yes")
 					if(Explode)
-						savant << "Blast is a explosion."
+						to_chat(savant, "Blast is a explosion.")
 						goto theselect
 					if(!Piercer)
 						if(EnoughPoints(2))
 							Piercer = 1
 							SubtractPoints(2)
 						else
-							savant <<"Not enough points."
+							to_chat(savant, "Not enough points.")
 				if("No")
 					if(Piercer)
 						Piercer = 0
@@ -106,14 +106,14 @@
 				if("Cancel")
 				if("Yes")
 					if(Piercer)
-						savant << "Blast is a piercer."
+						to_chat(savant, "Blast is a piercer.")
 						goto theselect
 					if(!Explode)
 						if(EnoughPoints(4))
 							Explode = 1
 							SubtractPoints(1)
 						else
-							savant <<"Not enough points."
+							to_chat(savant, "Not enough points.")
 				if("No")
 					if(Explode)
 						Explode = 0
@@ -123,14 +123,14 @@
 				if("Cancel")
 				if("Yes")
 					if(Stun)
-						savant << "Blast is a stun."
+						to_chat(savant, "Blast is a stun.")
 						goto theselect
 					if(!Homing)
 						if(EnoughPoints(2))
 							Homing = 1
 							SubtractPoints(1)
 						else
-							savant <<"Not enough points."
+							to_chat(savant, "Not enough points.")
 				if("No")
 					if(Homing)
 						Homing = 0
@@ -158,7 +158,7 @@
 				if("Cancel")
 				if("Yes")
 					if(Homing)
-						savant << "Blast is a homing."
+						to_chat(savant, "Blast is a homing.")
 						goto theselect
 					if(!Stun)
 						if(EnoughPoints(3))
@@ -166,7 +166,7 @@
 							SubtractPoints(3)
 							Refire = 8
 						else
-							savant <<"Not enough points."
+							to_chat(savant, "Not enough points.")
 				if("No")
 					if(Stun)
 						Stun = 0

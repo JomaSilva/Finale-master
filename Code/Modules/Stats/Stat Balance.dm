@@ -13,7 +13,7 @@ mob/Admin1
 			set category = "Admin"
 			var/REWARD=input("How much?","This will give Milestones to everyone!")as num
 			if(REWARD<0||REWARD>10000)
-				src<<"You cant do that!"
+				to_chat(src, "You cant do that!")
 			else
 				globalpoints+=REWARD
 
@@ -36,10 +36,10 @@ mob/Admin3
 				if("Exclude")
 					var/mob/M = input(usr,"Select player mob") in player_list
 					if(M.exclusion)
-						usr<<"Returned to lists"
+						to_chat(usr, "Returned to lists")
 						M.exclusion = 0
 					else if(!M.exclusion)
-						usr<<"Excluded"
+						to_chat(usr, "Excluded")
 						M.exclusion = 1
 				if("Reset")
 					queuedeletion = 1
@@ -102,7 +102,7 @@ proc/ServerAverage()
 			/*for(var/ln,ln<=LastTimeList.len,ln++)//declares the ln - (length) var, every time the for loop goes, it'll do a conditional with ln <= length of LastTime list, and increase it.
 				var/ck = LastTimeList[ln] //declares the ck (ckey) var, because the list with the ln var with only return the ckey- we're dealing with a index, not associations
 				var/lt = LastTimeList[ck] //finally retrieves the association, I.E. the most important part.
-				world << "[lt] = [world.realtime]"
+				to_chat(world, "[lt] = [world.realtime]")
 				if(lt + (86400 * 2) >= world.realtime) //lt is equal to the realtime var that was retrieved when they last logged in. We want them to be removed after two days. REALTIME IS A BIG NUMBER.
 					LastTimeList -= ck //finally, using the ck (remember, this refers to ckey) var, we remove the ckey in question from all lists
 					BPList -= ck

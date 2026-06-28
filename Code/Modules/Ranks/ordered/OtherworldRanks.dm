@@ -107,10 +107,10 @@ mob/var/kaipermission
 
 /datum/skill/rank/KaiPermission/after_learn()
 	assignverb(/mob/Rank/verb/KaiPermission)
-	savant<<"You give permissions."
+	to_chat(savant, "You give permissions.")
 /datum/skill/rank/KaiPermission/before_forget()
 	unassignverb(/mob/Rank/verb/KaiPermission)
-	savant<<"You've forgotten how to give permission?"
+	to_chat(savant, "You've forgotten how to give permission?")
 /datum/skill/rank/KaiPermission/login(var/mob/logger)
 	..()
 	assignverb(/mob/Rank/verb/KaiPermission)
@@ -119,11 +119,11 @@ mob/Rank/verb/KaiPermission(mob/M in view(6))
 	set category="Other"
 	switch(input("Give permission for [M] to enter the Kai Loft and/or the Hallowed Realm?", "", text) in list ("Kai Loft","Kai Loft and Hallowed Realm","Neither",))
 		if("Kai Loft and Hallowed Realm")
-			usr<<"You give [M] permission to enter the Hallowed Realm and Kai Loft."
+			to_chat(usr, "You give [M] permission to enter the Hallowed Realm and Kai Loft.")
 			M.kaipermission=2
 		if("Kai Loft")
-			usr<<"You give [M] permission to use the Kai Loft."
+			to_chat(usr, "You give [M] permission to use the Kai Loft.")
 			M.kaipermission=1
 		if("Neither")
-			usr<<"You deny [M] permission to enter the Kai Loft or use the Hallowed Realm."
+			to_chat(usr, "You deny [M] permission to enter the Kai Loft or use the Hallowed Realm.")
 			M.kaipermission=0

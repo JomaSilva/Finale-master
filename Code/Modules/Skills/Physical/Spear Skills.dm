@@ -2,10 +2,10 @@ mob/keyable/combo/spear/verb/Lunge()
 	set category = "Skills"
 	set desc = "Lunge at a nearby foe, slowing them. Spear skill. Movement skill."
 	if(!("Spear" in usr.WeaponEQ))
-		usr<<"You need a spear equipped to use this!"
+		to_chat(usr, "You need a spear equipped to use this!")
 		return
 	if(usr.movementCD)
-		usr<<"Movement skills on CD for [movementCD/10] seconds."
+		to_chat(usr, "Movement skills on CD for [movementCD/10] seconds.")
 		return
 	 
 	if(!usr.target||get_dist(usr,target)>6)
@@ -14,25 +14,25 @@ mob/keyable/combo/spear/verb/Lunge()
 				target=M
 				break
 	if(!usr.target)
-		usr<<"You have no target."
+		to_chat(usr, "You have no target.")
 		return
 	else
 		if(get_dist(usr,target)>6)
-			usr<<"You must be closer to your target to use this!"
+			to_chat(usr, "You must be closer to your target to use this!")
 			return
 	var/kireq=usr.Ephysoff*BaseDrain*0.4*5
 	if(!usr.med&&!usr.train&&!usr.KO&&usr.Ki>=kireq&&!usr.basicCD&&usr.canfight)
 		usr.ki-=kireq
 		usr.basicCD = 5*usr.Eactspeed
 	else
-		usr<<"You must be combat ready (not be stunned, be able to attack, and not have a cooldown happening (Basic CD = -[basicCD/10]- seconds)) and have at least [kireq] ki."
+		to_chat(usr, "You must be combat ready (not be stunned, be able to attack, and not have a cooldown happening (Basic CD = -[basicCD/10]- seconds)) and have at least [kireq] ki.")
 		return
 	var/lungetime = 8//we'll give 7 steps worth in case the target is moving
 	while(lungetime&&get_dist(usr,target)>1)
 		step_towards(usr,target,32)
 		sleep(1)
 	if(get_dist(usr,target)>1)
-		usr<<"Your target evaded your lunge."
+		to_chat(usr, "Your target evaded your lunge.")
 		return
 	else
 		spawn MeleeAttack(target,2)
@@ -43,12 +43,12 @@ mob/keyable/combo/spear/verb/Javelin_Toss()
 	set category = "Skills"
 	set desc = "Throw a spear. Homes in on your target if they are slowed. Spear skill. Ranged skill."
 	if(!("Spear" in usr.WeaponEQ))
-		usr<<"You need a spear equipped to use this!"
+		to_chat(usr, "You need a spear equipped to use this!")
 		return
 	if(usr.rangedCD)
 		return
 	if(usr.canfight<=0||usr.KO||usr.med||usr.stamina<7)
-		usr<<"You can't use this now!"
+		to_chat(usr, "You can't use this now!")
 		return
 	var/passbp = expressedBP
 	var/kireq=usr.Ephysoff*BaseDrain*0.4*10
@@ -56,7 +56,7 @@ mob/keyable/combo/spear/verb/Javelin_Toss()
 		usr.ki-=kireq
 		usr.basicCD = 10*usr.Eactspeed
 	else
-		usr<<"You must be combat ready (not be stunned, be able to attack, and not have a cooldown happening (Basic CD = -[basicCD/10]- seconds)) and have at least [kireq] ki."
+		to_chat(usr, "You must be combat ready (not be stunned, be able to attack, and not have a cooldown happening (Basic CD = -[basicCD/10]- seconds)) and have at least [kireq] ki.")
 		return
 	flick("Attack",usr)
 	spawn(3)
@@ -90,13 +90,13 @@ mob/keyable/combo/spear/verb/Compass_Rose()
 	set category = "Skills"
 	set desc = "Attack in each of the cardinal directions. Spear skill. AoE skill."
 	if(!("Spear" in usr.WeaponEQ))
-		usr<<"You need a spear equipped to use this!"
+		to_chat(usr, "You need a spear equipped to use this!")
 		return
 	if(usr.AoECD)
-		usr<<"Melee AoE skills on CD for [AoECD/10] seconds."
+		to_chat(usr, "Melee AoE skills on CD for [AoECD/10] seconds.")
 		return
 	if(usr.canfight<=0||usr.KO||usr.med||usr.stamina<14)
-		usr<<"You can't use this now!"
+		to_chat(usr, "You can't use this now!")
 		return
 	var/turf/TA = get_step(usr,NORTH)
 	var/turf/TB = get_step(usr,SOUTH)
@@ -119,13 +119,13 @@ mob/keyable/combo/spear/verb/High_Jump()
 	set category = "Skills"
 	set desc = "Jump and impale a nearby foe, slowing them and dealing heavy damage. Spear skill. Special skill."
 	if(!("Spear" in usr.WeaponEQ))
-		usr<<"You need a spear equipped to use this!"
+		to_chat(usr, "You need a spear equipped to use this!")
 		return
 	if(usr.ultiCD)
-		usr<<"Melee special skills on CD for [ultiCD/10] seconds."
+		to_chat(usr, "Melee special skills on CD for [ultiCD/10] seconds.")
 		return
 	if(usr.canfight<=0||usr.KO||usr.med||usr.stamina<12)
-		usr<<"You can't use this now!"
+		to_chat(usr, "You can't use this now!")
 		return
 	if(!usr.target||get_dist(usr,target)>8)
 		for(var/mob/M in oview(1))
@@ -133,18 +133,18 @@ mob/keyable/combo/spear/verb/High_Jump()
 				target=M
 				break
 	if(!usr.target)
-		usr<<"You have no target."
+		to_chat(usr, "You have no target.")
 		return
 	else
 		if(get_dist(usr,target)>8)
-			usr<<"Your target is out of range!"
+			to_chat(usr, "Your target is out of range!")
 			return
 	var/kireq=usr.Ephysoff*BaseDrain*0.4*12
 	if(!usr.med&&!usr.train&&!usr.KO&&usr.Ki>=kireq&&!usr.basicCD&&usr.canfight)
 		usr.ki-=kireq
 		usr.basicCD = 20*usr.Eactspeed
 	else
-		usr<<"You must be combat ready (not be stunned, be able to attack, and not have a cooldown happening (Basic CD = -[basicCD/10]- seconds)) and have at least [kireq] ki."
+		to_chat(usr, "You must be combat ready (not be stunned, be able to attack, and not have a cooldown happening (Basic CD = -[basicCD/10]- seconds)) and have at least [kireq] ki.")
 		return
 	flick("Attack",usr)
 	spawn(3)

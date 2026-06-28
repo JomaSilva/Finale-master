@@ -8,8 +8,8 @@ obj/Creatables
 		create_type = /obj/items/Chalk
 		Description()
 			set category =null
-			if(usr.Emagiskill <= 1) usr<<"Chalk allows you to create funny little drawings on the ground."
-			else usr<<"Chalk is a incredibly useful magic tool that allows you to transmute catalysts into various reactions. Limited uses."
+			if(usr.Emagiskill <= 1) to_chat(usr, "Chalk allows you to create funny little drawings on the ground.")
+			else to_chat(usr, "Chalk is a incredibly useful magic tool that allows you to transmute catalysts into various reactions. Limited uses.")
 	Wand
 		icon='magic_items.dmi'
 		icon_state = "wand"
@@ -80,7 +80,7 @@ obj
 				set category=null
 				set src in usr
 				if(usr.Emagiskill <= 1)
-					view(usr)<<"[usr] scrawls a funny little drawing on the ground. Funny [usr]. Haha."
+					to_chat(view(usr), "[usr] scrawls a funny little drawing on the ground. Funny [usr]. Haha.")
 					var/obj/a = new(usr.loc)
 					a.SaveItem = 0
 					a.IsntAItem = 1
@@ -105,7 +105,7 @@ obj
 									r.customic = FALSE
 									icon_state = pick("main1","main2","main3","main4","main5","main6")
 					if(trued)
-						view(usr)<<"[usr] draws a complex drawing on the ground."
+						to_chat(view(usr), "[usr] draws a complex drawing on the ground.")
 						uses-=1
 		Predictor
 			icon='magic_items.dmi'
@@ -117,7 +117,7 @@ obj
 				set category=null
 				set src in usr
 				if(usr.Emagiskill <= 1)
-					view(usr)<<"[usr] taps the ground. Funny [usr]. Haha."
+					to_chat(view(usr), "[usr] taps the ground. Funny [usr]. Haha.")
 					uses-=1
 				else
 					//var/trued
@@ -159,13 +159,13 @@ obj
 				if(x&&y&&z&&!Bolted)
 					switch(input("Are you sure you want to bolt this to the ground so nobody can ever pick it up? Not even you?","",text) in list("Yes","No",))
 						if("Yes")
-							view(src)<<"<font size=1>[usr] bolts the [src] to the ground."
+							to_chat(view(src), "<font size=1>[usr] bolts the [src] to the ground.")
 							Bolted=1
 							boltersig=usr.signature
 				else if(Bolted&&boltersig==usr.signature)
 					switch(input("Unbolt?","",text) in list("Yes","No",))
 						if("Yes")
-							view(src)<<"<font size=1>[usr] unbolts the [src] from the ground."
+							to_chat(view(src), "<font size=1>[usr] unbolts the [src] from the ground.")
 							Bolted=0
 			var/list/ingredient_list = list()
 			verb/Store_All()
@@ -175,7 +175,7 @@ obj
 					for(var/obj/items/Material/A in view(10))
 						ingredient_list[A.type] += 1
 						A.deleteMe()
-				else usr<<"Needs to be bolted"
+				else to_chat(usr, "Needs to be bolted")
 			verb/Retrieve()
 				set category = null
 				set src in oview(1)
@@ -190,7 +190,7 @@ obj
 						if(ingredient_list[input] == 0)
 							ingredient_list -= input
 						goto goback
-				else usr<<"Needs to be bolted"
+				else to_chat(usr, "Needs to be bolted")
 		Ingredient_Bag
 			name="Ingredient Bag"
 			icon = 'ingrbag.dmi'
@@ -328,7 +328,7 @@ obj/Magic_Sifter
 	Del()
 		if(Resources)
 
-			view(src)<<"<font size=1><font color=teal>[src] blows and drops ingredients!"
+			to_chat(view(src), "<font size=1><font color=teal>[src] blows and drops ingredients!")
 			while(round(Resources))
 				Resources--
 				if(prob(50)) return_random_ingredient()
@@ -338,20 +338,20 @@ obj/Magic_Sifter
 	Click()
 		if(Resources>0)
 			Resources = min(5,Resources)
-			usr<<"<font color=yellow><b>You withdraw [FullNum(Resources)] ingredients. ([FullNum(DrillSpeed+1)] Speed & [FullNum(DrillRate+1)] Rate) ([Magic] mana remaining.)"
+			to_chat(usr, "<font color=yellow><b>You withdraw [FullNum(Resources)] ingredients. ([FullNum(DrillSpeed+1)] Speed & [FullNum(DrillRate+1)] Rate) ([Magic] mana remaining.)")
 			while(round(Resources))
 				Resources--
 				return_random_ingredient()
 				sleep(1)
 			Resources=0
 			if(bonus)
-				usr<<"<font color=yellow><b> Your sifter has tried to withdraw past the cap, 250k. You have bonus sifter gains for the next ten cycles as long as you don't continue to withdraw."
+				to_chat(usr, "<font color=yellow><b> Your sifter has tried to withdraw past the cap, 250k. You have bonus sifter gains for the next ten cycles as long as you don't continue to withdraw.")
 				bonusmult = 2
 			else
-				usr<<"<font color=yellow><b> Bonus ended."
+				to_chat(usr, "<font color=yellow><b> Bonus ended.")
 				bonusmult = 1
 		else
-			usr<<"<font color=yellow><b>There are no resources left at this moment."
+			to_chat(usr, "<font color=yellow><b>There are no resources left at this moment.")
 	verb/Scuff()
 		set src in oview(1)
 		set category=null
@@ -362,7 +362,7 @@ obj/Magic_Sifter
 		var/amount = round(max(0,min(usr.Magic,input(usr,"Input however much magic into this sifter. It'll take one mana per [50/DrillSpeed] second(s). It's max cap for mana (before it starts leaking it) is [100*DrillSpeed] magic.") as num)))
 		Magic += amount
 		usr.Magic -= amount
-		view(src)<<"<font color=blue size=2>[src]: [amount] mana added.</font>"
+		to_chat(view(src), "<font color=blue size=2>[src]: [amount] mana added.</font>")
 	verb/Upgrade()
 		set src in oview(1)
 		set category=null
@@ -376,17 +376,17 @@ obj/Magic_Sifter
 			var/Opt=input("How much Magic to add?") as num
 			Opt = min(max(round(Opt),0),50000)
 			if(usr.Magic<Opt)
-				usr<<"You do not have enough Magic ([FullNum(Opt)]z)"
+				to_chat(usr, "You do not have enough Magic ([FullNum(Opt)]z)")
 				return
 			DrillRate+=(Opt/1000)*usr.Emagiskill
 			usr.Magic-=Opt
-			usr<<"Rate increased ([FullNum(DrillRate+1)]z)."
+			to_chat(usr, "Rate increased ([FullNum(DrillRate+1)]z).")
 		if(A=="Speed")
 			var/Opt=input("How much Magic to add?") as num
 			Opt = min(max(round(Opt),0),50000)
 			if(usr.Magic<Opt)
-				usr<<"You do not have enough Magic ([FullNum(Opt)]z)"
+				to_chat(usr, "You do not have enough Magic ([FullNum(Opt)]z)")
 				return
 			DrillSpeed+=(Opt/1000)*usr.Emagiskill
 			usr.Magic-=Opt
-			usr<<"Speed increased ([FullNum(DrillSpeed+1)]x)."
+			to_chat(usr, "Speed increased ([FullNum(DrillSpeed+1)]x).")

@@ -85,7 +85,7 @@ mob/var
 				return
 			if(level == maxlvl&&battle)//mastering a battle mastery gives you an insight to learn a new mastery
 				savant.insights++
-				savant<<"You've gained insight!"
+				to_chat(savant, "You've gained insight!")
 			//if(level == N) stat - if level is equal to N: used to give something at a specific level
 			//if(level % X == 0) stat - if level is evenly divisible by X: used to give something every X levels
 			//stat+=f(level) - modify a stat by some fuction f of the current level
@@ -103,7 +103,7 @@ mob/var
 			for(var/datum/mastery/S in savant.masteries)
 				if(istype(S,M))
 					S.available = 1
-					savant<<"You may now learn [S.name]!"
+					to_chat(savant, "You may now learn [S.name]!")
 		make_visible(datum/mastery/M)//to directly enable other masteries
 			if(!savant)
 				return
@@ -126,8 +126,8 @@ mob/var
 					savant.insights--
 			if(!nocost&&tier>0)
 				savant.insights++
-			if(battle) savant<<"You've lost access to your [name] mastery! Your total exp has decreased by [exp] as a consequence!"
-			else savant<<"You've lost access to your [name] mastery!"
+			if(battle) to_chat(savant, "You've lost access to your [name] mastery! Your total exp has decreased by [exp] as a consequence!")
+			else to_chat(savant, "You've lost access to your [name] mastery!")
 			savant = null
 			learned = 0
 			exp = initial(exp)
@@ -163,19 +163,19 @@ mob/proc/mastery_enable(datum/mastery/M)
 	var/datum/mastery/S = locate(M) in masteries
 	if(S)
 		S.available = 1
-		src<<"You may now learn [S.name]!"
+		to_chat(src, "You may now learn [S.name]!")
 
 mob/proc/mastery_disable(datum/mastery/M)
 	var/datum/mastery/S = locate(M) in masteries
 	if(S)
 		S.available = 0
-		src<<"You cannot learn [S.name]!"
+		to_chat(src, "You cannot learn [S.name]!")
 
 mob/proc/mastery_remove(datum/mastery/M)
 	var/datum/mastery/S = locate(M) in masteries
 	if(S)
 		S.remove()
-		src<<"You forgot [S.name]!"
+		to_chat(src, "You forgot [S.name]!")
 var
 	gexprate = 1//global exp rate
 
@@ -207,12 +207,12 @@ mob/Admin3/verb/Edit_Masteries(mob/M in player_list)
 						if(!S.learned)
 							S.acquire(M)
 						else
-							usr<<"[M.name] already knows this!"
+							to_chat(usr, "[M.name] already knows this!")
 					if("Unlearn")
 						if(S.learned)
 							S.remove()
 						else
-							usr<<"[M.name] doesn't know this!"
+							to_chat(usr, "[M.name] doesn't know this!")
 					if("Cancel")
 						return
 
@@ -222,7 +222,7 @@ mob/Admin3/verb
 		var/rate = input(usr,"What do you want to set the global exp rate to? Current rate is [gexprate]","",null) as num
 		if(rate)
 			gexprate = rate
-			world<<"Global EXP rate set to [gexprate]"
+			to_chat(world, "Global EXP rate set to [gexprate]")
 
 	Lifeskill_Level_Cap()
 		set category="Admin"
@@ -230,7 +230,7 @@ mob/Admin3/verb
 		if(rate)
 			rate = max(rate,0)
 			lifeskillcap = rate
-			world<<"Lifeskill Level Cap set to [lifeskillcap]"
+			to_chat(world, "Lifeskill Level Cap set to [lifeskillcap]")
 
 /*mob/default/verb/Skill_Information()
 	set category = "Other"

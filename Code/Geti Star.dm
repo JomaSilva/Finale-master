@@ -82,41 +82,41 @@ obj/Core_Computer
 		if(get_dist(src,usr)>=3 && src.z != usr.z) return
 		if(!controller)
 			if(!ghetto_star_own)
-				view(src,9) << "CORE REBOOTING..."
+				to_chat(view(src,9), "CORE REBOOTING...")
 				usr.contents+=new /obj/Meta_Inhabit
 				usr.dir=NORTH
-				view(src,9) << "Geti Star: Welcome [usr]. Please enjoy your eternal life."
+				to_chat(view(src,9), "Geti Star: Welcome [usr]. Please enjoy your eternal life.")
 				controller = usr.signature
 				ghetto_star_own = usr.signature
 				ghetto_star_last_check = world.realtime
 			else
 				controller = ghetto_star_own
-				view(src,9) << "CORE REBOOTING...."
+				to_chat(view(src,9), "CORE REBOOTING....")
 				if(controller != usr.signature && world.realtime >= ghetto_star_last_check + 172800 && !eternalGetistar) //if you leave the Ghetto Star alone for 2 days...
-					view(src,9) << "Geti Star: <font color=red>USER ABANDONMENT PROTCOL ACTIVATED</font>"
+					to_chat(view(src,9), "Geti Star: <font color=red>USER ABANDONMENT PROTCOL ACTIVATED</font>")
 					sleep(10)
-					view(src,9) << "Geti Star: <font color=red>NEW USER REGISTERED.</font>"
+					to_chat(view(src,9), "Geti Star: <font color=red>NEW USER REGISTERED.</font>")
 					usr.contents+=new /obj/Meta_Inhabit
 					usr.dir=NORTH
-					view(src,9) << "Geti Star: Welcome [usr]. Please enjoy your eternal life."
+					to_chat(view(src,9), "Geti Star: Welcome [usr]. Please enjoy your eternal life.")
 					ghetto_star_own = usr.signature
 					ghetto_star_last_check = world.realtime
 					controller = usr.signature
 				else if(controller == usr.signature)
-					view(src,9) << "Geti Star: Welcome [usr]. Please enjoy your eternal life."
-				else usr << "The Core does not allow you access."
+					to_chat(view(src,9), "Geti Star: Welcome [usr]. Please enjoy your eternal life.")
+				else to_chat(usr, "The Core does not allow you access.")
 		else if(controller!=usr.signature)
 			if(world.realtime >= ghetto_star_last_check + 172800 && !eternalGetistar) //if you leave the Ghetto Star alone for 2 days...
-				view(src,9) << "Geti Star: <font color=red>USER ABANDONMENT PROTCOL ACTIVATED</font>"
+				to_chat(view(src,9), "Geti Star: <font color=red>USER ABANDONMENT PROTCOL ACTIVATED</font>")
 				sleep(10)
-				view(src,9) << "Geti Star: <font color=red>NEW USER REGISTERED.</font>"
+				to_chat(view(src,9), "Geti Star: <font color=red>NEW USER REGISTERED.</font>")
 				usr.contents+=new /obj/Meta_Inhabit
 				usr.dir=NORTH
-				view(src,9) << "Geti Star: Welcome [usr]. Please enjoy your eternal life."
+				to_chat(view(src,9), "Geti Star: Welcome [usr]. Please enjoy your eternal life.")
 				ghetto_star_own = usr.signature
 				ghetto_star_last_check = world.realtime
 				controller = usr.signature
-			else usr<<"The Core does not allow you access."
+			else to_chat(usr, "The Core does not allow you access.")
 		else if(controller==usr.signature)
 			ghetto_star_own = usr.signature
 			ghetto_star_last_check = world.realtime
@@ -155,7 +155,7 @@ obj/Core_Computer
 	Del()
 		ghetto_star_exist = 0
 		for(var/mob/npc/Clone/Q)
-			view(Q)<<"[Q] has lost its core computer!"
+			to_chat(view(Q), "[Q] has lost its core computer!")
 			del(Q)
 		..()
 
@@ -202,9 +202,9 @@ obj/Meta_Inhabit //need to add bodyswapping back in eventually
 		if(!checkcontroller()) return
 		if(!usr.canmove || usr.KO || usr.deathregening || usr.grabParalysis || usr.stagger) return
 		if(!usr.KO&&usr.canfight&&!usr.med&&!usr.train&&usr.Ki>=usr.MaxKi&&!usr.inteleport)
-			view(6)<<"[usr] is decomposing!!!!"
+			to_chat(view(6), "[usr] is decomposing!!!!")
 			usr.Ki=0
-			view(6)<<"[usr] decomposes into light particles!!"
+			to_chat(view(6), "[usr] decomposes into light particles!!")
 			usr.inteleport=1
 			var/obj/geti
 			var/list/objlist = list()
@@ -259,10 +259,10 @@ obj/Meta_Inhabit //need to add bodyswapping back in eventually
 
 							break
 						else
-							usr<<"They can't be knocked out." //needs to be reworked.
+							to_chat(usr, "They can't be knocked out.") //needs to be reworked.
 							break
 		else
-			usr<<"You need to be in your true body."
+			to_chat(usr, "You need to be in your true body.")
 	verb/Return_To_Body()
 		set category = "Other"
 		if(hasbody)

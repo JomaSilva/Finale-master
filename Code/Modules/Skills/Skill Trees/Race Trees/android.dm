@@ -20,4 +20,4 @@
 
 /datum/skill/general/androidabsorb/after_learn()
 	savant.contents+=new/obj/Absorb_Android
-	savant<<"You can absorb others!"
+	to_chat(savant, "You can absorb others!")

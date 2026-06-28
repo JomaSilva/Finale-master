@@ -143,7 +143,7 @@ obj/Trap
 		if(ismob(M))
 			mouse_opacity = 1
 			icon_state = sprungstate
-			view(M)<<"You sprung a [sprungstate] trap!"
+			to_chat(view(M), "You sprung a [sprungstate] trap!")
 			spawn(3)
 				if(M in range(0))
 					M:AddEffect(effect_t)

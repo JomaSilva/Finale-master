@@ -43,7 +43,7 @@ obj/Creatables
 		if(cost==1) del(src)
 	verb/Description()
 		set category =null
-		usr<<"[name]: [desc]"
+		to_chat(usr, "[name]: [desc]")
 	Click()
 		if(usr.zenni>=cost)
 			usr.zenni-=cost
@@ -55,7 +55,7 @@ obj/Creatables
 			A.maxarmor = usr.intBPcap
 			A.armor = usr.intBPcap
 			return A
-		else usr<<"You dont have enough money"
+		else to_chat(usr, "You dont have enough money")
 		return FALSE
 
 
@@ -127,16 +127,16 @@ obj
 				set category="Skills"
 				if(M.Race=="Android")
 					if(M.techrate<(usr.intBPcap/1.1))
-						usr<<"You upgrade [M]'s Tech Rating to [usr.intBPcap]."
-						M<<"[usr] upgrades your Tech Rating to [usr.intBPcap]."
-						oview(usr)<<"[usr] upgrades [M]'s Tech Rating to [usr.intBPcap], Increasing their BP and Energy levels"
+						to_chat(usr, "You upgrade [M]'s Tech Rating to [usr.intBPcap].")
+						to_chat(M, "[usr] upgrades your Tech Rating to [usr.intBPcap].")
+						to_chat(oview(usr), "[usr] upgrades [M]'s Tech Rating to [usr.intBPcap], Increasing their BP and Energy levels")
 						M.techrate=usr.intBPcap
 						usr.techxp+=25
 					else
 						if(M.techrate<(usr.intBPcap))
-							usr<<"[M]'s tech rating is just fine it seems. Maybe you need to learn a bit more?"
-						else usr<<"You dont have the knowledge to upgrade [M], they are too advanced."
-				else usr<<"They have to be an android for you to upgrade them."
+							to_chat(usr, "[M]'s tech rating is just fine it seems. Maybe you need to learn a bit more?")
+						else to_chat(usr, "You dont have the knowledge to upgrade [M], they are too advanced.")
+				else to_chat(usr, "They have to be an android for you to upgrade them.")
 obj/var/cantblueprint=1
 
 obj/proc/CheckObjects()

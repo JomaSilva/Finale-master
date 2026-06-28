@@ -36,9 +36,9 @@ mob/proc/MeleeAttack(addeddamage,iscrit,vampdamage,customFlavor,Type)//default b
 					if(L.durability)
 						L.durability-=round(min(2+W.level-L.masterylevel,4))
 						L.durability=max(L.durability,0)
-						if(L.durability >= 8) view(L)<<"[L] makes a chunky sound."
-						else if(L.durability) view(L)<<"[L] makes a cracking sound."
-						else view(L)<<"[L] makes a crumbling sound."
+						if(L.durability >= 8) to_chat(view(L), "[L] makes a chunky sound.")
+						else if(L.durability) to_chat(view(L), "[L] makes a cracking sound.")
+						else to_chat(view(L), "[L] makes a crumbling sound.")
 					else
 						W.expgain(L.masterylevel*10)
 						//AddEffect(/effect/exhaustion)

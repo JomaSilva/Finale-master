@@ -11,26 +11,26 @@ obj/items
 			set src in usr
 			if(equipped==0)
 				usr.hasnav=1
-				usr<<"<b>You turn on your navigation system.(Only works while in space)"
+				to_chat(usr, "<b>You turn on your navigation system.(Only works while in space)")
 				equipped=1
 			else
 				usr.hasnav=0
-				usr<<"<b>You turn off your navigation system"
+				to_chat(usr, "<b>You turn off your navigation system")
 				equipped=0
 		verb/Call_Ship()
 			set category = null
 			set src in usr
 			var/linkedship
-			view(usr)<<"[usr] presses a button on a small computer!"
+			to_chat(view(usr), "[usr] presses a button on a small computer!")
 			for(var/obj/Spacepod/Sp in world)
 				if(Sp.link==link)
 					linkedship = 1
-					usr<<"You call the linked ship. This will take [((400/Sp.Speed)/10)] second(s)"
+					to_chat(usr, "You call the linked ship. This will take [((400/Sp.Speed)/10)] second(s)")
 					sleep(400/Sp.Speed)
 					Sp.loc = locate(usr.x + rand(1,-1),usr.y + rand(1,-1),usr.z)
 					break
 			if(linkedship)
-				usr<<"There's no ship to call."
+				to_chat(usr, "There's no ship to call.")
 		verb/Change_Link()
 			set src in usr
 			set category = null
@@ -55,7 +55,7 @@ obj/Spacepod
 	verb/Launch()
 		set category=null
 		set src in view(1)
-		usr<<"ETA [((400/Speed)/10)] second(s)"
+		to_chat(usr, "ETA [((400/Speed)/10)] second(s)")
 		icon_state = "Launching"
 		pilot.launchParalysis = 1
 		sleep(400/Speed)
@@ -122,21 +122,21 @@ obj/Spacepod
 				var/obj/items/Scouter/nO = O
 				if(nO.suffix&&ismob(nO.loc)&&link==nO.channel)
 					var/mob/M = nO.loc
-					M<<"(Spacepod)<[usr.SayColor]>[usr] says, '[msg]'"
+					to_chat(M, "(Spacepod)<[usr.SayColor]>[usr] says, '[msg]'")
 			if(istype(O,/obj/Spacepod))
 				var/obj/Spacepod/nO = O
 				if(link==nO.link)
-					view(O)<<"(Spacepod)<[usr.SayColor]>[usr] says, '[msg]'"
+					to_chat(view(O), "(Spacepod)<[usr.SayColor]>[usr] says, '[msg]'")
 			if(istype(O,/obj/items/Communicator))
 				var/obj/items/Communicator/nO = O
 				if(link in nO.freqlist)
 					nO.messagelist+={"<html><head><title></title></head><body><body bgcolor="#000000"><font size=1><font color="#0099FF"><b><i>(Spacepod)<[usr.SayColor]>[usr] says, '[msg]'</font><br></body><html>"}
-					if(nO.hasbroadcaster) view(nO) << "(Spacepod)<[usr.SayColor]>[usr] says, '[msg]'"
+					if(nO.hasbroadcaster) to_chat(view(nO), "(Spacepod)<[usr.SayColor]>[usr] says, '[msg]'")
 	verb/Info()
 		set src in oview(1)
 		set category=null
-		usr<<"Speed: [Speed]"
-		usr<<"Cost to make: [techcost]z"
+		to_chat(usr, "Speed: [Speed]")
+		to_chat(usr, "Cost to make: [techcost]z")
 	verb/Upgrade()
 		set src in oview(1)
 		set category=null
@@ -151,19 +151,19 @@ obj/Spacepod
 		if(A=="Speed ([1000*Speed]z)")
 			cost=1000*Speed
 			if(usr.zenni<cost)
-				usr<<"You do not have enough money ([cost]z)"
+				to_chat(usr, "You do not have enough money ([cost]z)")
 				return
-			usr<<"Speed increased."
+			to_chat(usr, "Speed increased.")
 			Speed+=1
 		if(A=="Armor (1000z)")
 			cost=1000*Speed
 			if(usr.zenni<cost)
-				usr<<"You do not have enough money ([cost]z)"
+				to_chat(usr, "You do not have enough money ([cost]z)")
 				return
-			usr<<"Armor increased."
+			to_chat(usr, "Armor increased.")
 			armor=usr.intBPcap
 			maxarmor=usr.intBPcap
-		usr<<"Cost: [cost]z"
+		to_chat(usr, "Cost: [cost]z")
 		usr.zenni-=cost
 		tech+=1
 		techcost+=cost
@@ -208,9 +208,9 @@ obj/Rocketship
 		if(icon_state!="stable") return
 		var/area/nA = GetArea()
 		if(nA.InsideArea)
-			usr << "[src]: Error: inside"
+			to_chat(usr, "[src]: Error: inside")
 			return
-		view(src)<<"ETA [((400/Speed)/10)] second(s)"
+		to_chat(view(src), "ETA [((400/Speed)/10)] second(s)")
 		icon_state = "liftoff"
 		pilot.launchParalysis = 1
 		sleep(400/Speed)
@@ -225,7 +225,7 @@ obj/Rocketship
 				icon_state = "space"
 				break
 		sleep(150)
-		view(src) << "[src]: Re-entry imminenet."
+		to_chat(view(src), "[src]: Re-entry imminenet.")
 		sleep(100)
 		var/turf/temploc = pickTurf(nA,2)
 		if(pilot)
@@ -234,11 +234,11 @@ obj/Rocketship
 		icon_state = "landed"
 		if(pilot)
 			sleep(10)
-			view(src) << "[src]: Re-entry success."
+			to_chat(view(src), "[src]: Re-entry success.")
 			didland=1
 		else
 			sleep(10)
-			view(src) << "[src]: Re-entry failure."
+			to_chat(view(src), "[src]: Re-entry failure.")
 			del(src)
 
 	verb/Use()
@@ -279,7 +279,7 @@ obj/Rocketship
 						usr.zenni-=100000
 						didland = 0
 						icon_state = "stable"
-					else usr<<"You dont have enough money"
+					else to_chat(usr, "You dont have enough money")
 	verb/Channel()
 		set src in oview(1)
 		set category = null
@@ -292,12 +292,12 @@ obj/Rocketship
 				var/obj/items/clothes/Spacesuit/nO = O
 				if(nO.suffix&&ismob(nO.loc)&&channel==nO.channel)
 					var/mob/M = nO.loc
-					M<<"(Rocketship)<[usr.SayColor]>[usr] says, '[msg]'"
+					to_chat(M, "(Rocketship)<[usr.SayColor]>[usr] says, '[msg]'")
 			if(istype(O,/obj/items/Communicator))
 				var/obj/items/Communicator/nO = O
 				if(channel in nO.freqlist)
 					nO.messagelist+={"<html><head><title></title></head><body><body bgcolor="#000000"><font size=1><font color="#0099FF"><b><i>(Rocketship)<[usr.SayColor]>[usr] says, '[msg]'</font><br></body><html>"}
-					if(nO.hasbroadcaster) view(nO) << "(Rocketship)<[usr.SayColor]>[usr] says, '[msg]'"
+					if(nO.hasbroadcaster) to_chat(view(nO), "(Rocketship)<[usr.SayColor]>[usr] says, '[msg]'")
 	Del()
 		if(pilot)
 			pilot.ship = null
@@ -320,12 +320,12 @@ obj/items/clothes
 				if(istype(O,/obj/Rocketship))
 					var/obj/Rocketship/nO = O
 					if(channel==nO.channel)
-						view(nO)<<"(Spacesuit)<[usr.SayColor]>[usr] says, '[msg]'"
+						to_chat(view(nO), "(Spacesuit)<[usr.SayColor]>[usr] says, '[msg]'")
 				if(istype(O,/obj/items/Communicator))
 					var/obj/items/Communicator/nO = O
 					if(channel in nO.freqlist)
 						nO.messagelist+={"<html><head><title></title></head><body><body bgcolor="#000000"><font size=1><font color="#0099FF"><b><i>(Spacesuit)<[usr.SayColor]>[usr] says, '[msg]'</font><br></body><html>"}
-						if(nO.hasbroadcaster) view(nO) << "(Spacesuit)<[usr.SayColor]>[usr] says, '[msg]'"
+						if(nO.hasbroadcaster) to_chat(view(nO), "(Spacesuit)<[usr.SayColor]>[usr] says, '[msg]'")
 		Equip()
 			set category=null
 			set src in usr
@@ -336,14 +336,14 @@ obj/items/clothes
 				usr.spacesuit=1
 				usr.overlayList+=icon
 				usr.overlaychanged=1
-				usr<<"You put on the [src]."
+				to_chat(usr, "You put on the [src].")
 			else
 				equipped=0
 				suffix=""
 				usr.spacesuit=0
 				usr.overlayList-=icon
 				usr.overlaychanged=1
-				usr<<"You take off the [src]."
+				to_chat(usr, "You take off the [src].")
 
 // =====================================================
 // PLAYER BASES AND BUILDABLE SPACEPOD
@@ -407,7 +407,7 @@ obj/PlayerBase
 		if(!usr || !src) return
 		if(get_dist(usr, src) > 1) return
 		if(!owner_ckey)
-			usr << "This base camp has no owner."
+			to_chat(usr, "This base camp has no owner.")
 			return
 		var/choice = input(usr, "What would you like to do?", name) as null|anything in list("Rest", "Store Item", "Retrieve Item", "Cancel")
 		if(!choice || choice == "Cancel") return
@@ -416,31 +416,31 @@ obj/PlayerBase
 			usr.SpreadHeal(5, 1, 0)
 			if(usr.Ki < usr.MaxKi)
 				usr.Ki = min(usr.Ki + usr.MaxKi * 0.05, usr.MaxKi)
-			usr << "<font color=green>You rest at the base camp, recovering some energy.</font>"
+			to_chat(usr, "<font color=green>You rest at the base camp, recovering some energy.</font>")
 
 		if(choice == "Store Item")
 			var/list/carryable = list()
 			for(var/obj/items/I in usr.contents)
 				if(!I.equipped) carryable += I
 			if(!carryable.len)
-				usr << "You have nothing to store."
+				to_chat(usr, "You have nothing to store.")
 				return
 			var/picked = input(usr, "Store which item?", "", null) as null|anything in carryable
 			if(!picked) return
 			var/obj/items/stored_item = picked
 			usr.contents -= stored_item
 			src.contents += stored_item
-			usr << "You store [stored_item.name] in the base camp."
+			to_chat(usr, "You store [stored_item.name] in the base camp.")
 
 		if(choice == "Retrieve Item")
 			if(!src.contents.len)
-				usr << "The base camp is empty."
+				to_chat(usr, "The base camp is empty.")
 				return
 			if(usr.ckey != owner_ckey)
-				usr << "Only the owner can retrieve items from this base camp."
+				to_chat(usr, "Only the owner can retrieve items from this base camp.")
 				return
 			if(usr.inven_min >= usr.inven_max)
-				usr << "You have no room in your inventory."
+				to_chat(usr, "You have no room in your inventory.")
 				return
 			var/picked = input(usr, "Retrieve which item?", "", null) as null|anything in src.contents
 			if(!picked) return
@@ -448,17 +448,17 @@ obj/PlayerBase
 			src.contents -= retrieved
 			usr.contents += retrieved
 			usr.InvenSet()
-			usr << "You retrieve [retrieved.name] from the base camp."
+			to_chat(usr, "You retrieve [retrieved.name] from the base camp.")
 
 	verb/Dismantle()
 		set category = null
 		set src in oview(1)
 		if(usr.ckey != owner_ckey)
-			usr << "Only the owner can dismantle this base camp."
+			to_chat(usr, "Only the owner can dismantle this base camp.")
 			return
 		for(var/obj/items/I in src.contents)
 			I.loc = locate(src.x, src.y, src.z)
-		usr << "You dismantle the base camp. Stored items have been dropped."
+		to_chat(usr, "You dismantle the base camp. Stored items have been dropped.")
 		del(src)
 
 
@@ -478,7 +478,7 @@ obj/PlayerFortress
 		if(!usr || !src) return
 		if(get_dist(usr, src) > 1) return
 		if(!owner_ckey)
-			usr << "This fortress has no owner."
+			to_chat(usr, "This fortress has no owner.")
 			return
 		var/choice = input(usr, "What would you like to do?", name) as null|anything in list("Rest", "Store Item", "Retrieve Item", "Cancel")
 		if(!choice || choice == "Cancel") return
@@ -487,31 +487,31 @@ obj/PlayerFortress
 			usr.SpreadHeal(15, 1, 0)
 			if(usr.Ki < usr.MaxKi)
 				usr.Ki = min(usr.Ki + usr.MaxKi * 0.15, usr.MaxKi)
-			usr << "<font color=green>You rest at the fortress, recovering significant energy.</font>"
+			to_chat(usr, "<font color=green>You rest at the fortress, recovering significant energy.</font>")
 
 		if(choice == "Store Item")
 			var/list/carryable = list()
 			for(var/obj/items/I in usr.contents)
 				if(!I.equipped) carryable += I
 			if(!carryable.len)
-				usr << "You have nothing to store."
+				to_chat(usr, "You have nothing to store.")
 				return
 			var/picked = input(usr, "Store which item?", "", null) as null|anything in carryable
 			if(!picked) return
 			var/obj/items/stored_item = picked
 			usr.contents -= stored_item
 			src.contents += stored_item
-			usr << "You store [stored_item.name] in the fortress."
+			to_chat(usr, "You store [stored_item.name] in the fortress.")
 
 		if(choice == "Retrieve Item")
 			if(!src.contents.len)
-				usr << "The fortress is empty."
+				to_chat(usr, "The fortress is empty.")
 				return
 			if(usr.ckey != owner_ckey)
-				usr << "Only the owner can retrieve items from this fortress."
+				to_chat(usr, "Only the owner can retrieve items from this fortress.")
 				return
 			if(usr.inven_min >= usr.inven_max)
-				usr << "You have no room in your inventory."
+				to_chat(usr, "You have no room in your inventory.")
 				return
 			var/picked = input(usr, "Retrieve which item?", "", null) as null|anything in src.contents
 			if(!picked) return
@@ -519,15 +519,15 @@ obj/PlayerFortress
 			src.contents -= retrieved
 			usr.contents += retrieved
 			usr.InvenSet()
-			usr << "You retrieve [retrieved.name] from the fortress."
+			to_chat(usr, "You retrieve [retrieved.name] from the fortress.")
 
 	verb/Dismantle()
 		set category = null
 		set src in oview(1)
 		if(usr.ckey != owner_ckey)
-			usr << "Only the owner can dismantle this fortress."
+			to_chat(usr, "Only the owner can dismantle this fortress.")
 			return
 		for(var/obj/items/I in src.contents)
 			I.loc = locate(src.x, src.y, src.z)
-		usr << "You dismantle the fortress. Stored items have been dropped."
+		to_chat(usr, "You dismantle the fortress. Stored items have been dropped.")
 		del(src)

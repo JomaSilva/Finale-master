@@ -14,25 +14,25 @@ obj/items/Armor
 	var/armordecrease=2
 	verb/Description()
 		set category=null
-		usr<<"This armor increases endurance to [armorincrease*100]%, and reduces speed to [100/armordecrease]%"
+		to_chat(usr, "This armor increases endurance to [armorincrease*100]%, and reduces speed to [100/armordecrease]%")
 	verb/Equip()
 		set category=null
 		set src in usr
 		for(var/obj/items/Armor/A in usr.contents) if(A.equipped&&A!=src)
-			usr<<"You already have armor equipped."
+			to_chat(usr, "You already have armor equipped.")
 			return
 		if(!equipped)
 			equipped=1
 			suffix="*Equipped*"
 			usr.updateOverlay(/obj/overlay/clothes/Armor,icon)
-			usr<<"You put on the [src]."
+			to_chat(usr, "You put on the [src].")
 			usr.physdefBuff+=armorincrease
 			usr.speedBuff-=armordecrease
 		else
 			equipped=0
 			suffix=""
 			usr.removeOverlay(/obj/overlay/clothes/Armor,icon)
-			usr<<"You take off the [src]."
+			to_chat(usr, "You take off the [src].")
 			usr.physdefBuff-=armorincrease
 			usr.speedBuff+=armordecrease
 	verb/Upgrade()
@@ -51,19 +51,19 @@ obj/items/Armor
 				cost=50000
 				if(input(usr,"The microfiber cloth upgrade will cause the speed decrease to be minimized to 80% instead of 50%.","","Sure") in list("Sure","Naw") == "Naw") return
 				if(usr.zenni<cost)
-					usr<<"You do not have enough money ([cost]z)"
+					to_chat(usr, "You do not have enough money ([cost]z)")
 					return
-				usr<<"Armor upgraded"
+				to_chat(usr, "Armor upgraded")
 				armordecrease=1.25
 			if(A=="Increased Protection (45000z)")
 				cost=45000
 				if(input(usr,"The amount of protection the armor gives you is increased a bit. (200% to 225%)","","Sure") in list("Sure","Naw") == "Naw") return
 				if(usr.zenni<cost)
-					usr<<"You do not have enough money ([cost]z)"
+					to_chat(usr, "You do not have enough money ([cost]z)")
 					return
-				usr<<"Armor upgraded"
+				to_chat(usr, "Armor upgraded")
 				armorincrease=1.25
-		else usr<<"You can't change armor stats while it's equipped!"
+		else to_chat(usr, "You can't change armor stats while it's equipped!")
 	verb/Icon()
 		set category = null
 		set src in usr
@@ -122,7 +122,7 @@ obj/items/Armor
 								icon='Nappa Armor.dmi'
 							if("Azure Style")
 								icon='Armor, Azure.dmi'
-		else usr<<"You can't change armor appearance while it's equipped! (to avoid Overlay issues.)"
+		else to_chat(usr, "You can't change armor appearance while it's equipped! (to avoid Overlay issues.)")
 
 obj/overlay/clothes/Armor
 	ID=332

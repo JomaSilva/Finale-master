@@ -57,11 +57,11 @@ mob/var/rudeffpbcheck
 	maxlevel = 1
 	tier = 1
 /datum/skill/kidefense/after_learn()
-	savant<<"You feel protected."
+	to_chat(savant, "You feel protected.")
 	savant.physdef+=0.1
 	savant.kidef+=0.3
 /datum/skill/kidefense/before_forget()
-	savant<<"You feel frail."
+	to_chat(savant, "You feel frail.")
 	savant.physdef-=0.1
 	savant.kidef-=0.3
 
@@ -74,11 +74,11 @@ mob/var/rudeffpbcheck
 	maxlevel = 1
 	tier = 1
 /datum/skill/deflection/after_learn()
-	savant<<"You feel amped."
+	to_chat(savant, "You feel amped.")
 	savant.kidef+=0.4
 	savant.kiskill+=0.05
 /datum/skill/deflection/before_forget()
-	savant<<"You feel frail."
+	to_chat(savant, "You feel frail.")
 	savant.kidef-=0.4
 	savant.kiskill-=0.05
 
@@ -91,7 +91,7 @@ mob/var/rudeffpbcheck
 	maxlevel = 1
 	tier = 1
 /datum/skill/peffusion/after_learn()
-	savant<<"You feel careful."
+	to_chat(savant, "You feel careful.")
 	savant.kioff-=0.2
 	savant.kidef+=0.15
 	savant.kiskill+=0.3
@@ -99,7 +99,7 @@ mob/var/rudeffpbcheck
 	savant.rudeffpb=1
 
 /datum/skill/peffusion/before_forget()
-	savant<<"You feel more powerful, but something is missing..."
+	to_chat(savant, "You feel more powerful, but something is missing...")
 	savant.kioff+=0.2
 	savant.kidef-=0.15
 	savant.kiskill-=0.3
@@ -115,14 +115,14 @@ mob/var/rudeffpbcheck
 	maxlevel = 1
 	tier = 1
 /datum/skill/beffusion/after_learn()
-	savant<<"You feel powerful."
+	to_chat(savant, "You feel powerful.")
 	savant.kioff+=0.5
 	savant.kiskill-=0.2
 	savant.rudeffpbcheck=1
 	savant.rudeffpb=2
 
 /datum/skill/beffusion/before_forget()
-	savant<<"You feel more steady, but something is missing..."
+	to_chat(savant, "You feel more steady, but something is missing...")
 	savant.kioff-=0.5
 	savant.kiskill+=0.2
 	savant.rudeffpbcheck=1
@@ -159,11 +159,11 @@ datum/skill/ki/EnergyShield/login(var/mob/logger)
 	assignverb(/mob/keyable/verb/Energy_Shield)
 
 /datum/skill/ki/EnergyShield/after_learn()
-	savant << "You feel like you can use your Ki to actively protect yourself."
+	to_chat(savant, "You feel like you can use your Ki to actively protect yourself.")
 	assignverb(/mob/keyable/verb/Energy_Shield)
 
 /datum/skill/ki/EnergyShield/before_forget()
-	savant << "You feel nervous without your shield."
+	to_chat(savant, "You feel nervous without your shield.")
 	unassignverb(/mob/keyable/verb/Energy_Shield)
 
 /datum/skill/PowerControl
@@ -181,7 +181,7 @@ datum/skill/ki/EnergyShield/login(var/mob/logger)
 	assignverb(/mob/keyable/verb/Power_Up)
 	assignverb(/mob/keyable/verb/Power_Down)
 	assignverb(/mob/keyable/verb/Conceal_Power)
-	savant<<"You can control your power!"
+	to_chat(savant, "You can control your power!")
 /datum/skill/PowerControl/login()
 	..()
 	assignverb(/mob/keyable/verb/Power_Up)

@@ -69,8 +69,8 @@ obj/items
 					Health+=NanoCore
 					if(Health>=MaxHealth)
 						Health=MaxHealth
-						view(src)<<"[src]: Nanites activated. Energy fully restored."
-					else view(src)<<"[src]: Nanites activated. Energy partially restored."
+						to_chat(view(src), "[src]: Nanites activated. Energy fully restored.")
+					else to_chat(view(src), "[src]: Nanites activated. Energy partially restored.")
 				sleep(6000)
 		icon='Space.dmi'
 		icon_state="terminal"
@@ -84,11 +84,11 @@ obj/items
 		verb/Info()
 			set src in oview(1)
 			set category=null
-			usr<<"Armor: [Health*100] / [MaxHealth*100]"
-			usr<<"Energy: [Energy*100] / [MaxEnergy*100]"
-			usr<<"Sim Power: [round(maxbp)]"
-			if(NanoCore) usr<<"Nano Regeneration: [NanoCore]"
-			usr<<"Cost to make: [techcost]z"
+			to_chat(usr, "Armor: [Health*100] / [MaxHealth*100]")
+			to_chat(usr, "Energy: [Energy*100] / [MaxEnergy*100]")
+			to_chat(usr, "Sim Power: [round(maxbp)]")
+			if(NanoCore) to_chat(usr, "Nano Regeneration: [NanoCore]")
+			to_chat(usr, "Cost to make: [techcost]z")
 		verb/Upgrade()
 			set src in oview(1)
 			set category=null
@@ -105,34 +105,34 @@ obj/items
 			if(A=="Simulation Power ([500*(maxbp/500)]z)")
 				cost=500*(maxbp/500)
 				if(usr.zenni<cost)
-					usr<<"You do not have enough money ([cost]z)"
+					to_chat(usr, "You do not have enough money ([cost]z)")
 					return
-				usr<<"Simulation power increased."
+				to_chat(usr, "Simulation power increased.")
 				maxbp*=2
 			if(A=="Energy Expansion ([1000*MaxEnergy]z)")
 				cost=1000*MaxEnergy
 				if(usr.zenni<cost)
-					usr<<"You do not have enough money ([cost]z)"
+					to_chat(usr, "You do not have enough money ([cost]z)")
 					return
-				usr<<"Core expanded. Full energy restored."
+				to_chat(usr, "Core expanded. Full energy restored.")
 				MaxEnergy+=1
 				Energy=MaxEnergy
 			if(A=="Durability ([100*MaxHealth]z)")
 				cost=100*MaxHealth
 				if(usr.zenni<cost)
-					usr<<"You do not have enough money ([cost]z)"
+					to_chat(usr, "You do not have enough money ([cost]z)")
 					return
-				usr<<"Durability increased. Armor fully restored"
+				to_chat(usr, "Durability increased. Armor fully restored")
 				MaxHealth+=1
 				Health=MaxHealth
 			if(A=="Nano Regeneration ([3000*(NanoCore+1)]z)")
 				cost=3000*(NanoCore+1)
 				if(usr.zenni<cost)
-					usr<<"You do not have enough money ([cost]z)"
+					to_chat(usr, "You do not have enough money ([cost]z)")
 					return
-				usr<<"Nano Regeneration Increased."
+				to_chat(usr, "Nano Regeneration Increased.")
 				NanoCore+=1
-			usr<<"Cost: [cost]z"
+			to_chat(usr, "Cost: [cost]z")
 			usr.zenni-=cost
 			tech+=1
 			techcost+=cost
@@ -142,7 +142,7 @@ obj/items
 			if(Energy>=0.1)
 				for(var/mob/M in NPC_list) if(M.name=="[usr] Simulation")
 					M.deleteMe()
-					usr<<"Simulations cancelled."
+					to_chat(usr, "Simulations cancelled.")
 					return
 			var/mob/npc/Enemy/Simulation/x
 			x=new(loc)
@@ -172,13 +172,13 @@ obj/items
 			if(x&&y&&z&&!Bolted)
 				switch(input("Are you sure you want to bolt this to the ground so nobody can ever pick it up? Not even you?","",text) in list("Yes","No",))
 					if("Yes")
-						view(src)<<"<font size=1>[usr] bolts the [src] to the ground."
+						to_chat(view(src), "<font size=1>[usr] bolts the [src] to the ground.")
 						Bolted=1
 						boltersig=usr.signature
 			else if(Bolted&&boltersig==usr.signature)
 				switch(input("Unbolt?","",text) in list("Yes","No",))
 					if("Yes")
-						view(src)<<"<font size=1>[usr] unbolts the [src] from the ground."
+						to_chat(view(src), "<font size=1>[usr] unbolts the [src] from the ground.")
 						Bolted=0
 	food/Simulation_Meat
 		icon='corpse.dmi'
@@ -198,14 +198,14 @@ obj/items
 				usr.spacesuit+=1
 				usr.overlayList+=icon
 				usr.overlaychanged=1
-				usr<<"You put on the [src]."
+				to_chat(usr, "You put on the [src].")
 			else
 				equipped=0
 				suffix=""
 				usr.spacesuit-=1
 				usr.overlayList-=icon
 				usr.overlaychanged=1
-				usr<<"You take off the [src]."
+				to_chat(usr, "You take off the [src].")
 	Forcefield
 		icon='Lab.dmi'
 		icon_state="Computer 1"
@@ -220,13 +220,13 @@ obj/items
 				usr.hasForcefield=1
 				usr.forcefieldID = src
 				suffix="*Equipped*"
-				usr<<"You turn on the [src]."
+				to_chat(usr, "You turn on the [src].")
 			else
 				equipped=0
 				usr.hasForcefield=0
 				usr.forcefieldID = null
 				suffix=""
-				usr<<"You turn off the [src]."
+				to_chat(usr, "You turn off the [src].")
 		superCalc()
 			superarmor = 0.05*maxarmor
 		testDestroy()
@@ -323,10 +323,10 @@ obj/items
 			if(A=="Reload ([100*log(usr.intBPcap)]z)")
 				cost=100*log(usr.intBPcap)
 				if(usr.zenni<cost)
-					usr<<"You do not have enough money ([cost]z)"
+					to_chat(usr, "You do not have enough money ([cost]z)")
 					return
-				usr<<"Reloaded."
-			usr<<"Cost: [cost]z"
+				to_chat(usr, "Reloaded.")
+			to_chat(usr, "Cost: [cost]z")
 			usr.zenni-=cost
 		verb/Use()
 			set category=null
@@ -351,10 +351,10 @@ obj/items
 		Click()
 			var/cost=100*log(usr.intBPcap)
 			if(usr.zenni<cost)
-				usr<<"You do not have enough money ([cost]z)"
+				to_chat(usr, "You do not have enough money ([cost]z)")
 				return
 			strength = usr.intBPcap
-			usr << "[src]: Upgraded to [strength]!"
+			to_chat(usr, "[src]: Upgraded to [strength]!")
 
 	First_Aid_Kit
 		icon='FirstAid.dmi'
@@ -369,13 +369,13 @@ obj/items
 			set category=null
 			set src in usr
 			if(usr.bandaging)
-				usr<<"You are currently bandaging someone!"
+				to_chat(usr, "You are currently bandaging someone!")
 				return
 			if(usr.KO)
-				usr<<"You can't use this while unconscious!"
+				to_chat(usr, "You can't use this while unconscious!")
 				return
 			if(M==usr)
-				usr<<"You begin bandaging yourself. Don't move."
+				to_chat(usr, "You begin bandaging yourself. Don't move.")
 				mloc=usr.loc
 				usr.bandaging=1
 				counter=10
@@ -383,11 +383,11 @@ obj/items
 				while(usr.bandaging&&counter&&!usr.KO)
 					sleep(5)
 					if(mloc!=usr.loc)
-						usr<<"You moved, and your bandaging has failed"
+						to_chat(usr, "You moved, and your bandaging has failed")
 						usr.bandaging=0
 						break
 					if(prevHP>usr.HP)
-						usr<<"Being damaged interrupted you!"
+						to_chat(usr, "Being damaged interrupted you!")
 						usr.bandaging=0
 						break
 					usr.SpreadHeal(4,0,0)
@@ -395,12 +395,12 @@ obj/items
 				usr.bandaging=0
 				if(uses)
 					uses--
-					usr<<"You have [uses] uses left."
+					to_chat(usr, "You have [uses] uses left.")
 					return
 				del(src)
 			else
-				usr<<"You begin bandaging [M.name]. If either of you move, this will fail."
-				M<<"[usr.name] is bandaging you. If either of you move, this will fail."
+				to_chat(usr, "You begin bandaging [M.name]. If either of you move, this will fail.")
+				to_chat(M, "[usr.name] is bandaging you. If either of you move, this will fail.")
 				uloc=usr.loc
 				mloc=M.loc
 				usr.bandaging=1
@@ -409,24 +409,24 @@ obj/items
 				while(usr.bandaging&&counter&&!usr.KO)
 					sleep(5)
 					if(mloc!=M.loc)
-						usr<<"[M.name] moved, and your bandaging has failed."
-						M<<"You moved, and [usr.name]'s bandaging has failed."
+						to_chat(usr, "[M.name] moved, and your bandaging has failed.")
+						to_chat(M, "You moved, and [usr.name]'s bandaging has failed.")
 						usr.bandaging=0
 						break
 					if(uloc!=usr.loc)
-						usr<<"You moved, and your bandaging has failed."
-						M<<"[usr.name] moved, and [usr.name]'s bandaging has failed."
+						to_chat(usr, "You moved, and your bandaging has failed.")
+						to_chat(M, "[usr.name] moved, and [usr.name]'s bandaging has failed.")
 						usr.bandaging=0
 						break
 					if(prevHP>usr.HP)
-						usr<<"Being damaged interrupted you!"
+						to_chat(usr, "Being damaged interrupted you!")
 						usr.bandaging=0
 						break
 					M.SpreadHeal(4,1,0)
 					counter--
 				usr.bandaging=0
 				if(uses)
-					usr<<"You have [uses] uses left."
+					to_chat(usr, "You have [uses] uses left.")
 					uses--
 					return
 				del(src)
@@ -470,7 +470,7 @@ obj/Power_Drill
 				storedmats-=m
 				goto clickstart
 		else
-			usr<<"There are no materials to withdraw!"
+			to_chat(usr, "There are no materials to withdraw!")
 			return
 
 

@@ -95,49 +95,49 @@ obj/Modules
 			set category = null
 			set src in usr
 			if(requiredslots>=0)
-				usr<<"Requires [requiredslots] free capacity"
+				to_chat(usr, "Requires [requiredslots] free capacity")
 			else
-				usr<<"Provides [abs(requiredslots)] free capacity"
+				to_chat(usr, "Provides [abs(requiredslots)] free capacity")
 			if(!canuninstall)
-				usr<<"Once installed, cannot be removed"
+				to_chat(usr, "Once installed, cannot be removed")
 			if(allowedlimb)
 				var/datum/Body/A=allowedlimb
-				usr<<"Can only be installed in [initial(A.name)]"
+				to_chat(usr, "Can only be installed in [initial(A.name)]")
 			if(requireartificial)
-				usr<<"Requires an artificial limb"
+				to_chat(usr, "Requires an artificial limb")
 			if(requireorganic)
-				usr<<"Requires an organic limb"
+				to_chat(usr, "Requires an organic limb")
 			if(requiredupgrade)
 				var/obj/Modules/B=requiredupgrade
-				usr<<"Requires [initial(B.name)] to be installed in the limb first"
+				to_chat(usr, "Requires [initial(B.name)] to be installed in the limb first")
 			if(disallowedupgrade)
 				var/obj/Modules/C=disallowedupgrade
-				usr<<"Cannot be installed with [initial(C.name)]"
+				to_chat(usr, "Cannot be installed with [initial(C.name)]")
 
 	proc
 		GetMe(var/mob/TargetMob)
 			if(Bolted)
-				TargetMob<<"It is bolted to the ground, you cannot get it."
+				to_chat(TargetMob, "It is bolted to the ground, you cannot get it.")
 				return FALSE
 			if(TargetMob)
 				if(!TargetMob.KO)
 					for(var/turf/G in view(src)) G.gravity=0
 					Move(TargetMob)
-					view(TargetMob)<<"<font color=teal><font size=1>[TargetMob] picks up [src]."
+					to_chat(view(TargetMob), "<font color=teal><font size=1>[TargetMob] picks up [src].")
 					WriteToLog("rplog","[TargetMob] picks up [src]    ([time2text(world.realtime,"Day DD hh:mm")])")
 					return TRUE
 				else
-					TargetMob<<"You cant, you are knocked out."
+					to_chat(TargetMob, "You cant, you are knocked out.")
 					return FALSE
 		DropMe(var/mob/TargetMob)
 			if(isequipped|suffix=="*Equipped*")
-				usr<<"You must unequip it first"
+				to_chat(usr, "You must unequip it first")
 				return FALSE
 			TargetMob.overlayList-=icon
 			TargetMob.overlaychanged=1
 			loc=TargetMob.loc
 			step(src,TargetMob.dir)
-			view(TargetMob)<<"<font size=1><font color=teal>[TargetMob] drops [src]."
+			to_chat(view(TargetMob), "<font size=1><font color=teal>[TargetMob] drops [src].")
 			return TRUE
 	New()
 		..()
@@ -151,14 +151,14 @@ obj/items/Repair_Kit
 		set src in view(1)
 		var/prevHP = usr.HP
 		var/prevloc = usr.loc
-		usr<<"This will take a moment, don't move or take further damage!"
+		to_chat(usr, "This will take a moment, don't move or take further damage!")
 		sleep(100)
 		if(usr.HP>=prevHP&&usr.loc==prevloc&&!usr.KO)
 			for(var/datum/Body/C in usr.body)
 				if(C.health < C.maxhealth&&C.artificial)
 					C.health += 10
 					C.health = min(C.health, C.maxhealth)
-			view(usr)<<"[usr] repairs themselves!"
+			to_chat(view(usr), "[usr] repairs themselves!")
 			del(src)
 		return
 
@@ -170,7 +170,7 @@ obj/items/Mechanical_Kit
 		if(!T.KO&&T!=usr)
 			var/agree = alert(T,"[usr] wants to install something into you. Do you accept?","","Yes","No")
 			if(agree=="No")
-				usr<<"[T] does not agree to your installation."
+				to_chat(usr, "[T] does not agree to your installation.")
 				return
 		var/list/installchoice = list()
 		var/obj/Modules/B=null
@@ -182,7 +182,7 @@ obj/items/Mechanical_Kit
 			if(!B)
 				return
 		else
-			usr<<"You have no modules to install!"
+			to_chat(usr, "You have no modules to install!")
 			return
 		var/list/limbselection = list()
 		for(var/datum/Body/C in T.body)
@@ -194,11 +194,11 @@ obj/items/Mechanical_Kit
 			if(B.allowedlimb)
 				if(choice.type==B.allowedlimb)
 				else
-					usr<<"This module cannot be installed in this limb!"
+					to_chat(usr, "This module cannot be installed in this limb!")
 					return
 			if(choice.artificial >= B.requireartificial&&!choice.artificial >= B.requireorganic&&choice.lopped==B.requirelopped)//first check tests if the limb is artificial and required to be, second checks orgainic (not artificial) and required to be
 			else
-				usr<<"This limb is not biologically compatible with this module!"
+				to_chat(usr, "This limb is not biologically compatible with this module!")
 				return
 			if(B.requiredupgrade)
 				var/prereq=0
@@ -207,7 +207,7 @@ obj/items/Mechanical_Kit
 						prereq+=1
 				if(prereq>=1)
 				else
-					usr<<"You lack the prerequisites to install this!"
+					to_chat(usr, "You lack the prerequisites to install this!")
 					return
 			if(B.disallowedupgrade)
 				var/disallow=0
@@ -216,10 +216,10 @@ obj/items/Mechanical_Kit
 						disallow+=1
 				if(disallow==0)
 				else
-					usr<<"This module is incompatible with a currently installed module"
+					to_chat(usr, "This module is incompatible with a currently installed module")
 					return
 			if(B.requiredslots>choice.capacity)
-				usr<<"There is not enough room for this module"
+				to_chat(usr, "There is not enough room for this module")
 				return
 			B.place(choice,T)
 			T.EquippedModules += B
@@ -227,14 +227,14 @@ obj/items/Mechanical_Kit
 			B.equip()
 			spawn(1)
 			B.savant=T
-			usr<<"Module Installed"
+			to_chat(usr, "Module Installed")
 	verb/Uninstall_Module(mob/T in view(1))
 		set category = null
 		set src in view(1)
 		if(!T.KO&&T!=usr)
 			var/agree = alert(T,"[usr] wants to uninstall something from you. Do you accept?","","Yes","No")
 			if(agree=="No")
-				usr<<"[T] does not agree to your uninstallation."
+				to_chat(usr, "[T] does not agree to your uninstallation.")
 				return
 		var/list/uninstalllimb = list()
 		var/list/uninstallchoice = list()
@@ -248,7 +248,7 @@ obj/items/Mechanical_Kit
 			if(!U)
 				return
 		else
-			usr<<"You have no modules to uninstall!"
+			to_chat(usr, "You have no modules to uninstall!")
 			return
 		for(var/obj/Modules/A in U.Modules)
 			if(A.isequipped&&A.canuninstall)
@@ -258,34 +258,34 @@ obj/items/Mechanical_Kit
 			if(!B)
 				return
 		else
-			usr<<"You have no modules to uninstall!"
+			to_chat(usr, "You have no modules to uninstall!")
 			return
 		B.unequip()
 		B.remove()
 		B.logout()
 		B.login(T)
 		T.EquippedModules -= B
-		usr<<"Module Uninstalled"
+		to_chat(usr, "Module Uninstalled")
 	verb/Check_Module_Energy(mob/T in view(1))
 		set category = null
 		set src in view(1)
 		for(var/obj/Modules/A in T.contents)
 			if(A.elec_energy_max)
-				view(src)<<"<font color=gray>[A.name] is at [A.elec_energy] out of [A.elec_energy_max]"
+				to_chat(view(src), "<font color=gray>[A.name] is at [A.elec_energy] out of [A.elec_energy_max]")
 	verb/Check_Module_Health(mob/T in view(1))
 		set category = null
 		set src in view(1)
 		for(var/obj/Modules/A in T.contents)
 			if(A.integrity)
-				view(src)<<"<font color=gray>[A.name] is at [A.integrity] out of 10"
+				to_chat(view(src), "<font color=gray>[A.name] is at [A.integrity] out of 10")
 			else
-				view(src)<<"<font color=gray>[A.name] is non-functional! (Functioning equal to [A.functional])"
+				to_chat(view(src), "<font color=gray>[A.name] is non-functional! (Functioning equal to [A.functional])")
 	verb/Scan_Limb(mob/T in view(1))
 		set category = null
 		set src in view(1)
 		for(var/datum/Body/Z in T.body)
 			if(!Z.lopped&&Z.artificial)
-				view(src)<<"<font color=gray>[Z.name] is at [Z.health] out of [Z.maxhealth]"
+				to_chat(view(src), "<font color=gray>[Z.name] is at [Z.health] out of [Z.maxhealth]")
 
 
 obj/Modules/Infinite_Energy_Core
@@ -403,50 +403,50 @@ obj/Modules/Mega_Buster
 		if(A=="Max Energy ([10*src.elec_energy_max]z)")
 			cost=10*src.elec_energy_max
 			if(usr.zenni<cost)
-				usr<<"You do not have enough money ([cost]z)"
+				to_chat(usr, "You do not have enough money ([cost]z)")
 			else
-				usr<<"Energy increased!"
+				to_chat(usr, "Energy increased!")
 				src.elec_energy_max += 1000
 		if(A=="Power ([100000*src.power]z)")
 			cost=100000*src.power
 			if(usr.zenni<cost)
-				usr<<"You do not have enough money ([cost]z)"
+				to_chat(usr, "You do not have enough money ([cost]z)")
 			else
-				usr<<"Power increased!"
+				to_chat(usr, "Power increased!")
 				src.power += 1
 		if(A=="Range ([100000*src.range]z)")
 			cost=100000*src.range
 			if(usr.zenni<cost)
-				usr<<"You do not have enough money ([cost]z)"
+				to_chat(usr, "You do not have enough money ([cost]z)")
 			else
-				usr<<"Range increased!"
+				to_chat(usr, "Range increased!")
 				src.range += 1
 		if(A=="Rapid ([100000*src.rapid]z)")
 			cost=100000*src.rapid
 			if(usr.zenni<cost)
-				usr<<"You do not have enough money ([cost]z)"
+				to_chat(usr, "You do not have enough money ([cost]z)")
 			else
-				usr<<"Rapid increased!"
+				to_chat(usr, "Rapid increased!")
 				src.rapid += 1
 		if(A=="Charged Shots ([1000000]z)")
 			cost=1000000
 			if(usr.zenni<cost)
-				usr<<"You do not have enough money ([cost]z)"
+				to_chat(usr, "You do not have enough money ([cost]z)")
 			else
-				usr<<"Charged Shots enabled!"
+				to_chat(usr, "Charged Shots enabled!")
 				src.charge = 1
-		usr<<"Cost: [cost]z"
+		to_chat(usr, "Cost: [cost]z")
 		usr.zenni-=cost
 		goto thechoices
 
 	verb/Check_Buster_Stats()
 		desc="Check the stats of your buster"
-		usr<<"Your buster has [src.elec_energy] out of [src.elec_energy_max] charge remaining"
-		usr<<"Your buster's statistics are: Power: [src.power], Range: [src.range], Rapid: [src.rapid]"
+		to_chat(usr, "Your buster has [src.elec_energy] out of [src.elec_energy_max] charge remaining")
+		to_chat(usr, "Your buster's statistics are: Power: [src.power], Range: [src.range], Rapid: [src.rapid]")
 		if(charge)
-			usr<<"You can charge your buster's shots"
+			to_chat(usr, "You can charge your buster's shots")
 		if(!charge)
-			usr<<"You cannot charge your buster's shots"
+			to_chat(usr, "You cannot charge your buster's shots")
 
 	verb/Shoot_Buster()
 		set category="Skills"
@@ -484,7 +484,7 @@ obj/Modules/Mega_Buster
 					else
 						return
 				else
-					usr<<"Your buster is out of energy!"
+					to_chat(usr, "Your buster is out of energy!")
 					return
 			else if(charge)
 				if(!usr.bustercharge)
@@ -525,10 +525,10 @@ obj/Modules/Mega_Buster
 						else
 							return
 					else
-						usr<<"Your buster is out of energy!"
+						to_chat(usr, "Your buster is out of energy!")
 						return
 		else
-			usr<<"Your buster is not equiped!"
+			to_chat(usr, "Your buster is not equiped!")
 			return
 
 	Ticker()
@@ -648,12 +648,12 @@ obj/Modules/Metabolic_Interchange
 		if(isequipped&&functional)
 			if(usr.currentNutrition>0&&usr.Ki<usr.MaxKi&&usr.exchange==0)
 				usr.exchange=1//I defined this variable for the mob at the top of the DM, it tells us if we should be converting or not
-				usr<<"You begin converting nutrition into ki!"
+				to_chat(usr, "You begin converting nutrition into ki!")
 			else
 				usr.exchange=0
-				usr<<"You are not converting nutriton"
+				to_chat(usr, "You are not converting nutriton")
 		else
-			usr<<"You don't have this equiped!"
+			to_chat(usr, "You don't have this equiped!")
 
 	Ticker()
 		if(isequipped&&functional)
@@ -690,9 +690,9 @@ obj/Modules/Metabolic_Autonomer
 		if(isequipped&&functional)
 			if(usr.currentNutrition>0&&usr.Ki<usr.MaxKi&&breakme==1)
 				breakme=0
-				usr<<"You reset this module."
+				to_chat(usr, "You reset this module.")
 		else
-			usr<<"You don't have this equiped!"
+			to_chat(usr, "You don't have this equiped!")
 
 	Ticker()
 		if(isequipped&&functional)
@@ -702,8 +702,8 @@ obj/Modules/Metabolic_Autonomer
 						usr.currentNutrition += S.nutrition
 						if(prob(25))
 							breakme = 1
-							usr << "Metabolic Autonomer Module broken. Please reset."
-						usr << "Food consumed."
+							to_chat(usr, "Metabolic Autonomer Module broken. Please reset.")
+						to_chat(usr, "Food consumed.")
 						break
 		..()
 
@@ -730,12 +730,12 @@ obj/Modules/Repair_Nanobots
 		if(isequipped&&functional)
 			if(usr.Ki>0&&usr.HP<100&&usr.exchange==0)
 				usr.exchange=1//I defined this variable for the mob at the top of the DM, it tells us if we should be converting or not
-				usr<<"You begin to regenerate!"
+				to_chat(usr, "You begin to regenerate!")
 			else
 				usr.exchange=0
-				usr<<"You stop regenerating"
+				to_chat(usr, "You stop regenerating")
 		else
-			usr<<"You don't have this equiped!"
+			to_chat(usr, "You don't have this equiped!")
 
 	Ticker()
 		if(isequipped&&functional)
@@ -785,7 +785,7 @@ obj/Modules/Levitation_Systems
 				usr.freeflight=0
 				usr.flight = 0
 				if(usr.Savable) usr.icon_state=""
-				usr<<"You land back on the ground."
+				to_chat(usr, "You land back on the ground.")
 				usr.isflying=0
 				isactive=0
 			else if(src.elec_energy>5&&!usr.KO&&!isactive)
@@ -795,10 +795,10 @@ obj/Modules/Levitation_Systems
 				usr.swim=0
 				usr.isflying=1
 				isactive=1
-				usr<<"You begin to levitate through your module."
+				to_chat(usr, "You begin to levitate through your module.")
 				if(usr.Savable) usr.icon_state="Flight"
 			else
-				usr<<"You are unable to levitate"
+				to_chat(usr, "You are unable to levitate")
 				isactive=0
 
 	Ticker()
@@ -816,7 +816,7 @@ obj/Modules/Levitation_Systems
 					savant.flight=0
 					savant.isflying=0
 					isactive=0
-					savant<<"Your levitation systems have run out of energy, sending you to the ground!"
+					to_chat(savant, "Your levitation systems have run out of energy, sending you to the ground!")
 			if(elec_energy<elec_energy_max)
 				elec_energy+=1
 		..()
@@ -857,25 +857,25 @@ obj/Modules/Rocket_Punch
 		if(A=="Power ([10000*src.power]z)")
 			cost=10000*src.power
 			if(usr.zenni<cost)
-				usr<<"You do not have enough money ([cost]z)"
+				to_chat(usr, "You do not have enough money ([cost]z)")
 			else
-				usr<<"Power increased!"
+				to_chat(usr, "Power increased!")
 				src.power += 1
 		if(A=="Range ([100000*src.range]z)")
 			cost=100000*src.range
 			if(usr.zenni<cost)
-				usr<<"You do not have enough money ([cost]z)"
+				to_chat(usr, "You do not have enough money ([cost]z)")
 			else
-				usr<<"Range increased!"
+				to_chat(usr, "Range increased!")
 				src.range += 1
-		usr<<"Cost: [cost]z"
+		to_chat(usr, "Cost: [cost]z")
 		usr.zenni-=cost
 		goto thechoices
 
 	verb/Check_RocketPunch()
 		set category="Other"
 		desc="Check the stats of your Rocket Punch"
-		usr<<"Your manly fist's statistics are: Power: [src.power], Range: [src.range]"
+		to_chat(usr, "Your manly fist's statistics are: Power: [src.power], Range: [src.range]")
 
 	verb/ROCKETO_PUNCH()
 		set category="Skills"
@@ -909,13 +909,13 @@ obj/Modules/Rocket_Punch
 					usr.icon_state = ""
 					usr.buster=0
 				else
-					usr<<"You can't do this right now!"
+					to_chat(usr, "You can't do this right now!")
 					return
 			else
-				usr<<"You need to wait for your fist!"
+				to_chat(usr, "You need to wait for your fist!")
 				return
 		else
-			usr<<"Your fist is not equiped!"
+			to_chat(usr, "Your fist is not equiped!")
 			return
 
 	Ticker()
@@ -940,37 +940,37 @@ obj/Modules/Advanced_Targeting_Systems
 	verb/Assess_Target(mob/M in view(usr))
 		var/accuracy = 1
 		if(isequipped&&functional)
-			usr<<"<font color=green><br>-----<br>Scanning..."
+			to_chat(usr, "<font color=green><br>-----<br>Scanning...")
 			sleep(10)
-			usr<<"<font color=green>Battle Power: [num2text((round(M.BP,accuracy)),20)]<br>-Scan Complete-"
-			if(M.Race=="Saiyan") usr<<"<font color=green>Records show this [M.Race] was born with [M.FirstYearPower] Battle Power."
-			usr<<"<font color=green>Target Statistics:"
-			usr<<"<font color=green>Physical Offense - [M.Ephysoff]"
-			usr<<"<font color=green>Physical Defense - [M.Ephysdef]"
-			usr<<"<font color=green>Ki Offense - [M.Ekioff]"
-			usr<<"<font color=green>Ki Defense - [M.Ekidef]"
-			usr<<"<font color=green>Technique - [M.Etechnique]"
-			usr<<"<font color=green>Ki Skill - [M.Ekiskill]"
-			usr<<"<font color=green>Speed - [M.Espeed]"
+			to_chat(usr, "<font color=green>Battle Power: [num2text((round(M.BP,accuracy)),20)]<br>-Scan Complete-")
+			if(M.Race=="Saiyan") to_chat(usr, "<font color=green>Records show this [M.Race] was born with [M.FirstYearPower] Battle Power.")
+			to_chat(usr, "<font color=green>Target Statistics:")
+			to_chat(usr, "<font color=green>Physical Offense - [M.Ephysoff]")
+			to_chat(usr, "<font color=green>Physical Defense - [M.Ephysdef]")
+			to_chat(usr, "<font color=green>Ki Offense - [M.Ekioff]")
+			to_chat(usr, "<font color=green>Ki Defense - [M.Ekidef]")
+			to_chat(usr, "<font color=green>Technique - [M.Etechnique]")
+			to_chat(usr, "<font color=green>Ki Skill - [M.Ekiskill]")
+			to_chat(usr, "<font color=green>Speed - [M.Espeed]")
 			var/Threat=0
 			if(usr.Ephysoff>=usr.Ekioff)
 				Threat = (usr.expressedBP/M.expressedBP)*(usr.Ephysoff/M.Ephysdef)*(usr.Etechnique/M.Etechnique)
 			else
 				Threat = (usr.expressedBP/M.expressedBP)*(usr.Ekioff/M.Ekidef)*(usr.Ekiskill/M.Ekiskill)
 			if(Threat>2)
-				usr<<"<font color=green>Threat Level: None"
+				to_chat(usr, "<font color=green>Threat Level: None")
 			else if(Threat>1.1)
-				usr<<"<font color=yellow>Threat Level: Weak"
+				to_chat(usr, "<font color=yellow>Threat Level: Weak")
 			else if(Threat>0.9)
-				usr<<"<font color=white>Threat Level: Standard"
+				to_chat(usr, "<font color=white>Threat Level: Standard")
 			else if(Threat>0.5)
-				usr<<"<font color=#FF9900>Threat Level: Strong"
+				to_chat(usr, "<font color=#FF9900>Threat Level: Strong")
 			else if(Threat>0.1)
-				usr<<"<font color=red>Threat Level: Dangerous"
+				to_chat(usr, "<font color=red>Threat Level: Dangerous")
 			else
-				usr<<"<font color=purple>Threat Level: Overwhelming"
+				to_chat(usr, "<font color=purple>Threat Level: Overwhelming")
 		else
-			usr<<"Your targetting systems are not functional currently!"
+			to_chat(usr, "Your targetting systems are not functional currently!")
 
 obj/Modules/Hydraulic_Force_Multiplier
 	desc = "Improve the force your muscles can output with advanced hydraulics originating from your abdomen. Requires artifical abdominal support to function. Also makes your body more fragile by exposing limbs to greater force transfer."
@@ -1020,7 +1020,7 @@ obj/Modules/Forcefield_Generator
 				if(integrity<=0)
 					functional=0
 				if(!functional&&parent_limb)
-					savant<<"Your forcefield generator has overloaded and exploded, taking the limb with it and damaging you!"
+					to_chat(savant, "Your forcefield generator has overloaded and exploded, taking the limb with it and damaging you!")
 					savant.SpreadDamage(10)
 					savant.emit_Sound('kiplosion.wav')
 					spawnExplosion(location=savant.loc)
@@ -1035,8 +1035,8 @@ obj/Modules/Matter_Assimilator
 		set category = "Skills"
 		if(isequipped&&functional)
 			if(usr.grabMode==2&&usr.grabbee&&usr.assimilating==0)
-				usr<<"You begin assimilating [usr.grabbee]'s matter!"
-				usr.grabbee<<"[usr] begins assimilating your matter!"
+				to_chat(usr, "You begin assimilating [usr.grabbee]'s matter!")
+				to_chat(usr.grabbee, "[usr] begins assimilating your matter!")
 				usr.assimilating=1
 				while(usr.grabMode==2&&usr.grabbee&&usr.assimilating==1)
 					var/dmg=((usr.Ephysoff/usr.grabbee.Ephysdef)*BPModulus(usr.expressedBP, usr.grabbee.expressedBP)/10)
@@ -1049,13 +1049,13 @@ obj/Modules/Matter_Assimilator
 					sleep(5)
 				usr.assimilating=0
 			else if(usr.grabMode==2&&usr.grabbee&&usr.assimilating==1)
-				usr.grabbee<<"[usr] stops assimilating your matter!"
-				usr<<"You stop assimilating [usr.grabbee]'s matter!"
+				to_chat(usr.grabbee, "[usr] stops assimilating your matter!")
+				to_chat(usr, "You stop assimilating [usr.grabbee]'s matter!")
 				usr.assimilating=0
 			else
-				usr<<"You must be holding a target to assimilate their matter!"
+				to_chat(usr, "You must be holding a target to assimilate their matter!")
 		else
-			usr<<"Your module is either uninstalled or broken!"
+			to_chat(usr, "Your module is either uninstalled or broken!")
 
 obj/Modules/Limiter_Overload
 	desc="Remove the limiters on your artificial limbs, greatly increasing your power at the cost of damaging your limbs and modules from the increased load"
@@ -1064,11 +1064,11 @@ obj/Modules/Limiter_Overload
 	verb/Limiter_Overload()
 		set category = "Skills"
 		if(isequipped&&functional&&!usr.KO&&!usr.limiteroverload)
-			usr<<"You remove the limits to your power usage. OVERDRIVE ENGAGED"
+			to_chat(usr, "You remove the limits to your power usage. OVERDRIVE ENGAGED")
 			usr.limiteroverload=1
 			usr.startbuff(/obj/buff/limiteroverload)
 		else if(usr.isBuffed(/obj/buff/limiteroverload))
-			usr<<"You relimit your power expenditure"
+			to_chat(usr, "You relimit your power expenditure")
 			usr.stopbuff(/obj/buff/limiteroverload)
 			usr.limiteroverload=0
 		else
@@ -1089,7 +1089,7 @@ obj/Modules/Energy_Capacitor
 				if(integrity<=0)
 					functional=0
 				if(!functional&&parent_limb)
-					savant<<"Your energy capacitor has overloaded and exploded, taking the limb with it and damaging you!"
+					to_chat(savant, "Your energy capacitor has overloaded and exploded, taking the limb with it and damaging you!")
 					savant.SpreadDamage(10)
 					savant.emit_Sound('kiplosion.wav')
 					spawnExplosion(location=savant.loc)
@@ -1133,7 +1133,7 @@ obj/Modules/Refractor_Upgrade
 						usr.piercer=1
 						usr.updateOverlay(/obj/overlay/effects/MegaBusterCharge)
 					return
-				else src << "Your buster is out of energy!"
+				else to_chat(src, "Your buster is out of energy!")
 obj/Modules/Abdominal_Machinegun
 	desc="German science is the greatest in the world! Installs a machinegun into your abdomen, allowing you to open fire!"
 	allowedlimb=/datum/Body/Abdomen
@@ -1142,7 +1142,7 @@ obj/Modules/Abdominal_Machinegun
 		set category = "Skills"
 		if(isequipped&&functional)
 			if(!usr.mgun&&!usr.KO&&!usr.med&&!usr.train&&usr.canfight)
-				usr<<"You open fire with your abdominal machinegun!"
+				to_chat(usr, "You open fire with your abdominal machinegun!")
 				usr.mgun=1
 				usr.updateOverlay(/obj/overlay/effects/AbMachinegun)
 				while(usr.mgun&&elec_energy>=1&&!usr.KO&&!usr.med&&!usr.train&&usr.canfight)
@@ -1166,13 +1166,13 @@ obj/Modules/Abdominal_Machinegun
 					sleep(2)
 				usr.mgun=0
 				usr.removeOverlay(/obj/overlay/effects/AbMachinegun)
-				usr<<"You stop firing your machinegun."
+				to_chat(usr, "You stop firing your machinegun.")
 			if(usr.mgun)
-				usr<<"You stop firing your machinegun."
+				to_chat(usr, "You stop firing your machinegun.")
 				usr.mgun=0
 				usr.removeOverlay(/obj/overlay/effects/AbMachinegun)
 		else
-			usr<<"Your machinegun is not functional!"
+			to_chat(usr, "Your machinegun is not functional!")
 
 obj/overlay/effects/AbMachinegun
 	icon = 'Abdominal_Machinegun.dmi'
@@ -1217,16 +1217,16 @@ obj/Modules/Portable_Missile_Launcher
 						usr.hmissile=0
 						i=0
 					else
-						usr<<"Your missiles are not fully replenished!"
+						to_chat(usr, "Your missiles are not fully replenished!")
 						return
 				else
-					usr<<"You are currently firing missiles!"
+					to_chat(usr, "You are currently firing missiles!")
 					return
 			else
-				usr<<"You need a target!"
+				to_chat(usr, "You need a target!")
 				return
 		else
-			usr<<"Your module is not in working condition."
+			to_chat(usr, "Your module is not in working condition.")
 			return
 
 	Ticker()

@@ -35,12 +35,12 @@ mob/var
 
 		levelstat()
 			..()
-			savant<<"You're on your way to becoming a fishing master! Your Fishing is now level [level]!"
+			to_chat(savant, "You're on your way to becoming a fishing master! Your Fishing is now level [level]!")
 			savant.FishingSkill+=1
 			if(level == 15)
-				savant<<"You now have a chance to catch Trout!"
+				to_chat(savant, "You now have a chance to catch Trout!")
 			if(level == 35)
-				savant<<"You now have a chance to catch Salmon!"
+				to_chat(savant, "You now have a chance to catch Salmon!")
 
 	Cooking
 		name = "Cooking"
@@ -60,7 +60,7 @@ mob/var
 
 		levelstat()
 			..()
-			savant<<"You're on your way to becoming a master chef! Your Cooking is now level [level]!"
+			to_chat(savant, "You're on your way to becoming a master chef! Your Cooking is now level [level]!")
 			savant.CookingSkill+=1
 
 	Foraging
@@ -81,7 +81,7 @@ mob/var
 
 		levelstat()
 			..()
-			savant<<"You're becoming more skilled with foraging! Your Foraging is now level [level]!"
+			to_chat(savant, "You're becoming more skilled with foraging! Your Foraging is now level [level]!")
 			savant.ForagingSkill+=1
 
 	Farming
@@ -103,7 +103,7 @@ mob/var
 
 		levelstat()
 			..()
-			savant<<"You're learning the ways of the farmer! Your Farming is now level [level]!"
+			to_chat(savant, "You're learning the ways of the farmer! Your Farming is now level [level]!")
 			savant.FarmingSkill+=1
 			if(level==10)
 				addverb(/mob/keyable/verb/Appraise_Plant)
@@ -122,7 +122,7 @@ mob/var
 
 		levelstat()
 			..()
-			savant<<"You're getting better at swimming! Your Swimming is now level [level]!"
+			to_chat(savant, "You're getting better at swimming! Your Swimming is now level [level]!")
 			savant.swimmastery+=0.01
 
 	Mining
@@ -133,7 +133,7 @@ mob/var
 
 		levelstat()
 			..()
-			savant<<"Your mining skill improves! Your Mining is now level [level]!"
+			to_chat(savant, "Your mining skill improves! Your Mining is now level [level]!")
 
 	Woodcutting
 		name = "Woodcutting"
@@ -143,7 +143,7 @@ mob/var
 
 		levelstat()
 			..()
-			savant<<"Your woodcutting skill improves! Your Woodcutting is now level [level]!"
+			to_chat(savant, "Your woodcutting skill improves! Your Woodcutting is now level [level]!")
 
 	Harvesting
 		name = "Harvesting"
@@ -153,7 +153,7 @@ mob/var
 
 		levelstat()
 			..()
-			savant<<"Your harvesting skill improves! Your Harvesting is now level [level]!"
+			to_chat(savant, "Your harvesting skill improves! Your Harvesting is now level [level]!")
 
 	Skinning
 		name = "Skinning"
@@ -163,7 +163,7 @@ mob/var
 
 		levelstat()
 			..()
-			savant<<"Your skinning skill improves! Your Skinning is now level [level]!"
+			to_chat(savant, "Your skinning skill improves! Your Skinning is now level [level]!")
 
 //verbs go down here
 
@@ -174,13 +174,13 @@ mob/keyable/verb/Appraise_Plant()
 	var/obj/Plants/P = input(usr,"Which plant would you like to appraise?","",null) in plantlist
 	if(!P)
 		return
-	usr<<"You judge the plant as follows..."
-	usr<<"[P.growthPercent]% grown."
+	to_chat(usr, "You judge the plant as follows...")
+	to_chat(usr, "[P.growthPercent]% grown.")
 	if(P.growthPercent>=0.5)
-		usr<<"Ready to harvest."
+		to_chat(usr, "Ready to harvest.")
 		if(usr.ForagingSkill>=10)
-			usr<<"You guess you can harvest [round(P.harvestYield * P.growthPercent * max(usr.ForagingSkill/10,1),1)] items."
+			to_chat(usr, "You guess you can harvest [round(P.harvestYield * P.growthPercent * max(usr.ForagingSkill/10,1),1)] items.")
 	else
-		usr<<"Not ready to harvest"
+		to_chat(usr, "Not ready to harvest")
 	if(P.planter&&usr.FarmingSkill>=20)
-		usr<<"This crop was planted."
+		to_chat(usr, "This crop was planted.")

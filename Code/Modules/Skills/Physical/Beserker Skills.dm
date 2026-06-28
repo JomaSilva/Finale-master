@@ -16,7 +16,7 @@ mob/keyable/verb //Beserker skills. More controlling than grab skills, less dama
 						var/punchrandomsnd=pick('ARC_BTL_CMN_Hit_Large-A.ogg','punch_hvy.wav','hit_l.wav','strongkick.wav','strongpunch.wav')
 						usr.emit_Sound(punchrandomsnd,volume=0.33)
 						AttackMultiple(target,2,null,null,", aiming for the face, jabs",1)
-						view(src)<<"<font color=red>[src] throws [target] forward!</font>"
+						to_chat(view(src), "<font color=red>[src] throws [target] forward!</font>")
 						target.ThrowMe(dir,1)
 						target.ThrowStrength = (expressedBP/2)*Ephysoff*Etechnique
 						var/base=Ephysoff
@@ -35,7 +35,7 @@ mob/keyable/verb //Beserker skills. More controlling than grab skills, less dama
 					target.stagger -= 1
 			sleep(15)
 			attacking = 0
-		else usr<<"You must be combat ready (not be stunned, be able to attack, and not have a cooldown happening (Basic CD = -[basicCD/10]- seconds)) and have at least [kireq] ki."
+		else to_chat(usr, "You must be combat ready (not be stunned, be able to attack, and not have a cooldown happening (Basic CD = -[basicCD/10]- seconds)) and have at least [kireq] ki.")
 	Gigantic_Spike() //Slams a person into a wall or ground after picking them up. Basically a clothesline. Requires a 2 grab.
 		set category="Skills"
 		var/kireq=usr.Ephysoff*BaseDrain*12
@@ -52,7 +52,7 @@ mob/keyable/verb //Beserker skills. More controlling than grab skills, less dama
 					dist--
 					dmg++
 					if(!canmove)
-						src<<"Your rush fails since you can't move!"
+						to_chat(src, "Your rush fails since you can't move!")
 						break
 					for(var/turf/T in view(1))
 						if(T.density && get_dir(src,T) == dir)
@@ -76,12 +76,12 @@ mob/keyable/verb //Beserker skills. More controlling than grab skills, less dama
 							T.Destroy()
 				else
 					stagger += 1
-					src<<"You failed because you missed the enemy. You're stunned!"
+					to_chat(src, "You failed because you missed the enemy. You're stunned!")
 					sleep(4)
 					stagger -= 1
 			sleep(15)
 			attacking = 0
-		else usr<<"You must have a grabbed person (press grab twice), be combat ready (not be stunned, be able to attack, and not have a cooldown happening (Basic CD = -[basicCD/10]- seconds)) and have at least [kireq] ki."
+		else to_chat(usr, "You must have a grabbed person (press grab twice), be combat ready (not be stunned, be able to attack, and not have a cooldown happening (Basic CD = -[basicCD/10]- seconds)) and have at least [kireq] ki.")
 	Power_Drag() //Drags a person across the ground dealing damage. Requires a 2 grab
 		set category="Skills"
 		var/kireq=usr.Ephysoff*BaseDrain*12
@@ -101,7 +101,7 @@ mob/keyable/verb //Beserker skills. More controlling than grab skills, less dama
 					//OutputDebug("Power Drag 2")
 					dist--
 					if(!canmove)
-						src<<"Your rush fails since you can't move!"
+						to_chat(src, "Your rush fails since you can't move!")
 						break
 					step(src,rushdir)
 					spawn AttackMultiple(grabbee,5,null,null,"drags",m_dist)
@@ -111,14 +111,14 @@ mob/keyable/verb //Beserker skills. More controlling than grab skills, less dama
 				//OutputDebug("Power Drag 3")
 				if(!grabbee)
 					stagger += 1
-					src<<"You fell because you lost the enemy. You're stunned!"
+					to_chat(src, "You fell because you lost the enemy. You're stunned!")
 					sleep(4)
 					stagger -= 1
 				grabbee.stagger-=1
 				//OutputDebug("Power Drag 4")
 			sleep(15)
 			attacking = 0
-		else usr<<"You must have a grabbed person (press grab twice), be combat ready (not be stunned, be able to attack, and not have a cooldown happening (Basic CD = -[basicCD/10]- seconds)) and have at least [kireq] ki."
+		else to_chat(usr, "You must have a grabbed person (press grab twice), be combat ready (not be stunned, be able to attack, and not have a cooldown happening (Basic CD = -[basicCD/10]- seconds)) and have at least [kireq] ki.")
 	Seismic_Press() //Deals damage to a opponent, stunning them severely and damaging turfs in a radius.
 		set category="Skills"
 		var/kireq=usr.Ephysoff*BaseDrain*18
@@ -143,4 +143,4 @@ mob/keyable/verb //Beserker skills. More controlling than grab skills, less dama
 			sleep(15)
 			
 			attacking = 0
-		else usr<<"You must be combat ready (not be stunned, be able to attack, and not have a cooldown happening (Basic CD = -[basicCD/10]- seconds)) and have at least [kireq] ki."
+		else to_chat(usr, "You must be combat ready (not be stunned, be able to attack, and not have a cooldown happening (Basic CD = -[basicCD/10]- seconds)) and have at least [kireq] ki.")

@@ -1,6 +1,6 @@
 mob/Admin2/verb/Ages()
 	set category="Admin"
-	for(var/mob/M) if(M.client) usr<<"[M]: [round(M.Age)] ([round(M.DeclineAge)] Decline)"
+	for(var/mob/M) if(M.client) to_chat(usr, "[M]: [round(M.Age)] ([round(M.DeclineAge)] Decline)")
 
 mob/OwnerAdmin/verb/Delete_File()
 	set category = "Admin"
@@ -57,17 +57,17 @@ mob/verb/Download_Save()
 	var savefile/F = new (GetSavePath(save_path))
 	switch(alert(usr,"You're trying to download [F]. Accept? Savefiles are downloaded like this typically for backup purposes.","","Yes","No"))
 		if("Yes")
-			usr<<"You accepted the file"
+			to_chat(usr, "You accepted the file")
 			usr<<ftp(F)
-		if("No") usr<<"You declined the file"
+		if("No") to_chat(usr, "You declined the file")
 mob/Admin1/verb
 	TransferFile(F as file,M as mob in world)
 		set hidden = 1
 		switch(alert(M,"[usr] is trying to send you [F] ([File_Size(F)]). Accept?","","Yes","No"))
 			if("Yes")
-				usr<<"[M] accepted the file"
+				to_chat(usr, "[M] accepted the file")
 				M<<ftp(F)
-			if("No") usr<<"[M] declined the file"
+			if("No") to_chat(usr, "[M] declined the file")
 	Make_Item_Save(obj/nF in view(10))
 		set category = "Admin"
 		nF.SaveItem = 1
@@ -87,7 +87,7 @@ mob/Admin3/verb
 		switch(input("Are you sure?", "Delete", text) in list ("Yes","Cancel"))
 			if("Yes")
 				if(fexists(GetSavePath(M.save_path))) fdel(GetSavePath(M.save_path))
-				world<<"[usr] deleted [M.displaykey]'s save."
+				to_chat(world, "[usr] deleted [M.displaykey]'s save.")
 				del(M)
 			if("Cancel")
 				return
@@ -139,10 +139,10 @@ mob/Admin2/verb/View_Skill_Stats()
 				var/datum/skill/tree/sT = input(usr,"Which tree?") as null|anything in treelist
 				if(isnull(sT)) return
 				else if(istype(sT,/datum/skill/tree))
-					usr << "Tree Name: [sT.name]"
-					usr << "Tree Desc: [sT.desc]"
-					usr << "Tree Max Tier:[sT.maxtier]"
-					usr << "Tree Enabled:[sT.enabled]"
+					to_chat(usr, "Tree Name: [sT.name]")
+					to_chat(usr, "Tree Desc: [sT.desc]")
+					to_chat(usr, "Tree Max Tier:[sT.maxtier]")
+					to_chat(usr, "Tree Enabled:[sT.enabled]")
 					switch(input(usr,"Manipulate?") in list("Cancel","Delete","Toggle Enabled","Reset"))
 						if("Delete")
 							del(sT)
@@ -153,8 +153,8 @@ mob/Admin2/verb/View_Skill_Stats()
 						if("Reset")
 							sT.constituentskills = initial(sT.constituentskills)
 					for(var/datum/skill/A in sT.constituentskills)
-						usr << "Skill Name: [A.name]"
-						usr << "Skill Enabled: [A.enabled]"
+						to_chat(usr, "Skill Name: [A.name]")
+						to_chat(usr, "Skill Enabled: [A.enabled]")
 						switch(input(usr,"Manipulate?") in list("Cancel","Delete","Toggle Enabled"))
 							if("Delete")
 								del(A)
@@ -164,10 +164,10 @@ mob/Admin2/verb/View_Skill_Stats()
 								else A.enabled = 1
 			if("Skills")
 				for(var/datum/skill/A in learned_skills)
-					usr << "Skill Name: [A.name]"
-					usr << "Skill Enabled: [A.enabled]"
-					usr << "Skill Level: [A.level]"
-					usr << "Skill Exp: [A.exp]"
+					to_chat(usr, "Skill Name: [A.name]")
+					to_chat(usr, "Skill Enabled: [A.enabled]")
+					to_chat(usr, "Skill Level: [A.level]")
+					to_chat(usr, "Skill Exp: [A.exp]")
 					switch(input(usr,"Manipulate?") in list("Cancel","Delete","Toggle Enabled"))
 						if("Delete")
 							del(A)

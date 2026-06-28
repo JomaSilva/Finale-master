@@ -259,11 +259,11 @@ datum/skill/ki/Ki_Wave/login(var/mob/logger)
 	assignverb(/mob/keyable/verb/Ki_Wave)
 
 /datum/skill/ki/Ki_Wave/after_learn()
-	savant << "You feel like you can focus your ki into a beam."
+	to_chat(savant, "You feel like you can focus your ki into a beam.")
 	assignverb(/mob/keyable/verb/Ki_Wave)
 
 /datum/skill/ki/Ki_Wave/before_forget()
-	savant << "You lose focus."
+	to_chat(savant, "You lose focus.")
 	unassignverb(/mob/keyable/verb/Ki_Wave)
 
 
@@ -298,7 +298,7 @@ mob/keyable/verb/Ki_Wave()
 			bypass=1
 			spawn usr.addchargeoverlay()
 		return
-	else src << "You need at least [kireq] Ki!"
+	else to_chat(src, "You need at least [kireq] Ki!")
 
 mob/keyable/verb/Masenko()
 	set category = "Skills"
@@ -333,7 +333,7 @@ mob/keyable/verb/Masenko()
 			chargedelay = 2
 			spawn usr.addchargeoverlay()
 		return
-	else src << "You need at least [kireq] Ki!"
+	else to_chat(src, "You need at least [kireq] Ki!")
 
 mob/keyable/verb/Makkankosappo()
 	set category = "Skills"
@@ -368,7 +368,7 @@ mob/keyable/verb/Makkankosappo()
 			chargedelay = 6
 			spawn usr.addchargeoverlay()
 		return
-	else src << "You need at least [kireq] Ki!"
+	else to_chat(src, "You need at least [kireq] Ki!")
 
 mob/keyable/verb/Energy_Wave_Volley()
 	set category = "Skills"
@@ -402,7 +402,7 @@ mob/keyable/verb/Energy_Wave_Volley()
 			bypass=1
 			spawn usr.addchargeoverlay()
 		return
-	else src << "You need at least [kireq] Ki!"
+	else to_chat(src, "You need at least [kireq] Ki!")
 
 mob/keyable/verb/Massive_Beam()
 	set category = "Skills"
@@ -437,7 +437,7 @@ mob/keyable/verb/Massive_Beam()
 			chargedelay=5
 			spawn usr.addchargeoverlay()
 		return
-	else src << "You need at least [kireq] Ki!"
+	else to_chat(src, "You need at least [kireq] Ki!")
 
 mob/var/Dodompaicon='Dodompa.dmi'
 
@@ -460,12 +460,12 @@ datum/skill/ki/Boom_Wave/login(var/mob/logger)
 	assignverb(/mob/keyable/verb/Boom_Wave)
 
 /datum/skill/ki/Boom_Wave/after_learn()
-	savant << "You think you're ready to attempt to use a Boom Wave."
+	to_chat(savant, "You think you're ready to attempt to use a Boom Wave.")
 	savant.kiskill+=0.05
 	assignverb(/mob/keyable/verb/Boom_Wave)
 
 /datum/skill/ki/Boom_Wave/before_forget()
-	savant << "You feel dull."
+	to_chat(savant, "You feel dull.")
 	savant.kiskill-=0.05
 	unassignverb(/mob/keyable/verb/Boom_Wave)
 
@@ -495,4 +495,4 @@ mob/keyable/verb/Boom_Wave()
 			charging=1
 			spawn usr.addchargeoverlay()
 		return
-	else src << "You need at least [kireq] Ki!"
+	else to_chat(src, "You need at least [kireq] Ki!")

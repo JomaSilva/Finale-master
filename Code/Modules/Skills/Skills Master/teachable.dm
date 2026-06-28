@@ -47,8 +47,8 @@ mob/proc/Study(var/datum/skill/S, var/mob/Teacher)
 		if(skillpoints>=teachingcost)
 			var/Choice=input("Do you want to learn [S.name]? It costs [teachingcost] and you have [src.skillpoints]. Learning won't remove Milestones, however.\n[S.desc]") in Options
 			if(Choice=="Yes")
-				Teacher << "[src] learned [S.name]!"
-				src << "You learned [S.name]!"
+				to_chat(Teacher, "[src] learned [S.name]!")
+				to_chat(src, "You learned [S.name]!")
 				var/datum/skill/nS = new S.type
 				nS.teacher=FALSE
 				nS.wastaught=TRUE
@@ -56,16 +56,16 @@ mob/proc/Study(var/datum/skill/S, var/mob/Teacher)
 				nS.afterTeach(Teacher)
 				return TRUE
 			if(Choice=="No")
-				Teacher << "[src] chose not to learn [S.name]."
-				src << "You chose not to learn [S.name]."
+				to_chat(Teacher, "[src] chose not to learn [S.name].")
+				to_chat(src, "You chose not to learn [S.name].")
 				return FALSE //returns true/false depending on success
 		else
-			src << "You do not have enough points for [S.name]."
-			Teacher << "[src] did not have enough points for [S.name]."
+			to_chat(src, "You do not have enough points for [S.name].")
+			to_chat(Teacher, "[src] did not have enough points for [S.name].")
 			return FALSE
 	else
-		src << "You cannot learn [S.name]."
-		Teacher << "[src] cannot learn [S.name]."
+		to_chat(src, "You cannot learn [S.name].")
+		to_chat(Teacher, "[src] cannot learn [S.name].")
 		return FALSE
 
 mob/proc/SStudy(var/datum/skill/S, var/mob/Teacher)
@@ -80,7 +80,7 @@ mob/proc/SStudy(var/datum/skill/S, var/mob/Teacher)
 		if(skillpoints>=teachingcost)
 			var/Choice=input("Do you want to learn [S.name]? It costs [teachingcost] and you have [src.skillpoints]. Learning won't remove Milestones, however.\n[S.desc]") in Options
 			if(Choice=="Yes")
-				view(src) << "[src] learned [S.name]!"
+				to_chat(view(src), "[src] learned [S.name]!")
 				var/datum/skill/nS = new S.type
 				nS.teacher=FALSE
 				nS.wastaught=TRUE
@@ -88,11 +88,11 @@ mob/proc/SStudy(var/datum/skill/S, var/mob/Teacher)
 				nS.afterTeach(Teacher)
 				return TRUE
 			if(Choice=="No")
-				src << "You chose not to learn [S.name]!"
+				to_chat(src, "You chose not to learn [S.name]!")
 				return FALSE //returns true/false depending on success
 		else
-			view(src) << "[src] do not have enough points for [S.name]!"
+			to_chat(view(src), "[src] do not have enough points for [S.name]!")
 			return FALSE
 	else
-		view(src) << "[src] cannot learn [S.name]!"
+		to_chat(view(src), "[src] cannot learn [S.name]!")
 		return FALSE

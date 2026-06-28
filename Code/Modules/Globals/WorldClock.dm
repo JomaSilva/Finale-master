@@ -21,7 +21,7 @@ proc/WorldClock()
 				Years()
 			else
 				Calculate_Day()
-				world<<"It is now [listedDay], [listedMonth] the [Days][listedDaysuffix]"
+				to_chat(world, "It is now [listedDay], [listedMonth] the [Days][listedDaysuffix]")
 		sleep(max(10,(100/max(Yearspeed,1))))
 
 proc/Calculate_Day()

@@ -202,8 +202,8 @@ mob/proc/hitProc(var/mob/M,dmg,var/iscrit,var/customFlavor,var/forcehit,type)
 	switch(hit)
 		if(3)//crit
 			dmg*=((rand(15,30) + Etechnique)/10)
-			src<<"You critically hit [M]!"
-			M<<"[src] critically hits you!"
+			to_chat(src, "You critically hit [M]!")
+			to_chat(M, "[src] critically hits you!")
 			Fight()
 			createShockwavemisc(loc,2)
 			GenerateAttackFlavorText("Attack",M,customFlavor)
@@ -219,7 +219,7 @@ mob/proc/hitProc(var/mob/M,dmg,var/iscrit,var/customFlavor,var/forcehit,type)
 			if(M.buildStun >= 30 + M.Etechnique * 2)
 				M.buildStun = 0
 				M.stunCount = 100 * type
-				M << "[src] stunned you!"
+				to_chat(M, "[src] stunned you!")
 		if(2)//hit
 			Fight()
 			GenerateAttackFlavorText("Attack",M,customFlavor)
@@ -239,7 +239,7 @@ mob/proc/hitProc(var/mob/M,dmg,var/iscrit,var/customFlavor,var/forcehit,type)
 			if(M.buildStun >= 30 + M.Etechnique * 2)
 				M.buildStun = 0
 				M.stunCount = min(30 * type,30)
-				M << "[src] stunned you!"
+				to_chat(M, "[src] stunned you!")
 		if(1)//counter
 			Fight()
 			M.GenerateAttackFlavorText("Counter",src)
@@ -253,7 +253,7 @@ mob/proc/hitProc(var/mob/M,dmg,var/iscrit,var/customFlavor,var/forcehit,type)
 			M.stagger = 0
 			combo_count = 0
 			stunCount = min(60 * type,50)
-			src << "[M] stunned you!"
+			to_chat(src, "[M] stunned you!")
 		if(0)//dodge
 			if(M.blocking)
 				M.GenerateAttackFlavorText("Dodge",src,"blocks")
@@ -293,7 +293,7 @@ mob/proc/hitProc(var/mob/M,dmg,var/iscrit,var/customFlavor,var/forcehit,type)
 
 	if(hit>=2&&M.dir==dir&&murderToggle&&M.Tail)
 		if(M.hpratio<0.6&&dmg>5)
-			view(M)<<"[usr] punches [M]'s tail off!"
-			M<<"[usr] punches your tail off!"
+			to_chat(view(M), "[usr] punches [M]'s tail off!")
+			to_chat(M, "[usr] punches your tail off!")
 			M.Lop_Tail()
 	return hit

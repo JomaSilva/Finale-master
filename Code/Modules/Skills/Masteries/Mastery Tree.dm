@@ -18,7 +18,7 @@ proc/Init_Masteries()//this populates the global mastery list will all "real" ma
 mob/Admin3/verb/Reinitialize_Masteries()
 	set category = "Admin"
 	mupdate++
-	usr<<"Masteries will now update."
+	to_chat(usr, "Masteries will now update.")
 	for(var/mob/M in player_list)
 		M.Check_Masteries()
 
@@ -224,14 +224,14 @@ obj/masterychoice
 		set waitfor = 0
 		if(!Choice) return//exception handling, this should never end up null
 		if(Choice.learned)
-			usr<<"You already know this mastery!"
+			to_chat(usr, "You already know this mastery!")
 		else if(!Choice.learned&&Choice.available&&(usr.insights>=1||Choice.nocost))
-			usr<<"You learn [Choice.name]!"
+			to_chat(usr, "You learn [Choice.name]!")
 			Choice.acquire(usr)
 		else if(!Choice.learned&&!Choice.available)
-			usr<<"You don't know how to learn this mastery!"
+			to_chat(usr, "You don't know how to learn this mastery!")
 		else
-			usr<<"You lack the insight to learn this!"
+			to_chat(usr, "You lack the insight to learn this!")
 		usr.updateMastery = 1
 		usr.CloseMasteryChoiceWindow()//causes a infinite cross reference loop otherwise
 		spawn del(src)
@@ -242,23 +242,23 @@ obj/masterychoice
 		set waitfor = 0
 		if(!Choice) return
 		if(Choice.locked)
-			usr<<"This skill is currently locked, preventing EXP gain."
+			to_chat(usr, "This skill is currently locked, preventing EXP gain.")
 			return
 		if(Choice.level>=Choice.maxlvl)
-			usr<<"This skill is already at maximum level."
+			to_chat(usr, "This skill is already at maximum level.")
 			return
 		if(Choice.learned&&Choice.battle)
 			var/gain = input(usr,"How much Global EXP would you like to add? You currently have [usr.gexp] available.","",null) as num
 			if(!gain||gain<0)
 				return
 			if(gain>usr.gexp)
-				usr<<"You can't add more EXP than you have available!"
+				to_chat(usr, "You can't add more EXP than you have available!")
 				return
 			if(gain>0)
 				if(Choice.exp+gain<=Choice.nxtlvl)
 					Choice.expgain(gain,1)
 					usr.gexp-=gain
-					usr<<"You add [gain] exp to [Choice.name]!"
+					to_chat(usr, "You add [gain] exp to [Choice.name]!")
 				else
 					while(gain>0&&Choice.level<Choice.maxlvl)
 						var/diff = Choice.nxtlvl - Choice.exp
@@ -271,9 +271,9 @@ obj/masterychoice
 							usr.gexp-=gain
 							gain = 0
 						sleep(1)
-					usr<<"You add [gain] exp to [Choice.name]!"
+					to_chat(usr, "You add [gain] exp to [Choice.name]!")
 		else
-			usr<<"You cannot apply Global EXP to this skill."
+			to_chat(usr, "You cannot apply Global EXP to this skill.")
 		usr.updateMastery = 1
 		usr.CloseMasteryChoiceWindow()//causes a infinite cross reference loop otherwise
 		spawn del(src)
@@ -284,13 +284,13 @@ obj/masterychoice
 		set waitfor = 0
 		if(!Choice) return
 		if(!Choice.learned)
-			usr<<"You don't know this mastery!"
+			to_chat(usr, "You don't know this mastery!")
 			return
 		else if(Choice.learned&&Choice.locked)
-			usr<<"You unlock [Choice.name], enabling EXP gain."
+			to_chat(usr, "You unlock [Choice.name], enabling EXP gain.")
 			Choice.locked=0
 		else if(Choice.learned&&!Choice.locked)
-			usr<<"You lock [Choice.name], disabling EXP gain."
+			to_chat(usr, "You lock [Choice.name], disabling EXP gain.")
 			Choice.locked=1
 		usr.updateMastery = 1
 		usr.CloseMasteryChoiceWindow()//causes a infinite cross reference loop otherwise

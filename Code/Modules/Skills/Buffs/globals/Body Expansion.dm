@@ -21,10 +21,10 @@ obj/buff/Expand
 	Buff()
 		..()
 		container.depandicon=container.icon
-		if(container.expandlevel==1)container<<"You expand your muscles to the 1st degree!"
+		if(container.expandlevel==1)to_chat(container, "You expand your muscles to the 1st degree!")
 		else if(container.expandlevel==2)container<<"You expand your muscles to the 2nd degree!"
 		else if(container.expandlevel==3)container<<"You expand your muscles to the 3rd degree!"
-		else container<<"You expand your muscles to the [container.expandlevel]th degree!"
+		else to_chat(container, "You expand your muscles to the [container.expandlevel]th degree!")
 	Loop()
 		var/doescost=rand(1,3)
 		if(doescost==3)container.Ki-=(container.expandlevel/container.Etechnique)
@@ -32,7 +32,7 @@ obj/buff/Expand
 			container.stopbuff(/obj/buff/Expand)
 			return
 		if(!container.HellStar&&container.expandlevel==4)
-			container<<"Without the Hellstar you lose concentration, slipping back to the 3rd Degree."
+			to_chat(container, "Without the Hellstar you lose concentration, slipping back to the 3rd Degree.")
 			container.expandlevel=3
 		if(container.expandlevel!=lastlevel)
 			container.expandBuff = 1
@@ -103,11 +103,11 @@ obj/buff/Expand
 	skillcost = 2
 	enabled = 1
 /datum/skill/expand/after_learn()
-	savant<<"You feel enlightened."
+	to_chat(savant, "You feel enlightened.")
 	savant.technique+=0.05
 	assignverb(/mob/keyable/verb/Expand_Body)
 /datum/skill/expand/before_forget()
-	savant<<"You feel lost."
+	to_chat(savant, "You feel lost.")
 	savant.technique-=0.05
 	unassignverb(/mob/keyable/verb/Expand_Body)
 /datum/skill/expand/login(var/mob/logger)
@@ -118,7 +118,7 @@ mob/var/tmp/doingexpand=0
 mob/keyable/verb/Expand_Body()
 	set category="Skills"
 	if(KiBladeOn)
-		src<<"You can't use this with Ki Blades!"
+		to_chat(src, "You can't use this with Ki Blades!")
 		return
 	var/kireq=(25/Ekiskill)+5
 	if(Ki>=kireq&&!doingexpand)
@@ -138,7 +138,7 @@ mob/keyable/verb/Expand_Body()
 		if(Choice=="0th Degree"&&isBuffed(/obj/buff/Expand))
 			expandlevel=0
 			stopbuff(/obj/buff/Expand)
-			src<<"You relax your body."
+			to_chat(src, "You relax your body.")
 			doingexpand=0
 			return
 		else if(Choice=="0th Degree")
@@ -158,7 +158,7 @@ mob/keyable/verb/Expand_Body()
 			expandlevel=4
 			kireq=(((35/Ekiskill)*4)+5)
 		if(!isBuffed(/obj/buff/Expand))
-			src<<"You begin to expand your body!"
+			to_chat(src, "You begin to expand your body!")
 			failedexp = startbuff(/obj/buff/Expand)
 		if(!failedexp) //on fail
 			expandlevel=0

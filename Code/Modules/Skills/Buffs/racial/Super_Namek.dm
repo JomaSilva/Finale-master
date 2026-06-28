@@ -32,7 +32,7 @@ obj/buff/snamek/Loop()
 				if(prob(20)) container.Ki-=container.snamekdrain*container.BaseDrain //ki takes a small hit regardless.
 				if(container.Ki<=container.MaxKi*container.snamekdrain)
 					container.Revert()
-					container<<"You are too tired to sustain your form."
+					to_chat(container, "You are too tired to sustain your form.")
 				container.stamina -= trans_drain*max(0.001,container.snamekdrain) //max statement ensures you won't be hitting exactly zero if drain changes mid drain.
 			else container.Revert()
 	if(lastForm!=container.snamek)

@@ -32,10 +32,10 @@
 
 /datum/skill/Telepathy/after_learn()
 	assignverb(/mob/keyable/verb/Telepathy)
-	savant<<"You can talk to minds!"
+	to_chat(savant, "You can talk to minds!")
 /datum/skill/Telepathy/before_forget()
 	unassignverb(/mob/keyable/verb/Telepathy)
-	savant<<"You've forgotten how to read minds!?"
+	to_chat(savant, "You've forgotten how to read minds!?")
 /datum/skill/Telepathy/login(var/mob/logger)
 	..()
 	assignverb(/mob/keyable/verb/Telepathy)
@@ -50,12 +50,12 @@
 	maxlevel = 1
 	tier = 1
 /datum/skill/focusX/after_learn()
-	savant<<"You feel much more focused."
+	to_chat(savant, "You feel much more focused.")
 	savant.kioffBuff+=0.1
 	savant.physoffBuff+=0.1
 	savant.kiskillBuff+=0.3
 /datum/skill/focusX/before_forget()
-	savant<<"You feel less focused."
+	to_chat(savant, "You feel less focused.")
 	savant.kioffBuff-=0.1
 	savant.physoffBuff-=0.1
 	savant.kiskillBuff-=0.3
@@ -69,11 +69,11 @@
 	maxlevel = 1
 	tier = 1
 /datum/skill/tactics/after_learn()
-	savant<<"You feel prepared."
+	to_chat(savant, "You feel prepared.")
 	savant.techniqueBuff+=0.3
 	savant.physdefBuff+=0.2
 /datum/skill/tactics/before_forget()
-	savant<<"You feel unprepared."
+	to_chat(savant, "You feel unprepared.")
 	savant.techniqueBuff-=0.3
 	savant.physdefBuff-=0.2
 
@@ -90,7 +90,7 @@
 
 /datum/skill/GivePower/after_learn()
 	savant.cangivepower=1
-	savant<<"You have the ability to temporarily transfer your health and energy to others to boost their power. (by clicking them)"
+	to_chat(savant, "You have the ability to temporarily transfer your health and energy to others to boost their power. (by clicking them)")
 /datum/skill/GivePower/before_forget()
 	savant.cangivepower=0
 	savant<<"You have forgone the ability to temporarily transfer your health and energy to others to boost their power."*/

@@ -7,7 +7,7 @@ mob/proc/statheran()
 		var/Choice = Class
 		if(Class=="None") //class is RANDOM (like the Saiyan class), not chosen; Omega only in the pool if the lucky roll above added it
 			Choice = pick(options)
-			src << "<font color=#cda434><b>You were born a [Choice]-class Heran.</b></font>"
+			to_chat(src, "<font color=#cda434><b>You were born a [Choice]-class Heran.</b></font>")
 		genome.this_class = Choice //was = Class, which stays "None" for a new Heran -> they never got their chosen class (wrong stats + the class hint fell through). Use the selection.
 
 

@@ -16,23 +16,23 @@ mob/verb/Add_to_Party(mob/M in player_list)
 				disapproved=1
 			if(!disapproved)
 				Party+=M.name
-				usr<<"You added [M.name] to your party"
+				to_chat(usr, "You added [M.name] to your party")
 			else
-				usr<<"[M.name] is already in your party, or you are [M.name]!"
-	else usr<<"You can only have 4 party members."
+				to_chat(usr, "[M.name] is already in your party, or you are [M.name]!")
+	else to_chat(usr, "You can only have 4 party members.")
 
 mob/verb/Remove_from_Party(M in Party)
 	set category="Other"
 	if(M)
 		Party-=M
-		usr<<"You removed [M] from your party"
+		to_chat(usr, "You removed [M] from your party")
 	else
-		usr<<"You have not made a party!"
+		to_chat(usr, "You have not made a party!")
 mob/verb/Toggle_Friendly_Fire()
 	set category ="Other"
 	if(usr.fftoggle==0)
 		usr.fftoggle=1
-		usr<<"You will now harm your party."
+		to_chat(usr, "You will now harm your party.")
 	else if(usr.fftoggle==1)
 		usr.fftoggle=0
-		usr<<"You will not harm your party."
+		to_chat(usr, "You will not harm your party.")

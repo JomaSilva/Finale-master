@@ -46,10 +46,10 @@ datum/skill/tree/Rank/Namek/growbranches()
 
 /datum/skill/rank/MakeDragonballs/after_learn()
 	assignverb(/mob/Rank/verb/Create_Dragon_Statue)
-	savant<<"You can make dragon statues!"
+	to_chat(savant, "You can make dragon statues!")
 /datum/skill/rank/MakeDragonballs/before_forget()
 	unassignverb(/mob/Rank/verb/Create_Dragon_Statue)
-	savant<<"You've forgotten how to make dragon statues!"
+	to_chat(savant, "You've forgotten how to make dragon statues!")
 /datum/skill/rank/MakeDragonballs/login(var/mob/logger)
 	..()
 	assignverb(/mob/Rank/verb/Create_Dragon_Statue)
@@ -79,10 +79,10 @@ mob/Rank/verb/Create_Dragon_Statue()
 
 /datum/skill/rank/Appoint_Elder/after_learn()
 	assignverb(/mob/Rank/verb/Appoint_Elder)
-	savant<<"You can appoint Elders!"
+	to_chat(savant, "You can appoint Elders!")
 /datum/skill/rank/Appoint_Elder/before_forget()
 	unassignverb(/mob/Rank/verb/Appoint_Elder)
-	savant<<"You've forgotten how to appoint Elders?"
+	to_chat(savant, "You've forgotten how to appoint Elders?")
 /datum/skill/rank/Appoint_Elder/login(var/mob/logger)
 	..()
 	assignverb(/mob/Rank/verb/Appoint_Elder)
@@ -103,4 +103,4 @@ mob/Rank/verb/Appoint_Elder(var/mob/M in view(1))
 						East_Elder=key
 				M.Rank="Namekian Elder"
 				M.getTree(new /datum/skill/tree/RankTree)
-			else usr<<"[M] has declined your offer."
+			else to_chat(usr, "[M] has declined your offer.")

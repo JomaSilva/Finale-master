@@ -323,11 +323,11 @@ obj/attack/blast
 						if(paralysis)
 							M.paralyzed=1
 							if(!M.paralysistime) M.paralysistime=min(max(5,(M.Ekidef*max(M.Etechnique,M.Ekiskill)*BPModulus(BP,M.expressedBP))),10)
-							M<<"<font color=Purple>You have been paralyzed! ([M.paralysistime] seconds)"
+							to_chat(M, "<font color=Purple>You have been paralyzed! ([M.paralysistime] seconds)")
 							if(paralysis==2&&!M.KO&&!M.hasForcefield)
 								if(M.HP<=15/(BP/((M.Ekidef*max(M.expressedBP,1)*max(M.Ekiskill,M.Etechnique))*10))||M.expressedBP<100&&M.Ekidef<3)
 									spawn M.KO()
-									view(M)<<"<font color=Purple>[M] has been stunned!"
+									to_chat(view(M), "<font color=Purple>[M] has been stunned!")
 						if(M.ResistCheck(dmg,"[element]")*BPModulus(BP,M.expressedBP) < 10)
 							explodeme = 1
 							stoopme = 1
@@ -340,14 +340,14 @@ obj/attack/blast
 						else if(prob(deflectchance)&&M.Ki>=5&&M.DRenabled)
 							M.kidefensecounter++
 							if((M.Race=="Android"&&proprietor!=M||M.Race=="Cyborg"&&proprietor!=M)&&!physdamage)
-								view(M)<<"[M] absorbs the blast!"
+								to_chat(view(M), "[M] absorbs the blast!")
 								M.Ki+=100
 								obj_list-=src
 								attack_list-=src
 								src.loc=null
 							else if(prob(20))
 								M.Ki-=5*M.BaseDrain
-								view(M)<<"[M] reflects the blast!"
+								to_chat(view(M), "[M] reflects the blast!")
 								density=1
 								if(!WaveAttack)
 									var/obj/attack/A = Copy_Blast()
@@ -375,7 +375,7 @@ obj/attack/blast
 							//			M.dir=Z.dir
 							else
 								M.Ki-=5*M.BaseDrain
-								view(M)<<"[M] deflects the blast!"
+								to_chat(view(M), "[M] deflects the blast!")
 								density=1
 								if(!WaveAttack)
 									var/obj/attack/A = Copy_Blast()
@@ -420,8 +420,8 @@ obj/attack/blast
 								if(kiinterfere)
 									spawn Interfere(M,dmg*BPModulus(BP,M.expressedBP))
 								if(prob(5)&& dmg>2 && M.Tail &&proprietor.murderToggle&&M.dir==dir)
-									view(M)<<"[proprietor] blasts [M]'s tail off!"
-									M<<"[proprietor] blasts your tail off!"
+									to_chat(view(M), "[proprietor] blasts [M]'s tail off!")
+									to_chat(M, "[proprietor] blasts your tail off!")
 									M.Lop_Tail()
 								if(WaveAttack)
 									if(maxdistance-distance<=2&&dmg*BPModulus(BP,M.expressedBP)>0.25&&!M.KB)//if the target is sufficiently strong, they should be able to walk through beams
@@ -436,11 +436,11 @@ obj/attack/blast
 									spawn Knockback(M,kbstr)
 								if(M.KO&&M.HP<=5)
 									if(M.Player)
-										if(!M.KO) M<<"You have been defeated by [proprietor]'s blast!"
+										if(!M.KO) to_chat(M, "You have been defeated by [proprietor]'s blast!")
 										if(!locate(/obj/Crater/destroyed) in range(3)) createCrater(loc,1)
 										if(murderToggle|piercer)
 											if(proprietor!=usr)
-												view(M)<<"[M] was killed by [proprietor]([ownkey])!"
+												to_chat(view(M), "[M] was killed by [proprietor]([ownkey])!")
 												if(M.DeathRegen)
 													M.buudead = BP/M.peakexBP
 												if(piercer) M.buudead=0
@@ -449,7 +449,7 @@ obj/attack/blast
 											else M.KO()
 										else M.KO()
 									if(M.monster)
-										view(M)<<"[M] was killed by [proprietor]([ownkey])!"
+										to_chat(view(M), "[M] was killed by [proprietor]([ownkey])!")
 										if(BP>=500) if(!locate(/obj/Crater/destroyed) in range(3)) createCrater(loc,1)
 										M.mobDeath()
 							if(piercer)
@@ -548,7 +548,7 @@ obj/attack/blast
 						if(M.HP<=5&&M.KO)
 							if(M.Player) M.KO()
 							else
-								view(M)<<"[M] was killed by [proprietor]([ownkey])!"
+								to_chat(view(M), "[M] was killed by [proprietor]([ownkey])!")
 								M.mobDeath()
 				var/sdir=rand(1,8)
 				if(sdir==1) walk(src,NORTH)

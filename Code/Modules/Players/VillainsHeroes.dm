@@ -51,11 +51,11 @@ mob/Admin2/verb/Set_Villain()
 	if(M.isVillain)
 		M.HVAlign = 2
 		if(M.HVAlignName == "Neutral" || !M.HVAlignName) M.HVAlignName = "Villain"
-		usr << "[M] is now a Villain."
-		M << "<font color=red><b>You have been designated a Villain. Dark powers such as Planet Destroy are now within your reach.</b></font>"
+		to_chat(usr, "[M] is now a Villain.")
+		to_chat(M, "<font color=red><b>You have been designated a Villain. Dark powers such as Planet Destroy are now within your reach.</b></font>")
 	else
-		usr << "[M] is no longer a Villain."
-		M << "<font color=yellow>Your Villain designation has been revoked.</font>"
+		to_chat(usr, "[M] is no longer a Villain.")
+		to_chat(M, "<font color=yellow>Your Villain designation has been revoked.</font>")
 		M.unassignverb(/mob/keyable/verb/Planet_Destroy) //strip the verb if they had it
 
 mob/proc
@@ -111,8 +111,8 @@ You can also choose to 'flag' people as HV, but not give them anything. Just put
 							M.BoostTargMultiple = round(M.BoostTargMultiple)
 							if(M.BoostTargMultiple >= 1) M.BoostTargMultiple = 1
 							else M.BoostTargMultiple = 0
-						usr << "The player can choose their own alignment freely, once every 12 hours."
-						M << "Your HV system has been updated!"
+						to_chat(usr, "The player can choose their own alignment freely, once every 12 hours.")
+						to_chat(M, "Your HV system has been updated!")
 			if("BP Flat")
 				var/mob/M = input(usr,"Choose a player. BP flat gives a set amount of BP as 'base' BP. Alternatively, you can make the added BP as expressed BP instead.") as null|mob in player_list
 				if(!isnull(M))
@@ -140,6 +140,6 @@ You can also choose to 'flag' people as HV, but not give them anything. Just put
 								if(M.HVBPExpAdd <= 1) M.HVBPExpAdd = 1
 								M.HVBPExpAddEnd=input(usr,"When can this player gain again? This will trigger only when another player hits this number in raw BP.","",M.HVBPAddEnd) as num
 								if(M.HVBPExpAddEnd <= M.BP) M.HVBPExpAddEnd = BP + HVBPExpAdd * 0.01 / BPBoost
-					usr << "The player can choose their own alignment freely, once every 12 hours."
-					M << "Your HV system has been updated!"
+					to_chat(usr, "The player can choose their own alignment freely, once every 12 hours.")
+					to_chat(M, "Your HV system has been updated!")
 			if("Cancel") return

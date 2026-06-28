@@ -19,14 +19,14 @@
 	var/datum/style/StyleNameHere/attachedstyle //as a reminder: include this if you're getting errors.
 
 	after_learn()
-		savant<<"You feel more complex in both body and movement."
+		to_chat(savant, "You feel more complex in both body and movement.")
 		attachedstyle = new
 		savant.styleList.Add(attachedstyle)
 		savant.availableStyles += attachedstyle
 		attachedstyle.savant = savant
 
 	before_forget()
-		savant<<"You feel like something neccessary was removed from your form."
+		to_chat(savant, "You feel like something neccessary was removed from your form.")
 		savant.styleList.Cut(attachedstyle)
 		del(attachedstyle)
 

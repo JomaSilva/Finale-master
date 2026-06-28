@@ -111,7 +111,7 @@ mob/lobby/proc/deletecharacter(var/N)
 			if(fexists(GetSavePath(N)))
 				fdel(GetSavePath(N))
 				savefiles[N] = FALSE
-				client <<"Delete successful."
+				to_chat(client, "Delete successful.")
 				if(winexists(usr,"characterpane[usr]"))
 					winshow(src,"characterpane[usr]",0)
 					winset(usr,"characterpane[usr]","parent=none")
@@ -127,4 +127,4 @@ mob/lobby/proc/deletecharacter(var/N)
 					savefiles[3] = TRUE
 				else savefiles[3] = FALSE
 				return
-			client<<"Delete failed! Contact server admin for manual deletion! (Or the savefile doesn't exist anyway.)"
+			to_chat(client, "Delete failed! Contact server admin for manual deletion! (Or the savefile doesn't exist anyway.)")

@@ -78,14 +78,21 @@ proc/ui_qual_label(val, mean)
 // (area/Time-Chamber via Egains, stamina) times the dominant gain path: weights
 // (regular training) OR gravity-training (incl. the low-gravity accustom buff),
 // each normalized to a plain weight=1 / gravity=1 session.
+// Mirrors the ACTUAL passive Grav_Gain() loop: per tick you gain
+//   relBPmax*BPTick*TrainMod*Egains*GlobalGravGain*(effgrav/gravGainDiv).
+// We report that rate as a MULTIPLE of a 1x-gravity / neutral-area baseline
+// (effgrav=1, Egains=1): the relBPmax*BPTick*TrainMod*gravGainDiv terms all
+// cancel, leaving Egains*GlobalGravGain*effgrav. Gravity is LINEAR, so 10x
+// gravity reads ~10x. Worn weights (1-2x) multiply your training gain on top.
 mob/proc/bp_gain_mult()
-	var/env = max(Egains, 0) * max(StamBPGainMod, 0) * max(GainsRate, 0)
-	var/wpath = max(weight, 0) //regular training: weights (1-2x)
+	var/area = max(Egains, 0) * max(StamBPGainMod, 0) * max(GainsRate, 0) //region/HBTC/stamina/training boosts
 	var/grav = Planetgrav + gravmult
 	var/effgrav = grav
-	if(GravMastered > grav) effgrav += (GravMastered - grav) * gravAccustomWeight //accustomization buff in low gravity
-	var/gpath = GlobalGravGain * effgrav * 9 / max(gravGainDiv, 1) //gravity training, normalized to the weight=1 baseline
-	return round(env * max(wpath, gpath), 0.01)
+	if(GravMastered > grav) effgrav += (GravMastered - grav) * gravAccustomWeight //low-gravity acclimation buff
+	if(grav < 1) effgrav = 0 //true zero-g (space) trains nothing
+	var/gmult = area * max(GlobalGravGain, 0) * effgrav //passive gravity gain vs the 1x neutral baseline
+	var/wmult = (weight > 1) ? weight : 1 //weights multiply TRAINING gain (1-2x)
+	return round(max(gmult, 0.01) * wmult, 0.01)
 
 // ---- page assembly: tab bar + active tab -----------------------------------
 mob/proc/BuildStatsHTML()
@@ -120,7 +127,13 @@ mob/proc/ui_tab_stats()
 	else
 		h += ui_row("BATTLE POWER", "??? <span class='mut'>(no scouter)</span>", "")
 	var/gm = bp_gain_mult()
-	h += ui_row("BP GAIN", "[gm]x <span class='mut'>(weights &middot; area &middot; gravity)</span>", gm >= 1.5 ? "hi" : (gm < 0.9 ? "lo" : ""))
+	var/_grav = Planetgrav + gravmult
+	var/_eff = _grav
+	if(GravMastered > _grav) _eff += (GravMastered - _grav) * gravAccustomWeight
+	var/gtxt = "[_grav]x grav"
+	if(_eff > _grav) gtxt += " (+acclim &rarr; [round(_eff,0.1)])" //low-grav acclimation pushes the effective gravity up
+	if(weight > 1) gtxt += " &middot; [round(weight,0.01)]x weights"
+	h += ui_row("BP GAIN", "[gm]x <span class='mut'>([gtxt])</span>", gm >= 1.5 ? "hi" : (gm < 0.9 ? "lo" : ""))
 	h += ui_row("HEALTH", "[round(HP)]%", HP >= 66 ? "hi" : (HP <= 33 ? "lo" : "av"))
 	h += ui_row("ENERGY (KI)", "[FullNum(round(Ki))] / [FullNum(round(MaxKi))] <span class='mut'>[round((Ki / max(MaxKi,1)) * 100)]%</span>", "")
 	h += ui_row("STAMINA", "[round(staminapercent * 100)]%", "")

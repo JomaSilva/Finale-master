@@ -25,12 +25,12 @@ mob/keyable/verb/Solar_Flare()
 			if(A!=usr&&!usr.currentlyBlind)
 				if(A.dir==get_dir(A,usr)||A.dir==turn(get_dir(A,usr),-45)||A.dir==turn(get_dir(A,usr),45))
 					usr.kidebuffcounter+=4
-					A<<"You are blinded by [usr]'s Solar Flare!"
+					to_chat(A, "You are blinded by [usr]'s Solar Flare!")
 					A.blindT=max(round(0.4*kidebuffskill*max((Ekiskill/2),1),1),10)
 		sleep(reload)
 		usr.solarCD=0
-	else if(usr.Ki<=kireq) usr<<"This requires atleast [kireq] energy to use."
-	else if(solarCD) usr<<"This skill was set on cooldown for [solarCD/10] seconds."
+	else if(usr.Ki<=kireq) to_chat(usr, "This requires atleast [kireq] energy to use.")
+	else if(solarCD) to_chat(usr, "This skill was set on cooldown for [solarCD/10] seconds.")
 
 /datum/skill/ki/Afterimage
 	skilltype = "Ki"
@@ -60,15 +60,15 @@ datum/skill/ki/Afterimage/effector()
 	switch(level)
 		if(2)
 			if(levelup)
-				savant << "You can use Zanzoken Combo now! (use the skill to teleport behind a target and attack.)"
+				to_chat(savant, "You can use Zanzoken Combo now! (use the skill to teleport behind a target and attack.)")
 				assignverb(/mob/keyable/verb/Zanzoken_Combo)
 		if(3)
 			if(levelup)
-				savant << "You can use Zanzoken Dodge now! (use the skill to immediately teleport to a free tile around you.)"
+				to_chat(savant, "You can use Zanzoken Dodge now! (use the skill to immediately teleport to a free tile around you.)")
 				assignverb(/mob/keyable/verb/Zanzoken_Dodge)
 		if(4)
 			if(levelup)
-				savant << "You can use Zanzoken Afterimage now! (use the skill to start producing afterimages which may confuse the enemy.)"
+				to_chat(savant, "You can use Zanzoken Afterimage now! (use the skill to start producing afterimages which may confuse the enemy.)")
 				assignverb(/mob/keyable/verb/Zanzoken_Afterimage)
 	if(levelup) levelup = 0
 datum/skill/ki/Afterimage/login(var/mob/logger)
@@ -78,11 +78,11 @@ datum/skill/ki/Afterimage/login(var/mob/logger)
 	if(level>=3) assignverb(/mob/keyable/verb/Zanzoken_Dodge)
 	if(level>=4) assignverb(/mob/keyable/verb/Zanzoken_Afterimage)
 /datum/skill/ki/Afterimage/after_learn()
-	savant << "You feel swift. Try clicking a nearby tile."
+	to_chat(savant, "You feel swift. Try clicking a nearby tile.")
 	savant.haszanzo=1
 	assignverb(/mob/keyable/verb/Afterimage_Toggle)
 /datum/skill/ki/Afterimage/before_forget()
-	savant << "You feel sluggish."
+	to_chat(savant, "You feel sluggish.")
 	savant.haszanzo=0
 	unassignverb(/mob/keyable/verb/Afterimage_Toggle)
 	if(level>=2) unassignverb(/mob/keyable/verb/Zanzoken_Combo)
@@ -92,10 +92,10 @@ mob/keyable/verb/Afterimage_Toggle()
 	set category = "Skills"
 	if(usr.haszanzo==0)
 		usr.haszanzo=1
-		usr<<"You will now use your Afterimage technique (click to use)."
+		to_chat(usr, "You will now use your Afterimage technique (click to use).")
 	else
 		usr.haszanzo=0
-		usr<<"You will no longer use your Afterimage technique."
+		to_chat(usr, "You will no longer use your Afterimage technique.")
 mob/var
 	haszanzo=0
 	zanzorange=1
@@ -129,16 +129,16 @@ datum/skill/ki/Heal/effector(var/mob/logger)
 					M.SpreadHeal(0.2*savant.Ekiskill)
 					if(prob(1) && prob(1) && M.has_Tail()) if(!usr.Tail) usr.Tail_Grow()
 		else if(savant.Healtarget)
-			usr<<"You stop healing [savant.Healtarget]."
+			to_chat(usr, "You stop healing [savant.Healtarget].")
 			savant.Healtarget=null
 /datum/skill/ki/Heal/login()
 	..()
 	assignverb(/mob/keyable/verb/Heal)
 /datum/skill/ki/Heal/after_learn()
-	savant << "You think you might be able to heal others using your Ki."
+	to_chat(savant, "You think you might be able to heal others using your Ki.")
 	assignverb(/mob/keyable/verb/Heal)
 /datum/skill/ki/Heal/before_forget()
-	savant << "You lose your ability to heal others' wounds."
+	to_chat(savant, "You lose your ability to heal others' wounds.")
 	unassignverb(/mob/keyable/verb/Heal)
 	savant.haszanzo=0
 
@@ -151,11 +151,11 @@ datum/skill/ki/Heal/effector(var/mob/logger)
 		reload=15*Eactspeed
 		if(reload<30)reload=30
 		usr.Healtarget = usr.target
-		oview(usr)<<"[usr] begins to heal [usr.Healtarget]."
-		usr<<"You begin to heal [usr.Healtarget]."
+		to_chat(oview(usr), "[usr] begins to heal [usr.Healtarget].")
+		to_chat(usr, "You begin to heal [usr.Healtarget].")
 		sleep(reload)
-	else if(usr.Ki<=kireq) usr<<"This requires atleast [kireq] energy to use."
-	else if(healCD) usr<<"This skill was set on cooldown for [healCD/10] seconds."
+	else if(usr.Ki<=kireq) to_chat(usr, "This requires atleast [kireq] energy to use.")
+	else if(healCD) to_chat(usr, "This skill was set on cooldown for [healCD/10] seconds.")
 
 mob/var/tmp/sding=0
 mob/var/tmp/chargecounter=0
@@ -163,18 +163,18 @@ mob/var/tmp/chargecounter=0
 /mob/keyable/verb/Self_Destruct()
 	set category="Skills"
 	if(sdingtype==2)
-		usr<<"You can't use Final Explosion with this."
+		to_chat(usr, "You can't use Final Explosion with this.")
 		return
 	if(sding)
 		sding=0
 		sdingtype=0
 		usr.move=0
 		if(!grabbee)
-			range(20)<<"[usr] lost control of the situation."
+			to_chat(range(20), "[usr] lost control of the situation.")
 			usr.move=1
 			return
 		var/mob/Mz = grabbee
-		range(20)<<"[usr] is blowing the fuck up!"
+		to_chat(range(20), "[usr] is blowing the fuck up!")
 		usr.emit_Sound('buster_fire.wav')
 		for(var/turf/T in orange(4))
 			createLightningmisc(T,8)
@@ -190,9 +190,9 @@ mob/var/tmp/chargecounter=0
 					if(M.DeathRegen)
 						M.buudead=peakexBP/M.expressedBP
 					if(M.immortal)
-						view(M)<<"[M] is unable to die!"
+						to_chat(view(M), "[M] is unable to die!")
 					spawn M.Death()
-					view(M)<<"[M] was killed by [usr]!"
+					to_chat(view(M), "[M] was killed by [usr]!")
 		usr.SpreadDamage(power)
 		Ki=0
 		Mz.SpreadDamage(power)
@@ -200,15 +200,15 @@ mob/var/tmp/chargecounter=0
 			if(Mz.DeathRegen)
 				Mz.buudead=peakexBP/Mz.expressedBP
 			if(Mz.immortal)
-				view(Mz)<<"[Mz] is unable to die!"
+				to_chat(view(Mz), "[Mz] is unable to die!")
 			spawn
 				Mz.Death()
-			view(Mz)<<"[Mz] was killed by [usr]!"
+			to_chat(view(Mz), "[Mz] was killed by [usr]!")
 		if(chargecounter>20)
 			if(prob(75))
 				buudead=peakexBP/expressedBP
 				spawn usr.Death()
-				view(usr)<<"[usr] dies by [usr]'s Self Destruct!"
+				to_chat(view(usr), "[usr] dies by [usr]'s Self Destruct!")
 		Mz=0
 		usr.grabbee=null
 		usr.move=1
@@ -218,34 +218,34 @@ mob/var/tmp/chargecounter=0
 		chargecounter=0
 		return
 	if(!grabbee)
-		usr<<"You need to be grabbing someone!"
+		to_chat(usr, "You need to be grabbing someone!")
 		return
 	if(KO)
-		usr<<"You can't do this while knocked out!"
+		to_chat(usr, "You can't do this while knocked out!")
 		return
 	if(dead)
-		usr<<"Dead people can't use this!"
+		to_chat(usr, "Dead people can't use this!")
 	else
 		chargecounter=1
-		usr<<"You are now charging your self destruct!"
-		usr<<"Press Self Destruct again to detonate. The longer you charge, the stronger the blast."
+		to_chat(usr, "You are now charging your self destruct!")
+		to_chat(usr, "Press Self Destruct again to detonate. The longer you charge, the stronger the blast.")
 		sding=1
 		sdingtype=1
 		move=0
 		spawn(20) if(sding && sdingtype == 1)
 			if(grabbee)
-				range(20)<<"[usr] begins gathering all the energy around [usr] into [usr]'s body!"
+				to_chat(range(20), "[usr] begins gathering all the energy around [usr] into [usr]'s body!")
 			else
-				range(20)<<"[usr] lost control of the situation."
+				to_chat(range(20), "[usr] lost control of the situation.")
 				move=1
 				sding=0
 				sdingtype=0
 				return
 			spawn(40) if(sding && sdingtype == 1)
 				if(grabbee)
-					range(20)<<"The ground begins to shake fiercely around [usr]!"
+					to_chat(range(20), "The ground begins to shake fiercely around [usr]!")
 				else
-					range(20)<<"[usr] lost control of the situation."
+					to_chat(range(20), "[usr] lost control of the situation.")
 					move=1
 					sding=0
 					sdingtype=0
@@ -261,7 +261,7 @@ mob/var/tmp/chargecounter=0
 					sding=0
 					sdingtype=0
 					move=1
-					range(20)<<"[usr] lost control of the situation."
+					to_chat(range(20), "[usr] lost control of the situation.")
 					return
 				else
 					return
@@ -284,23 +284,23 @@ mob/var/tmp/sdingrange=0
 
 	after_learn()
 		assignverb(/mob/keyable/verb/Final_Explosion)
-		savant<<"You can now use Final Explosion!"
+		to_chat(savant, "You can now use Final Explosion!")
 	before_forget()
 		unassignverb(/mob/keyable/verb/Final_Explosion)
-		savant<<"You've forgotten how to use Final Explosion!?"
+		to_chat(savant, "You've forgotten how to use Final Explosion!?")
 
 
 /mob/keyable/verb/Final_Explosion()
 	set category="Skills"
 	if(sdingtype==1)
-		usr<<"You can't use Self Destruct with this."
+		to_chat(usr, "You can't use Self Destruct with this.")
 		return
 	if(sding)
 		sding=0
 		sdingtype=0
 		usr.move=1
 		grabbee = null
-		range(20)<<"[usr] is blowing the fuck up!"
+		to_chat(range(20), "[usr] is blowing the fuck up!")
 		usr.emit_Sound('buster_fire.wav')
 		new /obj/bigboom(loc)
 		var/power=((expressedBP*Ekioff)/(100/chargecounter))
@@ -310,14 +310,14 @@ mob/var/tmp/sdingrange=0
 				if(M.DeathRegen)
 					buudead=peakexBP/M.expressedBP
 				spawn M.Death()
-				view(M)<<"[M] was killed by [usr]!"
+				to_chat(view(M), "[M] was killed by [usr]!")
 		SpreadDamage(DamageCalc(power,expressedBP*Ekidef,10))
 		Ki= max((Ki - (sdingrange * (MaxKi / 25))),0)
 		if(chargecounter>10)
 			if(prob(70)||HP<=10||KO)
 				if(DeathRegen) buudead=peakexBP/expressedBP
 				spawn usr.Death()
-				view(usr)<<"[usr] dies by [usr]'s Final Explosion!"
+				to_chat(view(usr), "[usr] dies by [usr]'s Final Explosion!")
 		if(sdingrange>=25 && expressedBP >= 10000000)// > than 10m? blow the planet
 			var/area/currentarea=GetArea()
 			currentarea.DestroyPlanet(expressedBP)
@@ -336,17 +336,17 @@ mob/var/tmp/sdingrange=0
 				sdingrange=10
 			if("Maximum")
 				sdingrange=25
-		usr<<"You are now charging your self destruct!"
-		usr<<"Press Self Destruct again to detonate. The longer you charge, the stronger the blast."
+		to_chat(usr, "You are now charging your self destruct!")
+		to_chat(usr, "Press Self Destruct again to detonate. The longer you charge, the stronger the blast.")
 		sding=1
 		sdingtype=2
 		move=0
 		spawn(20)
-			range(20)<<"[usr] begins gathering all the energy around [usr] into [usr]'s body!"
+			to_chat(range(20), "[usr] begins gathering all the energy around [usr] into [usr]'s body!")
 			spawn(40)
-				range(20)<<"The ground begins to shake fiercely around [usr]!"
+				to_chat(range(20), "The ground begins to shake fiercely around [usr]!")
 				if(sdingrange>=25 && expressedBP >= 10000000)
-					range(20)<<"The energy surrounding [usr] could potentially blow the planet!!"
+					to_chat(range(20), "The energy surrounding [usr] could potentially blow the planet!!")
 		JINGO
 		spawn(25)
 			if(sding)

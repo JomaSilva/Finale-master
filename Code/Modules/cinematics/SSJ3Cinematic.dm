@@ -9,14 +9,14 @@ mob/proc/SSJ3Cinematic()
 		overlayList-='Elec.dmi'
 		overlaychanged=1
 		updateOverlay(/obj/overlay/hairs/hair)
-		view(8)<<"<font size=[TextSize]><[SayColor]>[src]: You're going to love this, trust me. What you're seeing now is my normal state."
+		to_chat(view(8), "<font size=[TextSize]><[SayColor]>[src]: You're going to love this, trust me. What you're seeing now is my normal state.")
 		sleep(60)
 		removeOverlay(/obj/overlay/hairs/hair)
 		updateOverlay(/obj/overlay/hairs/ssj/ssj1)
 		ssj=1
 		updateOverlay(/obj/overlay/auras/aura)
 		emit_Sound('chargeaura.wav')
-		view(8)<<"<font size=[TextSize]><[SayColor]>[src]: This is a Super Saiyan."
+		to_chat(view(8), "<font size=[TextSize]><[SayColor]>[src]: This is a Super Saiyan.")
 		emit_TransformMusic('ssj3theme.ogg', 1682) //SSJ3 theme (~2.8min): plays to everyone nearby + ducks listeners' battle music
 		sleep(50)
 		removeOverlay(/obj/overlay/hairs/ssj/ssj1)
@@ -25,9 +25,9 @@ mob/proc/SSJ3Cinematic()
 		overlayList+='Elec.dmi'
 		overlaychanged=1
 		emit_Sound('chargeaura.wav')
-		view(8)<<"<font size=[TextSize]><[SayColor]>[src]: And this... this is what as known as a Super Saiyan that has ascended past a Super Saiyan."
+		to_chat(view(8), "<font size=[TextSize]><[SayColor]>[src]: And this... this is what as known as a Super Saiyan that has ascended past a Super Saiyan.")
 		sleep(20)
-		view(8)<<"<font size=[TextSize]><[SayColor]>[src]: Or you can just call this a Super Saiyan 2."
+		to_chat(view(8), "<font size=[TextSize]><[SayColor]>[src]: Or you can just call this a Super Saiyan 2.")
 		sleep(50)
 		var/list/localmobs[3]
 		for(var/mob/M in view(src))
@@ -39,26 +39,26 @@ mob/proc/SSJ3Cinematic()
 				localmobs[3] = M
 		if(localmobs[1])
 			var/mob/M = localmobs[1]
-			view(8)<<"<font size=[M.TextSize]><[M.SayColor]>[M]: Has [src] really done it!? Has [src] really found a way to surpass an ascended Saiyan? Is that possible!?"
+			to_chat(view(8), "<font size=[M.TextSize]><[M.SayColor]>[M]: Has [src] really done it!? Has [src] really found a way to surpass an ascended Saiyan? Is that possible!?")
 		if(localmobs[2])
 			var/mob/M = localmobs[2]
-			view(8)<<"<font size=[M.TextSize]><[M.SayColor]>[M]: [src] must be bluffing. I mean, what would that make [src]? Double ascended?"
+			to_chat(view(8), "<font size=[M.TextSize]><[M.SayColor]>[M]: [src] must be bluffing. I mean, what would that make [src]? Double ascended?")
 		sleep(40)
-		view(8)<<"<font size=[src.TextSize]><[SayColor]>[src]: AND THIS..."
-		view(6)<<"<font color=yellow>*[src] leans inward and pumps their fists next to their sides!!*"
+		to_chat(view(8), "<font size=[src.TextSize]><[SayColor]>[src]: AND THIS...")
+		to_chat(view(6), "<font color=yellow>*[src] leans inward and pumps their fists next to their sides!!*")
 		if(localmobs[3])
 			var/mob/M = localmobs[3]
-			view(8)<<"<font size=[M.TextSize]><[M.SayColor]>[M]: What's [src] doing!?"
+			to_chat(view(8), "<font size=[M.TextSize]><[M.SayColor]>[M]: What's [src] doing!?")
 		sleep(50)
-		view(8)<<"<font size=[TextSize]><[SayColor]>[src]: IS TO GO..."
+		to_chat(view(8), "<font size=[TextSize]><[SayColor]>[src]: IS TO GO...")
 		sleep(20)
-		view(6)<<"<font size=[TextSize]><font color=yellow>*[src] leans foward!!*"
-		view(8)<<"<font size=[TextSize]><[SayColor]>[src]: EVEN FURTHER BEYOND"
+		to_chat(view(6), "<font size=[TextSize]><font color=yellow>*[src] leans foward!!*")
+		to_chat(view(8), "<font size=[TextSize]><[SayColor]>[src]: EVEN FURTHER BEYOND")
 		sleep(30)
 		removeOverlay(/obj/overlay/auras/aura)
-		view(6)<<"<font color=yellow>*A great wave of power emanates from [src] as a yellow aura bursts around them!*"
-		view(8)<<"<font size=[TextSize]><[SayColor]>[src]: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA!!!"
-		view(6)<<"<font color=yellow>*[src] screams as [src] releases a unbelievable amount of energy!*"
+		to_chat(view(6), "<font color=yellow>*A great wave of power emanates from [src] as a yellow aura bursts around them!*")
+		to_chat(view(8), "<font size=[TextSize]><[SayColor]>[src]: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA!!!")
+		to_chat(view(6), "<font color=yellow>*[src] screams as [src] releases a unbelievable amount of energy!*")
 		spawn for(var/mob/M in view(src))
 			M.Quake()
 		for(var/turf/T in view(24,src))
@@ -69,7 +69,7 @@ mob/proc/SSJ3Cinematic()
 		sleep(50)
 		Quake()
 		sleep(50)
-		view(8)<<"<font size=[TextSize]><[SayColor]>[src]: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA!!!"
+		to_chat(view(8), "<font size=[TextSize]><[SayColor]>[src]: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA!!!")
 		sleep(100)
 		spawn for(var/mob/M in player_list)
 			if(M.Planet == src.Planet)
@@ -82,7 +82,7 @@ mob/proc/SSJ3Cinematic()
 		I.plane = 7
 		overlayList+=I
 		overlaychanged=1
-		view(8)<<"<font size=[TextSize]><[SayColor]>[src]: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA!!!"
+		to_chat(view(8), "<font size=[TextSize]><[SayColor]>[src]: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA!!!")
 		sleep(100)
 		spawn for(var/mob/M in view(src))
 			M.Quake()
@@ -90,8 +90,8 @@ mob/proc/SSJ3Cinematic()
 		for(var/mob/M in player_list)
 			if(M.Planet == src.Planet)
 				M.Quake()
-		view(8)<<"<font color=yellow>*[src]'s voice grows very hoarse!*"
-		view(8)<<"<font size=[TextSize]><[SayColor]>[src]: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA!!!!"
+		to_chat(view(8), "<font color=yellow>*[src]'s voice grows very hoarse!*")
+		to_chat(view(8), "<font size=[TextSize]><[SayColor]>[src]: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA!!!!")
 		spawn SSj2GroundGrind()
 		sleep(130)
 		spawn for(var/mob/M in player_list)
@@ -104,8 +104,8 @@ mob/proc/SSJ3Cinematic()
 		overlayList-=I3
 		overlayList+=I3
 		overlaychanged=1
-		view(8)<<"<font size=[TextSize]><[SayColor]>[src]: AAAAAAAAAAAAAAAAAHHHHHHHHHHHHHHH!!!!"
-		view(6)<<"<font color=yellow>*[src] is shaking the entire planet!!!*"
+		to_chat(view(8), "<font size=[TextSize]><[SayColor]>[src]: AAAAAAAAAAAAAAAAAHHHHHHHHHHHHHHH!!!!")
+		to_chat(view(6), "<font color=yellow>*[src] is shaking the entire planet!!!*")
 		spawn for(var/mob/M in player_list)
 			if(M.Planet == src.Planet)
 				M.Quake()
@@ -114,8 +114,8 @@ mob/proc/SSJ3Cinematic()
 			if(M.Planet == src.Planet)
 				M.Quake()
 		sleep(140)
-		view(8)<<"<font size=[TextSize]><[SayColor]>[src]: AAAAAAAAAAAAAAAAAAHHHHHHHHHHHHHHHHHHHH!!!!"
-		view(6)<<"<font color=yellow>*[src] is causing earthquakes everywhere!!!*"
+		to_chat(view(8), "<font size=[TextSize]><[SayColor]>[src]: AAAAAAAAAAAAAAAAAAHHHHHHHHHHHHHHHHHHHH!!!!")
+		to_chat(view(6), "<font color=yellow>*[src] is causing earthquakes everywhere!!!*")
 		spawn for(var/mob/M in player_list)
 			if(M.Planet == src.Planet)
 				M.Quake()
@@ -124,8 +124,8 @@ mob/proc/SSJ3Cinematic()
 			if(M.Planet == src.Planet)
 				M.Quake()
 		sleep(100)
-		view(8)<<"<font size=[TextSize]><[SayColor]>[src]: AAAAAAAAAAAAAAAAAAAAAHHHHHHHHHHHHHHHHHHHHHHHH!!!!"
-		view(6)<<"<font color=yellow>*The ocean itself is curling away from [src]'s immense power!!!*"
+		to_chat(view(8), "<font size=[TextSize]><[SayColor]>[src]: AAAAAAAAAAAAAAAAAAAAAHHHHHHHHHHHHHHHHHHHHHHHH!!!!")
+		to_chat(view(6), "<font color=yellow>*The ocean itself is curling away from [src]'s immense power!!!*")
 		spawn for(var/mob/M in player_list)
 			if(M.Planet == src.Planet)
 				M.Quake()
@@ -140,11 +140,11 @@ mob/proc/SSJ3Cinematic()
 		move=0
 		//Flashy stuff
 		emit_TransformMusic('BF - Super Saiyan 3 Transformation.mp3', 568) //SSJ3 transformation theme (~57s)
-		view(8)<<"<font size=[TextSize]><[SayColor]>[src]: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA!!!"
+		to_chat(view(8), "<font size=[TextSize]><[SayColor]>[src]: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA!!!")
 		sleep(30)
-		view(6)<<"<font color=yellow>*A great wave of power emanates from [src] as a yellow aura bursts around them!*"
-		view(8)<<"<font size=[TextSize]><[SayColor]>[src]: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA!!!"
-		view(6)<<"<font color=yellow>*[src] screams as [src] releases a unbelievable amount of energy!*"
+		to_chat(view(6), "<font color=yellow>*A great wave of power emanates from [src] as a yellow aura bursts around them!*")
+		to_chat(view(8), "<font size=[TextSize]><[SayColor]>[src]: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA!!!")
+		to_chat(view(6), "<font color=yellow>*[src] screams as [src] releases a unbelievable amount of energy!*")
 		spawn for(var/mob/M in view(src))
 			M.Quake()
 		for(var/turf/T in view(24,src))
@@ -168,8 +168,8 @@ mob/proc/SSJ3Cinematic()
 		sleep(100)
 		spawn for(var/mob/M in view(src))
 			M.Quake()
-		view(6)<<"<font color=yellow>*[src]'s voice grows very hoarse!*"
-		view(8)<<"<font size=[TextSize]><[SayColor]>[src]: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA!!!!"
+		to_chat(view(6), "<font color=yellow>*[src]'s voice grows very hoarse!*")
+		to_chat(view(8), "<font size=[TextSize]><[SayColor]>[src]: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA!!!!")
 		spawn SSj2GroundGrind()
 		sleep(100)
 		spawn for(var/mob/M in view(src))
@@ -177,7 +177,7 @@ mob/proc/SSJ3Cinematic()
 		sleep(100)
 		spawn for(var/mob/M in view(src))
 			M.Quake()
-		view(8)<<"<font size=[TextSize]><[SayColor]>[src]: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA!!!"
+		to_chat(view(8), "<font size=[TextSize]><[SayColor]>[src]: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA!!!")
 		sleep(100)
 		spawn for(var/mob/M in view(src))
 			M.Quake()
@@ -193,20 +193,20 @@ mob/proc/SSJ3Cinematic()
 		overlayList-=I3
 		overlayList+=I3
 		overlaychanged=1
-		view(8)<<"<font size=[TextSize]><[SayColor]>[src]: AAAAAAAAAAAAAAAAAHHHHHHHHHHHHHHH!!!!"
-		view(6)<<"<font color=yellow>*[src] is shaking the entire planet!!!*"
+		to_chat(view(8), "<font size=[TextSize]><[SayColor]>[src]: AAAAAAAAAAAAAAAAAHHHHHHHHHHHHHHH!!!!")
+		to_chat(view(6), "<font color=yellow>*[src] is shaking the entire planet!!!*")
 		for(var/mob/M in player_list)
 			if(M.Planet == src.Planet)
 				M.Quake()
 		sleep(150)
-		view(8)<<"<font size=[TextSize]><[SayColor]>[src]: AAAAAAAAAAAAAAAAAAHHHHHHHHHHHHHHHHHHHH!!!!"
-		view(6)<<"<font color=yellow>*[src] is causing earthquakes everywhere!!!*"
+		to_chat(view(8), "<font size=[TextSize]><[SayColor]>[src]: AAAAAAAAAAAAAAAAAAHHHHHHHHHHHHHHHHHHHH!!!!")
+		to_chat(view(6), "<font color=yellow>*[src] is causing earthquakes everywhere!!!*")
 		for(var/mob/M in player_list)
 			if(M.Planet == src.Planet)
 				M.Quake()
 		sleep(150)
-		view(8)<<"<font size=[TextSize]><[SayColor]>[src]: AAAAAAAAAAAAAAAAAAAAAHHHHHHHHHHHHHHHHHHHHHHHH!!!!"
-		view(6)<<"<font color=yellow>*The ocean itself is curling away from [src]'s immense power!!!*"
+		to_chat(view(8), "<font size=[TextSize]><[SayColor]>[src]: AAAAAAAAAAAAAAAAAAAAAHHHHHHHHHHHHHHHHHHHHHHHH!!!!")
+		to_chat(view(6), "<font color=yellow>*The ocean itself is curling away from [src]'s immense power!!!*")
 		for(var/mob/M in player_list)
 			if(M.Planet == src.Planet)
 				M.Quake()

@@ -38,7 +38,7 @@ obj/DBVTitle
 		..()
 
 proc/SaveWorld()
-	world<<"<font color=red><b><font size=3>Saving and Processing all Files"
+	to_chat(world, "<font color=red><b><font size=3>Saving and Processing all Files")
 	SaveAdmins()
 	SaveYear()
 	Save_Gains()
@@ -50,7 +50,7 @@ proc/SaveWorld()
 	Save_Settings()
 	SaveMobs()
 	sleep(10)
-	world<<"<b><font color=yellow>Processing Complete."
+	to_chat(world, "<b><font color=yellow>Processing Complete.")
 
 var/tmp/worldloading=0
 
@@ -58,80 +58,80 @@ proc/Initialize()
 	set waitfor = 0
 	set background = 1
 	worldloading = 1
-	world<<"Initializing all files..."
+	to_chat(world, "Initializing all files...")
 	firstcleaner=1
 	generateTXT()
 	LoadYear()
 	sleep(1)
-	world<<"Loaded Years"
+	to_chat(world, "Loaded Years")
 	LoadAdmins()
 	sleep(1)
-	world<<"Loaded (b)Admins"
+	to_chat(world, "Loaded (b)Admins")
 	Load_Ban()
 	sleep(1)
-	world<<"Loaded Idio- I mean Bans"
+	to_chat(world, "Loaded Idio- I mean Bans")
 	Load_Illegal()
 	sleep(1)
-	world<<"Loaded Illegals"
+	to_chat(world, "Loaded Illegals")
 	Load_Gains()
 	sleep(1)
-	world<<"Loaded Muh Gains"
+	to_chat(world, "Loaded Muh Gains")
 	LoadStory()
 	sleep(1)
-	world<<"Loaded Lol Story"
+	to_chat(world, "Loaded Lol Story")
 	LoadRules()
 	sleep(1)
-	world<<"Loaded Admin Excuses"
+	to_chat(world, "Loaded Admin Excuses")
 	Load_Rank()
 	sleep(1)
-	world<<"Loaded Skill Hoarders"
+	to_chat(world, "Loaded Skill Hoarders")
 	Init_Masteries()
 	sleep(1)
-	world<<"Loaded Masteries"
+	to_chat(world, "Loaded Masteries")
 	LoadIntro()
 	sleep(1)
-	world<<"Loaded The Introduction"
+	to_chat(world, "Loaded The Introduction")
 	Load_Settings()
 	sleep(1)
-	world<<"Loaded the optimized settings for maxmimum gaming potential"
+	to_chat(world, "Loaded the optimized settings for maxmimum gaming potential")
 	Init_Genome()
 	sleep(1)
-	world<<"Initialized Genomes"
+	to_chat(world, "Initialized Genomes")
 	LoadItems()
 	Init_Alchemy()
 	sleep(1)
-	world<<"YOU CANNOT HANDLE MY POTIONS. Potions loaded."
+	to_chat(world, "YOU CANNOT HANDLE MY POTIONS. Potions loaded.")
 	Init_Recipes()
 	sleep(1)
-	world<<"It's a piece of cake to bake a pretty cake, WHAT, (If the way is hazy!) Recipes loaded."
+	to_chat(world, "It's a piece of cake to bake a pretty cake, WHAT, (If the way is hazy!) Recipes loaded.")
 	MapLoad()
 	sleep(1)
-	world<<"Nah Final Destination was cool. Map loaded."
+	to_chat(world, "Nah Final Destination was cool. Map loaded.")
 	AreaLoad()
 	sleep(1)
-	world<<"Loading ATMOSPHERE"
+	to_chat(world, "Loading ATMOSPHERE")
 	Build_Vegeta_Structures()
 	sleep(1)
-	world<<"The cities of Vegeta rise from the red soil."
+	to_chat(world, "The cities of Vegeta rise from the red soil.")
 	LoadMobs()
 	sleep(1)
 	Cleaner()
 	sleep(1)
-	world<<"Cleaning lady on board."
+	to_chat(world, "Cleaning lady on board.")
 	WorldTime()
 	sleep(1)
-	world<<"I just put the 'Morning' in Morning-Wood. World Timer loaded."
+	to_chat(world, "I just put the 'Morning' in Morning-Wood. World Timer loaded.")
 	spawn(10)
 		WorldClock()
 		WorldSubClocks()
 	spawn World_Ticker()
-	world<<"Time to charge the clock, you cock."
+	to_chat(world, "Time to charge the clock, you cock.")
 	spawn(10) Years()
-	world<<"Old... age... kicking... in..."
+	to_chat(world, "Old... age... kicking... in...")
 	spawn(10) Dungeon_Timer()
-	world<<"Dungeons rolling up!"
+	to_chat(world, "Dungeons rolling up!")
 	spawn Restart_Handler()
-	world<<"All files loaded."
+	to_chat(world, "All files loaded.")
 	spawn jokecheck()
 	worldloading = 0
 	spawn generate_spells()
@@ -177,20 +177,20 @@ proc/jokecheck()
 	var/daycheck = time2text(world.realtime,"DD")
 	if(monthcheck == "04" && daycheck == "01")
 		aprilfoolson = 1
-		world << "<font color=red size=3>SELF DESTRUCT SEQUENCE INITIATED"
+		to_chat(world, "<font color=red size=3>SELF DESTRUCT SEQUENCE INITIATED")
 		sleep(10)
-		world << "<font color=red size=3>TIME TO DESTRUCTION: 5"
+		to_chat(world, "<font color=red size=3>TIME TO DESTRUCTION: 5")
 		sleep(10)
-		world << "<font color=red size=3>TIME TO DESTRUCTION: 4"
+		to_chat(world, "<font color=red size=3>TIME TO DESTRUCTION: 4")
 		sleep(10)
-		world << "<font color=red size=3>TIME TO DESTRUCTION: 3"
+		to_chat(world, "<font color=red size=3>TIME TO DESTRUCTION: 3")
 		sleep(10)
-		world << "<font color=red size=3>TIME TO DESTRUCTION: 2"
+		to_chat(world, "<font color=red size=3>TIME TO DESTRUCTION: 2")
 		sleep(10)
-		world << "<font color=red size=3>TIME TO DESTRUCTION: 1"
+		to_chat(world, "<font color=red size=3>TIME TO DESTRUCTION: 1")
 		sleep(10)
-		world << "<font color=white size=3>Shaggy:</font><font color=purple size=4> Hakai.</font>"
+		to_chat(world, "<font color=white size=3>Shaggy:</font><font color=purple size=4> Hakai.</font>")
 		sleep(15)
-		world << "..."
+		to_chat(world, "...")
 		sleep(30)
-		world << "APRIL FOOLS! Super Saiyan 5 is available for saiyans today only. For the Admin's sake, don't abuse this please."
+		to_chat(world, "APRIL FOOLS! Super Saiyan 5 is available for saiyans today only. For the Admin's sake, don't abuse this please.")

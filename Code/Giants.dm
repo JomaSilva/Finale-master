@@ -12,10 +12,10 @@ mob/DblClick()
 	//spawn(10) usr.dblclk = max(0,usr.dblclk-1)
 	if(usr!=src)
 		usr.target=src
-		usr<<"Your target is now [src].  (Click on yourself twice or press Select Target to stop targeting.)"
+		to_chat(usr, "Your target is now [src].  (Click on yourself twice or press Select Target to stop targeting.)")
 	else
 		usr.target=null
-		usr<<"You don't have a target anymore."
+		to_chat(usr, "You don't have a target anymore.")
 	..()
 mob/Click()
 	if(Race=="Saiyan") if(usr==src&&!goingssj4)

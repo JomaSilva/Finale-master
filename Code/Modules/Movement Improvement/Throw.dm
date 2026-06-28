@@ -2,8 +2,8 @@ mob/OnStep()
 	spawn
 		if(grabMode==1)
 			if(grabbee)
-				usr<<"You throw [grabbee]"
-				oview(usr)<<"[usr] throws [grabbee]!!"
+				to_chat(usr, "You throw [grabbee]")
+				to_chat(oview(usr), "[usr] throws [grabbee]!!")
 				grabbee.grabberSTR=null
 				grabbee.grabber = null
 				var/testback=( (Ephysoff*((rand(3,(5*BPModulus(expressedBP,grabbee.expressedBP)))/1.8))) / max(((grabbee.Ephysdef*grabbee.Etechnique)/2),0.1) ) //use a similar equation to the KB equation found in attack.dm
@@ -32,8 +32,8 @@ mob/OnStep()
 				//canfight=1
 				grabbee=null
 			if(objgrabbee)
-				usr<<"You throw [objgrabbee]"
-				oview(usr)<<"[usr] throws [objgrabbee]!!"
+				to_chat(usr, "You throw [objgrabbee]")
+				to_chat(oview(usr), "[usr] throws [objgrabbee]!!")
 				var/testback=(rand(2,(log(expressedBP)**3)))
 				testback = min(testback,20)
 				testback = round(testback,1)

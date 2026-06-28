@@ -22,7 +22,7 @@ mob/proc/InjectionChoice()
 						A.techcost+=cost
 						A.maxarmor = usr.intBPcap
 						A.armor = usr.intBPcap
-					else usr<<"You dont have enough money"
+					else to_chat(usr, "You dont have enough money")
 		if("LSD")
 			switch(input("LSD. Doesn't do anything real for right now, but it does give a temporary Ki and Magic boost. Costs 25000 zenni.","",text) in list("Yes","No",))
 				if("Yes")
@@ -33,7 +33,7 @@ mob/proc/InjectionChoice()
 						A.techcost+=cost
 						A.maxarmor = usr.intBPcap
 						A.armor = usr.intBPcap
-					else usr<<"You dont have enough money"
+					else to_chat(usr, "You dont have enough money")
 		if("RAGE")
 			switch(input("Sends you into a drug-filled rage. Isn't really that strong. Costs 50000 zenni.","",text) in list("Yes","No",))
 				if("Yes")
@@ -44,7 +44,7 @@ mob/proc/InjectionChoice()
 						A.techcost+=cost
 						A.maxarmor = usr.intBPcap
 						A.armor = usr.intBPcap
-					else usr<<"You dont have enough money"
+					else to_chat(usr, "You dont have enough money")
 		if("Steroids")
 			switch(input("Gives you a small on-demand BP boost, at the cost of 1 year of your lifespan. Costs 50000 zenni.","",text) in list("Yes","No",))
 				if("Yes")
@@ -55,7 +55,7 @@ mob/proc/InjectionChoice()
 						A.techcost+=cost
 						A.maxarmor = usr.intBPcap
 						A.armor = usr.intBPcap
-					else usr<<"You dont have enough money"
+					else to_chat(usr, "You dont have enough money")
 		if("Insta-Death")
 			switch(input("Will kill you. This ensures death. Costs 25000 zenni.","",text) in list("Yes","No",))
 				if("Yes")
@@ -66,7 +66,7 @@ mob/proc/InjectionChoice()
 						A.techcost+=cost
 						A.maxarmor = usr.intBPcap
 						A.armor = usr.intBPcap
-					else usr<<"You dont have enough money"
+					else to_chat(usr, "You dont have enough money")
 		if("Steroids v2")
 			switch(input("Better version of the regular steroids. Gives you a better BP boost for a year of your lifespan. Costs 75000 zenni.","",text) in list("Yes","No",))
 				if("Yes")
@@ -76,7 +76,7 @@ mob/proc/InjectionChoice()
 						A.techcost+=cost
 						A.maxarmor = usr.intBPcap
 						A.armor = usr.intBPcap
-					else usr<<"You dont have enough money"
+					else to_chat(usr, "You dont have enough money")
 		if("RAGE v2")
 			switch(input("Better version of RAGE. Will take a month of lifespan, but in exchange gives you better anger, a small BP boost (smaller than Steroids), and it heals you a bit. Costs 75000 zenni.","",text) in list("Yes","No",))
 				if("Yes")
@@ -86,7 +86,7 @@ mob/proc/InjectionChoice()
 						A.techcost+=cost
 						A.maxarmor = usr.intBPcap
 						A.armor = usr.intBPcap
-					else usr<<"You dont have enough money"
+					else to_chat(usr, "You dont have enough money")
 		if("T-Virus Injection")
 			switch(input("Gives you a guarenteed mutation and death. Can be injected into KO'd opponents or creatures. Costs 100000 zenni.","",text) in list("Yes","No",))
 				if("Yes")
@@ -96,7 +96,7 @@ mob/proc/InjectionChoice()
 						A.techcost+=cost
 						A.maxarmor = usr.intBPcap
 						A.armor = usr.intBPcap
-					else usr<<"You dont have enough money"
+					else to_chat(usr, "You dont have enough money")
 		if("Tail Injection")
 			switch(input("Gives tails to races that can have tails if they didn't have one. Will KO you and bring you to half health. Costs 100000 zenni.","",text) in list("Yes","No",))
 				if("Yes")
@@ -106,7 +106,7 @@ mob/proc/InjectionChoice()
 						A.techcost+=cost
 						A.maxarmor = usr.intBPcap
 						A.armor = usr.intBPcap
-					else usr<<"You dont have enough money"
+					else to_chat(usr, "You dont have enough money")
 		if("Shapeshifter's Cure")
 			switch(input("Cures permanently shapeshifted shapeshifters. They probably won't take this willingly. Costs 150000 zenni.","",text) in list("Yes","No",))
 				if("Yes")
@@ -116,7 +116,7 @@ mob/proc/InjectionChoice()
 						A.techcost+=cost
 						A.maxarmor = usr.intBPcap
 						A.armor = usr.intBPcap
-					else usr<<"You dont have enough money"
+					else to_chat(usr, "You dont have enough money")
 
 
 
@@ -131,11 +131,11 @@ obj/items
 			set category = null
 			set src in view(1)
 			if(usr.Race=="Android")
-				usr<<"You're an android, you cannot use this."
+				to_chat(usr, "You're an android, you cannot use this.")
 				return FALSE
 			if(prob(10))
 				usr.Mutations+=1
-			view(usr)<<"[usr] injects a mysterious needle!"
+			to_chat(view(usr), "[usr] injects a mysterious needle!")
 			return TRUE
 		Youthenasia
 			cantblueprint=1
@@ -153,7 +153,7 @@ obj/items
 			Consume()
 				if(!(..())) return
 				if(prob(10))
-					view(usr)<<"[usr] injects insane amounts of LSD into their system and falls over. Blood sprays from their eye sockets and their mouth foams as their body begins to fall apart. What the fuck."
+					to_chat(view(usr), "[usr] injects insane amounts of LSD into their system and falls over. Blood sprays from their eye sockets and their mouth foams as their body begins to fall apart. What the fuck.")
 					usr.KO()
 					sleep(50)
 					usr.Death()
@@ -172,7 +172,7 @@ obj/items
 				usr.anger_ssj = 0
 				spawn(1000)
 					if(usr) usr.anger_ssj = 1
-				view(usr)<<"[usr] goes into a drug filled rage!"
+				to_chat(view(usr), "[usr] goes into a drug filled rage!")
 
 				del(src)
 				return
@@ -189,7 +189,7 @@ obj/items
 					if(usr) usr.anger_ssj = 1
 				usr.SpreadHeal(25)
 				usr.BP += usr.capcheck(usr.relBPmax*(1/800))
-				view(usr)<<"[usr] flies into a major drug filled rage!"
+				to_chat(view(usr), "[usr] flies into a major drug filled rage!")
 
 				del(src)
 				return
@@ -201,7 +201,7 @@ obj/items
 				if(!(..())) return
 				usr.genome.sub_to_stat("Lifespan",0.01)
 				usr.BP += usr.capcheck(usr.relBPmax*(1/100))
-				view(usr)<<"[usr] uses a steroid!!"
+				to_chat(view(usr), "[usr] uses a steroid!!")
 				del(src)
 				return
 		Steroids_v2
@@ -212,7 +212,7 @@ obj/items
 				if(!(..())) return
 				usr.genome.sub_to_stat("Lifespan",0.03)
 				usr.BP += usr.capcheck(usr.relBPmax*(1/50))
-				view(usr)<<"[usr] uses a steroid!!"
+				to_chat(view(usr), "[usr] uses a steroid!!")
 				del(src)
 				return
 
@@ -225,7 +225,7 @@ obj/items
 			verb/Inject_Mob(var/mob/M in view(1))
 				set category = null
 				set src in usr
-				M << "[usr] is injecting you with something!"
+				to_chat(M, "[usr] is injecting you with something!")
 				var/prevHP = usr.HP
 				sleep(100)
 				if(usr.HP>=prevHP&&!usr.KO&&M in view(1))
@@ -233,19 +233,19 @@ obj/items
 			proc/Inject(var/mob/TargetMob)
 				if(prob(10))
 					TargetMob.Mutations+=1
-				view(TargetMob)<<"[usr] injects a mysterious needle into [TargetMob]!"
+				to_chat(view(TargetMob), "[usr] injects a mysterious needle into [TargetMob]!")
 				spawn del(src)
 				if(prob(90)&&usr.HP<100)
-					view(TargetMob)<<"[TargetMob] becomes comatose!"
+					to_chat(view(TargetMob), "[TargetMob] becomes comatose!")
 					TargetMob.KO()
 					sleep(50)
 					TargetMob.Death()
 				else if(usr.HP<100)
-					TargetMob << "It... didn't work?"
+					to_chat(TargetMob, "It... didn't work?")
 					sleep(100)
 					TargetMob.Death()
 				else if(prob(10))
-					TargetMob << "The injection fails to kill you!"
+					to_chat(TargetMob, "The injection fails to kill you!")
 				return
 		T_Virus_Injection
 			cantblueprint=1
@@ -259,7 +259,7 @@ obj/items
 				set category = null
 				set src in usr
 				if(!M.KO) return
-				M << "[usr] is injecting you with something!"
+				to_chat(M, "[usr] is injecting you with something!")
 				var/prevHP = usr.HP
 				sleep(100)
 				if(usr.HP>=prevHP&&!usr.KO&&M in view(1))
@@ -268,21 +268,21 @@ obj/items
 			proc/Inject(var/mob/TargetMob)
 				if(prob(10))
 					TargetMob.Mutations+=1
-				view(TargetMob)<<"[usr] injects a mysterious needle into [TargetMob]!"
+				to_chat(view(TargetMob), "[usr] injects a mysterious needle into [TargetMob]!")
 				spawn del(src)
 				if(prob(90)&&usr.HP<100)
 					TargetMob.KO(10)
-					view(TargetMob)<<"[TargetMob] becomes comatose!"
+					to_chat(view(TargetMob), "[TargetMob] becomes comatose!")
 					sleep(50)
 					spawn createZombies(10,TargetMob.peakexBP,TargetMob.x,TargetMob.y,TargetMob.z)
 					TargetMob.Death()
 				else if(usr.HP<100)
-					TargetMob << "It... didn't work?"
+					to_chat(TargetMob, "It... didn't work?")
 					sleep(100)
 					spawn createZombies(10,TargetMob.peakexBP,TargetMob.x,TargetMob.y,TargetMob.z)
 					TargetMob.Death()
 				else if(prob(10))
-					TargetMob << "The injection fails to kill you!"
+					to_chat(TargetMob, "The injection fails to kill you!")
 				return
 		Tail_Injection
 			cantblueprint=1

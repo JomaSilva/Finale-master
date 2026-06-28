@@ -37,7 +37,7 @@ obj/items/Bomb
 	var/running
 	proc/explode()
 		set background = 1
-		view(src)<<"The [src] goes off!"
+		to_chat(view(src), "The [src] goes off!")
 		if(radius >= 5)
 			emit_Sound('explosion.wav')
 		var/obj/explosions/nE = spawnExplosion(GetTurf(),explosionIcon,strength,radius)
@@ -60,7 +60,7 @@ obj/items/Bomb
 				if(usr.zenni >= log(usr.intBPcap)*60000)
 					usr.zenni -= log(usr.intBPcap)*60000
 					strength = usr.intBPcap * strengthMod
-					usr<<"[src]: Done!"
+					to_chat(usr, "[src]: Done!")
 
 	verb/Set()
 		set category=null
@@ -115,7 +115,7 @@ obj/items/Bomb
 		gibbify = 0
 		explode()
 			set background = 1
-			view(src)<<"[src] goes off!"
+			to_chat(view(src), "[src] goes off!")
 			spawnExplosionType(/obj/explosions/EMPBoom,strength,GetTurf(),radius)
 			del(src)
 	Sonic_Bomb
@@ -127,7 +127,7 @@ obj/items/Bomb
 		gibbify = 0
 		explode()
 			set background = 1
-			view(src)<<"[src] goes off!"
+			to_chat(view(src), "[src] goes off!")
 			spawnExplosionType(/obj/explosions/SonicBoom,strength,GetTurf(),radius)
 			del(src)
 	C4
@@ -143,45 +143,45 @@ obj/items/Bomb
 				if("Radius")
 					if(alert(usr,"Extend radius? It'll cost ya 100k zenni.","","Yes")=="Yes")
 						if(radius==15)
-							usr << "[src]: Already got 15 radius from 10, chief."
+							to_chat(usr, "[src]: Already got 15 radius from 10, chief.")
 							return
 						if(usr.zenni >= 100000)
 							usr.zenni -= 100000
 							radius = 15
-							usr<<"[src]: Done!"
+							to_chat(usr, "[src]: Done!")
 						else
-							usr<<"[src]: Not enough cash."
+							to_chat(usr, "[src]: Not enough cash.")
 				if("Radioactive")
 					if(alert(usr,"Make me radioactive? It'll cost ya 60k zenni (and produce some nasty waste!)","","Yes")=="Yes")
 						if(radioactive)
-							usr << "[src]: Already radioactive, chief."
+							to_chat(usr, "[src]: Already radioactive, chief.")
 							return
 						if(usr.zenni >= 60000)
 							usr.zenni -= 60000
 							radioactive = 1
 							new/obj/items/Toxic_Waste(src.loc)
-							usr<<"[src]: Done!"
+							to_chat(usr, "[src]: Done!")
 						else
-							usr<<"[src]: Not enough cash."
+							to_chat(usr, "[src]: Not enough cash.")
 				if("Gibbify")
 					if(alert(usr,"Make me send out shrapnel that damages limbs? It'll cost ya 50k zenni.","","Yes")=="Yes")
 						if(gibbify)
-							usr << "[src]: Already loaded with nasty sharp bits, chief."
+							to_chat(usr, "[src]: Already loaded with nasty sharp bits, chief.")
 							return
 						if(usr.zenni >= 50000)
 							usr.zenni -= 50000
 							gibbify = 1
-							usr<<"[src]: Done!"
+							to_chat(usr, "[src]: Done!")
 						else
-							usr<<"[src]: Not enough cash."
+							to_chat(usr, "[src]: Not enough cash.")
 				if("Strength")
 					if(alert(usr,"Bring me to [usr.intBPcap * strengthMod] strength (from [strength]?) It'll cost ya [log(usr.intBPcap)*60000] zenni.","","Yes")=="Yes")
 						if(usr.zenni >= log(usr.intBPcap)*60000)
 							usr.zenni -= log(usr.intBPcap)*60000
 							strength = usr.intBPcap * strengthMod
-							usr<<"[src]: Done!"
+							to_chat(usr, "[src]: Done!")
 						else
-							usr<<"[src]: Not enough cash."
+							to_chat(usr, "[src]: Not enough cash.")
 	Mines
 		New()
 			..()
@@ -205,7 +205,7 @@ obj/items/Bomb
 			set category=null
 			set src in usr
 			isset = 0
-			view(usr) <<"[src]: No longer canceled!"
+			to_chat(view(usr), "[src]: No longer canceled!")
 			icon = savedicon
 		Use()
 			set category=null
@@ -213,7 +213,7 @@ obj/items/Bomb
 			isset = 1
 			savedicon = icon
 			icon = null
-			view(usr) <<"[src]: Set!"
+			to_chat(view(usr), "[src]: Set!")
 
 		Mine_EMP
 			IsntAItem=0
@@ -224,7 +224,7 @@ obj/items/Bomb
 			gibbify = 0
 			explode()
 				set background = 1
-				view(src)<<"[src] goes off!"
+				to_chat(view(src), "[src] goes off!")
 				spawnExplosionType(/obj/explosions/EMPBoom,strength,GetTurf(),radius)
 				del(src)
 		Mine_Sonic
@@ -236,7 +236,7 @@ obj/items/Bomb
 			gibbify = 0
 			explode()
 				set background = 1
-				view(src)<<"[src] goes off!"
+				to_chat(view(src), "[src] goes off!")
 				spawnExplosionType(/obj/explosions/SonicBoom,strength,GetTurf(),radius)
 				del(src)
 		Mine
@@ -252,45 +252,45 @@ obj/items/Bomb
 					if("Radius")
 						if(alert(usr,"Extend radius? It'll cost ya 100k zenni.","","Yes")=="Yes")
 							if(radius==15)
-								usr << "[src]: Already got 15 radius from 10, chief."
+								to_chat(usr, "[src]: Already got 15 radius from 10, chief.")
 								return
 							if(usr.zenni >= 100000)
 								usr.zenni -= 100000
 								radius = 15
-								usr<<"[src]: Done!"
+								to_chat(usr, "[src]: Done!")
 							else
-								usr<<"[src]: Not enough cash."
+								to_chat(usr, "[src]: Not enough cash.")
 					if("Radioactive")
 						if(alert(usr,"Make me radioactive? It'll cost ya 60k zenni (and produce some nasty waste!)","","Yes")=="Yes")
 							if(radioactive)
-								usr << "[src]: Already radioactive, chief."
+								to_chat(usr, "[src]: Already radioactive, chief.")
 								return
 							if(usr.zenni >= 60000)
 								usr.zenni -= 60000
 								radioactive = 1
 								new/obj/items/Toxic_Waste(src.loc)
-								usr<<"[src]: Done!"
+								to_chat(usr, "[src]: Done!")
 							else
-								usr<<"[src]: Not enough cash."
+								to_chat(usr, "[src]: Not enough cash.")
 					if("Gibbify")
 						if(alert(usr,"Make me send out shrapnel that damages limbs? It'll cost ya 50k zenni.","","Yes")=="Yes")
 							if(gibbify)
-								usr << "[src]: Already loaded with nasty sharp bits, chief."
+								to_chat(usr, "[src]: Already loaded with nasty sharp bits, chief.")
 								return
 							if(usr.zenni >= 50000)
 								usr.zenni -= 50000
 								gibbify = 1
-								usr<<"[src]: Done!"
+								to_chat(usr, "[src]: Done!")
 							else
-								usr<<"[src]: Not enough cash."
+								to_chat(usr, "[src]: Not enough cash.")
 					if("Strength")
 						if(alert(usr,"Bring me to [usr.intBPcap * strengthMod] strength (from [strength]?) It'll cost ya [log(usr.intBPcap)*60000] zenni.","","Yes")=="Yes")
 							if(usr.zenni >= log(usr.intBPcap)*60000)
 								usr.zenni -= log(usr.intBPcap)*60000
 								strength = usr.intBPcap * strengthMod
-								usr<<"[src]: Done!"
+								to_chat(usr, "[src]: Done!")
 							else
-								usr<<"[src]: Not enough cash."
+								to_chat(usr, "[src]: Not enough cash.")
 
 obj/items
 	Toxic_Waste
@@ -305,7 +305,7 @@ obj/items
 					M.Mutations+=1
 			spawn(10) Ticker()
 		Del()
-			view(src)<<"[src] goes off!"
+			to_chat(view(src), "[src] goes off!")
 			spawnExplosionType(/obj/explosions/ToxicBoom,10,GetTurf(),3)
 			..()
 
@@ -316,9 +316,9 @@ obj/items
 		verb/Use()
 			set category = null
 			set src in usr
-			view(usr)<<"[usr] uses [src]"
+			to_chat(view(usr), "[usr] uses [src]")
 			del(src)
 		Del()
-			view(src)<<"[src] goes off!"
+			to_chat(view(src), "[src] goes off!")
 			spawnExplosionType(/obj/explosions/SmokeBoom,0,GetTurf(),0)
 			..()

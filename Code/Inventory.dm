@@ -45,10 +45,10 @@ obj/items/Windmill_Shuriken
 				sleep(5*shootSpeed)
 				reload=0
 			else
-				usr<<"[src]: Reloading..."
+				to_chat(usr, "[src]: Reloading...")
 				reload=1
 				sleep(50*shootSpeed)
-				usr<<"[src]: Done!"
+				to_chat(usr, "[src]: Done!")
 				Ammo=maxAmmo
 				reload=0
 	verb/Upgrade()
@@ -92,7 +92,7 @@ obj/GK_Well
 		set src in oview(1)
 		if(!usr.drinking&&!usr.train&&!usr.med&&water)
 			usr.drinking=1
-			view(6)<<"<font color=red>* [usr] drinks some water. *"
+			to_chat(view(6), "<font color=red>* [usr] drinks some water. *")
 			usr.SpreadHeal(100/effectiveness)
 			usr.Ki+=(usr.MaxKi/effectiveness)
 			water = 0
@@ -133,7 +133,7 @@ obj/Zenni
 			A.getkey=usr.key
 			A.getIP=usr.client.computer_id
 			step(A,usr.dir)
-			view(usr)<<"<font size=1><font color=teal>[usr] drops [num2text(zenni,20)] zenni."
+			to_chat(view(usr), "<font size=1><font color=teal>[usr] drops [num2text(zenni,20)] zenni.")
 			if(A.zenni<1000) A.icon_state="Zenni1"
 			else if(A.zenni<10000) A.icon_state="Zenni2"
 			else if(A.zenni<99999) A.icon_state="Zenni3"
@@ -141,8 +141,8 @@ obj/Zenni
 	verb/Get()
 		set category=null
 		set src in oview(1)
-		usr<<"You pick up [src]."
-		oview(usr)<<"<font size=1><font color=teal>[usr] picks up [src.zenni]z."
+		to_chat(usr, "You pick up [src].")
+		to_chat(oview(usr), "<font size=1><font color=teal>[usr] picks up [src.zenni]z.")
 		WriteToLog("rplog","[usr] picks up [src.zenni]z    ([time2text(world.realtime,"Day DD hh:mm")])")
 		usr.zenni+=src.zenni
 		del(src)
@@ -164,7 +164,7 @@ mob/proc/CheckInventory()
 	inven_min=count
 	if(inven_min>=inven_max)
 		inven_min=inven_max
-		src<<"You have no more space in your inventory."
+		to_chat(src, "You have no more space in your inventory.")
 		return TRUE
 mob/proc/InvenSet()
 	var/count=0

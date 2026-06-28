@@ -58,7 +58,7 @@ mob/proc/KO(var/KOtimer, var/ForceKO)
 		if(flight)
 			usr.flight=0
 			if(usr.Savable) usr.icon_state=""
-			usr<<"You land back on the ground."
+			to_chat(usr, "You land back on the ground.")
 			usr.flightspeed=0
 			usr.overlayList-=usr.FLIGHTAURA
 			overlaychanged=1
@@ -79,26 +79,26 @@ mob/proc/KO(var/KOtimer, var/ForceKO)
 		//Stone Mask functionality
 		for(var/obj/items/Equipment/Accessory/Stone_Mask/A in usr)
 			if(A.equipped)
-				view(usr)<<"<font color=yellow>Stone tendrils sprout from [usr]'s mask, stabbing directly into their head!</font>"
+				to_chat(view(usr), "<font color=yellow>Stone tendrils sprout from [usr]'s mask, stabbing directly into their head!</font>")
 				sleep(20)
 				if(!usr.IsAVampire&&usr.CanEat&&!usr.IsAWereWolf)
 					createShockwavemisc(loc,4)
 					sleep(30)
 					Un_KO()
-					view(usr)<<"<font color=yellow>[usr] stands as a bizarre light emanates from their body!!</font>"
+					to_chat(view(usr), "<font color=yellow>[usr] stands as a bizarre light emanates from their body!!</font>")
 					createDustmisc(loc,5)
 					sleep(30)
 					createLightningmisc(loc,6)
 					usr.Vampirification()
-					view(usr)<<"<font color=red>[usr] has become a Vampire!!!</font>"
+					to_chat(view(usr), "<font color=red>[usr] has become a Vampire!!!</font>")
 					break
 				else if(usr.IsAVampire) //If you're some gay vampire trying to make a fashion statement with ancient rock masks, nothing will happen. Since you're undead, you still live too.
-					usr<<"Due to already being a vampire, the Stone Mask has no effect on you. Those tendrils still sting though..."
+					to_chat(usr, "Due to already being a vampire, the Stone Mask has no effect on you. Those tendrils still sting though...")
 					break
 				else //if for whatever reason the Stone Mask does literally nothing to you and you're not a vamp, you die bro.
-					usr<<"A strange energy courses through your body, though nothing of note happens. Perhaps its from the stone tendrils tearing into your brain. Have you noticed the blood loss yet?"
+					to_chat(usr, "A strange energy courses through your body, though nothing of note happens. Perhaps its from the stone tendrils tearing into your brain. Have you noticed the blood loss yet?")
 					sleep(20)
-					usr<<"<font color=red>Your grip on reality begins to fade...It seems your story will end here.</font>"
+					to_chat(usr, "<font color=red>Your grip on reality begins to fade...It seems your story will end here.</font>")
 					sleep(30)
 					Death()
 					break
@@ -133,13 +133,13 @@ mob/proc/Un_KO(var/angery)
 			if(KOTimer>1)
 				if(prob(5))
 					StoredAnger+=10
-					usr<<"[usr] gets angry from being knocked out so much!"
+					to_chat(usr, "[usr] gets angry from being knocked out so much!")
 					LastKO=100000
 					KOTimer=0
 			if(KOTimer>3)
 				if(prob(15))
 					StoredAnger+=10
-					usr<<"[usr] gets angry from being knocked out so much!"
+					to_chat(usr, "[usr] gets angry from being knocked out so much!")
 					LastKO=100000
 					KOTimer=0
 		ClearPowerBuffs()

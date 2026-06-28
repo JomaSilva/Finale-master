@@ -12,7 +12,7 @@ obj/Creatables
 
 				var/obj/A=new/obj/Core_Computer(locate(usr.x,usr.y,usr.z))
 				A.techcost+=cost
-			else usr<<"You don't have enough money."
+			else to_chat(usr, "You don't have enough money.")
 		verb/Description()
 			set category =null
 			usr<<"Lets you create countless bodies to inhabit. Tsujin/Meta only."*//*
@@ -26,7 +26,7 @@ obj/Creatables
 
 				var/obj/A=new/obj/Core_Computer(locate(usr.x,usr.y,usr.z))
 				A.techcost+=cost
-			else usr<<"You don't have enough money."
+			else to_chat(usr, "You don't have enough money.")
 		verb/Description()
 			set category =null
 			usr<<"Lets you create countless bodies to inhabit. Available to all races."*/

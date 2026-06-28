@@ -26,7 +26,7 @@ mob
 	proc/meta_ability()
 		if(HP<25) if(prob(1))
 			if(!repairprotocolactivated)
-				usr<<"Repair Protocol Activated."
+				to_chat(usr, "Repair Protocol Activated.")
 				repairprotocolactivated = 1
 				spawn MetaRepair()
 		if(HP>=90&&repairprotocolactivated)
@@ -47,11 +47,11 @@ mob
 	after_learn()
 		savant.kiskillBuff+= 0.5
 		assignverb(/mob/keyable/verb/Stunlock)
-		savant<<"You feel capable of great stun hatred!"
+		to_chat(savant, "You feel capable of great stun hatred!")
 	before_forget()
 		savant.kiskillBuff-= 0.5
 		unassignverb(/mob/keyable/verb/Stunlock)
-		savant<<"Your intent to stun fades..."
+		to_chat(savant, "Your intent to stun fades...")
 	login()
 		..()
 		assignverb(/mob/keyable/verb/Stunlock)
@@ -130,7 +130,7 @@ mob/keyable/verb/Stunlock()
 
 	after_learn()
 		choose()
-		savant << "You have chosen..."
+		to_chat(savant, "You have chosen...")
 	before_forget()
 		switch(chosen)
 			if(1)
@@ -146,7 +146,7 @@ mob/keyable/verb/Stunlock()
 				savant.physoffBuff -= 1
 				savant.physdefBuff -= 1
 				savant.speedBuff -= 0.5
-		savant << "You lose your tribe..."
+		to_chat(savant, "You lose your tribe...")
 	login(var/mob/logger)
 		..()
 		if(!chosen)

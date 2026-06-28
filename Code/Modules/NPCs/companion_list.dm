@@ -69,7 +69,7 @@ obj/items/companion_obj
 			set category = null
 			set src in usr
 			if(linked_mob_type)
-				usr << "Already have a mob type."
+				to_chat(usr, "Already have a mob type.")
 				return
 			var/mob/trg = null
 			for(var/mob/npc/M in get_step(src,dir))
@@ -81,7 +81,7 @@ obj/items/companion_obj
 				linked_mob_name = trg.name
 				linked_mob_icon = trg.icon
 				linked_mob_bp = trg.BP
-			else usr<<"No target!"
+			else to_chat(usr, "No target!")
 
 	Intercepter_Core
 		name = "Intercepter Core"
@@ -112,7 +112,7 @@ mob/npc/pet
 	Click()
 		..()
 		if(owner_ref!=usr)
-			usr<<"This is not your [name]."
+			to_chat(usr, "This is not your [name].")
 			return
 		var/list/cmd_list = list("Cancel")
 		cmd_list += "Change Name"
@@ -140,10 +140,10 @@ mob/npc/pet
 			if("Follow/Stay")
 				if(setting)
 					setting=0
-					usr<<"You tell [src] to stay."
+					to_chat(usr, "You tell [src] to stay.")
 				else
 					setting=1
-					usr<<"You tell [src] to follow."
+					to_chat(usr, "You tell [src] to follow.")
 			if("Attack")
 				var/mob/M = input(usr,"Select a mob to attack") as null|mob in view(5)
 				if(ismob(M))

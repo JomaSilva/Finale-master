@@ -17,10 +17,10 @@ datum/skill/ki/kienzan/login(var/mob/logger)
 	..()
 	assignverb(/mob/keyable/verb/Destructo_Disc)
 /datum/skill/ki/kienzan/after_learn()
-	savant << "You feel a new power welling up inside you."
+	to_chat(savant, "You feel a new power welling up inside you.")
 	assignverb(/mob/keyable/verb/Destructo_Disc)
 /datum/skill/ki/kienzan/before_forget()
-	savant << "You can't remember how to use Destructo Disc!"
+	to_chat(savant, "You can't remember how to use Destructo Disc!")
 	unassignverb(/mob/keyable/verb/Destructo_Disc)*/
 
 mob/keyable/verb/Kienzan()
@@ -93,7 +93,7 @@ mob/keyable/verb/Kienzan()
 				usr.guidedcounter+=2
 				step(A,A.dir)
 			usr.Guiding = 0
-		else usr<<"You dont have enough energy."
+		else to_chat(usr, "You dont have enough energy.")
 	else if(usr.Guiding)
 		usr.Guiding=0
 

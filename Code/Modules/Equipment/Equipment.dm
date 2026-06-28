@@ -75,41 +75,41 @@ mob/var
 	verb/Description()
 		set category = null
 		set src in usr
-		usr<<"<font color=white>This item possesses the following attributes:</font>"
-		usr<<"<font color=white>[name]</font>"
+		to_chat(usr, "<font color=white>This item possesses the following attributes:</font>")
+		to_chat(usr, "<font color=white>[name]</font>")
 		if(desc)
-			usr<<"<font color=white>[desc]</font>"
-		usr<<"<font color=white>This item is [Rarity[rarity]], and its value is [value].</font>"
+			to_chat(usr, "<font color=white>[desc]</font>")
+		to_chat(usr, "<font color=white>This item is [Rarity[rarity]], and its value is [value].</font>")
 		if(!equipped)
-			usr<<"<font color=white>Equips to:</font>"
-			if(!slots)usr<<"<font color=white>Accessory</font>"
+			to_chat(usr, "<font color=white>Equips to:</font>")
+			if(!slots)to_chat(usr, "<font color=white>Accessory</font>")
 			for(var/A in slots)
 				switch(A)
 					if(/datum/Body/Head/Brain)
-						usr<<"<font color=white>Brain</font>"
+						to_chat(usr, "<font color=white>Brain</font>")
 					if(/datum/Body/Head)
-						usr<<"<font color=white>Head</font>"
+						to_chat(usr, "<font color=white>Head</font>")
 					if(/datum/Body/Torso)
-						usr<<"<font color=white>Torso</font>"
+						to_chat(usr, "<font color=white>Torso</font>")
 					if(/datum/Body/Abdomen)
-						usr<<"<font color=white>Abdomen</font>"
+						to_chat(usr, "<font color=white>Abdomen</font>")
 					if(/datum/Body/Organs)
-						usr<<"<font color=white>Organs</font>"
+						to_chat(usr, "<font color=white>Organs</font>")
 					if(/datum/Body/Reproductive_Organs)
-						usr<<"<font color=white>Reproductive Organs</font>"
+						to_chat(usr, "<font color=white>Reproductive Organs</font>")
 					if(/datum/Body/Arm/Hand)
-						usr<<"<font color=white>Hand</font>"
+						to_chat(usr, "<font color=white>Hand</font>")
 					if(/datum/Body/Arm)
-						usr<<"<font color=white>Arm</font>"
+						to_chat(usr, "<font color=white>Arm</font>")
 					if(/datum/Body/Leg/Foot)
-						usr<<"<font color=white>Foot</font>"
+						to_chat(usr, "<font color=white>Foot</font>")
 					if(/datum/Body/Leg)
-						usr<<"<font color=white>Leg</font>"
+						to_chat(usr, "<font color=white>Leg</font>")
 		else
-			usr<<"<font color=white>Is equipped to:</font>"
-			if(!slots)usr<<"<font color=white>Accessory</font>"
+			to_chat(usr, "<font color=white>Is equipped to:</font>")
+			if(!slots)to_chat(usr, "<font color=white>Accessory</font>")
 			for(var/datum/Body/B in parentlimbs)
-				usr<<"<font color=white>[B.name]</font>"
+				to_chat(usr, "<font color=white>[B.name]</font>")
 
 	verb/Display()
 		set category = null
@@ -168,16 +168,16 @@ mob/var
 						parentlimbs+=E
 						E.Equipment+=src
 						E.checked = 0
-					wearer<<"You equip [src.name]!"
+					to_chat(wearer, "You equip [src.name]!")
 					equip(wearer)
 				else
 					for(var/datum/Body/E in limbs)
 						E.checked = 0
-					wearer<<"You do not have enough room to equip this item."
+					to_chat(wearer, "You do not have enough room to equip this item.")
 			else
 				if(wearer.aslots>=slotcost)
 					wearer.aslots-=slotcost
-					wearer<<"You equip [src.name]!"
+					to_chat(wearer, "You equip [src.name]!")
 					equip(wearer)
 		else
 			unequip(wearer)
@@ -193,7 +193,7 @@ mob/var
 							L.Equipment-=src
 			else
 				wearer.aslots+=slotcost
-			wearer<<"You unequip [src.name]!"
+			to_chat(wearer, "You unequip [src.name]!")
 
 
 
@@ -219,13 +219,13 @@ mob/var
 /obj/items/Equipment/Armor
 	Description()
 		..()
-		usr<<"<font color=white>It provides:</font>"
+		to_chat(usr, "<font color=white>It provides:</font>")
 		if(armored)
-			usr<<"<font color=white>[armored] Armor</font>"
+			to_chat(usr, "<font color=white>[armored] Armor</font>")
 		if(resistance!=1)
-			usr<<"<font color=white>[resistance] Resistance</font>"
+			to_chat(usr, "<font color=white>[resistance] Resistance</font>")
 		if(deflection)
-			usr<<"<font color=white>[deflection] Deflection</font>"
+			to_chat(usr, "<font color=white>[deflection] Deflection</font>")
 	equip(var/mob/M)
 		..()
 		for(var/datum/Body/L in parentlimbs)
@@ -269,17 +269,17 @@ mob/var
 
 	Description()
 		..()
-		usr<<"<font color=white>It is a [wtype].</font>"
+		to_chat(usr, "<font color=white>It is a [wtype].</font>")
 		if(damage)
-			usr<<"<font color=white>It deals [damage] damage.</font>"
+			to_chat(usr, "<font color=white>It deals [damage] damage.</font>")
 		if(penetration)
-			usr<<"<font color=white>It ignores [penetration] armor.</font>"
+			to_chat(usr, "<font color=white>It ignores [penetration] armor.</font>")
 		if(accuracy)
-			usr<<"<font color=white>It modifies accuracy by [accuracy].</font>"
+			to_chat(usr, "<font color=white>It modifies accuracy by [accuracy].</font>")
 		if(speed!=1)
-			usr<<"<font color=white>It changes your attack delay by [speed*100]%</font>"
+			to_chat(usr, "<font color=white>It changes your attack delay by [speed*100]%</font>")
 		if(block)
-			usr<<"<font color=white>It modifies your block by [block].</font>"
+			to_chat(usr, "<font color=white>It modifies your block by [block].</font>")
 
 	equip(var/mob/M)
 		..()

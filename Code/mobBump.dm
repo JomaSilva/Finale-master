@@ -53,7 +53,7 @@ mob/Bump(mob/A)
 			dir = get_dir(src,A)
 			spawn MeleeAttack()
 		if(sim&&A.HP<=15)
-			usr<<"Simulator: Simulation cancelled due to safety protocols."
+			to_chat(usr, "Simulator: Simulation cancelled due to safety protocols.")
 			del(src)
 	if(istype(A,/obj/attack))
 		A.Bump(src)

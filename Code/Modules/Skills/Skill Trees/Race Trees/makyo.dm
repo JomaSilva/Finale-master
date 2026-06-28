@@ -56,23 +56,23 @@ mob/proc/migrate_makyo_mastery() //migracao unica: semeia a maestria % a partir 
 	expbarrier = 10000
 	maxlevel = 4
 	after_learn()
-		savant<<"The sun shall empower you!!"
+		to_chat(savant, "The sun shall empower you!!")
 		for(var/datum/skill/tree/T in savant.possessed_trees)
 			if(src in T.constituentskills)
 				for(var/datum/skill/nS in T.constituentskills)
 					if(nS.type==/datum/skill/makyo/Moon)
-						if(nS.enabled) savant<<"You can no longer learn [nS.name]!"
+						if(nS.enabled) to_chat(savant, "You can no longer learn [nS.name]!")
 						nS.enabled=0
 						break
 				break
 
 	before_forget()
-		savant<<"The sun abandones thee..."
+		to_chat(savant, "The sun abandones thee...")
 	effector()
 		..()
 		if(levelup)
 			levelup=0
-			savant << "Your \"ONE\" skill is level [level]!"
+			to_chat(savant, "Your \"ONE\" skill is level [level]!")
 			expbarrier = 10000 * (2 ** level)
 		if(!locate(/datum/skill/makyo/Above_All) in savant.learned_skills)
 			switch(savant.currentDaylight)
@@ -101,22 +101,22 @@ mob/proc/migrate_makyo_mastery() //migracao unica: semeia a maestria % a partir 
 	expbarrier = 10000
 	maxlevel = 4
 	after_learn()
-		savant<<"The moon shall empower you!!"
+		to_chat(savant, "The moon shall empower you!!")
 		for(var/datum/skill/tree/T in savant.possessed_trees)
 			if(src in T.constituentskills)
 				for(var/datum/skill/nS in T.constituentskills)
 					if(nS.type==/datum/skill/makyo/Sun)
-						if(nS.enabled) savant<<"You can no longer learn [nS.name]!"
+						if(nS.enabled) to_chat(savant, "You can no longer learn [nS.name]!")
 						nS.enabled=0
 						break
 				break
 	before_forget()
-		savant<<"The moon abandones thee..."
+		to_chat(savant, "The moon abandones thee...")
 	effector()
 		..()
 		if(levelup)
 			levelup=0
-			savant << "Your \"MONE\" skill is level [level]!"
+			to_chat(savant, "Your \"MONE\" skill is level [level]!")
 			expbarrier = 10000 * (2 ** level)
 		switch(savant.currentDaylight)
 			if(6 to 10)
@@ -148,16 +148,16 @@ mob/var/hellstar_disabled = 1
 	maxlevel = 5
 	var/gaingot = 0
 	after_learn()
-		savant<<"The sun shall empower you further beyond!!"
+		to_chat(savant, "The sun shall empower you further beyond!!")
 		savant.hellstar_disabled=0
 
 	before_forget()
-		savant<<"The sun abandones thee..."
+		to_chat(savant, "The sun abandones thee...")
 	effector()
 		..()
 		if(levelup)
 			levelup=0
-			savant << "Your Almighty \"ONE\" skill is level [level]!"
+			to_chat(savant, "Your Almighty \"ONE\" skill is level [level]!")
 			expbarrier = 10000 * (3 ** level)
 		if(savant.currentDaylight != 3)
 			if(gaingot)
@@ -207,16 +207,16 @@ mob/var/hellstar_disabled = 1
 	expbarrier = 10000
 	maxlevel = 4
 	after_learn()
-		savant<<"The moon shall empower you!!"
+		to_chat(savant, "The moon shall empower you!!")
 		savant.magiBuff++
 	before_forget()
-		savant<<"The moon abandones thee..."
+		to_chat(savant, "The moon abandones thee...")
 		savant.magiBuff--
 	effector()
 		..()
 		if(levelup)
 			levelup=0
-			savant << "Your Supreme \"MONE\" skill is level [level]!"
+			to_chat(savant, "Your Supreme \"MONE\" skill is level [level]!")
 			expbarrier = 10000 * (3 ** level)
 		if(savant.currentDaylight >= 6)
 			switch(savant.currentMoonlight==5)

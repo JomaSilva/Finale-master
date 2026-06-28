@@ -29,7 +29,7 @@ obj/overlay/effects/MysticEffect
 	var/storedpower
 	Buff()
 		..()
-		container<<"<font color=yellow> You unleash your godly Mystic form."
+		to_chat(container, "<font color=yellow> You unleash your godly Mystic form.")
 		container.Revert()
 		container.RemoveHair()
 		if(!container.Apeshit)
@@ -44,7 +44,7 @@ obj/overlay/effects/MysticEffect
 		container.BPadd += container.MysticAdded
 		container.emit_Sound('chargeaura.wav')
 	DeBuff()
-		container<<"<font color=yellow> You stop using your Mystic power."
+		to_chat(container, "<font color=yellow> You stop using your Mystic power.")
 		container.removeOverlay(/obj/overlay/effects/MysticEffect)
 		container.MysticPcnt=1
 		container.BPadd -= container.MysticAdded

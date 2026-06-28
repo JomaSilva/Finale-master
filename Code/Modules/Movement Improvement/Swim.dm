@@ -10,7 +10,7 @@ mob/verb
 		if(T.Water&&!swim&&!boat)
 			if(!usr.KO)
 				usr.flight=0
-				usr<<"You start to swim."
+				to_chat(usr, "You start to swim.")
 				usr.swim=1
 				step(usr,usr.dir)
 				usr.density=1
@@ -18,9 +18,9 @@ mob/verb
 		else if(swim)
 			usr.swim=0
 			if(usr.Savable) usr.icon_state=""
-			usr<<"You stop swimming."
+			to_chat(usr, "You stop swimming.")
 		else
-			usr<<"You can't swim there!"
+			to_chat(usr, "You can't swim there!")
 
 turf
 	proc/testWaters(var/M)

@@ -6,7 +6,7 @@ mob/Admin3/verb/Take_Skill(mob/M in world)
 		for(var/obj/O in M:contents)
 			varPackList += O
 	else
-		src << "[M:name] has an empty pack!"
+		to_chat(src, "[M:name] has an empty pack!")
 		return
 	var/varPackItem = input("Pick an item from [M:name]'s pack","Check Pack") in varPackList + list("Cancel")
 	if(varPackItem != "Cancel")
@@ -34,7 +34,7 @@ mob/Admin1/verb
 				ChoiceIP="[A.client.address]"
 				ChoiceCID="[A.client.computer_id]"
 		Bans.Add(ChoiceKey,ChoiceIP)
-		world<<"[ChoiceName]([ChoiceKey]) has been banned for [Reason]."
+		to_chat(world, "[ChoiceName]([ChoiceKey]) has been banned for [Reason].")
 		WriteToLog("admin","[usr]([key]) BANNED [ChoiceName]([ChoiceKey]) for '[Reason]' at [time2text(world.realtime,"Day DD hh:mm")]")
 		for(var/mob/M)
 			if(M.key==ChoiceKey)
@@ -42,7 +42,7 @@ mob/Admin1/verb
 		for(var/mob/V) if(V.client&&V!=usr&&V.key!=ChoiceKey)
 			var/MatchingIPs=V.client.address
 			if(ChoiceIP==MatchingIPs&&ChoiceCID!=V.client.computer_id)
-				world<<"--[V]([V.key]) has been banned (multikey)."
+				to_chat(world, "--[V]([V.key]) has been banned (multikey).")
 				Bans.Add(V.key)
 				del(V)
 		Save_Ban()
@@ -54,7 +54,7 @@ mob/Admin1/verb
 			var/Choice=input("UnBan who?") in Bans
 			if(Choice=="Cancel") return
 			if(alert(usr,"Silent unban?","","Yes","No")=="No")
-				world<<"[key] unbanned [Choice]."
+				to_chat(world, "[key] unbanned [Choice].")
 			WriteToLog("admin","[usr]([key]) UNBANNED [Choice] at [time2text(world.realtime,"Day DD hh:mm")]")
 			Bans.Remove(Choice)
 			Save_Ban()

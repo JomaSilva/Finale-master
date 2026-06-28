@@ -86,7 +86,7 @@ datum/godki//this could be converted to a mastery but generally you wouldn't wan
 					usage=0
 					savant.removeOverlay(/obj/overlay/auras/gk)
 					savant.emit_Sound('descend.wav')
-					savant << "You run out of your God Ki energy, it no longer replacing Ki."
+					to_chat(savant, "You run out of your God Ki energy, it no longer replacing Ki.")
 				if(usage != inusg && savant)
 					inusg = usage
 					if(usage && tier)
@@ -167,7 +167,7 @@ mob/keyable/verb
 			if(ssj==5 && ssj4fpmastery>=100 && hasFPLB)
 				SSj4FPLB()
 			else
-				usr << "Your primal blood rejects God Ki - you can only break your limit from a fully mastered Super Saiyan 4 Full Power."
+				to_chat(usr, "Your primal blood rejects God Ki - you can only break your limit from a fully mastered Super Saiyan 4 Full Power.")
 			return
 		if(godki)
 			if(!godki.usage)
@@ -175,7 +175,7 @@ mob/keyable/verb
 				else animate(src,time=8,color=rgb(255, 81, 0))
 				spawn(1) color=null
 				godki.usage = 1
-				usr << "You begin using God Ki energy, which will start being used to replace Ki, increasing your power."
+				to_chat(usr, "You begin using God Ki energy, which will start being used to replace Ki, increasing your power.")
 				emit_Sound('ssg.wav')
 				createShockwavemisc(loc,2)
 				for(var/obj/overlay/B in src.overlayList)B.EffectLoop()
@@ -185,7 +185,7 @@ mob/keyable/verb
 				godki.usage = 0
 				removeOverlay(/obj/overlay/auras/gk)
 				emit_Sound('descend.wav')
-				usr << "You shut off your God Ki energy, it no longer replacing Ki."
+				to_chat(usr, "You shut off your God Ki energy, it no longer replacing Ki.")
 		else
 			godki = new/datum/godki
 			unassignverb(/mob/keyable/verb/God_Ki)

@@ -21,10 +21,10 @@
 	skillcost=0
 /datum/skill/general/observe/after_learn()
 	assignverb(/mob/keyable/verb/Observe)
-	savant<<"You can now observe people!"
+	to_chat(savant, "You can now observe people!")
 /datum/skill/general/observe/before_forget()
 	unassignverb(/mob/keyable/verb/Observe)
-	savant<<"You've forgotten how to observe!?"
+	to_chat(savant, "You've forgotten how to observe!?")
 /datum/skill/general/observe/login(var/mob/logger)
 	..()
 	assignverb(/mob/keyable/verb/Observe)
@@ -43,9 +43,9 @@
 		break
 
 /datum/skill/kanassajin/precognition/after_learn()
-	savant<<"You can see the future!"
+	to_chat(savant, "You can see the future!")
 /datum/skill/kanassajin/precognition/before_forget()
-	savant<<"You've forgotten how to see the future!?"
+	to_chat(savant, "You've forgotten how to see the future!?")
 
 mob/var/stored_time
 /datum/skill/kanassajin/Time_Store
@@ -62,16 +62,16 @@ mob/var/stored_time
 		if(last_age != Year)
 			savant.stored_time += 10 * (Year - last_age)
 			last_age = Year
-			savant << "You have [savant.stored_time] stored time."
+			to_chat(savant, "You have [savant.stored_time] stored time.")
 		savant.Age = stuckage
 	after_learn()
 		last_age = Year
 		stuckage = savant.Age
-		savant<<"You can manipulate stored time! Your body is also stuck in time!"
+		to_chat(savant, "You can manipulate stored time! Your body is also stuck in time!")
 		assignverb(/mob/keyable/verb/Time_Touch)
 	before_forget()
 		assignverb(/mob/keyable/verb/Time_Touch)
-		savant<<"You've forgotten how to manipulate stored time."
+		to_chat(savant, "You've forgotten how to manipulate stored time.")
 	login(var/mob/logger)
 		..()
 		assignverb(/mob/keyable/verb/Time_Touch)
@@ -79,11 +79,11 @@ mob/var/stored_time
 mob/keyable/verb/Time_Touch()
 	set category = "Skills"
 	if(!stored_time)
-		usr << "You don't have any stored time!"
+		to_chat(usr, "You don't have any stored time!")
 		return
 	var/mob/m = input() as null|mob in view(1)
 	if(ismob(m))
-		view(m)<<"[usr] touches [m], giving them time! ([stored_time] stored time, need 1 (one year))"
+		to_chat(view(m), "[usr] touches [m], giving them time! ([stored_time] stored time, need 1 (one year))")
 		m.Age += 0.1
 		m.TempBuff("Tspeed"=2,30)
 		stored_time--
@@ -96,11 +96,11 @@ mob/keyable/verb/Time_Touch()
 	common_sense = FALSE
 	tier = 1
 	after_learn()
-		savant<<"You can manipulate your own time!"
+		to_chat(savant, "You can manipulate your own time!")
 		assignverb(/mob/keyable/verb/Chrono_Trigger)
 	before_forget()
 		assignverb(/mob/keyable/verb/Chrono_Trigger)
-		savant<<"You've forgotten how to manipulate your time."
+		to_chat(savant, "You've forgotten how to manipulate your time.")
 	login(var/mob/logger)
 		..()
 		assignverb(/mob/keyable/verb/Chrono_Trigger)
@@ -108,7 +108,7 @@ mob/var/chronoic_point
 mob/keyable/verb/Chrono_Trigger()
 	set category = "Skills"
 	if(chronoic_point)
-		view(usr) << "[usr] reverts in time!!"
+		to_chat(view(usr), "[usr] reverts in time!!")
 		var/obj/Chronoic_Point/cp = chronoic_point
 		chronoic_point = null
 		if(HP < cp.hp) SpreadHeal(cp.hp - HP)
@@ -121,13 +121,13 @@ mob/keyable/verb/Chrono_Trigger()
 		del(cp)
 		return
 	if(!stored_time >= 100)
-		usr << "You don't have enough stored time! ([stored_time] stored time, need 100 (ten years))"
+		to_chat(usr, "You don't have enough stored time! ([stored_time] stored time, need 100 (ten years))")
 		return
 	if(stored_time >= 100 && !chronoic_point)
 		stored_time-= 100
-		view(usr) << "[usr] focuses..."
+		to_chat(view(usr), "[usr] focuses...")
 		sleep(5)
-		view(usr) << "[usr] releases some time!"
+		to_chat(view(usr), "[usr] releases some time!")
 		var/obj/Chronoic_Point/cp = new/obj/Chronoic_Point(loc)
 		chronoic_point = cp
 		cp.hp = HP

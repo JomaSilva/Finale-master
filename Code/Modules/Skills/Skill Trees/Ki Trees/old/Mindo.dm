@@ -45,7 +45,7 @@ mob/var/KiSpecialty=0
 	enabled=0
 	tier = 1
 	after_learn()
-		savant<<"You feel somewhat more focused."
+		to_chat(savant, "You feel somewhat more focused.")
 		savant.KiSpecialty = 1
 		savant.kiskillBuff+=0.1
 	before_forget()
@@ -62,11 +62,11 @@ mob/var/KiSpecialty=0
 	maxlevel = 1
 	tier = 2
 /datum/skill/bclarity/after_learn()
-	savant<<"You're starting to get a feel for where you need to hit things to take them apart."
+	to_chat(savant, "You're starting to get a feel for where you need to hit things to take them apart.")
 	savant.kioffBuff+=0.4
 	//savant.penskill+=1
 /datum/skill/bclarity/before_forget()
-	savant<<"Your mind feels dull."
+	to_chat(savant, "Your mind feels dull.")
 	savant.kioffBuff-=0.4
 	//savant.penskill-=1
 
@@ -80,14 +80,14 @@ mob/var/KiSpecialty=0
 	maxlevel = 1
 	tier = 1
 /datum/skill/mindling/after_learn()
-	savant<<"You feel intense."
+	to_chat(savant, "You feel intense.")
 	savant.kioffBuff+=0.3
 	savant.kidefBuff+=0.3
 	savant.kiskillBuff+=0.3
 	savant.physoffBuff-=0.15
 	savant.physdefBuff-=0.2
 /datum/skill/mindling/before_forget()
-	savant<<"Your body begins to recover."
+	to_chat(savant, "Your body begins to recover.")
 	savant.kioffBuff-=0.3
 	savant.kidefBuff-=0.3
 	savant.kiskillBuff-=0.3
@@ -105,10 +105,10 @@ mob/var/KiSpecialty=0
 	maxlevel = 1
 	tier = 2
 /datum/skill/force/after_learn()
-	savant<<"You feel powerful."
+	to_chat(savant, "You feel powerful.")
 	savant.kioffBuff+=0.6
 /datum/skill/force/before_forget()
-	savant<<"You feel drained."
+	to_chat(savant, "You feel drained.")
 	savant.kioffBuff-=0.6
 
 /datum/skill/nforce
@@ -123,12 +123,12 @@ mob/var/KiSpecialty=0
 	prereqs = list(new/datum/skill/force)
 	tier = 2
 /datum/skill/nforce/after_learn()
-	savant<<"You feel somewhat more focused."
+	to_chat(savant, "You feel somewhat more focused.")
 	savant.kioffBuff+=0.4
 	savant.physoffBuff+=0.1
 	savant.speedBuff+=0.05
 /datum/skill/nforce/before_forget()
-	savant<<"You feel somewhat less focused."
+	to_chat(savant, "You feel somewhat less focused.")
 	savant.kioffBuff-=0.4
 	savant.physoffBuff-=0.1
 	savant.speedBuff-=0.05
@@ -147,11 +147,11 @@ mob/var/KiSpecialty=0
 	tier = 3
 	after_learn()
 		assignverb(/mob/keyable/verb/Space_Flight)
-		savant << "You learned how to fly to space!"
+		to_chat(savant, "You learned how to fly to space!")
 		..()
 	before_forget()
 		unassignverb(/mob/keyable/verb/Space_Flight)
-		savant << "You learned how to fly to space!"
+		to_chat(savant, "You learned how to fly to space!")
 		..()
 	login()
 		..()
@@ -160,18 +160,18 @@ mob/var/KiSpecialty=0
 mob/keyable/verb/Space_Flight()
 	set category = "Skills"
 	if(Ki>=600&&expressedBP>=2000&&flightability!=1)
-		usr << "You lift off from the ground. This'll take a second"
-		view(usr) << "[usr] lifts off from the ground, intent on going to space!"
+		to_chat(usr, "You lift off from the ground. This'll take a second")
+		to_chat(view(usr), "[usr] lifts off from the ground, intent on going to space!")
 		icon_state = "Flight"
 		var/pastHP = HP
 		var/area/A = GetArea()
 		if(A.name == "Inside")
-			view(usr) << "[usr] bumps [usr]s head on the ceiling!"
+			to_chat(view(usr), "[usr] bumps [usr]s head on the ceiling!")
 			icon_state = ""
 		else
 			sleep(50)
 			if(!HP>=pastHP||KO)
-				view(usr) <<"[usr] was damaged, canceling spaceflight!"
+				to_chat(view(usr), "[usr] was damaged, canceling spaceflight!")
 				return
 			for(var/obj/Planets/P in world)
 				if(P.planetType==usr.Planet)
@@ -182,4 +182,4 @@ mob/keyable/verb/Space_Flight()
 					src.loc = locate(rT.x,rT.y,rT.z)
 					icon_state = ""
 					break
-	else usr << "You need 600 Ki, 2,000 BP, and the ability to fly to use this."
+	else to_chat(usr, "You need 600 Ki, 2,000 BP, and the ability to fly to use this.")

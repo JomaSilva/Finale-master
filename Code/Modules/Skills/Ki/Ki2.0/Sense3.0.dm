@@ -507,7 +507,7 @@ mob/verb
 		set category = "Other"
 		if(sense_on)
 			sense_on=0
-			usr << "Sense window off."
+			to_chat(usr, "Sense window off.")
 		else
 			sense_on=1
 			usr << "Sense window on."*/

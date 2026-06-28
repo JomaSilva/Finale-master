@@ -47,7 +47,7 @@
 				sleep(MoveDelay / 2)
 				step(A,A.dir)
 			savant.Guiding=0
-		else savant<<"You dont have enough energy."
+		else to_chat(savant, "You dont have enough energy.")
 	if(!savant.KO&&!savant.med&&!savant.train&&!savant.blasting&&savant.Guiding)
 		savant.Guiding = 0
 //stop() and charge() isn't modified since the beam code in beams.dm do it for us.

@@ -48,7 +48,7 @@ obj/Modules/Reibi_Module
 								usr.canSSJ = 1
 								hadssj = 1
 								usr.TransferSSJStats(M)
-							view(usr)<<"[usr] inhabits [M]'s body!"
+							to_chat(view(usr), "[usr] inhabits [M]'s body!")
 							M.ReibiAbsorber=usr.signature
 							M.ReibiX = usr.x
 							M.ReibiY = usr.y
@@ -59,9 +59,9 @@ obj/Modules/Reibi_Module
 							nrc.victim_sig = M.signature
 							reibi_list += nrc
 							new/obj/ReibiAbsorbed(M)
-						else usr<<"They must be knocked out, or angrier past Annoyed."
+						else to_chat(usr, "They must be knocked out, or angrier past Annoyed.")
 		else
-			usr<<"You need to be in your true body."
+			to_chat(usr, "You need to be in your true body.")
 	verb/Exhabit()
 		set category = "Skills"
 		if(hasbody)
@@ -74,7 +74,7 @@ obj/Modules/Reibi_Module
 			if(hadssj && usr.Race != "Saiyan" && usr.Parent_Race != "Saiyan")
 				hadssj=0
 				usr.canSSJ = 0
-			view(usr)<<"[usr] exhabits [usr]'s body!"
+			to_chat(view(usr), "[usr] exhabits [usr]'s body!")
 			for(var/datum/reibi_ctrller/nrc in reibi_list)
 				if(nrc.victim_sig==absorbedsig && nrc.source_sig==usr.signature)
 					nrc.is_exhabiting = 1

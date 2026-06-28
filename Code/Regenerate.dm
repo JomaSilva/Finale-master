@@ -8,7 +8,7 @@ obj/Regenerate/verb/Regenerate()
 	set category="Skills"
 	if(!usr.regen)
 		usr.regen=1
-		usr<<"You start to regenerate"
+		to_chat(usr, "You start to regenerate")
 	else
 		usr.regen=0
-		usr<<"You stop regenerating"
+		to_chat(usr, "You stop regenerating")

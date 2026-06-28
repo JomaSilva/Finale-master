@@ -57,7 +57,7 @@ mob/var/didbodychange
 	tier = 1
 	enabled = 1
 /datum/skill/training/after_learn()
-	savant<<"You feel stronger."
+	to_chat(savant, "You feel stronger.")
 	savant.physoffBuff+=0.1
 	savant.physdefBuff+=0.1
 	savant.techniqueBuff+=0.05
@@ -65,7 +65,7 @@ mob/var/didbodychange
 	savant.bodyreadiness+=1
 	savant.didbodychange=1
 /datum/skill/training/before_forget()
-	savant<<"You feel weaker."
+	to_chat(savant, "You feel weaker.")
 	savant.physoffBuff-=0.1
 	savant.physdefBuff-=0.1
 	savant.techniqueBuff-=0.05
@@ -86,13 +86,13 @@ mob/var/didbodychange
 	enabled = 0
 	prereqs = list(new/datum/skill/training)
 /datum/skill/evasive/after_learn()
-	savant<<"You feel faster."
+	to_chat(savant, "You feel faster.")
 	savant.speedBuff+=0.05
 	savant.techniqueBuff+=0.05
 	savant.bodyskill+=1
 	savant.didbodychange=1
 /datum/skill/evasive/before_forget()
-	savant<<"You feel slower."
+	to_chat(savant, "You feel slower.")
 	savant.speedBuff-=0.05
 	savant.techniqueBuff-=0.1
 	savant.bodyskill-=1
@@ -109,14 +109,14 @@ mob/var/didbodychange
 	enabled = 0
 	prereqs = list(new/datum/skill/evasive)
 /datum/skill/drills/after_learn()
-	savant<<"You feel ready to run"
+	to_chat(savant, "You feel ready to run")
 	assignverb(/mob/keyable/verb/Lariat)
 	savant.speedBuff+=0.1
 	savant.physoffBuff+=0.1
 	savant.bodyreadiness+=1
 	savant.didbodychange=1
 /datum/skill/drills/before_forget()
-	savant<<"You feel slow."
+	to_chat(savant, "You feel slow.")
 	unassignverb(/mob/keyable/verb/Lariat)
 	savant.speedBuff-=0.1
 	savant.physoffBuff-=0.1
@@ -138,13 +138,13 @@ datum/skill/drills/login(var/mob/logger)
 	enabled = 0
 	prereqs = list(new/datum/skill/evasive)
 /datum/skill/qingqong/after_learn()
-	savant<<"You feel more in control."
+	to_chat(savant, "You feel more in control.")
 	savant.speedBuff+=0.05
 	savant.techniqueBuff+=0.25
 	savant.bodyskill+=1
 	savant.didbodychange=1
 /datum/skill/qingqong/before_forget()
-	savant<<"You feel like you wasted your time."
+	to_chat(savant, "You feel like you wasted your time.")
 	savant.speedBuff-=0.05
 	savant.techniqueBuff-=0.25
 	savant.bodyskill-=1
@@ -161,14 +161,14 @@ datum/skill/drills/login(var/mob/logger)
 	enabled = 0
 	prereqs = list(new/datum/skill/qingqong)
 	after_learn()
-		savant<<"You feel as light as a feather."
+		to_chat(savant, "You feel as light as a feather.")
 		savant.speedBuff+=0.1
 		savant.techniqueBuff+=0.2
 		savant.physoffBuff+=0.1
 		savant.bodyskill+=1
 		savant.didbodychange=1
 	before_forget()
-		savant<<"You feel bloated."
+		to_chat(savant, "You feel bloated.")
 		savant.speedBuff-=0.1
 		savant.techniqueBuff-=0.2
 		savant.physoffBuff-=0.1
@@ -181,7 +181,7 @@ datum/skill/drills/login(var/mob/logger)
 		switch(level)
 			if(2)
 				if(levelup)
-					savant << "You're able to coordinate a basic kicking attack! FALLING KICK!! This attack does more damage to flying opponents!"
+					to_chat(savant, "You're able to coordinate a basic kicking attack! FALLING KICK!! This attack does more damage to flying opponents!")
 					assignverb(/mob/keyable/verb/Falling_Kick)
 		levelup=0
 	login(mob/logger)
@@ -200,14 +200,14 @@ datum/skill/drills/login(var/mob/logger)
 	prereqs = list(new/datum/skill/grace)
 	expbarrier = 100
 	after_learn()
-		savant<<"You kick really good."
+		to_chat(savant, "You kick really good.")
 		savant.speedBuff+=0.1
 		savant.techniqueBuff+=0.2
 		savant.physoffBuff+=0.1
 		savant.bodyskill+=1
 		savant.didbodychange=1
 	before_forget()
-		savant<<"You feel more lost."
+		to_chat(savant, "You feel more lost.")
 		savant.speedBuff-=0.1
 		savant.techniqueBuff-=0.2
 		savant.physoffBuff-=0.1
@@ -221,11 +221,11 @@ datum/skill/drills/login(var/mob/logger)
 		switch(level)
 			if(2)
 				if(levelup)
-					savant << "You're able to execute a nasty kicking attack! KICKUP!!! This delivers a stun to grounded opponents!"
+					to_chat(savant, "You're able to execute a nasty kicking attack! KICKUP!!! This delivers a stun to grounded opponents!")
 					assignverb(/mob/keyable/verb/Kickup)
 			if(3)
 				if(levelup)
-					savant << "You're able to do a dropkick attack towards the opponent! DROPKICK!!! You'll move in a straight line when using this attack!"
+					to_chat(savant, "You're able to do a dropkick attack towards the opponent! DROPKICK!!! You'll move in a straight line when using this attack!")
 					assignverb(/mob/keyable/verb/Dropkick)
 		levelup=0
 	login(mob/logger)
@@ -245,13 +245,13 @@ datum/skill/drills/login(var/mob/logger)
 	enabled = 0
 	prereqs = list(new/datum/skill/physical)
 /datum/skill/bulk/after_learn()
-	savant<<"You feel swole."
+	to_chat(savant, "You feel swole.")
 	savant.physdefBuff+=0.4
 	savant.speedBuff-=0.1
 	savant.bodyreadiness+=1
 	savant.didbodychange=1
 /datum/skill/bulk/before_forget()
-	savant<<"You feel lean."
+	to_chat(savant, "You feel lean.")
 	savant.physdefBuff-=0.4
 	savant.speedBuff+=0.1
 	savant.bodyreadiness-=1
@@ -270,14 +270,14 @@ datum/skill/drills/login(var/mob/logger)
 	maxlevel = 3
 	prereqs = list(new/datum/skill/bulk)
 	after_learn()
-		savant<<"You feel massive."
+		to_chat(savant, "You feel massive.")
 		savant.physoffBuff+=0.1
 		savant.physdefBuff+=0.6
 		savant.speedBuff-=0.15
 		savant.bodyreadiness+=1
 		savant.didbodychange=1
 	before_forget()
-		savant<<"You feel puny."
+		to_chat(savant, "You feel puny.")
 		savant.physoffBuff-=0.1
 		savant.physdefBuff-=0.6
 		savant.speedBuff+=0.15
@@ -291,11 +291,11 @@ datum/skill/drills/login(var/mob/logger)
 		switch(level)
 			if(2)
 				if(levelup)
-					savant << "You're able to really press into people! GIGANTIC SPIKE!!"
+					to_chat(savant, "You're able to really press into people! GIGANTIC SPIKE!!")
 					assignverb(/mob/keyable/verb/Seismic_Press)
 			if(3)
 				if(levelup)
-					savant << "You're able to manipulate your opponent however you want! GIGANTIC SPIKE!!"
+					to_chat(savant, "You're able to manipulate your opponent however you want! GIGANTIC SPIKE!!")
 					assignverb(/mob/keyable/verb/Gigantic_Spike)
 		levelup=0
 	login(mob/logger)
@@ -315,14 +315,14 @@ datum/skill/drills/login(var/mob/logger)
 	expbarrier = 100
 	maxlevel=3
 	after_learn()
-		savant<<"You puff out your chest a bit more."
+		to_chat(savant, "You puff out your chest a bit more.")
 		savant.physoffBuff+=0.2
 		savant.physdefBuff+=0.7
 		savant.kiskillBuff-=0.1
 		savant.bodyreadiness+=1
 		savant.didbodychange=1
 	before_forget()
-		savant<<"You puff out your chest a bit less..."
+		to_chat(savant, "You puff out your chest a bit less...")
 		savant.physoffBuff-=0.2
 		savant.physdefBuff-=0.7
 		savant.kiskillBuff+=0.1
@@ -336,11 +336,11 @@ datum/skill/drills/login(var/mob/logger)
 		switch(level)
 			if(2)
 				if(levelup)
-					savant << "You're able to drag a motherfucker across the ground! POWER DRAG!!"
+					to_chat(savant, "You're able to drag a motherfucker across the ground! POWER DRAG!!")
 					assignverb(/mob/keyable/verb/Power_Drag)
 			if(3)
 				if(levelup)
-					savant << "You're able to do a short, nasty combo! REVENGE DEMON!!"
+					to_chat(savant, "You're able to do a short, nasty combo! REVENGE DEMON!!")
 					assignverb(/mob/keyable/verb/Revenge_Demon)
 		levelup=0
 	login(mob/logger)
@@ -359,13 +359,13 @@ datum/skill/drills/login(var/mob/logger)
 	enabled = 0
 	prereqs = list(new/datum/skill/training)
 /datum/skill/physical/after_learn()
-	savant<<"You feel strong."
+	to_chat(savant, "You feel strong.")
 	savant.physoffBuff+=0.15
 	savant.physdefBuff+=0.15
 	savant.bodyreadiness+=1
 	savant.didbodychange=1
 /datum/skill/physical/before_forget()
-	savant<<"You feel lazy."
+	to_chat(savant, "You feel lazy.")
 	savant.physoffBuff-=0.15
 	savant.physdefBuff-=0.15
 	savant.bodyreadiness-=1
@@ -382,13 +382,13 @@ datum/skill/drills/login(var/mob/logger)
 	enabled = 0
 	prereqs = list(new/datum/skill/physical)
 /datum/skill/arm/after_learn()
-	savant<<"You're getting a grip on punching."
+	to_chat(savant, "You're getting a grip on punching.")
 	savant.physoffBuff+=0.3
 	savant.techniqueBuff+=0.1
 	savant.bodyreadiness+=1
 	savant.didbodychange=1
 /datum/skill/arm/before_forget()
-	savant<<"You lose some precision."
+	to_chat(savant, "You lose some precision.")
 	savant.physoffBuff-=0.3
 	savant.techniqueBuff-=0.1
 	savant.bodyreadiness-=1
@@ -405,14 +405,14 @@ datum/skill/drills/login(var/mob/logger)
 	enabled = 0
 	prereqs = list(new/datum/skill/arm)
 	after_learn()
-		savant<<"You punch real good."
+		to_chat(savant, "You punch real good.")
 		savant.physoffBuff+=0.1
 		savant.physdefBuff+=0.05
 		savant.techniqueBuff+=0.3
 		savant.bodyskill+=1
 		savant.didbodychange=1
 	before_forget()
-		savant<<"You feel lost."
+		to_chat(savant, "You feel lost.")
 		savant.physoffBuff-=0.1
 		savant.physdefBuff-=0.05
 		savant.techniqueBuff-=0.3
@@ -425,7 +425,7 @@ datum/skill/drills/login(var/mob/logger)
 		switch(level)
 			if(2)
 				if(levelup)
-					savant << "You're able to coordinate a basic combo attack! ONE, TWO!!"
+					to_chat(savant, "You're able to coordinate a basic combo attack! ONE, TWO!!")
 					assignverb(/mob/keyable/verb/One_Two)
 		levelup=0
 	login(mob/logger)
@@ -444,13 +444,13 @@ datum/skill/drills/login(var/mob/logger)
 	prereqs = list(new/datum/skill/boxing)
 	expbarrier = 100
 	after_learn()
-		savant<<"You punch really good."
+		to_chat(savant, "You punch really good.")
 		savant.physoffBuff+=0.2
 		savant.techniqueBuff+=0.4
 		savant.bodyskill+=1
 		savant.didbodychange=1
 	before_forget()
-		savant<<"You feel more lost."
+		to_chat(savant, "You feel more lost.")
 		savant.physoffBuff-=0.2
 		savant.techniqueBuff-=0.4
 		savant.bodyskill-=1
@@ -463,11 +463,11 @@ datum/skill/drills/login(var/mob/logger)
 		switch(level)
 			if(2)
 				if(levelup)
-					savant << "You're able to execute a better combination attack! ONE, TWO, FIVE!!"
+					to_chat(savant, "You're able to execute a better combination attack! ONE, TWO, FIVE!!")
 					assignverb(/mob/keyable/verb/One_Two_Five)
 			if(3)
 				if(levelup)
-					savant << "You're able to do a short, but effective combination attack! TWO, ONE, FOUR!!"
+					to_chat(savant, "You're able to do a short, but effective combination attack! TWO, ONE, FOUR!!")
 					assignverb(/mob/keyable/verb/Two_One_Four)
 		levelup=0
 	login(mob/logger)
@@ -487,14 +487,14 @@ datum/skill/drills/login(var/mob/logger)
 	prereqs = list(new/datum/skill/Small_Boxer)
 	expbarrier = 100
 	after_learn()
-		savant<<"You puff out your chest a bit more."
+		to_chat(savant, "You puff out your chest a bit more.")
 		savant.physoffBuff+=0.3
 		savant.physdefBuff+=0.1
 		savant.techniqueBuff+=0.3
 		savant.bodyskill+=1
 		savant.didbodychange=1
 	before_forget()
-		savant<<"You feel lost."
+		to_chat(savant, "You feel lost.")
 		savant.physoffBuff-=0.3
 		savant.physdefBuff-=0.1
 		savant.techniqueBuff-=0.3
@@ -507,7 +507,7 @@ datum/skill/drills/login(var/mob/logger)
 		switch(level)
 			if(2)
 				if(levelup)
-					savant << "You're able to deliver a single nasty punch capable of one-hitting people! KO PUNCH!!"
+					to_chat(savant, "You're able to deliver a single nasty punch capable of one-hitting people! KO PUNCH!!")
 					assignverb(/mob/keyable/verb/KO_Punch)
 		levelup=0
 	login(mob/logger)
@@ -525,13 +525,13 @@ datum/skill/drills/login(var/mob/logger)
 	enabled = 0
 	prereqs = list(new/datum/skill/arm)
 /datum/skill/force/after_learn()
-	savant<<"You punch real hard."
+	to_chat(savant, "You punch real hard.")
 	savant.physoffBuff+=0.3
 	savant.techniqueBuff+=0.05
 	savant.bodyreadiness+=1
 	savant.didbodychange=1
 /datum/skill/force/before_forget()
-	savant<<"You feel weak."
+	to_chat(savant, "You feel weak.")
 	savant.physoff-=0.3
 	savant.technique-=0.05
 	savant.bodyreadiness-=1
@@ -550,13 +550,13 @@ datum/skill/drills/login(var/mob/logger)
 	enabled = 0
 	prereqs = list(new/datum/skill/physical)
 /datum/skill/precision/after_learn()
-	savant<<"Your body is a machine."
+	to_chat(savant, "Your body is a machine.")
 	savant.physoffBuff+=0.05
 	savant.techniqueBuff+=0.2
 	savant.bodyreadiness+=1
 	savant.didbodychange=1
 /datum/skill/precision/before_forget()
-	savant<<"You feel gangly and uncoordinated."
+	to_chat(savant, "You feel gangly and uncoordinated.")
 	savant.physoffBuff-=0.05
 	savant.techniqueBuff-=0.2
 	savant.bodyreadiness-=1
@@ -573,13 +573,13 @@ datum/skill/drills/login(var/mob/logger)
 	enabled = 0
 	prereqs = list(new/datum/skill/precision)
 /datum/skill/blocking/after_learn()
-	savant<<"Your can catch some blows."
+	to_chat(savant, "Your can catch some blows.")
 	savant.physdefBuff+=0.2
 	savant.techniqueBuff+=0.1
 	savant.bodyskill+=1
 	savant.didbodychange=1
 /datum/skill/blocking/before_forget()
-	savant<<"You feel unprepared."
+	to_chat(savant, "You feel unprepared.")
 	savant.physoffBuff-=0.2
 	savant.techniqueBuff-=0.1
 	savant.bodyskill-=1
@@ -596,14 +596,14 @@ datum/skill/drills/login(var/mob/logger)
 	enabled = 0
 	prereqs = list(new/datum/skill/precision)
 /datum/skill/preparedness/after_learn()
-	savant<<"You can feel the attacks coming."
+	to_chat(savant, "You can feel the attacks coming.")
 	savant.physdefBuff+=0.05
 	savant.techniqueBuff+=0.25
 	savant.speedBuff+=0.05
 	savant.bodyskill+=1
 	savant.didbodychange=1
 /datum/skill/preparedness/before_forget()
-	savant<<"You feel unready."
+	to_chat(savant, "You feel unready.")
 	savant.physdefBuff-=0.05
 	savant.techniqueBuff-=0.25
 	savant.speedBuff-=0.05
@@ -622,13 +622,13 @@ datum/skill/drills/login(var/mob/logger)
 	enabled = 0
 	prereqs = list(new/datum/skill/preparedness)
 /datum/skill/bprecision/after_learn()
-	savant<<"Your mind tingles with new sensation."
+	to_chat(savant, "Your mind tingles with new sensation.")
 	savant.techniqueBuff+=0.5
 	savant.genome.add_to_stat("Energy Level",0.1)
 	savant.bodyskill+=1
 	savant.didbodychange=1
 /datum/skill/bprecision/before_forget()
-	savant<<"You feel lost."
+	to_chat(savant, "You feel lost.")
 	savant.techniqueBuff-=0.5
 	savant.genome.sub_to_stat("Energy Level",0.1)
 	savant.bodyskill-=1

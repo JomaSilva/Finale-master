@@ -131,7 +131,7 @@ obj/buff/SuperSaiyan/Loop()
 			//Super Saiyan 4 Tail Check + Energy Gain
 			if(4)
 				if(!container.Tail)
-					view(container) << "[container]'s tail was lost, reverting them from SSJ4!"
+					to_chat(view(container), "[container]'s tail was lost, reverting them from SSJ4!")
 					DeBuff()
 				if(prob(15)) container.Ki+=0.002 * container.MaxKi //ki gains a bit of energy.
 				//there is no stamina loss from SSJ4.
@@ -141,10 +141,10 @@ obj/buff/SuperSaiyan/Loop()
 				if(container.ssj4mastery >= 100 && !container.hasSSJ4FP) //FORA do <100: libera o Full Power sempre que estiver 100% (mesmo se ja entrou em 100%, ex.: save antigo)
 					container.hasSSJ4FP = 1
 					container.testunlocks()
-					container << "<font color=#ffcc33>You have completely mastered Super Saiyan 4! Super Saiyan 4 Full Power is now available - transform again to ascend.</font>"
+					to_chat(container, "<font color=#ffcc33>You have completely mastered Super Saiyan 4! Super Saiyan 4 Full Power is now available - transform again to ascend.</font>")
 			if(5)
 				if(!container.Tail)
-					view(container) << "[container]'s tail was lost, reverting them from SSJ4 Full Power!"
+					to_chat(view(container), "[container]'s tail was lost, reverting them from SSJ4 Full Power!")
 					DeBuff()
 				if(prob(15)) container.Ki+=0.002 * container.MaxKi //SSJ4 Full Power: sem dreno de stamina
 				if(container.ssj4fpmastery < 100) //maestria do Full Power; ao 100% libera a COMPRA do Limit Breaker
@@ -153,10 +153,10 @@ obj/buff/SuperSaiyan/Loop()
 					if(container.ssj4fpmastery >= 100)
 						container.testunlocks()
 						if(!container.hasFPLB)
-							container << "<font color=#ff66cc>You have completely mastered Super Saiyan 4 Full Power! You may now learn the Super Saiyan 4 Limit Breaker.</font>"
+							to_chat(container, "<font color=#ff66cc>You have completely mastered Super Saiyan 4 Full Power! You may now learn the Super Saiyan 4 Limit Breaker.</font>")
 			if(6)
 				if(!container.Tail)
-					view(container) << "[container]'s tail was lost, reverting them from SSJ4 Limit Breaker!"
+					to_chat(view(container), "[container]'s tail was lost, reverting them from SSJ4 Limit Breaker!")
 					DeBuff()
 				if(prob(15)) container.Ki+=0.002 * container.MaxKi //SSJ4 Limit Breaker: sem dreno de stamina
 		if(container.ssj >= 1 && container.ssj <= 3.5 && container.Ki <= container.MaxKi*0.02) //Ki esgotado: reverte qualquer SSJ1-3.5, INCLUSIVE masterizada (que tem dreno 0 e nao roda o bloco de dreno acima)
@@ -176,7 +176,7 @@ obj/buff/SuperSaiyan/Loop()
 							container.lssjmult += 10
 							container.restssjmult += 5
 							container.ssj2mod = 10
-							container << "You've mastered Super Saiyan completely!"
+							to_chat(container, "You've mastered Super Saiyan completely!")
 							container.testunlocks()
 				if(2)
 					if(container.ssj2mastery < 100)
@@ -314,7 +314,7 @@ mob/proc/SSj()
 		attackable=0
 		var/ssjcolor = "yellow"
 		if(godki && godki.usage) ssjcolor = "blue"
-		if(godki && godki.usage) view(8)<<"<font color=#33ccff>[src]: We Saiyans have no limits!</font>" //fala ao virar Blue (Super Saiyajin em modo God Ki)
+		if(godki && godki.usage) to_chat(view(8), "<font color=#33ccff>[src]: We Saiyans have no limits!</font>") //fala ao virar Blue (Super Saiyajin em modo God Ki)
 		poweruprunning=1
 		if(!firsttime)
 			SSJCinematic()
@@ -328,19 +328,19 @@ mob/proc/SSj()
 			emit_Sound('powerup.wav')
 			spawn Quake()
 			createShockwavemisc(loc,1)
-			view(src)<<"<font color=[ssjcolor]>*A great wave of power emanates from [src]!*"
+			to_chat(view(src), "<font color=[ssjcolor]>*A great wave of power emanates from [src]!*")
 			spawn if(ssjdrain==0.025) Quake()
 			sleep(1000*ssjdrain)
 			spawn if(ssjdrain>0.01) Quake()
 			emit_Sound('chargeaura.wav')
-			view(src)<<"<font color=[ssjcolor]>*[src]'s hair stands on end and turns [ssjcolor]!*"
+			to_chat(view(src), "<font color=[ssjcolor]>*[src]'s hair stands on end and turns [ssjcolor]!*")
 			ssj=1
 			createCrater(loc,5)
 			
 			spawn startbuff(/obj/buff/SuperSaiyan,'SSJIcon.dmi')
 			if(!AscensionStarted)
 				AscensionStarted = 1
-				world << "Ascension has started."
+				to_chat(world, "Ascension has started.")
 		transing=0
 		attackable=1
 		poweruprunning=0
@@ -360,13 +360,13 @@ mob/proc/Ultra_SSj()
 		if(!hasussj)
 			ultrassjat/=2
 		hasussj=1
-		view(src)<<"<font color=[ssjcolor]>*[src] begins to power up beyond their Super Saiyan power*"
+		to_chat(view(src), "<font color=[ssjcolor]>*[src] begins to power up beyond their Super Saiyan power*")
 		emit_Sound('chargeaura.wav')
 		spawn Quake()
 		sleep(1000*ultrassjdrain)
 		spawn Quake()
 		emit_Sound('aura.wav')
-		view(src)<<"<font color=[ssjcolor]>*[src]'s Super Saiyan power becomes a more spikey [ussjcolor]!*"
+		to_chat(view(src), "<font color=[ssjcolor]>*[src]'s Super Saiyan power becomes a more spikey [ussjcolor]!*")
 		ssj=1.5
 		createCrater(loc,3)
 		if(!isBuffed(/obj/buff/SuperSaiyan))
@@ -404,7 +404,7 @@ mob/proc/SSj2()
 			emit_Sound('powerup.wav')
 			spawn Quake()
 			createShockwavemisc(loc,3)
-			view(6)<<"<font color=[ssjcolor]>*A great wave of power emanates from [src] as a [ssjcolor] aura bursts around them!*"
+			to_chat(view(6), "<font color=[ssjcolor]>*A great wave of power emanates from [src] as a [ssjcolor] aura bursts around them!*")
 			spawn if(ssj2drain==0.025) Quake()
 			sleep(600 * ssj2drain)
 			emit_Sound('chargeaura.wav')
@@ -413,7 +413,7 @@ mob/proc/SSj2()
 			createCrater(loc,5)
 			if(!isBuffed(/obj/buff/SuperSaiyan))
 				startbuff(/obj/buff/SuperSaiyan,'SSJIcon.dmi')
-			view(6)<<"<font color=[ssjcolor]>*Blue sparks begin to burst around [src]!*"
+			to_chat(view(6), "<font color=[ssjcolor]>*Blue sparks begin to burst around [src]!*")
 		transing=0
 		attackable=1
 /obj/overlay/auras/transform_aura
@@ -450,17 +450,17 @@ mob/proc/SSj3()
 		if(!ismastered3)
 			updateOverlay(/obj/overlay/auras/transform_aura)
 			sleep(100)
-			if(!ssj3firsttime) view(6)<<"<font color=[ssjcolor]>*A great wave of power emanates from [src] as a [ssjcolor] aura bursts around them!*"
+			if(!ssj3firsttime) to_chat(view(6), "<font color=[ssjcolor]>*A great wave of power emanates from [src] as a [ssjcolor] aura bursts around them!*")
 			spawn for(var/mob/M in player_list)
 				if(M.Planet == src.Planet)
 					M.Quake()
 			sleep(100)
-			if(!ssj3firsttime) view(8)<<"<font size=[TextSize]><[SayColor]>[src]: AAAAAAAAAAAAAAAAAHHHHHHHHHHHHHHH!!!!"
+			if(!ssj3firsttime) to_chat(view(8), "<font size=[TextSize]><[SayColor]>[src]: AAAAAAAAAAAAAAAAAHHHHHHHHHHHHHHH!!!!")
 			spawn for(var/mob/M in player_list)
 				if(M.Planet == src.Planet)
 					M.Quake()
 			spawn Quake()
-			view(8)<<"<font color=[ssjcolor]>*[src]'s screams die down!!*"
+			to_chat(view(8), "<font color=[ssjcolor]>*[src]'s screams die down!!*")
 			if(!ssj3firsttime) sleep(2000*ssj3drain)
 			if(powerMod<=1) removeOverlay(/obj/overlay/auras/aura)
 		createShockwavemisc(loc,4)
@@ -471,7 +471,7 @@ mob/proc/SSj3()
 		if(!isBuffed(/obj/buff/SuperSaiyan))
 			startbuff(/obj/buff/SuperSaiyan,'SSJIcon.dmi')
 		ssj=3
-		view(6)<<"<font color=[ssjcolor]>*[src]'s aura spikes upward as their hair grows longer!*"
+		to_chat(view(6), "<font color=[ssjcolor]>*[src]'s aura spikes upward as their hair grows longer!*")
 		emit_Sound('chargeaura.wav')
 		if(ssj3firsttime)
 			ssj3firsttime=0
@@ -495,7 +495,7 @@ mob/proc/LSSj3_Primal() //Primal Legendary: Legendary Super Saiyan 3 (ssj=3.5, a
 	emit_Sound('powerup.wav')
 	createShockwavemisc(loc,3)
 	spawn Quake()
-	view(8)<<"<font color=#2ef548 size=[TextSize]>[src]: HAAAAAAAAAAAHHHHHHH!!!!"
+	to_chat(view(8), "<font color=#2ef548 size=[TextSize]>[src]: HAAAAAAAAAAAHHHHHHH!!!!")
 	animate(src,time=6,color=rgb(46,245,72))
 	spawn(12) color=null
 	sleep(8)
@@ -503,7 +503,7 @@ mob/proc/LSSj3_Primal() //Primal Legendary: Legendary Super Saiyan 3 (ssj=3.5, a
 	createCrater(loc,5)
 	ssj=3.5
 	emit_Sound('chargeaura.wav')
-	view(6)<<"<font color=#2ef548>*[src]'s green aura erupts as they ascend to Legendary Super Saiyan 3!*"
+	to_chat(view(6), "<font color=#2ef548>*[src]'s green aura erupts as they ascend to Legendary Super Saiyan 3!*")
 	transing=0
 	attackable=1
 
@@ -525,14 +525,14 @@ mob/proc/tooTiredRevert() //reverte por falta de Ki e mostra o aviso no maximo 1
 	Revert(0) //arg explicito 0 = reversao TOTAL (nao depender de null==0)
 	if(!tooTiredMsg)
 		tooTiredMsg = 1
-		src << "You are too tired to sustain your form."
+		to_chat(src, "You are too tired to sustain your form.")
 		spawn(50) tooTiredMsg = 0
 
 mob/proc/cantSustainForm(drain) //TRUE se falta Ki pra sustentar uma forma; avisa (rate-limited). Evita transformar-e-reverter em loop. Bloqueia tambem com Ki <2% mesmo em forma masterizada (dreno 0).
 	if(Ki <= MaxKi*max(drain, 0.02))
 		if(!tooTiredMsg)
 			tooTiredMsg = 1
-			src << "You don't have enough Ki to sustain that form right now."
+			to_chat(src, "You don't have enough Ki to sustain that form right now.")
 			spawn(50) tooTiredMsg = 0
 		return TRUE
 	return FALSE
@@ -655,7 +655,7 @@ mob/proc/SSj4FP() //Super Saiyan 4 Full Power (estagio acima do SSJ4; liberado a
 	if(!Tail) return
 	transing=1
 	attackable=0
-	view(8)<<"<font color=#ffcc33 size=[TextSize]>[src]: HAAAAAAAAAAAAAAAHHHHHHHHHH!!!!"
+	to_chat(view(8), "<font color=#ffcc33 size=[TextSize]>[src]: HAAAAAAAAAAAAAAAHHHHHHHHHH!!!!")
 	emit_Sound('powerup.wav')
 	createShockwavemisc(loc,3)
 	spawn Quake()
@@ -667,7 +667,7 @@ mob/proc/SSj4FP() //Super Saiyan 4 Full Power (estagio acima do SSJ4; liberado a
 	ssj=5
 	ssjBuff=ssj_effective_mult()
 	emit_Sound('chargeaura.wav')
-	view(6)<<"<font color=#ffcc33>*A surge of golden power explodes around [src] as they reach Full Power!*"
+	to_chat(view(6), "<font color=#ffcc33>*A surge of golden power explodes around [src] as they reach Full Power!*")
 	transing=0
 	attackable=1
 
@@ -679,7 +679,7 @@ mob/proc/SSj4FPLB() //Super Saiyan 4 Limit Breaker (God Form: estagio acima do F
 	if(!Tail) return
 	transing=1
 	attackable=0
-	view(8)<<"<font color=red size=[TextSize]>[src]: HAAAAAAAAAAAAAAAAAHHHHHHHHHHHHHHH!!!!"
+	to_chat(view(8), "<font color=red size=[TextSize]>[src]: HAAAAAAAAAAAAAAAAAHHHHHHHHHHHHHHH!!!!")
 	emit_Sound('powerup.wav')
 	createShockwavemisc(loc,3)
 	spawn Quake()
@@ -691,6 +691,6 @@ mob/proc/SSj4FPLB() //Super Saiyan 4 Limit Breaker (God Form: estagio acima do F
 	ssj=6
 	ssjBuff=ssj_effective_mult()
 	emit_Sound('chargeaura.wav')
-	view(6)<<"<font color=red>*A blinding crimson aura erupts around [src] as they shatter their limit!*"
+	to_chat(view(6), "<font color=red>*A blinding crimson aura erupts around [src] as they shatter their limit!*")
 	transing=0
 	attackable=1

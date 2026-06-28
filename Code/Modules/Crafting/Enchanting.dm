@@ -60,7 +60,7 @@ obj/Enchanting
 					if(!(A.enchantment in usr.knownenchants))
 						studylist+=A
 				if(studylist.len==0)
-					usr<<"You have no catalysts to study!"
+					to_chat(usr, "You have no catalysts to study!")
 				else
 					var/obj/items/Material/Enchanting/Catalyst/choice = input(usr,"Which catalyst would you like to study? You can learn what enchantment it confers if you meditate long enough while studying it.","") as null|anything in studylist
 					if(!choice)
@@ -68,7 +68,7 @@ obj/Enchanting
 					else
 						usr.studyenchant=choice.enchantment
 						usr.studyenchanttimer=18000/max(choice.tier,1)
-						usr<<"You begin to study the [choice.name]'s magic. It will take you [usr.studyenchanttimer/10] seconds of meditation to complete your study"
+						to_chat(usr, "You begin to study the [choice.name]'s magic. It will take you [usr.studyenchanttimer/10] seconds of meditation to complete your study")
 			Enchant()
 				set category = null
 				set src in oview(1)
@@ -80,27 +80,27 @@ obj/Enchanting
 					if(E.enchantslots>=1)
 						itemlist+=E
 				if(itemlist.len==0)
-					usr<<"You have no items that can be enchanted! Items must have an open enchantment slot (q50 crafted items or higher)."
+					to_chat(usr, "You have no items that can be enchanted! Items must have an open enchantment slot (q50 crafted items or higher).")
 					return
 				var/list/catalist = list()
 				for(var/obj/items/Material/Enchanting/Catalyst/A in usr.contents)
 					if(A.enchantment in usr.knownenchants)
 						catalist+=A
 				if(catalist.len==0)
-					usr<<"You have no catalysts that you know how to use available."
+					to_chat(usr, "You have no catalysts that you know how to use available.")
 					return
 				var/list/sourcelist = list()
 				for(var/obj/items/Material/Enchanting/Source/B in usr.contents)
 					sourcelist+=B
 				if(sourcelist.len==0)
-					usr<<"You do not have an available source!"
+					to_chat(usr, "You do not have an available source!")
 					return
 				var/list/focuslist = list()
 				for(var/obj/items/Material/C in usr.contents)
 					if("Focus" in C.categories)
 						focuslist+=C
 				if(focuslist.len==0)
-					usr<<"You do not have an available focus!"
+					to_chat(usr, "You do not have an available focus!")
 					return
 				var/obj/items/Equipment/choice = input(usr,"Which item would you like to enchant?","") as null|anything in itemlist
 				if(!choice)
@@ -109,7 +109,7 @@ obj/Enchanting
 					if(D.enchanttype&&!istype(choice,D.enchanttype))
 						catalist-=D
 				if(catalist.len==0)
-					usr<<"You have no catalysts compatible with this item type."
+					to_chat(usr, "You have no catalysts compatible with this item type.")
 					return
 				var/obj/items/Material/Enchanting/Catalyst/enchant = input(usr,"Which catalyst would you like to use? Note that [choice.name] can only support enchantments of tier [choice.rarity] or lower.","") as null|anything in catalist
 				if(!enchant)
@@ -122,7 +122,7 @@ obj/Enchanting
 					return
 				var/maxtier = min(round(min(enchant.statvalues["Strength"],source.statvalues["Energy"]/10,focus.statvalues["Clarity"]/10,choice.rarity)),min(max(round(enchlevel/20+1.5),1),7))
 				if(maxtier<1)
-					usr<<"This set of items is not powerful enough to produce an enchantment!"
+					to_chat(usr, "This set of items is not powerful enough to produce an enchantment!")
 					return
 				var/createtier = input(usr,"What tier of [enchant.enchantment] enchantment would you like to apply? Your current set of materials can produce up to a [maxtier] tier enchantment (minimum of 1).","") as null|num
 				if(!createtier)
@@ -133,7 +133,7 @@ obj/Enchanting
 				choice.enchantslots-=1
 				usr.contents-=list(enchant,source,focus)
 				AddExp(usr,/datum/mastery/Crafting/Enchanting,100*createtier)
-				usr<<"You have successfully enchanted your [choice.name] with a tier [createtier] [enchant.enchantment] enchantment!"
+				to_chat(usr, "You have successfully enchanted your [choice.name] with a tier [createtier] [enchant.enchantment] enchantment!")
 
 			Disenchant()
 				set category = null
@@ -146,27 +146,27 @@ obj/Enchanting
 					if(E.enchants.len>0)
 						itemlist+=E
 				if(itemlist.len==0)
-					usr<<"You have no items that can be disenchanted!"
+					to_chat(usr, "You have no items that can be disenchanted!")
 					return
 				var/list/catalist = list()
 				for(var/obj/items/Material/Enchanting/Catalyst/A in usr.contents)
 					if(A.enchantment in usr.knownenchants)
 						catalist+=A
 				if(catalist.len==0)
-					usr<<"You have no catalysts that you know how to use available."
+					to_chat(usr, "You have no catalysts that you know how to use available.")
 					return
 				var/list/sourcelist = list()
 				for(var/obj/items/Material/Enchanting/Source/B in usr.contents)
 					sourcelist+=B
 				if(sourcelist.len==0)
-					usr<<"You do not have an available source!"
+					to_chat(usr, "You do not have an available source!")
 					return
 				var/list/focuslist = list()
 				for(var/obj/items/Material/C in usr.contents)
 					if("Focus" in C.categories)
 						focuslist+=C
 				if(focuslist.len==0)
-					usr<<"You do not have an available focus!"
+					to_chat(usr, "You do not have an available focus!")
 					return
 				var/obj/items/Equipment/choice = input(usr,"Which item would you like to disenchant?","") as null|anything in itemlist
 				if(!choice)
@@ -175,14 +175,14 @@ obj/Enchanting
 					if(D.enchanttype&&!istype(choice,D.enchanttype))
 						catalist-=D
 				if(catalist.len==0)
-					usr<<"You have no catalysts compatible with this item type."
+					to_chat(usr, "You have no catalysts compatible with this item type.")
 					return
 				var/list/disenchlist = list()
 				for(var/a in choice.enchants)
 					if(a in usr.knownenchants)
 						disenchlist+=a
 				if(disenchlist.len==0)
-					usr<<"You don't know how to remove any of these enchantments!"
+					to_chat(usr, "You don't know how to remove any of these enchantments!")
 					return
 				var/disenchant = input(usr,"Which enchantment would you like to remove?","") as null|anything in disenchlist
 				if(!disenchant)
@@ -191,19 +191,19 @@ obj/Enchanting
 					if(D1.enchantment!=disenchant||D1.statvalues["Strength"]<choice.enchants[disenchant])
 						catalist-=D1
 				if(catalist.len==0)
-					usr<<"You have no catalysts able to remove this enchantment."
+					to_chat(usr, "You have no catalysts able to remove this enchantment.")
 					return
 				for(var/obj/items/Material/Enchanting/Source/D2 in sourcelist)
 					if(D2.statvalues["Energy"]/10<choice.enchants[disenchant])
 						sourcelist-=D2
 				if(sourcelist.len==0)
-					usr<<"You have no sources powerful enough to remove this enchantment."
+					to_chat(usr, "You have no sources powerful enough to remove this enchantment.")
 					return
 				for(var/obj/items/Material/D3 in focuslist)
 					if(D3.statvalues["Clarity"]/10<choice.enchants[disenchant])
 						focuslist-=D3
 				if(focuslist.len==0)
-					usr<<"You have no focus powerful enough to remove this enchantment."
+					to_chat(usr, "You have no focus powerful enough to remove this enchantment.")
 					return
 				var/obj/items/Material/Enchanting/Catalyst/enchant = input(usr,"Which catalyst would you like to use?","") as null|anything in catalist
 				if(!enchant)
@@ -216,14 +216,14 @@ obj/Enchanting
 					return
 				var/maxtier = min(round(min(enchant.statvalues["Strength"],source.statvalues["Energy"]/10,focus.statvalues["Clarity"]/10,choice.rarity)),min(max(round(enchlevel/20+1.5),1),7))
 				if(maxtier<choice.enchants[disenchant])
-					usr<<"Your enchantment skill is not high enough to disenchant this effect!"
+					to_chat(usr, "Your enchantment skill is not high enough to disenchant this effect!")
 					return
 				AddExp(usr,/datum/mastery/Crafting/Enchanting,100*choice.enchants[disenchant])
 				choice.enchantnames-="[disenchant] [choice.enchants[disenchant]]"
 				choice.enchants-=disenchant
 				choice.enchantslots+=1
 				usr.contents-=list(enchant,source,focus)
-				usr<<"You have successfully disenchanted your [choice.name], removing the [disenchant] effect!"
+				to_chat(usr, "You have successfully disenchanted your [choice.name], removing the [disenchant] effect!")
 
 obj/items/Material
 	Enchanting//Catalysts and Sources will be here, Foci are things like gems
@@ -244,9 +244,9 @@ obj/items/Material
 			Description()
 				..()
 				if(!(enchantment in usr.knownenchants))
-					usr<<"You feel some strange power in this."
+					to_chat(usr, "You feel some strange power in this.")
 				else
-					usr<<"This object can confer the [enchantment] enchantment."
+					to_chat(usr, "This object can confer the [enchantment] enchantment.")
 			Vital_Shard
 				name = "Vital Shard"
 				enchantment = "Vitality"

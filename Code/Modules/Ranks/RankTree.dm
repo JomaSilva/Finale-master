@@ -24,10 +24,10 @@ datum/skill/tree/RankTree
 */
 /datum/skill/rank/RankChat/after_learn()
 	assignverb(/mob/Admin1/verb/RankChat)
-	savant<<"Rankchat Allowed"
+	to_chat(savant, "Rankchat Allowed")
 /datum/skill/rank/RankChat/before_forget()
 	unassignverb(/mob/Admin1/verb/RankChat)
-	savant<<"Rankchat disabled."
+	to_chat(savant, "Rankchat disabled.")
 /datum/skill/rank/RankChat/login(var/mob/logger)
 	..()
 	assignverb(/mob/Admin1/verb/RankChat)
@@ -44,10 +44,10 @@ datum/skill/tree/RankTree
 	enabled=1
 /datum/skill/rank/Narrate/after_learn()
 	assignverb(/mob/Admin1/verb/Narrate)
-	savant<<"Narrate Allowed"
+	to_chat(savant, "Narrate Allowed")
 /datum/skill/rank/Narrate/before_forget()
 	unassignverb(/mob/Admin1/verb/Narrate)
-	savant<<"Narrate Disallowed"
+	to_chat(savant, "Narrate Disallowed")
 /datum/skill/rank/Narrate/login(var/mob/logger)
 	..()
 	assignverb(/mob/Admin1/verb/Narrate)
@@ -129,11 +129,11 @@ mob/Admin1/verb
 		set category="Other"
 		switch(input(usr,"Global or local?") in list("Cancel","Global","Local"))
 			if("Local")
-				view(9)<<"<font color=red>[msg]"
+				to_chat(view(9), "<font color=red>[msg]")
 			if("Global")
-				world<<"<font color=red>[msg]"
+				to_chat(world, "<font color=red>[msg]")
 	RankChat(msg as text)
 		set category="Other"
 		for(var/mob/A)
 			if((A.Rank||A.Admin)&&A.client)
-				A<<"<font size=[A.TextSize]><font color=#FF5500>(RankChat)[usr.name]: [html_encode(msg)]"
+				to_chat(A, "<font size=[A.TextSize]><font color=#FF5500>(RankChat)[usr.name]: [html_encode(msg)]")

@@ -33,7 +33,7 @@ mob
 				if(TargetMob.HP>=10&&prob(30))
 					spawn TargetMob.Vampirification()
 			if(TargetMob.HP<5&&murderToggle)
-				view(TargetMob) << "[TargetMob] was killed by [usr], the vampire!"
+				to_chat(view(TargetMob), "[TargetMob] was killed by [usr], the vampire!")
 				spawn TargetMob.Death()
 			return TRUE
 		Vampirification()
@@ -49,7 +49,7 @@ mob
 				enable_visibility(/datum/mastery/Hidden/Vampirism)
 				assignverb(/mob/keyable/verb/Bite)
 				//willpowerMod += 0.5
-				world << "test"
+				to_chat(world, "test")
 				ParanormalBPMult += 0.2
 				ParanormalBPMult = min(1.2,VampireBPMultMin)
 				CanEat = 0
@@ -85,7 +85,7 @@ mob/keyable/verb/Bite()
 		break
 	if(isnull(TargetMob)) return
 	if(TargetMob.dead==1)
-		usr<<"You can't bite dead people, they lack nutrients."
+		to_chat(usr, "You can't bite dead people, they lack nutrients.")
 		return
 	if(usr.IsAVampire)
 		var/turnChoice = alert(usr,"Turn them?","","Yes","No")
@@ -109,9 +109,9 @@ obj/Artifacts/Blood_Chalice
 		set src in oview(1)
 		if(!usr.IsAVampire&&usr.CanEat&&!usr.IsAWereWolf)
 			usr.Vampirification()
-			view(usr)<<"[usr] has become a Vampire!!!"
+			to_chat(view(usr), "[usr] has become a Vampire!!!")
 		else
-			usr<<"The liquids simply pass through your system. The chalice cannot do anything for you."
+			to_chat(usr, "The liquids simply pass through your system. The chalice cannot do anything for you.")
 
 obj/Artifacts/White_Chalice
 	//parent_type = /obj/items //This allows obj/Artifact to access ALL procedures and variables of /item.
@@ -124,6 +124,6 @@ obj/Artifacts/White_Chalice
 		set src in oview(1)
 		if(usr.IsAVampire&&!usr.CanEat)
 			usr.UnVampire()
-			view(usr)<<"[usr] has been cured of Vampirism!!!"
+			to_chat(view(usr), "[usr] has been cured of Vampirism!!!")
 		else
-			usr<<"The liquids simply pass through your system. The chalice cannot do anything for you."
+			to_chat(usr, "The liquids simply pass through your system. The chalice cannot do anything for you.")

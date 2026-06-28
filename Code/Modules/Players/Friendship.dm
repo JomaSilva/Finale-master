@@ -80,7 +80,7 @@ mob/proc/friend_harmed_by(var/mob/harmer, var/amt)
 		if(A == src || A == harmer || !A.client || A.isNPC || !A.signature) continue
 		if(A.is_friend(src) && (harmer.signature in A.rivals))
 			A.add_enmity(harmer, amt)
-			A << "<font color=red>Seeing [src] hurt at the hands of [harmer] fuels your hatred.</font>"
+			to_chat(A, "<font color=red>Seeing [src] hurt at the hands of [harmer] fuels your hatred.</font>")
 
 mob/verb/Request_Friendship()
 	set category = null
@@ -89,38 +89,38 @@ mob/verb/Request_Friendship()
 	if(src == usr || !usr.client || !src.client || usr.isNPC || src.isNPC) return
 	if(!usr.signature || !src.signature) return
 	if(usr.is_friend(src))
-		usr << "You are already friends with [src]."
+		to_chat(usr, "You are already friends with [src].")
 		return
 	src.pendingFriendReq = usr.signature
 	src.pendingFriendName = usr.name
-	usr << "<font color=#88cc88>You ask [src] to be your friend.</font>"
-	src << "<font color=#88cc88><b>[usr] wants to be your friend!</b> Right-click them and choose 'Accept Friendship' (or 'Decline Friendship').</font>"
+	to_chat(usr, "<font color=#88cc88>You ask [src] to be your friend.</font>")
+	to_chat(src, "<font color=#88cc88><b>[usr] wants to be your friend!</b> Right-click them and choose 'Accept Friendship' (or 'Decline Friendship').</font>")
 
 mob/verb/Accept_Friendship()
 	set category = null
 	set name = "Accept Friendship"
 	set src in oview(3)
 	if(usr.pendingFriendReq != src.signature)
-		usr << "[src] hasn't asked to be your friend."
+		to_chat(usr, "[src] hasn't asked to be your friend.")
 		return
 	usr.pendingFriendReq = null
 	usr.pendingFriendName = null
 	usr.friendship["[src.signature]"] = max(usr.friendship["[src.signature]"], FRIEND_REQ)
 	src.friendship["[usr.signature]"] = max(src.friendship["[usr.signature]"], FRIEND_REQ)
-	usr << "<font color=#88cc88><b>You and [src] are now friends!</b></font>"
-	src << "<font color=#88cc88><b>[usr] accepted your friendship!</b></font>"
+	to_chat(usr, "<font color=#88cc88><b>You and [src] are now friends!</b></font>")
+	to_chat(src, "<font color=#88cc88><b>[usr] accepted your friendship!</b></font>")
 
 mob/verb/Decline_Friendship()
 	set category = null
 	set name = "Decline Friendship"
 	set src in oview(3)
 	if(usr.pendingFriendReq != src.signature)
-		usr << "[src] hasn't asked to be your friend."
+		to_chat(usr, "[src] hasn't asked to be your friend.")
 		return
 	usr.pendingFriendReq = null
 	usr.pendingFriendName = null
-	usr << "You decline [src]'s offer of friendship."
-	src << "[usr] declined your friendship request."
+	to_chat(usr, "You decline [src]'s offer of friendship.")
+	to_chat(src, "[usr] declined your friendship request.")
 
 mob/verb/Declare_Rival()
 	set category = null
@@ -129,10 +129,10 @@ mob/verb/Declare_Rival()
 	if(src == usr || !src.signature || src.isNPC || !src.client) return
 	if(src.signature in usr.rivals)
 		usr.rivals -= src.signature
-		usr << "You no longer consider [src] a rival."
+		to_chat(usr, "You no longer consider [src] a rival.")
 	else
 		usr.rivals += src.signature
-		usr << "<font color=red>You have declared [src] your rival. Their attacks on you — or on your friends — will breed enmity.</font>"
+		to_chat(usr, "<font color=red>You have declared [src] your rival. Their attacks on you — or on your friends — will breed enmity.</font>")
 
 // =====================================================================
 // SUPER SAIYAN 3 — unlike SSJ1/SSJ2 it is NOT awakened by rage. It is
@@ -149,5 +149,5 @@ mob/proc/CheckSSj3Learn()
 	if(!ssj3LearnReq) ssj3LearnReq = ssj3at * (rand(200,300)/100) // random 2.0x - 3.0x per character
 	if(expressedBP >= ssj3LearnReq && kiratio >= 1) // reached the power AND holding full ki = mastery of control
 		ssj3able = 1
-		src << "<font color=yellow><b>Through relentless training and flawless ki control, a new power stirs within you — Super Saiyan 3 is finally within your grasp!</b></font>"
+		to_chat(src, "<font color=yellow><b>Through relentless training and flawless ki control, a new power stirs within you — Super Saiyan 3 is finally within your grasp!</b></font>")
 		emit_Sound('powerup.wav')

@@ -51,14 +51,14 @@
 			if(T.type == ptree)
 				for(var/datum/skill/nS in T.constituentskills)
 					if(nS.type==S)
-						if(!nS.enabled) savant<<"You can now learn [nS.name]!"
+						if(!nS.enabled) to_chat(savant, "You can now learn [nS.name]!")
 						nS.enabled=1
 	proc/disableskill(var/datum/skill/S)
 		for(var/datum/skill/tree/T in savant.possessed_trees)
 			if(T.type == ptree)
 				for(var/datum/skill/nS in T.constituentskills)
 					if(nS.type==S)
-						if(nS.enabled) savant<<"You can no longer learn [nS.name]!"
+						if(nS.enabled) to_chat(savant, "You can no longer learn [nS.name]!")
 						nS.enabled=0
 
 //Basic Mastery Block
@@ -73,8 +73,8 @@
 	skillcost = 1
 	tier = 0
 	after_learn()
-		savant<<"It flows through you. You will never forget this experience, and you don't think you can. Akin to surfacing for air after nearly drowning, this feeling permates through your body."
-		savant<<"You can now write your knowledge of ki skills down for others to read."
+		to_chat(savant, "It flows through you. You will never forget this experience, and you don't think you can. Akin to surfacing for air after nearly drowning, this feeling permates through your body.")
+		to_chat(savant, "You can now write your knowledge of ki skills down for others to read.")
 		savant.KiUnlockPercent=1
 		savant.MeditateGivesKiRegen=1
 		assignverb(/mob/keyable/verb/Write_Teachings)
@@ -82,7 +82,7 @@
 		..()
 		if(levelup)
 			levelup=0
-			savant<<"You feel your ki flowing within you! Ki Unlocked is now level [level]!"
+			to_chat(savant, "You feel your ki flowing within you! Ki Unlocked is now level [level]!")
 			/*if(savant.MaxKi < 300/savant.KiMod) expbarrier=(5000*1.03**(level+(300/(savant.MaxKi*savant.KiMod))))//general formula for leveling curve
 			else */
 			expbarrier=(5000*1.03**level)
@@ -99,21 +99,21 @@
 				savant.genome.add_to_stat("Energy Level",0.2)//totals up to a whole point of KiMod at mastery
 				savant.kiskillBuff+=0.1//0.5 points of ki skill, or 5 displayed
 			if(level == 5)//mastery breakpoints, you can allow unique behavior such as granting skills, beyond the default levelup bonuses
-				savant << "You feel a bizarre presence near you...it seems to be coming from other nearby living beings. What is this sensation?"
+				to_chat(savant, "You feel a bizarre presence near you...it seems to be coming from other nearby living beings. What is this sensation?")
 				var/datum/skill/A = new/datum/skill/sense
 				A.learn(savant, 1)
 			if(level == 10)//learn basic kiai
-				savant<<"You feel as if you can force your ki out of your body, like a blast of air. You have learned the basic Kiai!"
+				to_chat(savant, "You feel as if you can force your ki out of your body, like a blast of air. You have learned the basic Kiai!")
 				assignverb(/mob/keyable/verb/Kiai)
 			if(level == 30)//learn flight
 				var/datum/skill/A = new/datum/skill/flying
 				A.learn(savant, 0)
 			if(level == 35)
-				savant<<"You've learned to expel your ki into a damaging sphere. You have learned the basic Blast!"
+				to_chat(savant, "You've learned to expel your ki into a damaging sphere. You have learned the basic Blast!")
 				assignverb(/mob/keyable/verb/Basic_Blast)
 				savant.kieffusionskill+=1
 			if(level == 50)
-				savant<<"You've learned a advanced form of training! You can create little targets made out of Ki, and then shoot at them!"
+				to_chat(savant, "You've learned a advanced form of training! You can create little targets made out of Ki, and then shoot at them!")
 				assignverb(/mob/keyable/verb/Ki_Targets)
 			if(level == 75)//boost to ki regen and ki mod
 				savant.kiregenMod+=0.30
@@ -156,12 +156,12 @@
 	tier = 1
 	enabled = 0//anything after Ki Unlocked has prerequisites to meet
 	after_learn()
-		savant<<"You realize that the boundaries to your sensing could be limitless!"
+		to_chat(savant, "You realize that the boundaries to your sensing could be limitless!")
 	effector()
 		..()
 		if(levelup)
 			levelup=0
-			savant<<"You feel the ki around you! Basic Ki Awareness is now level [level]!"
+			to_chat(savant, "You feel the ki around you! Basic Ki Awareness is now level [level]!")
 			expbarrier=(5000*1.03**level)
 			if(level % 5 == 0)
 				savant.kiawarenessskill+=1
@@ -170,11 +170,11 @@
 			if(level % 20 == 0)
 				savant.kiskillBuff+=0.05
 			if(level == 10)
-				savant<<"You've learned to sense how others are using their ki. You could learn something from them."
+				to_chat(savant, "You've learned to sense how others are using their ki. You could learn something from them.")
 				assignverb(/mob/keyable/verb/Study_Other)
 				assignverb(/mob/keyable/verb/Focus_Skill)
 			if(level == 50)
-				savant<<"You feel aware enough to judge someone else's ki skill."
+				to_chat(savant, "You feel aware enough to judge someone else's ki skill.")
 				assignverb(/mob/keyable/verb/Assess_Ki_Skill)
 				savant.kicontrolskill+=1
 			if(level == 75)
@@ -210,12 +210,12 @@
 	tier = 1
 	enabled = 0
 	after_learn()
-		savant<<"You start to truly feel the ki flow within you!"
+		to_chat(savant, "You start to truly feel the ki flow within you!")
 	effector()
 		..()
 		if(levelup)
 			levelup=0
-			savant<<"You feel the ki within you! Basic Ki Circulation is now level [level]!"
+			to_chat(savant, "You feel the ki within you! Basic Ki Circulation is now level [level]!")
 			expbarrier=(5000*1.03**level)
 			if(level % 5 == 0)
 				savant.kicirculationskill+=1
@@ -226,8 +226,8 @@
 				savant.willpowerMod+=0.01
 				savant.speedBuff+=0.1
 			if(level == 30)//learn Focus buff
-				savant<<"You have learned to focus on your ki circulation, making greater amounts available at once!"
-				savant<<"You feel like simply meditating can teach you nothing more"
+				to_chat(savant, "You have learned to focus on your ki circulation, making greater amounts available at once!")
+				to_chat(savant, "You feel like simply meditating can teach you nothing more")
 				assignverb(/mob/keyable/verb/Focus)
 				savant.kibuffskill+=1
 			if(level == 50)
@@ -262,12 +262,12 @@
 	tier = 1
 	enabled = 0
 	after_learn()
-		savant<<"You start to bend your ki to your will!"
+		to_chat(savant, "You start to bend your ki to your will!")
 	effector()
 		..()
 		if(levelup)
 			levelup=0
-			savant<<"You feel greater control of your ki! Basic Ki Control is now level [level]!"
+			to_chat(savant, "You feel greater control of your ki! Basic Ki Control is now level [level]!")
 			expbarrier=(5000*1.03**level)
 			if(level % 5 == 0)
 				savant.kicontrolskill+=1
@@ -277,17 +277,17 @@
 			if(level % 20 == 0)
 				savant.genome.add_to_stat("Energy Level",0.01)
 			if(level == 5)//learn Power Control
-				savant<<"You have learned to control your ki, allowing you to increase your power! (Press C to charge.)"
+				to_chat(savant, "You have learned to control your ki, allowing you to increase your power! (Press C to charge.)")
 				savant.canPower = 1
 				assignverb(/mob/keyable/verb/Power_Control)
 				assignverb(/mob/keyable/verb/Conceal_Power)
 				savant.kigatheringskill+=5
 			if(level == 30)
-				savant<<"You feel as though you can create a guided blast!"
+				to_chat(savant, "You feel as though you can create a guided blast!")
 				assignverb(/mob/keyable/verb/Guided_Ball)
 				savant.guidedskill+=1
 			if(level == 50)
-				savant<<"You can now surround a target with blasts! You've learned the Ki Bomb!"
+				to_chat(savant, "You can now surround a target with blasts! You've learned the Ki Bomb!")
 				assignverb(/mob/keyable/verb/Ki_Bomb)
 				savant.targetedskill+=1
 				savant.kicontrolskill+=1
@@ -330,12 +330,12 @@
 	var/tmp/lastki=0
 	var/tmp/diffki=0
 	after_learn()
-		savant<<"You become more efficient in your ki usage!"
+		to_chat(savant, "You become more efficient in your ki usage!")
 	effector()
 		..()
 		if(levelup)
 			levelup=0
-			savant<<"You feel more efficient with your ki! Basic Ki Efficiency is now level [level]!"
+			to_chat(savant, "You feel more efficient with your ki! Basic Ki Efficiency is now level [level]!")
 			expbarrier=(5000*1.03**level)
 			if(level % 5 == 0)
 				savant.kiefficiencyskill+=1
@@ -346,7 +346,7 @@
 			if(level % 20 == 0)
 				savant.kicontrolskill+=1
 			if(level == 30)//learn Efficiency
-				savant<<"You have learned to control your ki, allowing you to increase your efficiency!"
+				to_chat(savant, "You have learned to control your ki, allowing you to increase your efficiency!")
 				assignverb(/mob/keyable/verb/Efficiency)
 				savant.kigatheringskill+=2
 				savant.kibuffskill+=1
@@ -381,12 +381,12 @@
 	tier = 1
 	enabled = 0
 	after_learn()
-		savant<<"You feel a wellspring of ki within you!"
+		to_chat(savant, "You feel a wellspring of ki within you!")
 	effector()
 		..()
 		if(levelup)
 			levelup=0
-			savant<<"You feel your ki welling within you! Basic Ki Gathering is now level [level]!"
+			to_chat(savant, "You feel your ki welling within you! Basic Ki Gathering is now level [level]!")
 			expbarrier=(5000*1.03**level)
 			if(level % 5 == 0)
 				savant.kigatheringskill+=1
@@ -426,12 +426,12 @@
 	tier = 3
 	enabled = 0//anything after Ki Unlocked has prerequisites to meet
 	after_learn()
-		savant<<"You are becoming adept at sensing energy!"
+		to_chat(savant, "You are becoming adept at sensing energy!")
 	effector()
 		..()
 		if(levelup)
 			levelup=0
-			savant<<"You truly feel the ki around you! Advanced Ki Awareness is now level [level]!"
+			to_chat(savant, "You truly feel the ki around you! Advanced Ki Awareness is now level [level]!")
 			expbarrier=(10000*1.03**level)
 			if(level % 5 == 0)
 				savant.kiawarenessskill+=2
@@ -441,10 +441,10 @@
 				savant.kiskillBuff+=0.1
 				savant.kidefBuff+=0.05
 			if(level == 10)
-				savant<<"You've learned to communicate directly with others using your ki."
+				to_chat(savant, "You've learned to communicate directly with others using your ki.")
 				assignverb(/mob/keyable/verb/Telepathy)
 			if(level == 50)
-				savant<<"You feel as though you can pinpoint someone's ki and sense their environment."
+				to_chat(savant, "You feel as though you can pinpoint someone's ki and sense their environment.")
 				assignverb(/mob/keyable/verb/Observe)
 			if(level == 75)
 				savant.genome.add_to_stat("Energy Level",0.1)
@@ -485,12 +485,12 @@ mob/var/buffregen=0//ki buffs will speedBuff natural healing
 	tier = 3
 	enabled = 0
 	after_learn()
-		savant<<"Your ki flows almost effortlessly within you!"
+		to_chat(savant, "Your ki flows almost effortlessly within you!")
 	effector()
 		..()
 		if(levelup)
 			levelup=0
-			savant<<"You truly feel the ki within you! Advanced Ki Circulation is now level [level]!"
+			to_chat(savant, "You truly feel the ki within you! Advanced Ki Circulation is now level [level]!")
 			expbarrier=(10000*1.03**level)
 			if(level % 5 == 0)
 				savant.kicirculationskill+=2
@@ -500,7 +500,7 @@ mob/var/buffregen=0//ki buffs will speedBuff natural healing
 				savant.willpowerMod+=0.05
 				savant.speedBuff+=0.1
 			if(level == 30)
-				savant<<"Your ability to circulate ki now improves your regeneration while you have a ki buff on!"
+				to_chat(savant, "Your ability to circulate ki now improves your regeneration while you have a ki buff on!")
 				savant.buffregen=1
 			if(level == 50)
 				savant.kidefBuff+=0.5
@@ -533,12 +533,12 @@ mob/var/buffregen=0//ki buffs will speedBuff natural healing
 	tier = 3
 	enabled = 0
 	after_learn()
-		savant<<"You skillfully bend your ki to your will!"
+		to_chat(savant, "You skillfully bend your ki to your will!")
 	effector()
 		..()
 		if(levelup)
 			levelup=0
-			savant<<"You feel deep control of your ki! Advanced Ki Control is now level [level]!"
+			to_chat(savant, "You feel deep control of your ki! Advanced Ki Control is now level [level]!")
 			expbarrier=(10000*1.03**level)
 			if(level % 5 == 0)
 				savant.kicontrolskill+=2
@@ -575,12 +575,12 @@ mob/var/buffregen=0//ki buffs will speedBuff natural healing
 	var/tmp/lastki=0
 	var/tmp/diffki=0
 	after_learn()
-		savant<<"You become even more efficient with your ki!"
+		to_chat(savant, "You become even more efficient with your ki!")
 	effector()
 		..()
 		if(levelup)
 			levelup=0
-			savant<<"You feel very efficient with your ki! Advanced Ki Efficiency is now level [level]!"
+			to_chat(savant, "You feel very efficient with your ki! Advanced Ki Efficiency is now level [level]!")
 			expbarrier=(10000*1.03**level)
 			if(level % 5 == 0)
 				savant.kiefficiencyskill+=2
@@ -617,12 +617,12 @@ mob/var/buffregen=0//ki buffs will speedBuff natural healing
 	tier = 3
 	enabled = 0
 	after_learn()
-		savant<<"Your ki reserves are overflowing!"
+		to_chat(savant, "Your ki reserves are overflowing!")
 	effector()
 		..()
 		if(levelup)
 			levelup=0
-			savant<<"Your ki overflows within you! Advanced Ki Gathering is now level [level]!"
+			to_chat(savant, "Your ki overflows within you! Advanced Ki Gathering is now level [level]!")
 			expbarrier=(10000*1.03**level)
 			if(level % 5 == 0)
 				savant.kigatheringskill+=2
@@ -658,12 +658,12 @@ mob/var/buffregen=0//ki buffs will speedBuff natural healing
 	tier = 5
 	enabled = 0//anything after Ki Unlocked has prerequisites to meet
 	after_learn()
-		savant<<"You are a master at sensing energy!"
+		to_chat(savant, "You are a master at sensing energy!")
 	effector()
 		..()
 		if(levelup)
 			levelup=0
-			savant<<"You are one with the ki around you! Perfect Ki Awareness is now level [level]!"
+			to_chat(savant, "You are one with the ki around you! Perfect Ki Awareness is now level [level]!")
 			expbarrier=(20000*1.03**level)
 			if(level % 5 == 0)
 				savant.kiawarenessskill+=1
@@ -702,12 +702,12 @@ mob/var/buffregen=0//ki buffs will speedBuff natural healing
 	tier = 5
 	enabled = 0
 	after_learn()
-		savant<<"Your ki flows effortlessly within you!"
+		to_chat(savant, "Your ki flows effortlessly within you!")
 	effector()
 		..()
 		if(levelup)
 			levelup=0
-			savant<<"Your ki flows effortlessly! Perfect Ki Circulation is now level [level]!"
+			to_chat(savant, "Your ki flows effortlessly! Perfect Ki Circulation is now level [level]!")
 			expbarrier=(10000*1.03**level)
 			if(level % 5 == 0)
 				savant.kicirculationskill+=1
@@ -743,12 +743,12 @@ mob/var/buffregen=0//ki buffs will speedBuff natural healing
 	tier = 5
 	enabled = 0
 	after_learn()
-		savant<<"You masterfully bend your ki to your will!"
+		to_chat(savant, "You masterfully bend your ki to your will!")
 	effector()
 		..()
 		if(levelup)
 			levelup=0
-			savant<<"You feel perfect control of your ki! Perfect Ki Control is now level [level]!"
+			to_chat(savant, "You feel perfect control of your ki! Perfect Ki Control is now level [level]!")
 			expbarrier=(20000*1.03**level)
 			if(level % 5 == 0)
 				savant.kicontrolskill+=1
@@ -784,12 +784,12 @@ mob/var/buffregen=0//ki buffs will speedBuff natural healing
 	var/tmp/lastki=0
 	var/tmp/diffki=0
 	after_learn()
-		savant<<"You become masterfully efficient with your ki!"
+		to_chat(savant, "You become masterfully efficient with your ki!")
 	effector()
 		..()
 		if(levelup)
 			levelup=0
-			savant<<"You feel perfectly efficient with your ki! Perfect Ki Efficiency is now level [level]!"
+			to_chat(savant, "You feel perfectly efficient with your ki! Perfect Ki Efficiency is now level [level]!")
 			expbarrier=(20000*1.03**level)
 			if(level % 5 == 0)
 				savant.kiefficiencyskill+=1
@@ -825,12 +825,12 @@ mob/var/buffregen=0//ki buffs will speedBuff natural healing
 	tier = 5
 	enabled = 0
 	after_learn()
-		savant<<"Your ki reserves are limitless!"
+		to_chat(savant, "Your ki reserves are limitless!")
 	effector()
 		..()
 		if(levelup)
 			levelup=0
-			savant<<"Your ki is limitless within you! Perfect Ki Gathering is now level [level]!"
+			to_chat(savant, "Your ki is limitless within you! Perfect Ki Gathering is now level [level]!")
 			expbarrier=(20000*1.03**level)
 			if(level % 5 == 0)
 				savant.kigatheringskill+=1

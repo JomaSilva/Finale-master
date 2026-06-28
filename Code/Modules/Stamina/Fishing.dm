@@ -12,7 +12,7 @@ obj/items
 			else
 				return
 			if(usr.FishingSkill<1)
-				usr<<"You don't know how to fish?"
+				to_chat(usr, "You don't know how to fish?")
 				return
 			if(!usr.fishing)
 				usr.fishing = 1
@@ -22,8 +22,8 @@ obj/items
 					if(T.Water)
 						waterNearby+=1
 				if(waterNearby)
-					usr<<"You cast your line out. Don't move or else you'll scare the fish!"
-					oview(usr) << "[usr] casts a line out."
+					to_chat(usr, "You cast your line out. Don't move or else you'll scare the fish!")
+					to_chat(oview(usr), "[usr] casts a line out.")
 					var/obj/bobber/nB = new (usr.loc)
 					step(nB,usr.dir)
 					nB.ownersig = usr.signature
@@ -51,10 +51,10 @@ obj/items
 						spawn(100)
 							if(usr.FishCaught) usr.FishCaught-=1
 					del(nB)
-				else usr<<"You have to be near a body of water for this to work."
+				else to_chat(usr, "You have to be near a body of water for this to work.")
 			else
 				usr.fishing=0
-				usr<<"You stop fishing."
+				to_chat(usr, "You stop fishing.")
 		var
 			cooldown
 	food
@@ -138,6 +138,6 @@ obj/bobber
 			icon_state = ""
 			var/gain = usr.GenerateFish()
 			AddExp(usr,/datum/mastery/Life/Fishing,100*gain)
-			usr<<"You caught a fish!!"
-			oview(usr) << "[usr] catches a fish!"
+			to_chat(usr, "You caught a fish!!")
+			to_chat(oview(usr), "[usr] catches a fish!")
 			fishup = 0

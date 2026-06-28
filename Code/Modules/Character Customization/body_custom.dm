@@ -106,7 +106,7 @@ mob/proc/racedone_remove()
 
 mob/proc/formchoose(rtype)
 	var/list/skin_list = list()
-	usr << "Choose your form icons. You have a maximum of six forms. (Don't ask about the sixth.). If you're a biodroid, you don't need any more than 3. You start in form 1 if Biodroid, form 4 if Frost Demon."
+	to_chat(usr, "Choose your form icons. You have a maximum of six forms. (Don't ask about the sixth.). If you're a biodroid, you don't need any more than 3. You start in form 1 if Biodroid, form 4 if Frost Demon.")
 	if("Biodroid" == rtype)
 		truehair=null
 		skin_list += 'Bio Android 1.dmi'
@@ -233,7 +233,7 @@ obj/Dummy_Form_Icon
 			if(4) usr.form4icon = icon
 			if(5) usr.form5icon = icon
 			if(6) usr.form6icon = icon
-		usr << "Form [usr.temp_form_var] updated."
+		to_chat(usr, "Form [usr.temp_form_var] updated.")
 obj/formwindowverbs
 	IsntAItem=1
 	verb/racedone()

@@ -31,7 +31,7 @@
 	skillcost = 2
 	after_learn()
 		savant.hasayyform = 2
-		savant<<"You can transform!"
+		to_chat(savant, "You can transform!")
 
 /datum/skill/general/imitation
 	skilltype = "Physical"
@@ -43,13 +43,13 @@
 
 /datum/skill/general/imitation/after_learn()
 	savant.contents+=new/obj/Imitation
-	savant<<"You can disguse yourself!"
+	to_chat(savant, "You can disguse yourself!")
 
 /datum/skill/general/imitation/before_forget()
 	for(var/obj/D in savant.contents)
 		if(D.name=="Imitation")
 			del(D)
-	savant<<"You've forgotten how to disguise yourself!?"
+	to_chat(savant, "You've forgotten how to disguise yourself!?")
 
 /datum/skill/general/regenerate
 	skilltype = "Ki"
@@ -63,11 +63,11 @@
 	after_learn()
 		assignverb(/mob/keyable/verb/Regenerate)
 		savant.genome.add_to_stat("Regeneration",5)
-		savant<<"You can now regenerate from attacks!"
+		to_chat(savant, "You can now regenerate from attacks!")
 	before_forget()
 		unassignverb(/mob/keyable/verb/Regenerate)
 		savant.genome.sub_to_stat("Regeneration",5)
-		savant<<"You've forgotten how to regenerate!?"
+		to_chat(savant, "You've forgotten how to regenerate!?")
 	login(var/mob/logger)
 		..()
 		assignverb(/mob/keyable/verb/Regenerate)
@@ -81,7 +81,7 @@
 		if(stamina > stamreq && !KO && !med && !train && canfight && !basicCD)
 			basicCD += 15
 			regen = 1
-			usr << "You start regenerating. Stay still to continue regernating."
+			to_chat(usr, "You start regenerating. Stay still to continue regernating.")
 			var/oldloc = loc
 			while(regen && stamina > stamreq && !KO && !med && !train && canfight && canmove && oldloc == usr.loc && HP < 100)
 				stamina -= stamreq
@@ -92,7 +92,7 @@
 						V.RegrowLimb()
 						break
 				sleep(35)
-			usr << "You stop regenerating."
+			to_chat(usr, "You stop regenerating.")
 			oldloc = null
 			sleep(15)
 			regen = 0
@@ -108,10 +108,10 @@
 
 /datum/skill/general/timefreeze/after_learn()
 	assignverb(/mob/keyable/verb/Freeze)
-	savant<<"You can freeze time for a few individuals!"
+	to_chat(savant, "You can freeze time for a few individuals!")
 /datum/skill/general/timefreeze/before_forget()
 	unassignverb(/mob/keyable/verb/Freeze)
-	savant<<"You've forgotten how to freeze time!"
+	to_chat(savant, "You've forgotten how to freeze time!")
 /datum/skill/general/timefreeze/login(var/mob/logger)
 	..()
 	assignverb(/mob/keyable/verb/Freeze)
@@ -128,7 +128,7 @@
 
 /datum/skill/Perfect_Metabolism/after_learn()
 	savant.partplant = 1
-	savant<<"You can survive off of water now!"
+	to_chat(savant, "You can survive off of water now!")
 
 /datum/skill/general/invisible
 	skilltype = "Ki"
@@ -142,10 +142,10 @@
 	after_learn()
 		assignverb(/mob/keyable/verb/Invisibility)
 		pstseeinvis = savant.see_invisible
-		savant<<"You can now become invisible!"
+		to_chat(savant, "You can now become invisible!")
 	before_forget()
 		unassignverb(/mob/keyable/verb/Invisibility)
-		savant<<"You've forgotten how to become invisible!?"
+		to_chat(savant, "You've forgotten how to become invisible!?")
 		savant.see_invisible = pstseeinvis
 	login(var/mob/logger)
 		..()
@@ -165,7 +165,7 @@ mob/keyable/verb/Invisibility()
 		if(!see_invisible)
 			see_invisible = 1
 		else pstinvising = 1
-		usr<<"You are invisible."
+		to_chat(usr, "You are invisible.")
 		spawn
 			while(invising)
 				sleep(10)
@@ -176,11 +176,11 @@ mob/keyable/verb/Invisibility()
 				if(usr.Ki<10)
 					invising=0
 					usr.invisibility = 0
-					usr<<"You can no longer sustain the invisibility."
+					to_chat(usr, "You can no longer sustain the invisibility.")
 			if(pstinvising == 0)
 				see_invisible = 0
 			usr.invisibility = 0
-			usr<<"You are no longer invisible."
+			to_chat(usr, "You are no longer invisible.")
 	else
 		invising=0
 		if(pstinvising == 0)

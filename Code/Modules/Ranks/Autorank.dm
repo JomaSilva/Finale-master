@@ -3,11 +3,11 @@ mob/Admin3/verb/Ranks_Automatically()
 	set category = "Admin"
 	if(AutorankOn)
 		AutorankOn=0
-		world<<"Autorank has been turned off."
+		to_chat(world, "Autorank has been turned off.")
 		return
 	if(!AutorankOn)
 		AutorankOn=1
-		world<<"Autorank has been turned on."
+		to_chat(world, "Autorank has been turned on.")
 		return
 mob/Admin3/verb/GiveAutoRanks()
 	set name="Give Auto Ranks"
@@ -209,9 +209,9 @@ mob/proc
 proc
 	AutoRank()
 	//Gives autorank. Following variable sees if ANY of this happens in the first place.
-		world<<"Autorank start."
+		to_chat(world, "Autorank start.")
 		if(AutorankOn)
-			world<<"Autorank on."
+			to_chat(world, "Autorank on.")
 			for(var/mob/M in player_list)
 				if(M.GettingRank==0)
 					M.GettingRank=1

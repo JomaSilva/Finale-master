@@ -257,14 +257,14 @@ mob/Admin3/verb/Planet_Options()
 			PlanetDisableList-=input(usr,"Type the name of the planet EXACTLY how you see it! Alternatively, find the planet in space, edit it, find the planetType variable, and input it here.") as text
 		if("Check")
 			for(var/A in PlanetDisableList)
-				usr << "Toggle Planet: [A] is disabled."
+				to_chat(usr, "Toggle Planet: [A] is disabled.")
 		if("Toggle")
 			if(canplanetdestroy)
 				canplanetdestroy = 0
-				world << "Planet Destroy off."
+				to_chat(world, "Planet Destroy off.")
 			else
 				canplanetdestroy = 1
-				world << "Planet Destroy on."
+				to_chat(world, "Planet Destroy on.")
 		if("Restore/Destroy")
 			var/list/deadlist = list()
 			for(var/obj/Planets/P)
@@ -274,10 +274,10 @@ mob/Admin3/verb/Planet_Options()
 				if(!isnull(revivespecific))
 					if(revivespecific.isDestroyed)
 						revivespecific.isDestroyed = 0
-						world << "[revivespecific] restored."
+						to_chat(world, "[revivespecific] restored.")
 					else
 						revivespecific.isDestroyed = 1
-						world << "[revivespecific] destroyed."
+						to_chat(world, "[revivespecific] destroyed.")
 
 
 mob/keyable/verb/Planet_Destroy()
@@ -286,7 +286,7 @@ mob/keyable/verb/Planet_Destroy()
 	set waitfor =0
 	set background = 1
 	if(!usr.isVillain)
-		usr << "<font color=red>Only a Villain has the will to raze a planet.</font>"
+		to_chat(usr, "<font color=red>Only a Villain has the will to raze a planet.</font>")
 		return
 	if(usr.Ki>=1000*BaseDrain&&usr.expressedBP>=10000*usr.Planetgrav)
 		var/obj/Planets/currentP
@@ -294,11 +294,11 @@ mob/keyable/verb/Planet_Destroy()
 			if(P.planetType==usr.Planet)
 				currentP = P.planetType
 				if(!P.destroyAble||usr.Planet=="Space"||!canplanetdestroy)
-					usr << "You can't use Planet Destroy here."
+					to_chat(usr, "You can't use Planet Destroy here.")
 					return
 				break
 		if(!currentP)
-			usr << "You can't use Planet Destroy here."
+			to_chat(usr, "You can't use Planet Destroy here.")
 			return
 		usr.Ki-=1000*BaseDrain
 		switch(input("Destroy this Planet?","",text) in list("No","Yes"))
@@ -309,7 +309,7 @@ mob/keyable/verb/Planet_Destroy()
 					if(P.planetType==currentP)
 						P.isBeingDestroyed = 1
 						break
-				view(usr)<<"<font color=yellow>*[usr] begins focusing their energy on destroying the planet!*"
+				to_chat(view(usr), "<font color=yellow>*[usr] begins focusing their energy on destroying the planet!*")
 				WriteToLog("rplog","[usr] blew up [currentP] with planet destroy!!!   ([time2text(world.realtime,"Day DD hh:mm")])")
 				usr.emit_Sound('deathball_charge.wav')
 				var/obj/attack/blast/A=new/obj/attack/blast
@@ -332,7 +332,7 @@ mob/keyable/verb/Planet_Destroy()
 					var/area/currentarea=GetArea()
 					currentarea.DestroyPlanet(mexpressedBP)
 
-	else usr<<"You do not have enough energy. (You need 1000 Ki, and a expressed BP of 10k * The planet's gravity.)"
+	else to_chat(usr, "You do not have enough energy. (You need 1000 Ki, and a expressed BP of 10k * The planet's gravity.)")
 
 
 /datum/skill/Ki_Control/Planet_Destroy
@@ -346,10 +346,10 @@ mob/keyable/verb/Planet_Destroy()
 	fixedcost = 1 //keep the flat 10 cost (exempt from the cost = tier normalization)
 	villainonly = 1 //only an admin-designated Villain can learn it
 	after_learn()
-		savant<<"Your body molds into it's utter peak."
+		to_chat(savant, "Your body molds into it's utter peak.")
 		assignverb(/mob/keyable/verb/Planet_Destroy)
 	before_forget()
-		savant<<"Your body falls from the peak, and you feel intense sorrow. /fit/ disapproves."
+		to_chat(savant, "Your body falls from the peak, and you feel intense sorrow. /fit/ disapproves.")
 		unassignverb(/mob/keyable/verb/Planet_Destroy)
 	login()
 		..()

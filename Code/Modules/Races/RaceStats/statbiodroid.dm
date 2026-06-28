@@ -4,10 +4,10 @@ mob/proc/statbio()
 		if(!Class) //type is RANDOM (like the Saiyan class), not chosen: ~20% Majin-type, else Cell-type
 			if(rand(1,100) <= 20)
 				Class = "Majin-Type"
-				src << "<font color=#cda434><b>Your Bio-Android core formed as Majin-type.</b></font>"
+				to_chat(src, "<font color=#cda434><b>Your Bio-Android core formed as Majin-type.</b></font>")
 			else
 				Class = "None"
-				src << "<font color=#cda434><b>Your Bio-Android core formed as Cell-type.</b></font>"
+				to_chat(src, "<font color=#cda434><b>Your Bio-Android core formed as Cell-type.</b></font>")
 		genome.this_class = Class
 	RaceDescription={"Bio Androids are a rather odd race, as they are a combination of several races.
 They can have the ability to regenerate, so long as they have a single cell remaining that wasn't obliterated.

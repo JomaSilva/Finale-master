@@ -22,11 +22,11 @@
 	expbarrier = 100
 	maxlevel = 2
 	after_learn()
-		savant<<"You notice your strikes do more damage when you become more precise with them."
+		to_chat(savant, "You notice your strikes do more damage when you become more precise with them.")
 		savant.physoffBuff += 0.1
 		savant.techniqueBuff += 0.3
 	before_forget()
-		savant<<"Your strikes become imprecise."
+		to_chat(savant, "Your strikes become imprecise.")
 		savant.physoffBuff -= 0.1
 		savant.techniqueBuff -= 0.3
 		unassignverb(/mob/keyable/verb/Shock)
@@ -36,7 +36,7 @@
 		switch(level)
 			if(2)
 				if(levelup)
-					savant << "You're able to cause some nice damage to a opponent. You can use Shock!"
+					to_chat(savant, "You're able to cause some nice damage to a opponent. You can use Shock!")
 					assignverb(/mob/keyable/verb/Shock)
 					levelup=0
 	login(mob/logger)
@@ -53,11 +53,11 @@
 	expbarrier = 100
 	maxlevel = 2
 	after_learn()
-		savant<<"Your fists begin to echo."
+		to_chat(savant, "Your fists begin to echo.")
 		savant.physoffBuff += 0.1
 		savant.techniqueBuff += 0.4
 	before_forget()
-		savant<<"Your fists lose their echo."
+		to_chat(savant, "Your fists lose their echo.")
 		savant.physoffBuff -= 0.1
 		savant.techniqueBuff -= 0.4
 		unassignverb(/mob/keyable/verb/Reverb)
@@ -67,7 +67,7 @@
 		switch(level)
 			if(2)
 				if(levelup)
-					savant << "You're able to damage opponents over time! You can use Reverb!"
+					to_chat(savant, "You're able to damage opponents over time! You can use Reverb!")
 					assignverb(/mob/keyable/verb/Reverb)
 					levelup=0
 	login(mob/logger)
@@ -84,11 +84,11 @@
 	expbarrier = 100
 	maxlevel = 2
 	after_learn()
-		savant<<"Your fists' echo increases."
+		to_chat(savant, "Your fists' echo increases.")
 		savant.physoffBuff += 0.2
 		savant.techniqueBuff += 0.3
 	before_forget()
-		savant<<"Your fists' echo begins to vanish..."
+		to_chat(savant, "Your fists' echo begins to vanish...")
 		savant.physoffBuff -= 0.2
 		savant.techniqueBuff -= 0.3
 		unassignverb(/mob/keyable/verb/Precise_Explosion)
@@ -98,7 +98,7 @@
 		switch(level)
 			if(2)
 				if(levelup)
-					savant << "You're able to severely damage individual limbs of opponents! You can use Precise Explosion!"
+					to_chat(savant, "You're able to severely damage individual limbs of opponents! You can use Precise Explosion!")
 					assignverb(/mob/keyable/verb/Precise_Explosion)
 					levelup=0
 	login(mob/logger)
@@ -115,11 +115,11 @@
 	expbarrier = 100
 	maxlevel = 2
 	after_learn()
-		savant<<"The killer move of the Hokuto Series is within your grasp."
+		to_chat(savant, "The killer move of the Hokuto Series is within your grasp.")
 		savant.physoffBuff += 0.2
 		savant.techniqueBuff += 0.3
 	before_forget()
-		savant<<"You lose the Hokuto no Shinken prized technique."
+		to_chat(savant, "You lose the Hokuto no Shinken prized technique.")
 		savant.physoffBuff -= 0.2
 		savant.techniqueBuff -= 0.3
 		unassignverb(/mob/keyable/verb/Hokuto_Hyakuretsu_Ken)
@@ -129,7 +129,7 @@
 		switch(level)
 			if(2)
 				if(levelup)
-					savant << "ATATATATATATATATATATATATAwawa... You can use an attack that severely damages an opponent, AND THEN AFTER THE ATTACK WILL DAMAGE THEM AGAIN! Hokuto no Shinken Deadly Technique: Hokuto Hyakuretsu Ken!!"
+					to_chat(savant, "ATATATATATATATATATATATATAwawa... You can use an attack that severely damages an opponent, AND THEN AFTER THE ATTACK WILL DAMAGE THEM AGAIN! Hokuto no Shinken Deadly Technique: Hokuto Hyakuretsu Ken!!")
 					assignverb(/mob/keyable/verb/Hokuto_Hyakuretsu_Ken)
 					levelup=0
 	login(mob/logger)
@@ -150,12 +150,12 @@
 	expbarrier = 100
 	maxlevel = 2
 	after_learn()
-		savant<<"Your clever nature manifests into a more deadly and sneaky one."
+		to_chat(savant, "Your clever nature manifests into a more deadly and sneaky one.")
 		savant.physdefBuff += 0.1
 		savant.physoffBuff += 0.1
 		savant.techniqueBuff += 0.3
 	before_forget()
-		savant<<"You no longer are so cutthroat."
+		to_chat(savant, "You no longer are so cutthroat.")
 		savant.physdefBuff -= 0.1
 		savant.physoffBuff -= 0.1
 		savant.techniqueBuff -= 0.3
@@ -166,7 +166,7 @@
 		switch(level)
 			if(2)
 				if(levelup)
-					savant << "You're able to really hurt an offguard opponent! You can use Cutthroat!"
+					to_chat(savant, "You're able to really hurt an offguard opponent! You can use Cutthroat!")
 					assignverb(/mob/keyable/verb/Cutthroat)
 					levelup=0
 	login(mob/logger)
@@ -183,11 +183,11 @@
 	expbarrier = 100
 	maxlevel = 2
 	after_learn()
-		savant<<"The art of assassination leaves its mark."
+		to_chat(savant, "The art of assassination leaves its mark.")
 		savant.physoffBuff += 0.4
 		savant.techniqueBuff += 0.3
 	before_forget()
-		savant<<"You lose a mark of death."
+		to_chat(savant, "You lose a mark of death.")
 		savant.physoffBuff -= 0.4
 		savant.techniqueBuff -= 0.3
 		unassignverb(/mob/keyable/verb/Backstab)
@@ -197,7 +197,7 @@
 		switch(level)
 			if(2)
 				if(levelup)
-					savant << "You're able to damage opponents from behind! You can use Backstab!"
+					to_chat(savant, "You're able to damage opponents from behind! You can use Backstab!")
 					assignverb(/mob/keyable/verb/Backstab)
 					levelup=0
 	login(mob/logger)
@@ -214,11 +214,11 @@
 	expbarrier = 100
 	maxlevel = 2
 	after_learn()
-		savant<<"Your stealthy nature manifests."
+		to_chat(savant, "Your stealthy nature manifests.")
 		savant.physoffBuff += 0.1
 		savant.techniqueBuff += 0.3
 	before_forget()
-		savant<<"Your stealthy nature disappates."
+		to_chat(savant, "Your stealthy nature disappates.")
 		savant.physoffBuff -= 0.1
 		savant.techniqueBuff -= 0.3
 		unassignverb(/mob/keyable/verb/Sneak)
@@ -228,7 +228,7 @@
 		switch(level)
 			if(2)
 				if(levelup)
-					savant << "You're able to turn invisible! You can use Sneak!"
+					to_chat(savant, "You're able to turn invisible! You can use Sneak!")
 					assignverb(/mob/keyable/verb/Sneak)
 					levelup=0
 	login(mob/logger)
@@ -245,11 +245,11 @@
 	expbarrier = 100
 	maxlevel = 2
 	after_learn()
-		savant<<"Your legs get shifty."
+		to_chat(savant, "Your legs get shifty.")
 		savant.physoffBuff += 0.1
 		savant.techniqueBuff += 0.4
 	before_forget()
-		savant<<"You no longer feel the need to play dirty."
+		to_chat(savant, "You no longer feel the need to play dirty.")
 		savant.physoffBuff -= 0.1
 		savant.techniqueBuff -= 0.4
 		unassignverb(/mob/keyable/verb/Trip)
@@ -259,7 +259,7 @@
 		switch(level)
 			if(2)
 				if(levelup)
-					savant << "Your feet start dancing! You can Trip!"
+					to_chat(savant, "Your feet start dancing! You can Trip!")
 					assignverb(/mob/keyable/verb/Trip)
 					levelup=0
 	login(mob/logger)

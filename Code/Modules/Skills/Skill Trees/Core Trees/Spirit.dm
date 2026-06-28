@@ -40,7 +40,7 @@ mob/var/gravitatecheck
 	maxlevel = 1
 	tier = 1
 	after_learn()
-		savant<<"You feel your spirit well up inside you!."
+		to_chat(savant, "You feel your spirit well up inside you!.")
 		savant.willpowerMod+=0.1
 		savant.maxstamina+=10
 
@@ -57,11 +57,11 @@ mob/var/MeditateGivesKiRegen=1 //Manually set to 0 on character creation.
 	maxlevel = 1
 	tier = 1
 	after_learn()
-		savant<<"You feel more at ease as air flows through you."
+		to_chat(savant, "You feel more at ease as air flows through you.")
 		savant.genome.add_to_stat("Energy Level",0.05)
 		savant.willpowerMod+=0.05
 	before_forget()
-		savant<<"Due to neglect, you forget your deep breathing routine. However, you forogt it so well that, for half a minute, you forgot how to breath and nearly fall over."
+		to_chat(savant, "Due to neglect, you forget your deep breathing routine. However, you forogt it so well that, for half a minute, you forgot how to breath and nearly fall over.")
 		savant.genome.sub_to_stat("Energy Level",0.05)
 		savant.willpowerMod-=0.05
 
@@ -76,10 +76,10 @@ mob/var/MeditateGivesKiRegen=1 //Manually set to 0 on character creation.
 	maxlevel = 1
 	tier = 1
 	after_learn()
-		savant<<"You feel centered."
+		to_chat(savant, "You feel centered.")
 		savant.genome.add_to_stat("Energy Level",0.3)
 	before_forget()
-		savant<<"Your Heart-Sea dissipates, and with it, your grasp on self."
+		to_chat(savant, "Your Heart-Sea dissipates, and with it, your grasp on self.")
 		savant.genome.sub_to_stat("Energy Level",0.3)
 
 /datum/skill/upper
@@ -94,14 +94,14 @@ mob/var/MeditateGivesKiRegen=1 //Manually set to 0 on character creation.
 	maxlevel = 1
 	tier = 2
 	after_learn()
-		savant<<"You feel elevated."
+		to_chat(savant, "You feel elevated.")
 		savant.kioffBuff+=0.1
 		savant.physoffBuff-=0.2
 		savant.genome.add_to_stat("Energy Level",0.09)
 		savant.gravitate=1
 		savant.gravitatecheck=1
 	before_forget()
-		savant<<"You lose your heightened self."
+		to_chat(savant, "You lose your heightened self.")
 		savant.kioffBuff-=0.1
 		savant.physoffBuff+=0.2
 		savant.genome.add_to_stat("Energy Level",0.09)
@@ -120,14 +120,14 @@ mob/var/MeditateGivesKiRegen=1 //Manually set to 0 on character creation.
 	maxlevel = 1
 	tier = 2
 	after_learn()
-		savant<<"You feel grounded."
+		to_chat(savant, "You feel grounded.")
 		savant.physoffBuff+=0.1
 		savant.kioffBuff-=0.2
 		savant.genome.add_to_stat("Energy Level",0.05)
 		savant.gravitate=2
 		savant.gravitatecheck=1
 	before_forget()
-		savant<<"You lose your grounded self."
+		to_chat(savant, "You lose your grounded self.")
 		savant.physoffBuff-=0.1
 		savant.kioffBuff+=0.2
 		savant.genome.sub_to_stat("Energy Level",0.05)
@@ -145,16 +145,16 @@ mob/var/MeditateGivesKiRegen=1 //Manually set to 0 on character creation.
 	maxlevel = 1
 	skillcost = 1
 	after_learn()
-		savant<<"You steady your breathing even more, and your body reaps the benefits."
+		to_chat(savant, "You steady your breathing even more, and your body reaps the benefits.")
 		savant.genome.add_to_stat("Energy Level",0.1)
 		savant.willpowerMod+=0.1
 		savant.techniqueBuff+=0.05
 		spawn(15)
 			savant.emit_Sound('hamon.wav')
-		savant<<"Eh? You felt a rather bizarre energy flow through you while inhaling..."
+		to_chat(savant, "Eh? You felt a rather bizarre energy flow through you while inhaling...")
 		savant.willpowerMod+=0.05
 	before_forget()
-		savant<<"You slack off on your new breathing routine and forget how to do it properly. Its useless to you unless you can remember how to do it."
+		to_chat(savant, "You slack off on your new breathing routine and forget how to do it properly. Its useless to you unless you can remember how to do it.")
 		savant.genome.sub_to_stat("Energy Level",0.1)
 		savant.willpowerMod-=0.15
 		savant.techniqueBuff-=0.05
@@ -170,11 +170,11 @@ mob/var/MeditateGivesKiRegen=1 //Manually set to 0 on character creation.
 	skillcost = 2
 	tier = 3
 	after_learn()
-		savant<<"Your spirit fills you with will."
+		to_chat(savant, "Your spirit fills you with will.")
 		savant.genome.add_to_stat("Energy Level",0.05)
 		savant.willpowerMod+=0.1
 	before_forget()
-		savant<<"The spirit supporting your willpower faulters, you've lost some determination it seems."
+		to_chat(savant, "The spirit supporting your willpower faulters, you've lost some determination it seems.")
 		savant.genome.sub_to_stat("Energy Level",0.05)
 		savant.willpowerMod-=0.1
 
@@ -193,12 +193,12 @@ mob/var/MeditateGivesKiRegen=1 //Manually set to 0 on character creation.
 	var/accum
 	after_learn()
 		savant.emit_Sound('hamon.wav')
-		savant<<"You feel your entire being ripple with energy as you breath."
+		to_chat(savant, "You feel your entire being ripple with energy as you breath.")
 		savant.genome.add_to_stat("Energy Level",0.3)
 		savant.willpowerMod+=0.1
 		assignverb(/mob/keyable/verb/HamonBreathing)
 	before_forget()
-		savant<<"You haven't been keeping up with your breathing technique, thus you've forgotten your Hamon breathing ability."
+		to_chat(savant, "You haven't been keeping up with your breathing technique, thus you've forgotten your Hamon breathing ability.")
 		savant.genome.add_to_stat("Energy Level",0.3)
 		savant.willpowerMod-=0.1
 		if(level >= 2)
@@ -220,7 +220,7 @@ mob/var/MeditateGivesKiRegen=1 //Manually set to 0 on character creation.
 			if(1)
 				if(levelup)
 					levelup=0
-					savant<<"Your Hamon breathing has improved a bit!"
+					to_chat(savant, "Your Hamon breathing has improved a bit!")
 					savant.HBCost=12
 					expbarrier=60
 				if(savant.HBCount)
@@ -229,7 +229,7 @@ mob/var/MeditateGivesKiRegen=1 //Manually set to 0 on character creation.
 			if(2)
 				if(levelup)
 					levelup=0
-					savant<<"Your Hamon breathing has improved greatly!"
+					to_chat(savant, "Your Hamon breathing has improved greatly!")
 					savant.HBCost=5
 					savant.genome.add_to_stat("Energy Level",0.1)
 					savant.willpowerMod+=0.05
@@ -249,8 +249,8 @@ mob/keyable/verb/HamonBreathing()
 	var/kireq=usr.MaxKi/(usr.HBCost)
 	if(usr.Ki>=kireq && usr.HP<100 && !usr.blasting && !usr.KO)
 		if(!usr.HBOn)
-			usr<<"You use your Hamon breathing to heal!"
-			oview(usr)<<"[usr] deeply inhales and is covered in a bizarre light!"
+			to_chat(usr, "You use your Hamon breathing to heal!")
+			to_chat(oview(usr), "[usr] deeply inhales and is covered in a bizarre light!")
 			//usr.canfight=0
 			HBOn=1
 			HBcooldown = 180 - hamon_skill*8
@@ -264,15 +264,15 @@ mob/keyable/verb/HamonBreathing()
 			if(usr.hamon_skill_buffer >= 25 && !usr.hamon_skill)
 				usr.hamon_skill_buffer = 0
 				usr.hamon_skill += 1
-				oview(usr)<<"<font color=yellow>[usr]'s body suddenly ripples, [usr]'s strength deepening! You can learn hamon!</font>"
+				to_chat(oview(usr), "<font color=yellow>[usr]'s body suddenly ripples, [usr]'s strength deepening! You can learn hamon!</font>")
 			emit_Sound('hamonhealing.wav')
 			usr.Ki-=kireq
 			usr.SpreadHeal(1*willpowerMod+hamon_skill)
 			//usr.canfight=1
 		else if(usr.HBOn)
-			usr<<"Your Hamon Breathing is on cooldown. ([HBcooldown] seconds)"
-	else if(usr.Ki<=kireq) usr<<"You have no energy left to use Hamon. This requires atleast [kireq] energy to use."
-	else usr<<"You cannot use Hamon breathing to heal you right now."
+			to_chat(usr, "Your Hamon Breathing is on cooldown. ([HBcooldown] seconds)")
+	else if(usr.Ki<=kireq) to_chat(usr, "You have no energy left to use Hamon. This requires atleast [kireq] energy to use.")
+	else to_chat(usr, "You cannot use Hamon breathing to heal you right now.")
 
 /datum/skill/Spirit_Ball
 	skilltype = "Spirit Attack"
@@ -288,12 +288,12 @@ mob/keyable/verb/HamonBreathing()
 	skillcost = 1
 	tier = 3
 	after_learn()
-		savant<<"Your spirit that fills your body begins to bubble. There are martial applications to this..."
+		to_chat(savant, "Your spirit that fills your body begins to bubble. There are martial applications to this...")
 		savant.genome.add_to_stat("Energy Level",0.05)
 		savant.willpowerMod+=0.1
 		assignverb(/mob/keyable/verb/Spirit_Gun)
 	before_forget()
-		savant<<"The spirit once at the surface faulters, you've lost some determination it seems."
+		to_chat(savant, "The spirit once at the surface faulters, you've lost some determination it seems.")
 		savant.genome.sub_to_stat("Energy Level",0.05)
 		savant.willpowerMod-=0.1
 		if(level >= 2)
@@ -317,7 +317,7 @@ mob/keyable/verb/HamonBreathing()
 			if(1)
 				if(levelup)
 					levelup=0
-					savant<<"Your spirit abilities have increased a bit!"
+					to_chat(savant, "Your spirit abilities have increased a bit!")
 					savant.SpiritBallCost/=2
 					savant.SpiritBallDamage*=2
 					expbarrier=20
@@ -327,7 +327,7 @@ mob/keyable/verb/HamonBreathing()
 			if(2)
 				if(levelup)
 					levelup=0
-					savant<<"Your spirit abilities have increased a bunch!"
+					to_chat(savant, "Your spirit abilities have increased a bunch!")
 					savant.SpiritBallCost/=2
 					savant.SpiritBallDamage*=1.25
 					savant.genome.add_to_stat("Energy Level",0.05)
@@ -385,12 +385,12 @@ mob/keyable/verb/Spirit_Gun()
 	skillcost = 1
 	tier = 3
 	after_learn()
-		savant<<"Your spirit that fills your body begins to bubble. There are martial applications to this..."
+		to_chat(savant, "Your spirit that fills your body begins to bubble. There are martial applications to this...")
 		savant.physoffMod+=0.05
 		savant.willpowerMod+=0.1
 		assignverb(/mob/keyable/verb/Spirit_Fist)
 	before_forget()
-		savant<<"The spirit once at the surface faulters, you've lost some determination it seems."
+		to_chat(savant, "The spirit once at the surface faulters, you've lost some determination it seems.")
 		savant.physoffMod-=0.05
 		savant.willpowerMod-=0.1
 		if(level >= 2)
@@ -414,7 +414,7 @@ mob/keyable/verb/Spirit_Gun()
 			if(1)
 				if(levelup)
 					levelup=0
-					savant<<"Your spirit abilities have increased a bit!"
+					to_chat(savant, "Your spirit abilities have increased a bit!")
 					savant.SpiritFistCost/=2
 					savant.SpiritBallDamage*=2
 					expbarrier=20
@@ -424,7 +424,7 @@ mob/keyable/verb/Spirit_Gun()
 			if(2)
 				if(levelup)
 					levelup=0
-					savant<<"Your spirit abilities have increased a bunch!"
+					to_chat(savant, "Your spirit abilities have increased a bunch!")
 					savant.SpiritFistCost/=2
 					savant.SpiritFistDamage*=1.25
 					savant.physoffMod+=0.05

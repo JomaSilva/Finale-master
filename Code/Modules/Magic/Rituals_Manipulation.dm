@@ -281,7 +281,7 @@ obj/Ritual/proc
 		if(target_check() == FALSE) return 666
 		for(var/mob/M in view(magnitude,r_target))
 			if(!M.Apeshit && !M.is_Tail_Lopped() && M.Tail && (M.Race=="Saiyan" || M.canSSJ || M.Parent_Race == "Saiyan"))
-				view(M)<<"[M] becomes irradiated with Blutzwaves!"
+				to_chat(view(M), "[M] becomes irradiated with Blutzwaves!")
 				if(M.hasssj && prob(60))//canSSJ is a var ticked by Baby absorbs.
 					M.GoldenApeshit()
 				else
@@ -319,7 +319,7 @@ obj/Ritual/proc
 		var/amount = ((Magic - (r_target.Magic)) * magnitude) + log(1.2,invoker.expressedBP * magnitude)
 		if(ismob(r_target))
 			var/mob/M = r_target
-			view(12,M)<<"[M] is sucked into the dead zone!!"
+			to_chat(view(12,M), "[M] is sucked into the dead zone!!")
 			M.SealedLocation = locate(M.x,M.y,M.z)
 			M.SealMob(amount,0)
 		else return 666
@@ -331,13 +331,13 @@ obj/Ritual/proc
 			var/mob/M = r_target
 			var/obj/items/SealingItem/target_container = locate(/obj/items/SealingItem) in view()
 			if(target_container)
-				view(12,M)<<"[M] is sucked into the dead zone!!"
+				to_chat(view(12,M), "[M] is sucked into the dead zone!!")
 				M.SealedLocation = locate(M.x,M.y,M.z)
 				M.SealMob(amount,1)
 				target_container.Sealed = M
 				target_container.SealedSig = M.signature
 			else
-				view(12,invoker)<<"[invoker] and [M] is sucked into the dead zone due to nothing to hold the energies in!!!"
+				to_chat(view(12,invoker), "[invoker] and [M] is sucked into the dead zone due to nothing to hold the energies in!!!")
 				M.SealedLocation = locate(M.x,M.y,M.z)
 				M.SealMob(amount/2,0)
 				invoker.SealedLocation = locate(invoker.x,invoker.y,invoker.z)
@@ -359,10 +359,13 @@ obj/Ritual/proc
 		if(ismob(r_target))
 			var/mob/M = r_target
 			M<<output("<font size=[M.TextSize]><font face=Old English Text MT><font color=red>[invoker] says in telepathy, '[html_encode(message)]'","Chatpane.Chat")
+			chatcast(M, "<font size=[M.TextSize]><font face=Old English Text MT><font color=red>[invoker] says in telepathy, '[html_encode(message)]'", "say")
 			invoker<<output("<font face=Old English Text MT><font color=red>[invoker] says in telepathy, '[html_encode(message)]'","Chatpane.Chat")
+			chatcast(invoker, "<font face=Old English Text MT><font color=red>[invoker] says in telepathy, '[html_encode(message)]'", "say")
 			WriteToLog("rplog","(Telepathy to [M])[invoker]: [message]   ([time2text(world.realtime,"Day DD hh:mm")])")
 		else
 			view(magnitude,r_target)<<output("<font size=[invoker.TextSize]><font face=Old English Text MT><font color=red>[invoker] says in telepathy, '[html_encode(message)]'","Chatpane.Chat")
+			chatcast(view(magnitude,r_target), "<font size=[invoker.TextSize]><font face=Old English Text MT><font color=red>[invoker] says in telepathy, '[html_encode(message)]'", "say")
 			if(!invoker in view(magnitude,r_target)) invoker<<output("<font face=Old English Text MT><font color=red>[invoker] says in telepathy, '[html_encode(message)]'","Chatpane.Chat")
 			WriteToLog("rplog","(Telepathy to [r_target])[invoker]: [message]   ([time2text(world.realtime,"Day DD hh:mm")])")
 
@@ -399,17 +402,17 @@ obj/Ritual
 		req_ingredients = list(/obj/items/Material/Alchemy/Misc/Frog_Brain,/obj/items/Material/Alchemy/Misc/Essence_Of_Time)
 		ritual_effect(mob/u)
 			//if(target_check(2) == FALSE && !invoker) return
-			invoker << "<font color=blue><font size=2>An etherial voice calls to you...</font></font>"
+			to_chat(invoker, "<font color=blue><font size=2>An etherial voice calls to you...</font></font>")
 			sleep(10)
 			var/ind = rand(1,3)
 			var/known_types = 0
 			if(!ind) ind = pick(1,2,3)
 			retry
 			if(known_types == 3)
-				invoker << "<font color=blue><font size=3>???: error() : word_knowledge == power_words.length() : return mob/proc/Affirmation()</font></font>"
+				to_chat(invoker, "<font color=blue><font size=3>???: error() : word_knowledge == power_words.length() : return mob/proc/Affirmation()</font></font>")
 				sleep(20)
 				if(invoker)
-					invoker << "<font color=blue><font size=3>???: output(\"Congratulations.\")</font></font>"
+					to_chat(invoker, "<font color=blue><font size=3>???: output(\"Congratulations.\")</font></font>")
 			switch(ind)
 				if(1)
 					var/knownlist = list()
@@ -421,11 +424,11 @@ obj/Ritual
 					var/list/resultant_list = p_power_words - knownlist
 					if(resultant_list.len)
 						lucky_word = pick(resultant_list)
-						invoker << "<font color=blue><font size=3>???: [lucky_word] : [power_words_p_activations[lucky_word]]</font></font>"
+						to_chat(invoker, "<font color=blue><font size=3>???: [lucky_word] : [power_words_p_activations[lucky_word]]</font></font>")
 						invoker.known_words += power_words_p_activations[lucky_word]
 						invoker.known_words[power_words_p_activations[lucky_word]] = lucky_word
 					else
-						invoker << "<font color=blue size=3>???: error() : known_words >= available_p_words : proc: return src:ritual_effect() - known_power_words_p_activations"
+						to_chat(invoker, "<font color=blue size=3>???: error() : known_words >= available_p_words : proc: return src:ritual_effect() - known_power_words_p_activations")
 						ind = rand(2,3)
 						known_types++
 						goto retry
@@ -440,11 +443,11 @@ obj/Ritual
 					var/list/resultant_list = t_power_words - knownlist
 					if(resultant_list.len)
 						lucky_word = pick(resultant_list)
-						invoker << "<font color=blue><font size=3>???: [lucky_word] : [power_words_t_activations[lucky_word]]</font></font>"
+						to_chat(invoker, "<font color=blue><font size=3>???: [lucky_word] : [power_words_t_activations[lucky_word]]</font></font>")
 						invoker.known_words += power_words_t_activations[lucky_word]
 						invoker.known_words[power_words_t_activations[lucky_word]] = lucky_word
 					else
-						invoker << "<font color=blue size=3>???: error() : known_words >= available_t_words : proc: return src:ritual_effect() - known_power_words_t_activations"
+						to_chat(invoker, "<font color=blue size=3>???: error() : known_words >= available_t_words : proc: return src:ritual_effect() - known_power_words_t_activations")
 						ind = pick(1,3)
 						known_types++
 						goto retry
@@ -459,11 +462,11 @@ obj/Ritual
 					var/list/resultant_list = e_power_words - knownlist
 					if(resultant_list.len)
 						lucky_word = pick(resultant_list)
-						invoker << "<font color=blue><font size=3>???: [lucky_word] : [power_words_e_activations[lucky_word]]</font></font>"
+						to_chat(invoker, "<font color=blue><font size=3>???: [lucky_word] : [power_words_e_activations[lucky_word]]</font></font>")
 						invoker.known_words += power_words_e_activations[lucky_word]
 						invoker.known_words[power_words_e_activations[lucky_word]] = lucky_word
 					else
-						invoker << "<font color=blue size=3>???: error() : known_words >= available_e_words : proc: return src:ritual_effect() - known_power_words_e_activations"
+						to_chat(invoker, "<font color=blue size=3>???: error() : known_words >= available_e_words : proc: return src:ritual_effect() - known_power_words_e_activations")
 						ind = rand(1,2)
 						known_types++
 						goto retry
@@ -476,39 +479,39 @@ obj/Ritual
 		req_ingredients = list(/obj/items/Material/Alchemy/Misc/Frog_Brain,/obj/items/Material/Alchemy/Misc/Beetle_Eye)
 		ritual_effect(mob/u)
 			//if(target_check(2) == FALSE && !invoker) return
-			invoker << "<font color=blue><font size=2>An etherial voice calls to you...</font></font>"
+			to_chat(invoker, "<font color=blue><font size=2>An etherial voice calls to you...</font></font>")
 			sleep(10)
 			var/atom/movable/input = input(u,"Select the object to view a effect of it.") as obj|mob in view(10,src)
 			var/ind = rand(1,3)
 			if(!ind) ind = pick(1,2,3)
 			switch(ind)
 				if(1)
-					invoker << "<font color=blue><font size=3>???: [input] : r_eff:[input.mag_effects[1]]</font></font>"
+					to_chat(invoker, "<font color=blue><font size=3>???: [input] : r_eff:[input.mag_effects[1]]</font></font>")
 				if(2)
-					invoker << "<font color=blue><font size=3>???: [input] : r_eff:[input.mag_effects[2]]</font></font>"
+					to_chat(invoker, "<font color=blue><font size=3>???: [input] : r_eff:[input.mag_effects[2]]</font></font>")
 				if(3)
-					invoker << "<font color=blue><font size=3>???: [input] : r_eff:[input.mag_effects[3]]</font></font>"
-			invoker << "<font color=blue><font size=3>???: [input] : magic_[input.Magic]</font></font>"
+					to_chat(invoker, "<font color=blue><font size=3>???: [input] : r_eff:[input.mag_effects[3]]</font></font>")
+			to_chat(invoker, "<font color=blue><font size=3>???: [input] : magic_[input.Magic]</font></font>")
 			if(istype(input,/obj/items/Material/Alchemy))
 				ind = rand(1,4)
 				switch(ind)
 					if(1)
-						invoker << "<font color=blue><font size=3>???: [input] : eff_[input:Effects[1]]</font></font>"
+						to_chat(invoker, "<font color=blue><font size=3>???: [input] : eff_[input:Effects[1]]</font></font>")
 					
 					if(2)
-						invoker << "<font color=blue><font size=3>???: [input] : eff_[input:Effects[2]]</font></font>"
+						to_chat(invoker, "<font color=blue><font size=3>???: [input] : eff_[input:Effects[2]]</font></font>")
 
 					if(3)
-						invoker << "<font color=blue><font size=3>???: [input] : eff_[input:Effects[3]]</font></font>"
+						to_chat(invoker, "<font color=blue><font size=3>???: [input] : eff_[input:Effects[3]]</font></font>")
 
 					if(4)
-						invoker << "<font color=blue><font size=3>???: [input] : eff_[input:Effects[4]]</font></font>"
+						to_chat(invoker, "<font color=blue><font size=3>???: [input] : eff_[input:Effects[4]]</font></font>")
 				invoker.ingredientlist[input:ingredtype] = 2**(ind-1)
-				invoker << "<font color=blue><font size=3>???: [input] : magni_[input:magnitude]</font></font>"
-				invoker << "<font color=blue><font size=3>???: [input] : dura_[input:duration]</font></font>"
+				to_chat(invoker, "<font color=blue><font size=3>???: [input] : magni_[input:magnitude]</font></font>")
+				to_chat(invoker, "<font color=blue><font size=3>???: [input] : dura_[input:duration]</font></font>")
 			if(istype(input,/obj/items/Material/Enchanting/Catalyst))
 				invoker.knownenchants+=input:studyenchant
-				invoker << "<font color=blue><font size=3>???: [input] : eff_[input:enchantment]</font></font>"
+				to_chat(invoker, "<font color=blue><font size=3>???: [input] : eff_[input:enchantment]</font></font>")
 			if(istype(input,/obj/items/Material/Enchanting/Source))
 				invoker << "<font color=blue><font size=3>???: [input] : energy_[input:statvalues["Energy"]]</font></font>"
 

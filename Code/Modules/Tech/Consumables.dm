@@ -23,7 +23,7 @@ obj/items
 			if(!hasBlood)
 				if(alert(usr,"Give blood to the bloodbag? Will only work if you're a Non-Android and Non-Vampire. Will also take a bit of HP.","","Yes","No")=="Yes")
 					if(!usr.Race=="Android"&&!usr.IsAVampire)
-						view(usr)<<"[usr] fills [src] with blood."
+						to_chat(view(usr), "[usr] fills [src] with blood.")
 						hasBlood=1
 						suffix = "*Filled*"
 						usr.SpreadDamage(10)
@@ -31,7 +31,7 @@ obj/items
 			else
 				if(alert(usr,"Consume blood in the bloodbag? Will only work if you're a Vampire.","","Yes","No")=="Yes")
 					if(usr.IsAVampire)
-						view(usr)<<"[usr] drinks from the [src]."
+						to_chat(view(usr), "[usr] drinks from the [src].")
 						hasBlood=0
 						suffix = ""
 						usr.currentNutrition+= 30
@@ -48,8 +48,8 @@ obj/items
 			set category=null
 			set src in view(1)
 			if(!usr.eating&&usr.Race!="Android"&&!usr.Senzu)
-				usr<<"[flavor]"
-				view(usr)<<"[usr] eats the [name]"
+				to_chat(usr, "[flavor]")
+				to_chat(view(usr), "[usr] eats the [name]")
 				usr.Hunger=0
 				usr.eating=1
 				usr.Senzu=1
@@ -57,4 +57,4 @@ obj/items
 				del(src)
 			else
 				if(usr.eating)
-					usr<<"You need to wait to eat!"
+					to_chat(usr, "You need to wait to eat!")

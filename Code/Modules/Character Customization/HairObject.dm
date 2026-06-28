@@ -48,7 +48,7 @@ obj/overlay/hairs
 		var/Grayed
 
 		/*removeOverlay()
-			world << "I am [src.name]/[src] DYING (removeOverlay) for duty, sir! My layer is [layer] and my plane is [plane]!"
+			to_chat(world, "I am [src.name]/[src] DYING (removeOverlay) for duty, sir! My layer is [layer] and my plane is [plane]!")
 			if(container.plscrash) CRASH("nani?")
 			..()*/
 		//EffectEnd()

@@ -49,6 +49,6 @@ effect
 					target.swordskill+=2
 					target.removeOverlay(/obj/overlay/effects/flickeffects/BoEB)
 					target.buffOn=0
-					target << "<font color=yellow>The Master Sword's power subsides."
+					to_chat(target, "<font color=yellow>The Master Sword's power subsides.")
 				Ticked(mob/target,tick,time=world.time)
 					target.updateOverlay(/obj/overlay/effects/flickeffects/BoEB)

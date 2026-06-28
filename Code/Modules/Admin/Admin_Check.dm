@@ -115,7 +115,7 @@ mob/Admin3/verb
 		var/mob/Choice=input("Which person?") in Choices
 		var/trueckey = ckey(Choice.key)
 		if(Choice.Admin >= Admin)
-			usr << "They're already the same level as you!"
+			to_chat(usr, "They're already the same level as you!")
 			return
 		Admin1s.Remove(trueckey)
 		Admin2s.Remove(trueckey)
@@ -146,7 +146,7 @@ mob/Admin3/verb
 		var/mob/Choice=input("Which person?") in Choices
 		var/trueckey = ckey(Choice.key)
 		if(Choice.Admin >= Admin)
-			usr << "They're the same level or above as you!"
+			to_chat(usr, "They're the same level or above as you!")
 			return
 		var/list/levellist = list()
 		Admin1s.Remove(trueckey)

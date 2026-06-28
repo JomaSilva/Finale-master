@@ -81,7 +81,7 @@ mob/proc/unassignverb(var/V)
 		savant.skillpoints += src.skillcost
 		savant.learned_skills.Remove(src)
 		del(src)
-	else savant << "You can't forget that skill."
+	else to_chat(savant, "You can't forget that skill.")
 
 /datum/skill/proc/effector()
 	set waitfor = 0
@@ -120,13 +120,13 @@ mob/proc/unassignverb(var/V)
 	else
 		for(var/datum/skill/nS in usr.learned_skills)
 			if(S == nS.name)
-				usr<<"You focus on your skill: [nS.name]"
-				usr<<"[nS.desc]"
-				usr<<"[nS.skilltype]"
-				usr<<"Tier: [nS.tier]"
-				usr<<"Level: [nS.level]/[nS.maxlevel]"
-				usr<<"Experience: [nS.exp]/[nS.expbarrier]"
+				to_chat(usr, "You focus on your skill: [nS.name]")
+				to_chat(usr, "[nS.desc]")
+				to_chat(usr, "[nS.skilltype]")
+				to_chat(usr, "Tier: [nS.tier]")
+				to_chat(usr, "Level: [nS.level]/[nS.maxlevel]")
+				to_chat(usr, "Experience: [nS.exp]/[nS.expbarrier]")
 				if(nS.teacher)
-					usr<<"You may teach others this skill"
+					to_chat(usr, "You may teach others this skill")
 				else if(!nS.teacher)
-					usr<<"You may not teach others this skill"
+					to_chat(usr, "You may not teach others this skill")

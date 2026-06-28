@@ -8,12 +8,12 @@ proc
 		return eNum
 mob/verb/View_Self()
 	set category="Other"
-	usr<<"Race / Racial-Class,[Race]-[Class]"
-	usr<<"*Extra Character Info*"
-	usr<<"Physical Age: [round(Age)]"
-	usr<<"True Age: [round(SAge)]"
-	usr<<"You can lift [FullNum(round((expressedBP*Ephysoff*10)))] pounds maximum"
-	usr<<"Technology: [techskill] ([round(techxp)] / [round((4*(techskill**2))/techmod)])"
+	to_chat(usr, "Race / Racial-Class,[Race]-[Class]")
+	to_chat(usr, "*Extra Character Info*")
+	to_chat(usr, "Physical Age: [round(Age)]")
+	to_chat(usr, "True Age: [round(SAge)]")
+	to_chat(usr, "You can lift [FullNum(round((expressedBP*Ephysoff*10)))] pounds maximum")
+	to_chat(usr, "Technology: [techskill] ([round(techxp)] / [round((4*(techskill**2))/techmod)])")
 
 mob/verb/Toggle_Tabs()
 	set category="Other"

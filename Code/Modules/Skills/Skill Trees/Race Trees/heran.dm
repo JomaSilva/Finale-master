@@ -68,7 +68,7 @@
 		if(levelup)
 			levelup = 0
 			expbarrier = 10 ** (level+1)
-			savant << "Your zenkai grows even further! Level [level] reached!"
+			to_chat(savant, "Your zenkai grows even further! Level [level] reached!")
 		if(savant.IsInFight)
 			if(savant.expressedBP < savant.highestebp)
 				ki_boost_buffer++
@@ -80,10 +80,10 @@
 				savant.Ki += 10 * savant.BaseDrain
 
 	after_learn()
-		savant << "Your power begins to throbs every time your fists matches another..."
+		to_chat(savant, "Your power begins to throbs every time your fists matches another...")
 
 	before_forget()
-		savant << "Your power fades."
+		to_chat(savant, "Your power fades.")
 
 /datum/skill/heran/MstedMXPWR
 	name="Mastered Max Power"
@@ -131,7 +131,7 @@
 	common_sense = FALSE
 
 	after_learn()
-		savant << "Your energy mod in general have increased!"
+		to_chat(savant, "Your energy mod in general have increased!")
 		savant.ssjenergymod = 3
 		savant.ssj2energymod = 4
 		savant.kicapacityMod *= 2
@@ -146,11 +146,11 @@
 	common_sense = FALSE
 
 	after_learn()
-		savant << "You can use Psycho Threads, just click on the ground to place them."
+		to_chat(savant, "You can use Psycho Threads, just click on the ground to place them.")
 		assignverb(/mob/keyable/verb/Psycho_Thread)
 		savant.psythre=1
 	before_forget()
-		savant << "You've forgotten Psycho Threads..."
+		to_chat(savant, "You've forgotten Psycho Threads...")
 		unassignverb(/mob/keyable/verb/Psycho_Thread)
 		savant.psythre=0
 	login(var/mob/logger)
@@ -163,7 +163,7 @@ mob/keyable/verb/Psycho_Thread()
 	set category = "Skills"
 	if(usr.psythre)
 		usr.psythre = 0
-		usr << "Psycho Thread disabled."
+		to_chat(usr, "Psycho Thread disabled.")
 	else
 		usr.psythre = 1
-		usr << "Psycho Thread enabled."
+		to_chat(usr, "Psycho Thread enabled.")

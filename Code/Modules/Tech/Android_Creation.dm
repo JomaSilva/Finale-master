@@ -21,13 +21,13 @@ obj/items
 			if(x&&y&&z&&!Bolted)
 				switch(input("Are you sure you want to bolt this to the ground so nobody can ever pick it up? Not even you?","",text) in list("Yes","No",))
 					if("Yes")
-						view(src)<<"<font size=1>[usr] bolts the [src] to the ground."
+						to_chat(view(src), "<font size=1>[usr] bolts the [src] to the ground.")
 						Bolted=1
 						boltersig=usr.signature
 			else if(Bolted&&boltersig==usr.signature)
 				switch(input("Unbolt?","",text) in list("Yes","No",))
 					if("Yes")
-						view(src)<<"<font size=1>[usr] unbolts the [src] from the ground."
+						to_chat(view(src), "<font size=1>[usr] unbolts the [src] from the ground.")
 						Bolted=0
 		verb/Upgrade()
 			set category = null
@@ -38,7 +38,7 @@ obj/items
 					if(usr.zenni>=cost)
 						usr.zenni-=cost
 						if(!can_biod) can_biod = 1
-						view(src) << "<font size=2 color=red>[src]: BIODROID PRODUCTION ENABLED.</font>"
+						to_chat(view(src), "<font size=2 color=red>[src]: BIODROID PRODUCTION ENABLED.</font>")
 		verb/Create()
 			set category = null
 			set src in oview(1)
@@ -57,7 +57,7 @@ obj/items
 								bio_creator_list.len++
 								bio_creator_list[bio_creator_list.len] = list(x,y,z)
 							else
-								usr << "Not enough zenni"
+								to_chat(usr, "Not enough zenni")
 					if("Android") switch(input("Creating a standard Android costs 100k Zenni. Do so?","",text) in list("Yes","No",))
 						if("Yes")
 							var/cost = 100000
@@ -67,7 +67,7 @@ obj/items
 								android_creator_list.len++
 								android_creator_list[android_creator_list.len] = list(x,y,z)
 							else
-								usr << "Not enough zenni"
+								to_chat(usr, "Not enough zenni")
 		Del()
 			if(and) android_creator_list.len--
 			if(biod) bio_creator_list.len--

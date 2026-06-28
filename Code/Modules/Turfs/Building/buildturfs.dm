@@ -503,7 +503,7 @@ turf/build
 						else
 							for(var/mob/M in view(15,src))
 								if(M.client)
-									M<<"**[usr] knocks on the door!**"
+									to_chat(M, "**[usr] knocks on the door!**")
 					else return
 				else
 					Open()

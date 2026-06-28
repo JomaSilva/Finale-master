@@ -12,31 +12,31 @@ mob/var/tmp
 
 mob/proc/target_check()
 	if(!usr.target)
-		usr<<"You have no target."
+		to_chat(usr, "You have no target.")
 		return FALSE
 	else
 		if(get_dist(usr,target)>1)
-			usr<<"You must be next to your target to use this!"
+			to_chat(usr, "You must be next to your target to use this!")
 			return FALSE
 	return TRUE
 
 mob/keyable/verb/Riposte_Toggle()
 	set category = "Other"
 	if(usr.riposteon)
-		usr<<"You will no longer attack after dodging."
+		to_chat(usr, "You will no longer attack after dodging.")
 		usr.riposteon=0
 	else
-		usr<<"You will attempt to attack after dodging."
+		to_chat(usr, "You will attempt to attack after dodging.")
 		usr.riposteon=1
 
 mob/keyable/combo/verb/Kickflip()
 	set category = "Skills"
 	set desc = "Flip off of your foe, stepping backwards and knocking them back. Movement skill."
 	if(usr.movementCD)
-		usr<<"Movement skills on CD for [movementCD/10] seconds."
+		to_chat(usr, "Movement skills on CD for [movementCD/10] seconds.")
 		return
 	if(usr.canfight<=0||usr.KO||usr.med)
-		usr<<"You can't use this now!"
+		to_chat(usr, "You can't use this now!")
 		return
 	var/tgtcount = 0
 	for(var/mob/M in get_step(usr,usr.dir))
@@ -49,7 +49,7 @@ mob/keyable/combo/verb/Kickflip()
 			M.kbdir=usr.dir
 			M.AddEffect(/effect/knockback)
 	if(!tgtcount)
-		usr<<"You need someone in front of you to use this!"
+		to_chat(usr, "You need someone in front of you to use this!")
 		return
 	else
 		usr.canfight-=1

@@ -2,10 +2,10 @@ mob/keyable/combo/axe/verb/Logsplitter()
 	set category = "Skills"
 	set desc = "Strike a foe with your axe. Inflicts Bleed. Axe skill. Melee skill."
 	if(!("Axe" in usr.WeaponEQ))
-		usr<<"You need an axe equipped to use this!"
+		to_chat(usr, "You need an axe equipped to use this!")
 		return
 	if(usr.meleeCD)
-		usr<<"Melee skills on CD for [meleeCD/10] seconds."
+		to_chat(usr, "Melee skills on CD for [meleeCD/10] seconds.")
 		return
 	 
 	get_me_a_target()
@@ -15,7 +15,7 @@ mob/keyable/combo/axe/verb/Logsplitter()
 		usr.ki-=kireq
 		usr.basicCD = 10*usr.Eactspeed
 	else
-		usr<<"You must be combat ready (not be stunned, be able to attack, and not have a cooldown happening (Basic CD = -[basicCD/10]- seconds)) and have at least [kireq] ki."
+		to_chat(usr, "You must be combat ready (not be stunned, be able to attack, and not have a cooldown happening (Basic CD = -[basicCD/10]- seconds)) and have at least [kireq] ki.")
 		return
 	usr.emit_Sound('strongpunch.wav',0.5)
 	spawn MeleeAttack(target,3)
@@ -30,13 +30,13 @@ mob/keyable/combo/axe/verb/Reaver()
 	set category = "Skills"
 	set desc = "Strike foes in a 3 tile arc. Inflicts more damage to bleeding targets. Axe skill. AoE skill."
 	if(!("Axe" in usr.WeaponEQ))
-		usr<<"You need an axe equipped to use this!"
+		to_chat(usr, "You need an axe equipped to use this!")
 		return
 	if(usr.AoECD)
-		usr<<"Melee AoE skills on CD for [AoECD/10] seconds."
+		to_chat(usr, "Melee AoE skills on CD for [AoECD/10] seconds.")
 		return
 	if(usr.canfight<=0||usr.KO||usr.med||usr.stamina<13)
-		usr<<"You can't use this now!"
+		to_chat(usr, "You can't use this now!")
 		return
 	get_me_a_target()
 	if(target_check() == FALSE) return
@@ -45,7 +45,7 @@ mob/keyable/combo/axe/verb/Reaver()
 		usr.ki-=kireq
 		usr.basicCD = 13*usr.Eactspeed
 	else
-		usr<<"You must be combat ready (not be stunned, be able to attack, and not have a cooldown happening (Basic CD = -[basicCD/10]- seconds)) and have at least [kireq] ki."
+		to_chat(usr, "You must be combat ready (not be stunned, be able to attack, and not have a cooldown happening (Basic CD = -[basicCD/10]- seconds)) and have at least [kireq] ki.")
 		return
 	usr.dir = get_dir(usr,target)
 	usr.updateOverlay(/obj/overlay/effects/flickeffects/reaver)
@@ -84,10 +84,10 @@ mob/keyable/combo/axe/verb/Headsman()
 	set category = "Skills"
 	set desc = "Multi hit melee attack, stuns and knocks back. Axe skill. Melee skill."
 	if(!("Axe" in usr.WeaponEQ))
-		usr<<"You need an axe equipped to use this!"
+		to_chat(usr, "You need an axe equipped to use this!")
 		return
 	if(usr.meleeCD)
-		usr<<"Melee skills on CD for [meleeCD/10] seconds."
+		to_chat(usr, "Melee skills on CD for [meleeCD/10] seconds.")
 		return
 	 
 	get_me_a_target()
@@ -97,7 +97,7 @@ mob/keyable/combo/axe/verb/Headsman()
 		usr.ki-=kireq
 		usr.basicCD = 15*usr.Eactspeed
 	else
-		usr<<"You must be combat ready (not be stunned, be able to attack, and not have a cooldown happening (Basic CD = -[basicCD/10]- seconds)) and have at least [kireq] ki."
+		to_chat(usr, "You must be combat ready (not be stunned, be able to attack, and not have a cooldown happening (Basic CD = -[basicCD/10]- seconds)) and have at least [kireq] ki.")
 		return
 	usr.target.AddEffect(/effect/stun)
 	spawn MeleeAttack(usr.target,1.5)
@@ -114,10 +114,10 @@ mob/keyable/combo/axe/verb/Brutal_Cleaver()
 	set category = "Skills"
 	set desc = "Throw an axe at your target, teleporting to them and striking when it lands. Inflicts Bleeding. Axe skill. Special skill."
 	if(!("Axe" in usr.WeaponEQ))
-		usr<<"You need an axe equipped to use this!"
+		to_chat(usr, "You need an axe equipped to use this!")
 		return
 	if(usr.ultiCD)
-		usr<<"Melee special skills on CD for [ultiCD/10] seconds."
+		to_chat(usr, "Melee special skills on CD for [ultiCD/10] seconds.")
 		return
 	 
 	if(!usr.target||get_dist(usr,target)>5)
@@ -126,18 +126,18 @@ mob/keyable/combo/axe/verb/Brutal_Cleaver()
 				target=M
 				break
 	if(!usr.target)
-		usr<<"You have no target."
+		to_chat(usr, "You have no target.")
 		return
 	else
 		if(get_dist(usr,target)>5)
-			usr<<"Your target is out of range!"
+			to_chat(usr, "Your target is out of range!")
 			return
 	var/kireq=usr.Ephysoff*BaseDrain*0.4*15
 	if(!usr.med&&!usr.train&&!usr.KO&&usr.Ki>=kireq&&!usr.basicCD&&usr.canfight)
 		usr.ki-=kireq
 		usr.basicCD = 15*usr.Eactspeed
 	else
-		usr<<"You must be combat ready (not be stunned, be able to attack, and not have a cooldown happening (Basic CD = -[basicCD/10]- seconds)) and have at least [kireq] ki."
+		to_chat(usr, "You must be combat ready (not be stunned, be able to attack, and not have a cooldown happening (Basic CD = -[basicCD/10]- seconds)) and have at least [kireq] ki.")
 		return
 	var/passbp = expressedBP
 	flick("Attack",usr)

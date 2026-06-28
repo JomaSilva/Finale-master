@@ -5,7 +5,7 @@ mob/verb/View_Backstory(mob/M in view())
 	set name = "Backstory"
 	if(!M) M = src
 	if(!M.backstory)
-		usr << "No backstory has been written."
+		to_chat(usr, "No backstory has been written.")
 		return
 	usr << browse("<html><body style='background:#1a1a1a;color:#dddddd;font-family:sans-serif;padding:10px'><h3>[M.name]'s Backstory</h3><p>[html_encode(M.backstory)]</p></body></html>","window=backstory;size=460x420")
 mob
@@ -103,18 +103,18 @@ mob
 			var/tempfirst = uppertext(copytext(name,1,2))
 			name="[tempfirst][copytext(name,2,30)]" //ensures that the first letter will always be capitalized.
 			if(!name || (findtext(name," ") && length(name) == 1) || findtext(name,"  "))
-				src << "Invalid name."
+				to_chat(src, "Invalid name.")
 				Name()
 
 		Backstory()
 			var/bs = input(src, "Write your character's backstory — who they are and where they come from. This is required to continue.", "Character Backstory", backstory) as message|null
 			if(bs) bs = copytext(bs, 1, 2001) //2000 char cap
 			if(!bs || length(bs) < 10)
-				src << "<font color=red>You must write a backstory (at least a sentence) to continue.</font>"
+				to_chat(src, "<font color=red>You must write a backstory (at least a sentence) to continue.</font>")
 				Backstory()
 				return
 			backstory = bs
-			src << "<font color=#88cc88>Backstory saved. You can review it anytime via the Backstory verb.</font>"
+			to_chat(src, "<font color=#88cc88>Backstory saved. You can review it anytime via the Backstory verb.</font>")
 		Gender()
 			if(Race=="Kanassa-Jin"|Race=="Makyo"|Race=="Namekian"|Race=="Yardrat"|Race=="Saibamen")
 				gender = MALE

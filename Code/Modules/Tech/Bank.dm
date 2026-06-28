@@ -1,7 +1,7 @@
 mob/var/deposited_zenni=0
 mob/proc
 	Bank()
-		usr<<"You have [usr.deposited_zenni] zenni in your account."
+		to_chat(usr, "You have [usr.deposited_zenni] zenni in your account.")
 		switch(input("What now?","",text) in list("Nothing","Deposit","Withdraw"))
 			if("Deposit")
 				var/amount=input("How much do you want to put in?") as num
@@ -61,16 +61,16 @@ obj/Bank
 			if(isobj(choice))
 				if(istype(choice,/obj/items))
 					if(choice:DropMe(usr))
-						view(usr)<<"[usr] deposits [choice]."
+						to_chat(view(usr), "[usr] deposits [choice].")
 						TargetHolder.AddItem(choice)
 						goto bankstart
-					else usr<<"Failed to deposit item."
+					else to_chat(usr, "Failed to deposit item.")
 				if(istype(choice,/obj/Modules))
 					if(choice:DropMe(usr))
-						view(usr)<<"[usr] deposits [choice]."
+						to_chat(view(usr), "[usr] deposits [choice].")
 						TargetHolder.AddItem(choice)
 						goto bankstart
-					else usr<<"Failed to deposit item."
+					else to_chat(usr, "Failed to deposit item.")
 		else return
 
 	verb/Retrieve_Item()
@@ -84,7 +84,7 @@ obj/Bank
 				TargetHolder = A
 				break
 		if(isnull(TargetHolder))
-			usr << "ERROR: No bank account present! Despoit an item before you take one out!"
+			to_chat(usr, "ERROR: No bank account present! Despoit an item before you take one out!")
 			return
 		else
 			var/list/gibList = list()
@@ -96,10 +96,10 @@ obj/Bank
 				TargetHolder.RemoveItem(choice,usr)
 				if(istype(choice,/obj/items))
 					if(choice:GetMe(usr))
-					else usr<<"Failed to completely retrieve item. It's on the ground."
+					else to_chat(usr, "Failed to completely retrieve item. It's on the ground.")
 				if(istype(choice,/obj/Modules))
 					if(choice:GetMe(usr))
-					else usr<<"Failed to completely retrieve item. It's on the ground."
+					else to_chat(usr, "Failed to completely retrieve item. It's on the ground.")
 
 
 var/list/BankHolders = list()

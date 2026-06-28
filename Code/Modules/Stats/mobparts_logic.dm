@@ -17,7 +17,7 @@ mob/Admin3/verb/Reinitialize_Bodies()
 			sleep(5)
 			M.Generate_Droid_Parts()
 	bresolveseed+=1
-	usr << "body update seed = [bresolveseed]. (this means everyone who logs in whose local bresolveseed var != here will also have their parts reinitialized)"
+	to_chat(usr, "body update seed = [bresolveseed]. (this means everyone who logs in whose local bresolveseed var != here will also have their parts reinitialized)")
 var/bresolveseed
 
 mob
@@ -103,8 +103,8 @@ datum/Body
 		if(!lopped)
 			if(!savant) return FALSE
 			if(nestedlop) //if the lopping was because of a parent limb being removed.
-				view(savant) << "[savant]'s [src] goes with it!"
-			else view(savant) << "[savant]'s [src] was lopped off!"
+				to_chat(view(savant), "[savant]'s [src] goes with it!")
+			else to_chat(view(savant), "[savant]'s [src] was lopped off!")
 			SpawnLop()
 			lopped = 1
 			health = 0
@@ -130,7 +130,7 @@ datum/Body
 				return
 			if(Z.status == "Missing"&&Z.isnested==1&&src==Z.parentlimb)
 				Z.RegrowLimb()
-		view(savant) << "[savant]'s [src] regrew!"
+		to_chat(view(savant), "[savant]'s [src] regrew!")
 		lopped = 0
 		health = 0.7*maxhealth
 		status = "Damaged [health]"

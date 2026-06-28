@@ -24,10 +24,10 @@ obj/Container
 		set category = null
 		set src in view(1)
 		if(usr.inven_min>=usr.inven_max)
-			usr<<"You have no room!"
+			to_chat(usr, "You have no room!")
 			return
 		if(src.contents.len<1)
-			usr<<"It's empty."
+			to_chat(usr, "It's empty.")
 			return
 		var/get = input(usr,"What would you like to take?","",null) as null|anything in src.contents
 		if(!get)

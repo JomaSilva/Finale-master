@@ -30,10 +30,10 @@ mob
 		Practice_Crafting()
 			set category = "Other"
 			if(usr.trainingmode)
-				usr<<"You will now actually complete your items, losing the training bonus."
+				to_chat(usr, "You will now actually complete your items, losing the training bonus.")
 				usr.trainingmode = 0
 			else
-				usr<<"You will now practice crafting, rather than creating items. This gives you a small training bonus."
+				to_chat(usr, "You will now practice crafting, rather than creating items. This gives you a small training bonus.")
 				usr.trainingmode = 1
 
 obj/items
@@ -90,16 +90,16 @@ obj/items
 		verb
 			Description()
 				set category = null
-				usr<<"[name]:[desc]"
-				usr<<"Quality: [qualitylabel] ([quality])"
-				usr<<"Tier: [tier]"
-				usr<<"Category:"
+				to_chat(usr, "[name]:[desc]")
+				to_chat(usr, "Quality: [qualitylabel] ([quality])")
+				to_chat(usr, "Tier: [tier]")
+				to_chat(usr, "Category:")
 				for(var/a in categories)
-					usr<<"[a]"
+					to_chat(usr, "[a]")
 				if(statvalues.len)
-					usr<<"Attributes:"
+					to_chat(usr, "Attributes:")
 					for(var/b in statvalues)
-						usr<<"[b]:[statvalues[b]]"
+						to_chat(usr, "[b]:[statvalues[b]]")
 
 	Plan//plans are used to craft shit, you learn them and then crafting objects (benches, forges, etc) check against your learned list
 		name = "Crafting Plan"
@@ -118,26 +118,26 @@ obj/items
 		verb
 			Description()
 				set category = null
-				usr<<"[name]:[desc]"
-				usr<<"Is a tier [tier] recipe."
-				usr<<"Falls under the [masteryname] mastery, requires level [requiredlevel] to learn."
-				usr<<"Used to create: [createdname]"
+				to_chat(usr, "[name]:[desc]")
+				to_chat(usr, "Is a tier [tier] recipe.")
+				to_chat(usr, "Falls under the [masteryname] mastery, requires level [requiredlevel] to learn.")
+				to_chat(usr, "Used to create: [createdname]")
 				for(var/A in src.materialtypes)
 					if(A=="Zenni")
 						usr<<"Costs [materialtypes["Zenni"]] zenni."
 					else
-						usr<<"Requires [A] to make."
+						to_chat(usr, "Requires [A] to make.")
 
 			Learn()
 				set category = null
 				for(var/obj/items/Plan/P in usr.planlist)
 					if(P.type==src.type)
-						usr<<"You already know this plan!"
+						to_chat(usr, "You already know this plan!")
 						return
 				if(!masterytype)
 					usr.planlist+=src
 					usr.contents-=src
-					usr<<"You learned the [name]"
+					to_chat(usr, "You learned the [name]")
 				else
 					var/check=0
 					var/lcheck=0
@@ -147,13 +147,13 @@ obj/items
 							if(a.level >= requiredlevel)
 								lcheck++
 					if(!check)
-						usr<<"You don't know the mastery you need!"
+						to_chat(usr, "You don't know the mastery you need!")
 					else if(!lcheck)
-						usr<<"Your mastery level is too low to learn this!"
+						to_chat(usr, "Your mastery level is too low to learn this!")
 					else
 						usr.planlist+=src
 						usr.contents-=src
-						usr<<"You learned the [name]"
+						to_chat(usr, "You learned the [name]")
 
 obj/Crafting
 	density = 1
@@ -169,14 +169,14 @@ obj/Crafting
 			set src in oview(1)
 			var/maxtier = 0
 			if(recipecheck)
-				usr<<"You can't research at the moment..."
+				to_chat(usr, "You can't research at the moment...")
 				return
 			for(var/datum/mastery/A in usr.learnedmasteries)
 				if(A.type == masterytype)
 					maxtier+=A.level
 					break
 			if(!maxtier)
-				usr<<"You lack the skill to use this!"
+				to_chat(usr, "You lack the skill to use this!")
 				return
 			else
 				if(maxtier==100)
@@ -185,7 +185,7 @@ obj/Crafting
 					maxtier = min(max(round(maxtier/20+1.5),1),7)
 			var/tier = input(usr,"What tier recipe would you like to research? The highest tier you have access to is [maxtier]. Note you need [researchitem] of the tier you choose or higher.","") as num
 			if(tier > maxtier)
-				usr <<"You cannot create recipes above your max tier."
+				to_chat(usr, "You cannot create recipes above your max tier.")
 				return
 			var/list/planlist = list()
 			for(var/obj/items/Plan/P in globalrecipes)
@@ -193,28 +193,28 @@ obj/Crafting
 					var/obj/items/Plan/NP = new P.type
 					planlist+= NP
 			if(planlist.len == 0)
-				usr<<"You don't think you can make a plan of this tier..."
+				to_chat(usr, "You don't think you can make a plan of this tier...")
 				return
 			var/cost = 1000 * (2**tier)
 			if(usr.zenni<cost)
-				usr<<"You don't have enough money for this research..."
+				to_chat(usr, "You don't have enough money for this research...")
 				return
 			var/list/mats = list()
 			for(var/obj/items/Material/M in usr.contents)
 				if((researchitem in M.categories)&&M.tier>=tier)
 					mats+=M
 			if(mats.len == 0)
-				usr<<"You don't have the materials for this research!"
+				to_chat(usr, "You don't have the materials for this research!")
 				return
 			var/choice = input(usr,"What material would you like to use? Note this will cost you [cost] zenni and consume the material.","") as null|anything in mats
 			if(!choice)
-				usr<<"You cancel your research."
+				to_chat(usr, "You cancel your research.")
 				return
 			else
 				usr.zenni-=cost
 				usr.contents-=choice
 				var/obj/items/Plan/outcome=pick(planlist)
-				usr<<"You discovered [outcome.name]!"
+				to_chat(usr, "You discovered [outcome.name]!")
 				usr.contents+=outcome
 
 		Craft()
@@ -229,7 +229,7 @@ obj/Crafting
 				if(P.masterytype == src.masterytype)
 					plans+=P
 			if(plans.len==0)
-				usr<<"You have no recipes you can make here."
+				to_chat(usr, "You have no recipes you can make here.")
 				return
 			var/obj/items/Plan/choice = input(usr,"What recipe would you like to craft?","") as null|anything in plans
 			if(!choice)
@@ -252,7 +252,7 @@ obj/Crafting
 						check-=A
 						options+=M
 			if(check.len)
-				usr<<"You are missing materials for this recipe."
+				to_chat(usr, "You are missing materials for this recipe.")
 				return
 			var/list/uselist = list()
 			for(var/B in choice.materialtypes)
@@ -262,7 +262,7 @@ obj/Crafting
 						mlist+=N
 				var/choicem = input(usr,"Which [B] would you like to use?","") as null|anything in mlist
 				if(!choicem)
-					usr<<"Crafting cancelled."
+					to_chat(usr, "Crafting cancelled.")
 					return
 				uselist+=choicem
 				options-=choicem
@@ -356,7 +356,7 @@ obj/Raw_Material
 		Description()
 			set category = null
 			set src in view(1)
-			usr<<"[name]: Requires level [masterylevel] [masteryname] to gather."
+			to_chat(usr, "[name]: Requires level [masterylevel] [masteryname] to gather.")
 	proc
 		Gather()
 			if(!loc)

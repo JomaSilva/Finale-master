@@ -42,12 +42,12 @@ mob/proc/KaiokenMult(var/amt)
 			if(savant.KaiokenMastery>3) exp += 1
 			kaiotest = rand(1,33)
 			if(kaiotest==33&&savant.KaiokenMastery<=3)
-				savant << "Your body feels like it's tearing itself apart from the inside..."
+				to_chat(savant, "Your body feels like it's tearing itself apart from the inside...")
 				savant.SpreadDamage(35/(2*savant.KaiokenMastery))
 				savant.KaiokenMastery += 0.5
 		if(1)
 			if(levelup == 1)
-				savant << "You feel as if a power is roiling just beneath your skin."
+				to_chat(savant, "You feel as if a power is roiling just beneath your skin.")
 				assignverb(/verb/Kaioken)
 				levelup = 0
 			if(savant.KaioPcnt != 1)
@@ -55,7 +55,7 @@ mob/proc/KaiokenMult(var/amt)
 		if(2)
 			if(levelup == 1)
 				levelup = 0
-				savant << "Your Kaioken power feels more accessible."
+				to_chat(savant, "Your Kaioken power feels more accessible.")
 				assignverb(/verb/Kaioken_Settings)
 			if(savant.KaioPcnt != 1)
 				exp+=1
@@ -77,7 +77,7 @@ datum/skill/kaioken/login(var/mob/logger)
 	if(level>0)
 		if(savant.KaioPcnt != 1) savant.KaiokenRevert()
 		unassignverb(/verb/Kaioken)
-		savant << "You can't seem to remember how to use Kaio-ken."
+		to_chat(savant, "You can't seem to remember how to use Kaio-ken.")
 		savant.KaiokenMastery = 1
 	if(level>1)
 		unassignverb(/verb/Kaioken_Settings)
@@ -87,7 +87,7 @@ datum/skill/kaioken/login(var/mob/logger)
 
 /datum/skill/kaioken/after_learn()
 	switch(level)
-		if(0) savant << "You feel a bit crimson."
+		if(0) to_chat(savant, "You feel a bit crimson.")
 		if(1)
 			assignverb(/verb/Kaioken)
 			savant.KaiokenMastery+=3
@@ -133,17 +133,17 @@ mob/proc/SetKaioken()
 			src.KaiokenRevert()
 			return
 		if(src.powerMod>1)
-			src << "You must revert any power up buffs before using Kaioken."
+			to_chat(src, "You must revert any power up buffs before using Kaioken.")
 			return
 		if(src.kaioamount<2) src.kaioamount=2 //Kaioken is natively a x2 boost. Further multipliers don't affect this. x20 for instance is just a x20 multiplier.
 		src.kaioamount=round(src.kaioamount)
 		if(src.kaioamount>100) src.kaioamount = 100
 		if(isBuffed(/obj/buff/Kaioken))
-			view(src)<<"A bright red aura bursts all around [src]."
+			to_chat(view(src), "A bright red aura bursts all around [src].")
 			if(src.kaioamount<3)
-				view(src)<<"<font size=[src.TextSize]><[src.SayColor]>[src]: KAIOKEN!!!"
+				to_chat(view(src), "<font size=[src.TextSize]><[src.SayColor]>[src]: KAIOKEN!!!")
 			else
-				view(src)<<"<font size=[src.TextSize]><[src.SayColor]>[src]: KAIOKEN TIMES [src.kaioamount]!!!"
+				to_chat(view(src), "<font size=[src.TextSize]><[src.SayColor]>[src]: KAIOKEN TIMES [src.kaioamount]!!!")
 			emit_Sound('kaioken.wav')
 		else startbuff(/obj/buff/Kaioken)
 			//with the re-multiplying of powers, kaioken has been buffed to a real multiplier.
@@ -156,11 +156,11 @@ mob/proc/SetKaioken()
 	Buff()
 		..()
 		container.updateOverlay(/obj/overlay/auras/kaioaura,container.kaioaura)
-		view(container)<<"A bright red aura bursts all around [container]."
+		to_chat(view(container), "A bright red aura bursts all around [container].")
 		if(container.kaioamount<3)
-			view(container)<<"<font size=[container.TextSize]><[container.SayColor]>[container]: KAIOKEN!!!"
+			to_chat(view(container), "<font size=[container.TextSize]><[container.SayColor]>[container]: KAIOKEN!!!")
 		else
-			view(container)<<"<font size=[container.TextSize]><[container.SayColor]>[container]: KAIOKEN TIMES [container.kaioamount]!!!"
+			to_chat(view(container), "<font size=[container.TextSize]><[container.SayColor]>[container]: KAIOKEN TIMES [container.kaioamount]!!!")
 		container.emit_Sound('kaioken.wav')
 		container.poweruprunning=1
 		container.KaioPcnt=container.KaiokenMult(container.kaioamount) //tier -> multiplicador real (ver KaiokenMult)
@@ -176,9 +176,9 @@ mob/proc/SetKaioken()
 					container.KaiokenMastery+=0.00001*container.kaioamount //kaioken is long as fuck to master after x20.
 					container.KaiokenMastery = min(container.KaiokenMastery,50) //max mastery is 50x, so you can use x100 without dying maybe
 			else
-				src<<"You are too tired to continue using Kaioken."
+				to_chat(src, "You are too tired to continue using Kaioken.")
 				if(container.kaioamount>container.KaiokenMastery*2)
-					view(src)<<"[src] suddenly explodes!"
+					to_chat(view(src), "[src] suddenly explodes!")
 					if(!container.dead) spawn container.Body_Parts()
 					else spawn container.Death()
 				container.KaiokenRevert()
@@ -186,7 +186,7 @@ mob/proc/SetKaioken()
 	DeBuff()
 		container.KaioPcnt=1
 		container.kaioamount=1
-		container<<"You stop using Kaioken."
+		to_chat(container, "You stop using Kaioken.")
 		..()
 
 mob/var
@@ -214,11 +214,11 @@ obj/overlay/auras/kaioaura
 mob/proc/KaiokenRevert() if(src)
 	if(src.KaioPcnt > 1)
 		if(!KO)
-			src<<"You stop using Kaioken."
+			to_chat(src, "You stop using Kaioken.")
 		else
-			src<<"You are too tired to continue using Kaioken."
+			to_chat(src, "You are too tired to continue using Kaioken.")
 			if(kaioamount>KaiokenMastery*1.6)
-				view(src)<<"[src] suddenly explodes!"
+				to_chat(view(src), "[src] suddenly explodes!")
 				if(!dead) spawn Body_Parts()
 				else spawn Death()
 		KaioPcnt=1
@@ -237,9 +237,9 @@ verb/Kaioken_Settings()
 			if(choice2>=usr.KaiokenMastery)
 				choice2 = usr.KaiokenMastery
 			else if(choice2<=1)
-				usr <<"Invalid number."
+				to_chat(usr, "Invalid number.")
 				goto choiceset
-			usr << "Kaioken shortcut set to [choice2]"
+			to_chat(usr, "Kaioken shortcut set to [choice2]")
 			switch(input("Add Kaioken shortcut to skills?") in list("Yes","No"))
 				if("Yes")
 					if(!usr.Kaioken1Set)
@@ -252,7 +252,7 @@ verb/Kaioken_Settings()
 						usr.Kaioken3Set = choice2
 						usr.verbs += /verb/Kaioken_3
 					else
-						usr<<"You already have 3 set Kaioken verbs."
+						to_chat(usr, "You already have 3 set Kaioken verbs.")
 			goto choiceset
 		if("Remove Kaioken shortcut.")
 			switch(input("Which Kaioken shortcut?") in list("Kaioken 1","Kaioken 2","Kaioken 3","Cancel"))

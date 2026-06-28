@@ -199,20 +199,20 @@ datum/Fusion
 					PowerEqual = min(2,PowerEqual)
 					PowerEqual = (-((PowerEqual-1)**2) + 1)
 					if(PowerEqual<=0.05)
-						Keeper << "You botched the fusion! Your power needs to be within two times each other!"
-						Loser << "You botched the fusion! Your power needs to be within two times each other!"
+						to_chat(Keeper, "You botched the fusion! Your power needs to be within two times each other!")
+						to_chat(Loser, "You botched the fusion! Your power needs to be within two times each other!")
 					else PowerEqual = 1
 					Keeper.FuseDanceMod += DanceMod * FusionSkill
 					Keeper.FuseTimer = FusionEquation(Keeper.expressedBP)
 					if(FusionSkill<1)
-						Keeper << "You botched the fusion! You need to try it again in order to get it right!"
-						Loser << "You botched the fusion! You need to try it again in order to get it right!"
+						to_chat(Keeper, "You botched the fusion! You need to try it again in order to get it right!")
+						to_chat(Loser, "You botched the fusion! You need to try it again in order to get it right!")
 					spawn Keeper.FuseCheck()
 				if(2)
 					Keeper.FPotaraMod+= PotaraMod
 				if(3)
 					Loser.isnamekd = 1
-					Keeper <<"You feel [Loser] deep inside you. Is this the true dose?"
+					to_chat(Keeper, "You feel [Loser] deep inside you. Is this the true dose?")
 			Loser.verblist += /verb/Set_Fusion_View
 			Loser.verbs += /verb/Set_Fusion_View
 			LoserBackupLoc = Loser.loc
@@ -307,11 +307,11 @@ mob/Admin3/verb/Delete_Fusion_Database()
 	var/choice = alert(usr,"Delete the entire database, or just one? Deleting all will defuse everyone!","","Cancel","One","All")
 	switch(choice)
 		if("All")
-			usr << "Defusing everyone! Offline characters will have their stats fudged!"
+			to_chat(usr, "Defusing everyone! Offline characters will have their stats fudged!")
 			for(var/datum/Fusion/F)
 				if(F.IsActiveForKeeper||F.IsActiveForLoser)
 					F.Defuse(1)
-				world << "Deleted [F.FuseName]"
+				to_chat(world, "Deleted [F.FuseName]")
 				del(F)
 			FusionDatabase = list()
 
@@ -321,7 +321,7 @@ mob/Admin3/verb/Delete_Fusion_Database()
 				if(F==choice2)
 					if(F.IsActiveForKeeper||F.IsActiveForLoser)
 						F.Defuse(1)
-					world << "Deleted [F.FuseName]"
+					to_chat(world, "Deleted [F.FuseName]")
 					FusionDatabase -= F
 					del(F)
 					break
@@ -331,7 +331,7 @@ mob/Admin2/verb/Reset_Fusion(var/mob/M)
 	var/choice = alert(usr,"Make sure to use this on the other part of the fusion too! Also ask a level 3 to delete the fusion entirely as well from the database if you know it's malfunctioning.","","Cancel","OK")
 	switch(choice)
 		if("OK")
-			usr << "Just in case, the fusion will attempt to defuse itself on it's own!"
+			to_chat(usr, "Just in case, the fusion will attempt to defuse itself on it's own!")
 			for(var/datum/Fusion/F)
 				if(F.KeeperSig==signature||F.LoserSig==signature)
 					if(F.IsActiveForKeeper||F.IsActiveForLoser)
@@ -419,7 +419,7 @@ mob/keyable/verb/Namekian_Fusion()
 	usr.fusing=1
 	switch(input(M,"[usr] wishes to do a fusion with you, you will receive the offerer's power.", "", text) in list ("No", "Yes",))
 		if("Yes")
-			view(9)<<"<font color=yellow>[usr] fuses with [M]!"
+			to_chat(view(9), "<font color=yellow>[usr] fuses with [M]!")
 			M.Fuse(usr,3)
 	usr.fusing=0
 
@@ -438,13 +438,13 @@ obj/items/Potara_Earring
 				if(istype(A,/obj/items/Potara_Earring))
 					if(PairedEarring)
 						if(PairedEarring.PairedEarring == src)
-							usr<<"The earrings are already paired!"
+							to_chat(usr, "The earrings are already paired!")
 					A.PairedEarring = src
 					PairedEarring = src
 					A.icon = 'potararight.dmi'
 					icon = 'potaraleft.dmi'
 			else
-				usr << "You need another Potara Earring to pair it!"
+				to_chat(usr, "You need another Potara Earring to pair it!")
 		Remove_Pair()
 			set category = null
 			set src in usr
@@ -452,14 +452,14 @@ obj/items/Potara_Earring
 				PairedEarring.PairedEarring = null
 				PairedEarring = null
 				icon = 'potaraleft.dmi'
-				usr << "Paired earring removed."
+				to_chat(usr, "Paired earring removed.")
 		Check_Pair()
 			set category = null
 			set src in usr
 			if(PairedEarring)
-				usr << "The potara earring rings true... if you wish to fuse, you must wear it while on the same Z-level as the other earring!"
+				to_chat(usr, "The potara earring rings true... if you wish to fuse, you must wear it while on the same Z-level as the other earring!")
 			else
-				usr << "The potara earring rings falsely... if you wish to fuse, you must pair it with another earring! Kaioshins start with two."
+				to_chat(usr, "The potara earring rings falsely... if you wish to fuse, you must pair it with another earring! Kaioshins start with two.")
 		Equip()
 			set category = null
 			set src in usr
@@ -487,7 +487,7 @@ obj/items/Potara_Earring
 					usr.Wearing_Potara_Earrings = 2
 					usr.removeOverlay(/obj/overlay/clothes/PotaraEarring)
 					usr.updateOverlay(/obj/overlay/clothes/PotaraEarrings)
-				usr << "If you go near another player with the other paired earring, you'll slam together and fuse! The player with the right earring controls the body!"
+				to_chat(usr, "If you go near another player with the other paired earring, you'll slam together and fuse! The player with the right earring controls the body!")
 			else
 				equipped=1
 				suffix="*Equipped*"
@@ -498,7 +498,7 @@ obj/items/Potara_Earring
 					usr.Wearing_Potara_Earrings = 2
 					usr.removeOverlay(/obj/overlay/clothes/PotaraEarring)
 					usr.updateOverlay(/obj/overlay/clothes/PotaraEarrings)
-				usr<<"Your earrings aren't paired, so there won't be a fusion."
+				to_chat(usr, "Your earrings aren't paired, so there won't be a fusion.")
 	proc
 		checkEarringDist()
 			if(!equipped) return
@@ -532,7 +532,7 @@ obj/items/Potara_Earring
 					else
 						Fusee.Fuse(Fusor,2)
 					return
-				else usr<<"Neither the [Fusor] or [Fusee] were mobs!"
+				else to_chat(usr, "Neither the [Fusor] or [Fusee] were mobs!")
 			sleep(50)
 			checkEarringDist()
 
@@ -561,13 +561,13 @@ obj/items/Potara_Earring/var
 obj/Fusion_dance/verb/Fusion_Dance()
 	set category="Skills"
 	if(usr.FuseTimer)
-		usr <<"You're already fused!"
+		to_chat(usr, "You're already fused!")
 		return
 	var/mob/M=input("Who?") as null|mob in oview(1)
 	if(!M) return
 	if(M==usr) return
 	switch(input(M,"[usr] wishes to do the Fusion Dance with you, you will receive the offerer's power.", "", text) in list ("No", "Yes",))
 		if("Yes")
-			view(9)<<"<font color=yellow>[usr] fuses with [M]!"
+			to_chat(view(9), "<font color=yellow>[usr] fuses with [M]!")
 			usr.emit_Sound('fusion.wav')
 			M.Fuse(usr,1)

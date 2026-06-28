@@ -27,13 +27,13 @@ datum/skill/Swordmaster
 mob/var/GotWeaponBuff = 0
 
 datum/skill/Swordmaster/after_learn() //after_learn() only happens once, you're looking for effector() and a datum var that checks and tracks if you equipped something.
-	savant<<"Your sword swings feel lighter and more precise."
+	to_chat(savant, "Your sword swings feel lighter and more precise.")
 	if(savant.weaponeq>=1&&savant.GotWeaponBuff==0)
 		savant.GotWeaponBuff = 1
 		savant.physoffBuff+=0.3
 		savant.techniqueBuff+=0.1
 datum/skill/Swordmaster/before_forget()
-	savant<<"You let go of the way of the blade."
+	to_chat(savant, "You let go of the way of the blade.")
 	switch(level)
 		if(0) if(savant.GotWeaponBuff==1)
 			savant.GotWeaponBuff = 0
@@ -50,30 +50,30 @@ datum/skill/Swordmaster/effector()
 	switch(level)
 		if(0)
 			if(savant.weaponeq>=1&&savant.GotWeaponBuff==0)
-				savant<<"Your sword makes you feel stronger."
+				to_chat(savant, "Your sword makes you feel stronger.")
 				savant.GotWeaponBuff = 1
 				savant.physoffBuff+=0.3
 				savant.techniqueBuff+=0.1
 			if(savant.weaponeq==0&&savant.GotWeaponBuff==1)
-				savant<<"Your lack of weapon limits your body in some way?"
+				to_chat(savant, "Your lack of weapon limits your body in some way?")
 				savant.GotWeaponBuff = 0
 				savant.physoffBuff-=0.3
 				savant.techniqueBuff-=0.1
 		if(1)
 			if(levelup)
 				levelup = 0
-				savant<<"Your sword skill has evolved."
+				to_chat(savant, "Your sword skill has evolved.")
 				if(savant.weaponeq>=1&&savant.GotWeaponBuff==1)
 					savant.GotWeaponBuff = 0
 					savant.physoffBuff-=0.3
 					savant.techniqueBuff-=0.1
 			if(savant.weaponeq>=1&&savant.GotWeaponBuff==0)
-				savant<<"Your sword makes you feel stronger."
+				to_chat(savant, "Your sword makes you feel stronger.")
 				savant.GotWeaponBuff = 1
 				savant.physoffBuff+=0.5
 				savant.techniqueBuff+=0.2
 			if(savant.weaponeq==0&&savant.GotWeaponBuff==1)
-				savant<<"Your weapon is missing from your grip, your body is not in it's natural state."
+				to_chat(savant, "Your weapon is missing from your grip, your body is not in it's natural state.")
 				savant.GotWeaponBuff = 0
 				savant.physoffBuff-=0.5
 				savant.techniqueBuff-=0.2
@@ -126,11 +126,11 @@ verb/Equip_Tree(var/obj/Trees/A in usr.contents)
 		usr.TreeEquipped = 1
 
 datum/skill/Tree_Mastery/after_learn()
-	savant<<"The way of the Tree has imprinted within you."
+	to_chat(savant, "The way of the Tree has imprinted within you.")
 	assignverb(/verb/Pluck_Tree)
 	..()
 datum/skill/Tree_Mastery/before_forget()
-	savant<<"The forgotten Tree information has left a dull mark in your mind, your body now only viewing trees as nothing more but another resource."
+	to_chat(savant, "The forgotten Tree information has left a dull mark in your mind, your body now only viewing trees as nothing more but another resource.")
 	switch(level)
 		if(0)
 			unassignverb(/verb/Pluck_Tree)
@@ -173,14 +173,14 @@ datum/skill/Tree_Mastery/effector()
 			if(levelup)
 				levelup = 0
 				assignverb(/verb/Equip_Tree)
-				savant<<"You feel more powerful wielding a mighty tree!"
+				to_chat(savant, "You feel more powerful wielding a mighty tree!")
 			if(savant.TreeEquipped==1&&savant.GotTreeBuff==0)
-				savant<<"Your tree makes you feel stronger."
+				to_chat(savant, "Your tree makes you feel stronger.")
 				savant.GotTreeBuff = 1
 				savant.physoffBuff+=0.4
 				savant.techniqueBuff+=0.1
 			if(savant.TreeEquipped==0&&savant.GotTreeBuff==1)
-				savant<<"Your tree is missing from your grip, your body is not in it's natural state."
+				to_chat(savant, "Your tree is missing from your grip, your body is not in it's natural state.")
 				savant.GotTreeBuff = 0
 				savant.physoffBuff-=0.4
 				savant.techniqueBuff-=0.1
@@ -188,18 +188,18 @@ datum/skill/Tree_Mastery/effector()
 			if(levelup)
 				levelup = 1
 				assignverb(/verb/Throw_Tree)
-				savant<<"Anything can be a projectile... Anything."
+				to_chat(savant, "Anything can be a projectile... Anything.")
 				if(savant.TreeEquipped==1&&savant.GotTreeBuff==1)
 					savant.GotTreeBuff = 0
 					savant.physoffBuff-=0.1
 					savant.techniqueBuff-=0.1
 				if(savant.TreeEquipped==1&&savant.GotTreeBuff==0)
-					savant<<"Your tree makes you feel so much stronger."
+					to_chat(savant, "Your tree makes you feel so much stronger.")
 					savant.GotTreeBuff = 1
 					savant.physoffBuff+=0.7
 					savant.techniqueBuff+=0.1
 				if(savant.TreeEquipped==0&&savant.GotTreeBuff==1)
-					savant<<"Your tree is missing from your grip, you are uncomfortable."
+					to_chat(savant, "Your tree is missing from your grip, you are uncomfortable.")
 					savant.GotTreeBuff = 0
 					savant.physoffBuff-=0.7
 					savant.techniqueBuff-=0.1
@@ -218,13 +218,13 @@ datum/skill/Swordsinger
 	var/tmp/boosting
 	var/tmp/delay
 	after_learn()
-		savant<<"You seem a bit stronger."
+		to_chat(savant, "You seem a bit stronger.")
 		savant.staminagainMod += 0.1
 		savant.techniqueBuff += 0.1
 	before_forget()
 		savant.staminagainMod -= 0.1
 		savant.techniqueBuff -= 0.1
-		savant << "Your strength is lost..."
+		to_chat(savant, "Your strength is lost...")
 		if(boost) savant.Ttechnique -= boost
 	effector()
 		..()
@@ -255,10 +255,10 @@ datum/skill/Swordsinger
 	var/tmp/boosted
 	var/tmp/pstsetting
 	after_learn()
-		savant<<"You feel your sword weighing you down..."
+		to_chat(savant, "You feel your sword weighing you down...")
 		savant.staminagainMod += 0.1
 	before_forget()
-		savant<<"Your sword style no longer seems to do the trick anymore."
+		to_chat(savant, "Your sword style no longer seems to do the trick anymore.")
 		savant.staminagainMod -= 0.1
 		if(boost) savant.Ttechnique -= boost
 		switch(level)
@@ -281,7 +281,7 @@ datum/skill/Swordsinger
 				boost = 1.2
 				if(levelup)
 					levelup = 0
-					savant << "Your muscles feel stronger."
+					to_chat(savant, "Your muscles feel stronger.")
 					savant.techniqueBuff += 0.1
 					savant.physoffBuff += 0.2
 					savant.speedBuff += 0.1
@@ -289,7 +289,7 @@ datum/skill/Swordsinger
 				boost = 1.4
 				if(levelup)
 					levelup = 0
-					savant << "Your muscles feel stronger."
+					to_chat(savant, "Your muscles feel stronger.")
 					savant.techniqueBuff += 0.1
 					savant.physoffBuff += 0.2
 					savant.speedBuff += 0.1
@@ -338,7 +338,7 @@ datum/skill/Swordsinger
 	prereqs = list(new/datum/skill/Swordmaster)
 	var/boost
 	before_forget()
-		savant<<"Your workout routine no longer seems to do the trick anymore."
+		to_chat(savant, "Your workout routine no longer seems to do the trick anymore.")
 		switch(level)
 			if(2)
 				savant.techniqueBuff -= 1
@@ -357,14 +357,14 @@ datum/skill/Swordsinger
 			if(2)
 				if(levelup)
 					levelup = 0
-					savant << "Your muscles feel stronger."
+					to_chat(savant, "Your muscles feel stronger.")
 					savant.techniqueBuff += 1
 					savant.physoffBuff += 1
 					savant.speedBuff += 0.5
 			if(3)
 				if(levelup)
 					levelup = 0
-					savant << "Your muscles feel stronger."
+					to_chat(savant, "Your muscles feel stronger.")
 					savant.techniqueBuff += 1
 					savant.physoffBuff += 0.5
 					savant.speedBuff += 0.5

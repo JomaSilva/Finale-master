@@ -22,11 +22,11 @@ mob/verb/Logs()//players should be able to see admin logs
 
 mob/verb/Report_Bug(msg as text)
 	set category="Other"
-	usr<<"Report a bug. This will write into the 'bugreports' file, found in the game directory of the hosting computer."
+	to_chat(usr, "Report a bug. This will write into the 'bugreports' file, found in the game directory of the hosting computer.")
 	WriteToLog("bugrep","[usr] said \"[msg]\" [time2text(world.realtime,"Day DD hh:mm")]")
 mob/verb/Question(msg as text)
 	set category="Other"
-	usr<<"This is to submit questions to admins, they may or may not answer it. Only post important stuff."
+	to_chat(usr, "This is to submit questions to admins, they may or may not answer it. Only post important stuff.")
 	Questions+={"<html>
 <head><title></head></title><body>
 <body bgcolor="#000000"><font size=1><font color="#0099FF"><b><i>

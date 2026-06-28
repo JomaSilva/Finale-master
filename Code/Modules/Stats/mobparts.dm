@@ -325,29 +325,29 @@ obj/bodyparts
 	proc
 		GetMe(var/mob/TargetMob,messageless)
 			if(Bolted)
-				TargetMob<<"It is bolted to the ground, you cannot get it."
+				to_chat(TargetMob, "It is bolted to the ground, you cannot get it.")
 				return FALSE
 			if(TargetMob)
 				if(!TargetMob.KO)
 					for(var/turf/G in view(src)) G.gravity=0
 					Move(TargetMob)
 					if(!messageless)
-						view(TargetMob)<<"<font color=teal><font size=1>[TargetMob] picks up [src]."
+						to_chat(view(TargetMob), "<font color=teal><font size=1>[TargetMob] picks up [src].")
 						WriteToLog("rplog","[TargetMob] picks up [src]    ([time2text(world.realtime,"Day DD hh:mm")])")
 					return TRUE
 				else
-					TargetMob<<"You cant, you are knocked out."
+					to_chat(TargetMob, "You cant, you are knocked out.")
 					return FALSE
 		DropMe(var/mob/TargetMob,messageless)
 			if(equipped|suffix=="*Equipped*")
-				TargetMob<<"You must unequip it first"
+				to_chat(TargetMob, "You must unequip it first")
 				return FALSE
 			TargetMob.overlayList-=icon
 			TargetMob.overlaychanged=1
 			loc=TargetMob.loc
 			step(src,TargetMob.dir)
 			if(!messageless)
-				view(TargetMob)<<"<font size=1><font color=teal>[TargetMob] drops [src]."
+				to_chat(view(TargetMob), "<font size=1><font color=teal>[TargetMob] drops [src].")
 				WriteToLog("rplog","[TargetMob] drops [src]    ([time2text(world.realtime,"Day DD hh:mm")])")
 			return TRUE
 	verb
@@ -364,24 +364,24 @@ obj/bodyparts
 						GetMe(M,1)
 						M.contents += src
 						WriteToLog("rplog","[usr] gives [src] to [M]   ([time2text(world.realtime,"Day DD hh:mm")])")
-						view(usr) << "<font color=teal><font size=1>[usr] gives [src] to [M]"
+						to_chat(view(usr), "<font color=teal><font size=1>[usr] gives [src] to [M]")
 						return
 			DropMe(usr)
 		Eat()
 			set category = null
 			set src in view(1)
 			if(!usr.eating&&usr.CanEat)
-				usr<<"[flavor]"
-				view(usr)<<"[usr] eats the [name]"
+				to_chat(usr, "[flavor]")
+				to_chat(view(usr), "[usr] eats the [name]")
 				usr.Hunger=0
 				usr.eating=1
 				usr.currentNutrition+=nutrition
 				src.deleteMe()
 			else
 				if(usr.eating)
-					usr<<"You need to wait to eat!"
+					to_chat(usr, "You need to wait to eat!")
 				if(!usr.CanEat)
-					usr<<"You can't digest food."
+					to_chat(usr, "You can't digest food.")
 	New()
 		..()
 		spawn(6000) src.loc = null

@@ -5,19 +5,19 @@ obj/items/Clone_Machine
 		while(src)
 			if(!Reviving) for(var/mob/A) if(A.client) if(A==Initiator&&Energy>=1&&A.dead)
 				Reviving=1
-				view(src)<<"[src]: Cloning session activated. Revival in [10/Speed] minutes."
-				A<<"Your cloning machine has detected your fatality, it is attempting to resurrect you."
-				A<<"This will take [10/Speed] minutes."
+				to_chat(view(src), "[src]: Cloning session activated. Revival in [10/Speed] minutes.")
+				to_chat(A, "Your cloning machine has detected your fatality, it is attempting to resurrect you.")
+				to_chat(A, "This will take [10/Speed] minutes.")
 				sleep(6000/Speed)
-				if(prob(50/Failure)) if(A) A<<"The cloning process failed."
+				if(prob(50/Failure)) if(A) to_chat(A, "The cloning process failed.")
 				else if(A)
 					A.loc=locate(x,y,z)
 					A.dir=SOUTH
-					view(src)<<"[src]: Cloning successful."
+					to_chat(view(src), "[src]: Cloning successful.")
 					A.ReviveMe()
 					Reviving=0
 					Energy-=1
-					view(src)<<"[round((Energy/MaxEnergy)*100)]% Energy remaining."
+					to_chat(view(src), "[round((Energy/MaxEnergy)*100)]% Energy remaining.")
 				break
 			sleep(100)
 	icon='Turfs 1.dmi'
@@ -43,13 +43,13 @@ obj/items/Clone_Machine
 				dna_list += ndn
 			var/obj/items/dna_container/ndna = input(usr,"Select the DNA container.","","") as null|obj in dna_list
 			if(ndna)
-				view(src)<<"[src]: Cloning session activated. Clone completing in [10/Speed] minutes."
+				to_chat(view(src), "[src]: Cloning session activated. Clone completing in [10/Speed] minutes.")
 				sleep(6000/Speed)
 				if(prob(50/Failure))
-					view(src)<<"The cloning process failed."
+					to_chat(view(src), "The cloning process failed.")
 					Reviving=0
 				else
-					view(src)<<"[src]: Cloning successful."
+					to_chat(view(src), "[src]: Cloning successful.")
 					Reviving=0
 					var/mob/mZ = new
 					mZ.loc = locate(1,1,32)
@@ -72,7 +72,7 @@ obj/items/Clone_Machine
 					mZ.clone = 1
 					Energy-=1
 					mZ.loc = locate(src.x,src.y,src.z)
-					view(src)<<"[round((Energy/MaxEnergy)*100)]% Energy remaining."
+					to_chat(view(src), "[round((Energy/MaxEnergy)*100)]% Energy remaining.")
 	verb/Mindswap()
 		set src in oview(1)
 		set category=null
@@ -89,19 +89,19 @@ obj/items/Clone_Machine
 		if(Password)
 			Guess=input("You must know the password to reset the machine.") as text
 			if(Guess!=Password)
-				usr<<"Access denied."
+				to_chat(usr, "Access denied.")
 				return
 		Initiator=usr
-		usr<<"Reset to clone [usr] if fatality occurs."
+		to_chat(usr, "Reset to clone [usr] if fatality occurs.")
 	verb/Info()
 		set src in oview(1)
 		set category=null
-		usr<<"Armor: [Health*100] / [MaxHealth*100]"
-		usr<<"Energy: [Energy*100] / [MaxEnergy*100]"
-		usr<<"Cloning Speed: [Speed]"
-		usr<<"Failure Chance: [round(50/Failure)]"
-		if(Password) usr<<"Password Encryption: [Encryption]"
-		usr<<"Cost to make: [techcost]z"
+		to_chat(usr, "Armor: [Health*100] / [MaxHealth*100]")
+		to_chat(usr, "Energy: [Energy*100] / [MaxEnergy*100]")
+		to_chat(usr, "Cloning Speed: [Speed]")
+		to_chat(usr, "Failure Chance: [round(50/Failure)]")
+		if(Password) to_chat(usr, "Password Encryption: [Encryption]")
+		to_chat(usr, "Cost to make: [techcost]z")
 	verb/Upgrade()
 		set src in oview(1)
 		set category=null
@@ -120,48 +120,48 @@ obj/items/Clone_Machine
 		if(A=="Encryption ([200*Encryption]z)")
 			cost=200*Encryption
 			if(usr.zenni<cost)
-				usr<<"You do not have enough money ([cost]z)"
+				to_chat(usr, "You do not have enough money ([cost]z)")
 				return
-			usr<<"Password Encryption level increased."
+			to_chat(usr, "Password Encryption level increased.")
 			Encryption+=1
 		if(A=="Security Password (1000z)")
 			cost=1000
 			if(usr.zenni<cost)
-				usr<<"You do not have enough money ([cost]z)"
+				to_chat(usr, "You do not have enough money ([cost]z)")
 				return
 			Password=input("Set the machine's permanent access code.") as text
-			usr<<"Password set."
+			to_chat(usr, "Password set.")
 		if(A=="Clone Time ([1000*Speed]z)")
 			cost=1000*Speed
 			if(usr.zenni<cost)
-				usr<<"You do not have enough money ([cost]z)"
+				to_chat(usr, "You do not have enough money ([cost]z)")
 				return
-			usr<<"Clone Time decreased."
+			to_chat(usr, "Clone Time decreased.")
 			Speed+=1
 		if(A=="Chance of Failure ([1000*Failure]z)")
 			cost=1000*Failure
 			if(usr.zenni<cost)
-				usr<<"You do not have enough money ([cost]z)"
+				to_chat(usr, "You do not have enough money ([cost]z)")
 				return
-			usr<<"Clone Failure Chance decreased."
+			to_chat(usr, "Clone Failure Chance decreased.")
 			Failure+=1
 		if(A=="Battery Expansion ([1000*MaxEnergy]z)")
 			cost=1000*MaxEnergy
 			if(usr.zenni<cost)
-				usr<<"You do not have enough money ([cost]z)"
+				to_chat(usr, "You do not have enough money ([cost]z)")
 				return
-			usr<<"Energy Core expanded. Full Energy restored."
+			to_chat(usr, "Energy Core expanded. Full Energy restored.")
 			MaxEnergy+=1
 			Energy=MaxEnergy
 		if(A=="Durability ([100*MaxHealth]z)")
 			cost=100*MaxHealth
 			if(usr.zenni<cost)
-				usr<<"You do not have enough money ([cost]z)"
+				to_chat(usr, "You do not have enough money ([cost]z)")
 				return
-			usr<<"Durability increased. Full Armor restored."
+			to_chat(usr, "Durability increased. Full Armor restored.")
 			MaxHealth+=1
 			Health=MaxHealth
-		usr<<"Cost: [cost]z"
+		to_chat(usr, "Cost: [cost]z")
 		usr.zenni-=cost
 		tech+=1
 		techcost+=cost
@@ -189,9 +189,9 @@ obj/items
 			if(!hasDNA)
 				if(alert(usr,"Give DNA to the container?","","Yes","No")=="Yes")
 					if(usr.clone)
-						usr << "Can't clone a clone."
+						to_chat(usr, "Can't clone a clone.")
 						return
-					view(usr)<<"[usr] fills [src] with DNA."
+					to_chat(view(usr), "[usr] fills [src] with DNA.")
 					hasDNA=usr.signature
 					dnarace=usr.Race
 					dnaclass=usr.Class
@@ -207,9 +207,9 @@ obj/items
 						if(M.client) cM = M
 					if(cM && (cM.KO||alert(cM,"Give DNA to the container?","","Yes","No")=="Yes"))
 						if(cM.clone)
-							usr << "Can't clone a clone."
+							to_chat(usr, "Can't clone a clone.")
 							return
-						view(usr)<<"[src] is filled with [cM]'s DNA."
+						to_chat(view(usr), "[src] is filled with [cM]'s DNA.")
 						hasDNA=cM.signature
 						parrace=cM.Parent_Race
 						dnarace=cM.Race
@@ -217,7 +217,7 @@ obj/items
 						suffix = "*Filled*"
 						return
 			else
-				usr << "Already has DNA."
+				to_chat(usr, "Already has DNA.")
 				if(alert(usr,"Clear?","","Yes","no")=="Yes")
 					hasDNA = 0
 					parrace= 0

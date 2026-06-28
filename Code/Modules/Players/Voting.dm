@@ -5,7 +5,7 @@ mob/
 		Anger_Me()
 			set category = "Other"
 			if(angercooldown)
-				usr << "You can't anger right now, it's too recent to another anger."
+				to_chat(usr, "You can't anger right now, it's too recent to another anger.")
 				return
 			var/choice = alert(usr,"Anger yourself? You have [StoredAnger] stored anger. You will get a small boost, but it'll be broadcasted locally and put in the RP log, and it'll cost some Stored Anger for any level. Annoyed is technically free, but if you have any Stored Anger it'll take 10 of it.","","No","Yes")
 			if(choice=="No")
@@ -23,7 +23,7 @@ mob/
 						StoredAnger = max(StoredAnger - 10,0)
 						Ki += (MaxKi/10)
 					else
-						usr<<"No anger!"
+						to_chat(usr, "No anger!")
 						return
 				if("Slightly Angry")
 					if(StoredAnger > 30)
@@ -33,7 +33,7 @@ mob/
 						StoredAnger = max(StoredAnger - 30,0)
 						Ki += (MaxKi/5)
 					else
-						usr << "Anger not above 30!"
+						to_chat(usr, "Anger not above 30!")
 						return
 				if("Angry")
 					if(StoredAnger > 50)
@@ -43,7 +43,7 @@ mob/
 						StoredAnger = max(StoredAnger - 50,0)
 						Ki += (MaxKi/2)
 					else
-						usr << "Anger not above 50!"
+						to_chat(usr, "Anger not above 50!")
 						return
 				if("Very Angry")
 					if(StoredAnger == 100)
@@ -53,7 +53,7 @@ mob/
 						StoredAnger = max(StoredAnger - 50,0)
 						Ki += MaxKi
 					else
-						usr << "Anger not equal to 100!"
+						to_chat(usr, "Anger not equal to 100!")
 						return
 
 			rageExpire = world.time + 1200 //voluntary rage also expires after 2 minutes
@@ -61,7 +61,9 @@ mob/
 			for(var/mob/M in range(screenx,src))
 				if(M.client)
 					M<<output("<font size=[M.TextSize]><font color=red>*[name] got [Emotion] because [reason]!!!*","Chatpane.Chat")
+					chatcast(M, "<font size=[M.TextSize]><font color=red>*[name] got [Emotion] because [reason]!!!*", "say")
 					M.TestListeners("<font size=[M.TextSize]><font color=red>*[name] got [Emotion] because [reason]!!!*","Chatpane.Chat")
 			for(var/mob/C in mob_list)
 				if(C.Admin&&C.key!=src.key&&C.Spying)
 					C<<output("<font size=[C.TextSize]><font color=yellow>(RP Spy)*[name] got [Emotion] because [reason]!!*(RP Spy)","Chatpane.Chat")
+					chatcast(C, "<font size=[C.TextSize]><font color=yellow>(RP Spy)*[name] got [Emotion] because [reason]!!*(RP Spy)", "say")

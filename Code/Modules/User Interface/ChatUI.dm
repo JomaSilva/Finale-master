@@ -81,10 +81,30 @@ mob/proc/to_chat_html(html, category)
 	if(p > 1) html = copytext(html, p)
 	src << output("<div class='m c-[category]'>[html]</div>", "Chatpane.chatbrowser:addMsg") //DM->JS append
 
-proc/chatcast(targets, html, category) //mirror a broadcast line to everyone's HTML chat; accepts a single mob OR a view()/list
+proc/chatcast(targets, html, category) //mirror a line to recipients' HTML chat; accepts a mob, client, world, or a view()/list
+	if(!targets) return
 	if(ismob(targets))
 		var/mob/M = targets
 		if(M.client) M.to_chat_html(html, category)
 		return
-	for(var/mob/M in targets)
-		if(M.client) M.to_chat_html(html, category)
+	if(istype(targets, /client))
+		var/client/C = targets
+		if(C.mob) C.mob.to_chat_html(html, category)
+		return
+	if(targets == world)
+		for(var/mob/M in world)
+			if(M.client) M.to_chat_html(html, category)
+		return
+	if(islist(targets))
+		for(var/mob/M in targets)
+			if(M.client) M.to_chat_html(html, category)
+		return
+	//unknown target type (savefile/atom/etc.) -> no chat mirror, native send already happened
+
+//Central output: do the native send (preserves the is-default Chatpane.Chat behaviour for the
+//fallback pane) AND mirror it into the new HTML chat. The game's plain `target << "text"` sends
+//are routed through this so the browser chat shows everything the old default-output chat did.
+proc/to_chat(target, msg, category)
+	target << msg
+	if(!category) category = "system"
+	chatcast(target, msg, category)

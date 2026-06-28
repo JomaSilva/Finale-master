@@ -18,7 +18,7 @@ obj/buff/limiteroverload/Loop()
 				if(prob(20)) container.Ki-=container.limiteroverloaddrain*container.BaseDrain //ki takes a small hit regardless.
 				if(container.Ki<=container.MaxKi*container.limiteroverloaddrain)
 					container.Revert()
-					container<<"You are too tired to sustain your form."
+					to_chat(container, "You are too tired to sustain your form.")
 				container.stamina -= trans_drain*max(0.001,container.limiteroverloaddrain) //max statement ensures you won't be hitting exactly zero if drain changes mid drain.
 			else container.Revert()
 	var/artificialcount=0

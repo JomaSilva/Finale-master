@@ -31,7 +31,7 @@ client
 							//can be wav, ogg, or midi. prefer midi because it's small.
 							//parameters are numerous, but the minimum is ('FileName', volume=clientvolume)
 							//additionally, channel=1 for music, to support fading in or out. (default is -1, which means it takes the first available channel, which is 1 or 2)
-							usr<<"Playing: Dragon Ball Z Budokai 2 Opening (Sax Ver.)" //tells the person what's playing
+							to_chat(usr, "Playing: Dragon Ball Z Budokai 2 Opening (Sax Ver.)") //tells the person what's playing
 							played=1 //kinda important, makes it so that the same song doesn't play multiple times in a row.
 							playing=1 //also kinda important. if you don't have a sav file and press reload this stops songs from playing together.
 							spawn(2520)//this is the song length, delay is to keep the next song from playing. Calculated by ((((songlength's min*60)+song length's sec)+1)*10)
@@ -41,7 +41,7 @@ client
 					if(2)
 						if(played!=2)
 							musicdatumvar = sound('DBZBudokaiPlanetNamekStage.mid',volume=clientvolume,wait=1)
-							usr<<"Playing: Dragon Ball Z Budokai: Challenger"
+							to_chat(usr, "Playing: Dragon Ball Z Budokai: Challenger")
 							usr<<musicdatumvar
 							played=2
 							playing=1
@@ -52,7 +52,7 @@ client
 					if(3)
 						if(played!=3)
 							musicdatumvar = sound('getthatdragonball.mid',volume=clientvolume,wait=1)
-							usr<<"Playing: Dragon Ball Theme: Makafugishi Adventure"
+							to_chat(usr, "Playing: Dragon Ball Theme: Makafugishi Adventure")
 							usr<<musicdatumvar
 							played=3
 							playing=1
@@ -63,7 +63,7 @@ client
 					if(4)
 						if(played!=4)
 							musicdatumvar = sound('DragonballV.mid',volume=clientvolume,wait=1)
-							usr<<"Playing: Dragon Ball Super Opening 2"
+							to_chat(usr, "Playing: Dragon Ball Super Opening 2")
 							usr<<musicdatumvar
 							played=4
 							playing=1
@@ -74,7 +74,7 @@ client
 					if(5)
 						if(played!=5)
 							musicdatumvar = sound('Bloody Stream.ogg',volume=clientvolume,wait=1)
-							usr<<"Playing: Bloody Stream - Orchestral (JoJo's BA - Part 2)"
+							to_chat(usr, "Playing: Bloody Stream - Orchestral (JoJo's BA - Part 2)")
 							usr<<musicdatumvar
 							played=5
 							playing=1
@@ -85,7 +85,7 @@ client
 					if(6)
 						if(played!=6)
 							musicdatumvar = sound('01. Super Survivor.ogg',volume=clientvolume,wait=1)
-							usr<<"Playing: Dragon Ball Z: Super Survivor"
+							to_chat(usr, "Playing: Dragon Ball Z: Super Survivor")
 							usr<<musicdatumvar
 							played=6
 							playing=1
@@ -96,7 +96,7 @@ client
 					if(7)
 						if(played!=7)
 							musicdatumvar = sound('chala.ogg',volume=clientvolume,wait=1)
-							usr<<"Playing: Cha-la Head Cha-la (2006 Remix)"
+							to_chat(usr, "Playing: Cha-la Head Cha-la (2006 Remix)")
 							usr<<musicdatumvar
 							played=7
 							playing=1
@@ -107,7 +107,7 @@ client
 					if(8)
 						if(played!=8)
 							musicdatumvar = sound('wegottapower.mid',volume=clientvolume,wait=1)
-							usr<<"Playing: We Gotta Power"
+							to_chat(usr, "Playing: We Gotta Power")
 							usr<<musicdatumvar
 							played=8
 							playing=1
@@ -118,7 +118,7 @@ client
 					if(9)
 						if(played!=9)
 							musicdatumvar = sound('Rightfully.ogg',volume=clientvolume,wait=1)
-							usr<<"Playing: Rightfully by Mili."
+							to_chat(usr, "Playing: Rightfully by Mili.")
 							usr<<musicdatumvar
 							played=9
 							playing=1
@@ -129,7 +129,7 @@ client
 					if(10)
 						if(played!=10)
 							musicdatumvar = sound('fightinggold.ogg',volume=clientvolume,wait=1)
-							usr<<"Playing: Fighting Gold by Coda."
+							to_chat(usr, "Playing: Fighting Gold by Coda.")
 							usr<<musicdatumvar
 							played=10
 							playing=1
@@ -140,7 +140,7 @@ client
 					if(11)
 						if(played!=11)
 							musicdatumvar = sound('metalgearsaga.ogg',volume=clientvolume,wait=1)
-							usr<<"Playing: Metal Gear Saga, from Metal Gear Solid 4 OST, by Harry Gregson Williams."
+							to_chat(usr, "Playing: Metal Gear Saga, from Metal Gear Solid 4 OST, by Harry Gregson Williams.")
 							usr<<musicdatumvar
 							played=11
 							playing=1
@@ -151,7 +151,7 @@ client
 					if(12)
 						if(played!=12)
 							musicdatumvar = sound('Godhand.ogg',volume=clientvolume,wait=1)
-							usr<<"Playing: Godhand!! (End Credits/ Outro) From Godhand (PS2)"
+							to_chat(usr, "Playing: Godhand!! (End Credits/ Outro) From Godhand (PS2)")
 							usr<<musicdatumvar
 							played=12
 							playing=1
@@ -162,7 +162,7 @@ client
 					if(13)
 						if(played!=13)
 							musicdatumvar = sound('dbzkaiopening.ogg',volume=clientvolume,wait=1)
-							usr<<"Playing: Dragon Ball Z Kai Opening"
+							to_chat(usr, "Playing: Dragon Ball Z Kai Opening")
 							usr<<musicdatumvar
 							played=13
 							playing=1
@@ -173,7 +173,7 @@ client
 					if(14)
 						if(played!=14)
 							musicdatumvar = sound('StandProud.ogg',volume=clientvolume,wait=1)
-							usr<<"Playing: JoJo Opening 3: Stand Proud, by Jin Hashimoto"
+							to_chat(usr, "Playing: JoJo Opening 3: Stand Proud, by Jin Hashimoto")
 							usr<<musicdatumvar
 							played=14
 							playing=1
@@ -184,7 +184,7 @@ client
 					if(15)
 						if(played!=15)
 							musicdatumvar = sound('mysticaladventurenengl.ogg',volume=clientvolume,wait=1)
-							usr<<"Playing: Mystical Adventure English (DB Opening 1)"
+							to_chat(usr, "Playing: Mystical Adventure English (DB Opening 1)")
 							usr<<musicdatumvar
 							played=15
 							playing=1
@@ -195,7 +195,7 @@ client
 					if(16)
 						if(played!=16)
 							musicdatumvar = sound('hitstheme.ogg',volume=clientvolume,wait=1)
-							usr<<"Playing: Hit's Theme from Dragon Ball FighterZ"
+							to_chat(usr, "Playing: Hit's Theme from Dragon Ball FighterZ")
 							usr<<musicdatumvar
 							played=16
 							playing=1

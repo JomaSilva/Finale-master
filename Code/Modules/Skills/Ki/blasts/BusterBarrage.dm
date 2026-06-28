@@ -12,11 +12,11 @@
 
 /datum/skill/rank/BusterBarrage/after_learn()
 	assignverb(/mob/keyable/verb/BusterBarrage)
-	savant<<"You can fire an [name]!"
+	to_chat(savant, "You can fire an [name]!")
 
 /datum/skill/rank/BusterBarrage/before_forget()
 	unassignverb(/mob/keyable/verb/BusterBarrage)
-	savant<<"You've forgotten how to fire an [name]!?"
+	to_chat(savant, "You've forgotten how to fire an [name]!?")
 datum/skill/rank/BusterBarrage/login(var/mob/logger)
 	..()
 	assignverb(/mob/keyable/verb/BusterBarrage)
@@ -37,7 +37,7 @@ mob/var/BusterBarrageIcon='Brolly1.dmi'
 					if(usr.Ki>=1&&!usr.KO&&!usr.med&&!usr.train)
 						usr.Ki-=1*BaseDrain
 						if(!firstfire)
-							usr<<"<font size=1>Press it again to stop firing."
+							to_chat(usr, "<font size=1>Press it again to stop firing.")
 							firstfire=1
 						usr.emit_Sound('fire_kiblast.wav')
 						var/obj/attack/blast/A = usr.Create_Blast()

@@ -22,10 +22,10 @@ mob/Admin3/verb/Toggle_Yamato()
 		DevilArmsToggle=0
 		for(var/obj/items/Equipment/Weapon/Sword/Yamato/S in world)
 			del(S)
-			world << "Yamato off. Yamato will now spawn upon clearing the Boss Rush."
+			to_chat(world, "Yamato off. Yamato will now spawn upon clearing the Boss Rush.")
 	else
 		DevilArmsToggle=1
-		world << "Yamato on. Yamato will no longer spawn upon clearing the Boss Rush."
+		to_chat(world, "Yamato on. Yamato will no longer spawn upon clearing the Boss Rush.")
 
 obj/items/Equipment/Weapon//variables for the base types
 	slots= list(/datum/Body/Arm/Hand)
@@ -160,10 +160,10 @@ obj/items/Equipment/Weapon/Sword//sword list
 			set category="Skills"
 			set src in usr
 			if(!equipped)
-				usr << "You must equip [src] before using this."
+				to_chat(usr, "You must equip [src] before using this.")
 				return
 			if(usr.isSealed==0)
-				usr << "This abilty is for unsealing yourself if you have been sealed. You are currently not sealed, and thus cannot use the skill. (If this is not the case, contact an admin for help.)"
+				to_chat(usr, "This abilty is for unsealing yourself if you have been sealed. You are currently not sealed, and thus cannot use the skill. (If this is not the case, contact an admin for help.)")
 				return
 			else if(usr.isSealed==1)
 				var/choice = input("You can use the Yamato to unseal you from here, if you'd like.", "", text) in list ("Yes","No",)
@@ -173,33 +173,33 @@ obj/items/Equipment/Weapon/Sword//sword list
 			set category="Skills"
 			set src in usr
 			if(!equipped)
-				usr << "You must equip [src] before using this."
+				to_chat(usr, "You must equip [src] before using this.")
 				return
 			if(!usr.KO&&usr.canfight&&!usr.med&&!usr.train&&usr.Planet!="Sealed"&&!usr.inteleport)
-				view(6)<<"[usr] grabs the hilt of sword and concentrates."
+				to_chat(view(6), "[usr] grabs the hilt of sword and concentrates.")
 				var/choice = input("The Yamato can tear open a portal to Hell. The trip is one-way, however.", "", text) in list ("Hell","Nevermind",)
 				if(choice!="Nevermind")
-					view(6)<<"[usr] tears a hole in reality and suddenly disappears!"
+					to_chat(view(6), "[usr] tears a hole in reality and suddenly disappears!")
 					usr.inteleport=1
 					usr.BRAllowed=0
 					usr.emit_Sound('YamatoJudgementCut.wav')
 					spawn for(var/mob/V in oview(1))
-						view(6)<<"[V] suddenly disappears!"
+						to_chat(view(6), "[V] suddenly disappears!")
 						if(!V.inteleport)
 							V.inteleport=1
 							while(usr.inteleport)
 								sleep(1)
 							V.loc = locate(usr.x,usr.y,usr.z)
 							V.inteleport=0
-							V<<"[usr] brings you with them using teleportation."
-							view(6)<<"[V] suddenly appears!"
+							to_chat(V, "[usr] brings you with them using teleportation.")
+							to_chat(view(6), "[V] suddenly appears!")
 					usr.GotoPlanet(choice)
 					usr.inteleport=0
 					usr.emit_Sound('YamatoJudgementCut.wav')
 					spawn(1)
-						view(6)<<"[usr] suddenly appears!"
+						to_chat(view(6), "[usr] suddenly appears!")
 				else return
-			else usr<<"You need full ki and total concentration to use this."
+			else to_chat(usr, "You need full ki and total concentration to use this.")
 
 obj/items/Equipment/Weapon/Axe//axe list
 	Crude_Axe

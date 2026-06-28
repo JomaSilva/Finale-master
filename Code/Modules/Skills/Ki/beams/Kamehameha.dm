@@ -18,11 +18,11 @@ datum/skill/rank/Kamehameha/after_learn()
 	if(type==4) savant.Kamehamehaicon='Kamehameha4.dmi'
 	if(type==5) savant.Kamehamehaicon='Kamehameha5.dmi'
 	if(type==6) savant.Kamehamehaicon='Kamehameha6.dmi'
-	savant<<"You can use Kamehameha!"
+	to_chat(savant, "You can use Kamehameha!")
 
 datum/skill/rank/Kamehameha/before_forget()
 	unassignverb(/mob/keyable/verb/Kamehameha)
-	savant<<"You've forgotten how to use the Kamehameha?"
+	to_chat(savant, "You've forgotten how to use the Kamehameha?")
 datum/skill/rank/Kamehameha/login(var/mob/logger)
 	..()
 	assignverb(/mob/keyable/verb/Kamehameha)
@@ -87,4 +87,4 @@ mob/keyable/verb/Kamehameha()
 				charging=1
 			spawn usr.addchargeoverlay()
 		return
-	else src << "You need at least [kireq] Ki!"
+	else to_chat(src, "You need at least [kireq] Ki!")

@@ -59,11 +59,11 @@ mob/var
 	skillcost = 1
 	tier = 0
 	after_learn()
-		savant<<"You begin to knock foes back with every blow!"
+		to_chat(savant, "You begin to knock foes back with every blow!")
 		savant.effspec=1
 		savant.kiforceful=1
 	before_forget()
-		savant<<"Your blows blow foes back a little less."
+		to_chat(savant, "Your blows blow foes back a little less.")
 		savant.effspec=0
 		savant.kiforceful=0
 
@@ -78,11 +78,11 @@ mob/var
 	skillcost = 1
 	tier = 0
 	after_learn()
-		savant<<"Your attacks leave behind residual energy, causing damage!"
+		to_chat(savant, "Your attacks leave behind residual energy, causing damage!")
 		savant.effspec=2
 		savant.kishock=1
 	before_forget()
-		savant<<"Your attacks no longer leave behind that strong residual energy..."
+		to_chat(savant, "Your attacks no longer leave behind that strong residual energy...")
 		savant.effspec=0
 		savant.kishock=0
 
@@ -97,10 +97,10 @@ mob/var
 	skillcost = 1
 	tier = 0
 	after_learn()
-		savant<<"You increase your target's drain from ki attacks!"
+		to_chat(savant, "You increase your target's drain from ki attacks!")
 		savant.effspec=3
 		savant.kiinterfere=1
 	before_forget()
-		savant<<"Your targets no longer find themselves leaking ki..."
+		to_chat(savant, "Your targets no longer find themselves leaking ki...")
 		savant.effspec=0
 		savant.kishock=0

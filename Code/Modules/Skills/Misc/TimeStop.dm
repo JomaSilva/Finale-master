@@ -5,7 +5,7 @@ mob/var/tmp/Frozen
 mob/keyable/verb/Freeze()
 	set category = "Skills"
 	if(usr.Ki <= usr.MaxKi * 0.25)
-		usr << "You can't use Time Freeze!"
+		to_chat(usr, "You can't use Time Freeze!")
 		return
 	usr.overlayList+='TimeFreeze.dmi'
 	usr.overlaychanged=1
@@ -44,10 +44,10 @@ var/TimeStopDuration
 /datum/skill/general/stoptime/after_learn()
 	assignverb(/mob/keyable/verb/Stop)
 	savant.CanViewFrozenTime = 1
-	savant<<"Hahahahaha! The power of \[Za-Warudo\] is in my possesion..."
+	to_chat(savant, "Hahahahaha! The power of \[Za-Warudo\] is in my possesion...")
 /datum/skill/general/stoptime/before_forget()
 	unassignverb(/mob/keyable/verb/Stop)
-	savant<<"N-nani!? Bakana!? I've lost Za-Warudo!?"
+	to_chat(savant, "N-nani!? Bakana!? I've lost Za-Warudo!?")
 /datum/skill/general/stoptime/login(var/mob/logger)
 	..()
 	assignverb(/mob/keyable/verb/Stop)
@@ -62,11 +62,11 @@ mob/keyable/verb/Stop()
 	if(Ki >= MaxKi * 0.25)
 		Ki -= MaxKi * 0.25
 	else
-		usr << "Not enough Ki."
+		to_chat(usr, "Not enough Ki.")
 		return
 	var/durationTime = 10 * TimeStopSkill
 	if(TimeStopDuration&&TimeStopped)
-		view(usr)<<"<font size=(usr.TextSize+3)><font color=red>[name] says, 'ZA WARUDO!!'"
+		to_chat(view(usr), "<font size=(usr.TextSize+3)><font color=red>[name] says, 'ZA WARUDO!!'")
 		TimeStopDuration += ((durationTime**2)/(durationTime+TimeStopDuration))
 		TimeStopSkill = min(TimeStopSkill*1.1,11)
 		if(TimeStopperBP<=expressedBP)
@@ -76,11 +76,11 @@ mob/keyable/verb/Stop()
 		timestopCD = round(3000/TimeStopSkill + 10 + (round(log(TimeStopDuration)) * 2))
 	else
 		var/previousHP = HP
-		view(usr)<<"<font size=(usr.TextSize+3)><font color=red>[name]  says, 'ZA...'"
-		view(usr)<<"<font size=3><font color=red><font face=Old English Text MT>-[name] is stopping time!"
+		to_chat(view(usr), "<font size=(usr.TextSize+3)><font color=red>[name]  says, 'ZA...'")
+		to_chat(view(usr), "<font size=3><font color=red><font face=Old English Text MT>-[name] is stopping time!")
 		sleep(30)
 		if(!KO&&!previousHP<HP)
-			view(usr)<<"<font size=(usr.TextSize+4)><font color=red>[name] says, 'WARUDO!!'"
+			to_chat(view(usr), "<font size=(usr.TextSize+4)><font color=red>[name] says, 'WARUDO!!'")
 			usr.emit_Sound('timestop.wav')
 			TimeStopped = 1
 			TimeStopSkill = min(TimeStopSkill*1.1,11)
@@ -115,10 +115,10 @@ mob/proc/TrackTimeStop(var/Duration)
 	after_learn()
 		assignverb(/mob/keyable/verb/Tele_Stop)
 		savant.CanViewFrozenTime = 1
-		savant<<"You begin to be able to move swiftly in stopped time..."
+		to_chat(savant, "You begin to be able to move swiftly in stopped time...")
 	before_forget()
 		unassignverb(/mob/keyable/verb/Tele_Stop)
-		savant<<"Time feels like moving through the bottom of a pool..."
+		to_chat(savant, "Time feels like moving through the bottom of a pool...")
 	login(var/mob/logger)
 		..()
 		assignverb(/mob/keyable/verb/Tele_Stop)
@@ -127,27 +127,27 @@ mob/var/tmp/telestopping = 0
 mob/keyable/verb/Tele_Stop()
 	set category = "Skills"
 	if(!telestopping)
-		view(usr)<<"<font size=(usr.TextSize+3)><font color=red>[name] shifts forward a bit."
-		usr<<"The next time you use Zanzoken, Time Teleport will be used instead."
+		to_chat(view(usr), "<font size=(usr.TextSize+3)><font color=red>[name] shifts forward a bit.")
+		to_chat(usr, "The next time you use Zanzoken, Time Teleport will be used instead.")
 		telestopping=1
 	else
-		view(usr)<<"<font size=(usr.TextSize+3)><font color=red>[name] relaxs a bit."
-		usr<<"The next time you use Zanzoken, the regular skill will happen."
+		to_chat(view(usr), "<font size=(usr.TextSize+3)><font color=red>[name] relaxs a bit.")
+		to_chat(usr, "The next time you use Zanzoken, the regular skill will happen.")
 		telestopping=0
 mob/proc/telestop() //triggered in click.dm during zanzoken
 	if(timestopCD||KO) return
 	if(Ki >= MaxKi * 0.1)
 		Ki -= MaxKi * 0.1
 	else
-		usr << "Not enough Ki."
+		to_chat(usr, "Not enough Ki.")
 		return
 	var/durationTime = 20
 	if(!TimeStopDuration&&!TimeStopped)
 		if(!KO)
-			view(usr)<<"<font size=(usr.TextSize+3)><font color=red> [name] says, ' ZA...'"
-			view(usr)<<"<font size=3><font color=red><font face=Old English Text MT>-[name] is stopping time!"
+			to_chat(view(usr), "<font size=(usr.TextSize+3)><font color=red> [name] says, ' ZA...'")
+			to_chat(view(usr), "<font size=3><font color=red><font face=Old English Text MT>-[name] is stopping time!")
 			sleep(10)
-			view(usr)<<"<font size=(usr.TextSize+4)><font color=red>[name] says, 'WARUDO!!'"
+			to_chat(view(usr), "<font size=(usr.TextSize+4)><font color=red>[name] says, 'WARUDO!!'")
 			usr.emit_Sound('timestop.wav')
 			TimeStopped = 1
 			TimeStopSkill = min(TimeStopSkill*1.1,11)

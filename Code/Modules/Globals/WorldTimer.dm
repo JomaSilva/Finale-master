@@ -30,7 +30,7 @@ proc/WorldTime()
 
 
 proc/Restart()
-	world<<"<b><font color=yellow><font size=4>Restarting World"
+	to_chat(world, "<b><font color=yellow><font size=4>Restarting World")
 	for(var/mob/M in player_list)
 		if(M.client)
 			M.clearbuffs()
@@ -39,5 +39,5 @@ proc/Restart()
 	for(var/obj/dungeon/D in dun_list)
 		D.dungeon_delete()
 	SaveWorld()
-	world<<"<b><font color=yellow><font size=4>Rebooting..."
+	to_chat(world, "<b><font color=yellow><font size=4>Rebooting...")
 	world.Reboot()

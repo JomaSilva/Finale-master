@@ -239,7 +239,7 @@ area
 				InsideArea = 1
 			Enter(mob/M)
 				if(!usr.BRAllowed)
-					usr << "A strange force plucks you away from the area!?"
+					to_chat(usr, "A strange force plucks you away from the area!?")
 					usr.loc=locate(460,267,9)
 					return 0
 				else return 1

@@ -31,11 +31,11 @@
 	after_learn()
 		assignverb(/mob/keyable/verb/Acid_Spit)
 		savant.kioffBuff++
-		savant<<"You feel poisonous"
+		to_chat(savant, "You feel poisonous")
 	before_forget()
 		unassignverb(/mob/keyable/verb/Acid_Spit)
 		savant.kioffBuff--
-		savant<<"Your poison fades..."
+		to_chat(savant, "Your poison fades...")
 	login()
 		..()
 		assignverb(/mob/keyable/verb/Acid_Spit)
@@ -65,7 +65,7 @@ mob/keyable/verb/Acid_Spit()
 obj/attack/blast/Acid_spit
 	OnSucCollWMob(var/mob/M)
 		if(M)
-			M<<"You are poisoned!"
+			to_chat(M, "You are poisoned!")
 			spawn M.AddEffect(/effect/Alchemy/Health/Damage_Duration)
 			sleep(1)
 			var/effect/Alchemy/e = locate(/effect/Alchemy/Health/Damage_Duration) in M.effects
@@ -82,12 +82,12 @@ obj/attack/blast/Acid_spit
 	tier = 1
 	maxlevel = 1
 	after_learn()
-		savant<<"Your body's Ki control changes."
+		to_chat(savant, "Your body's Ki control changes.")
 		savant.genome.add_to_stat("Energy Level",0.7)
 		savant.kiskillMod += 0.5
 		savant.pitted = 1
 	before_forget()
-		savant<<"Your body's Ki control returns to normal."
+		to_chat(savant, "Your body's Ki control returns to normal.")
 		savant.genome.sub_to_stat("Energy Level",0.7)
 		savant.kiskillMod -= 0.5
 		savant.pitted = 0
@@ -102,7 +102,7 @@ obj/attack/blast/Acid_spit
 	tier = 1
 	maxlevel = 1
 	after_learn()
-		savant<<"Your body's durability increases."
+		to_chat(savant, "Your body's durability increases.")
 		savant.physdefMod += 0.03
 		savant.genome.add_to_stat("Zenkai",1)
 		savant.kiregenMod += 0.1
@@ -110,7 +110,7 @@ obj/attack/blast/Acid_spit
 		savant.willpowerMod += 0.3
 		savant.pitted = 2
 	before_forget()
-		savant<<"Your body's durability returns to normal."
+		to_chat(savant, "Your body's durability returns to normal.")
 		savant.physdefMod -= 0.03
 		savant.genome.sub_to_stat("Zenkai",1)
 		savant.kiregenMod -= 0.1

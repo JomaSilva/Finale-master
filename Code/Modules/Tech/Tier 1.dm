@@ -38,7 +38,7 @@ obj/Creatables
 				usr.zenni-=cost
 				var/obj/A=new/obj/items/Windmill_Shuriken(locate(usr.x,usr.y,usr.z))
 				A.techcost+=cost
-			else usr<<"You don't have enough money."
+			else to_chat(usr, "You don't have enough money.")
 		verb/Description()
 			set category =null
 			usr<<"Can be thrown for damage, and can be upgraded."*/
@@ -59,7 +59,7 @@ obj/Creatables
 				var/obj/A=new/obj/items/Saibaman_Seed(locate(usr.x,usr.y,usr.z))
 				A.techcost+=cost
 				A.SBP=1000000
-			else usr<<"You dont have enough money"
+			else to_chat(usr, "You dont have enough money")
 		verb/Description()
 			set category =null
 			usr<<"A braindead Saibaman in a pod. What's not to love?"*/
@@ -122,7 +122,7 @@ obj
 						suffix="Equipped"
 						usr.overlayList+=icon
 						usr.overlaychanged=1
-						usr<<"You put on the [src]."
+						to_chat(usr, "You put on the [src].")
 					else
 						equipped=0
 						usr.Weighted=0
@@ -130,8 +130,8 @@ obj
 						suffix=""
 						usr.overlayList-=icon
 						usr.overlaychanged=1
-						usr<<"You take off the [src]."
-				else usr<<"You already have one on."
+						to_chat(usr, "You take off the [src].")
+				else to_chat(usr, "You already have one on.")
 			verb/Upgrade()
 				set category=null
 				set src in usr
@@ -139,7 +139,7 @@ obj
 				if(!equipped)
 				else
 					usr.Weighted=pounds
-				view(usr)<<"Weighted Clothing changed to [pounds] pounds."
+				to_chat(view(usr), "Weighted Clothing changed to [pounds] pounds.")
 			verb/Icon()
 				set category=null
 				set src in usr
@@ -161,39 +161,39 @@ obj
 					var/Choice=alert(usr,"Enter in a password?","","Yes","No")
 					switch(Choice)
 						if("Yes")
-							usr<<"Enter a password."
+							to_chat(usr, "Enter a password.")
 							password+=input(usr,"Enter the password.","",text) as text
 				else if(!upgraded&&password.len>=1)
 					var/Choice=alert(usr,"You already have a password set on this. It's [password[1]]. Choose a new one?","","Yes","No")
 					switch(Choice)
 						if("Yes")
-							usr<<"Enter a password."
+							to_chat(usr, "Enter a password.")
 							password=input(usr,"Enter the password.","",text) as text
 				else
 					var/Choice=alert(usr,"Add another password to the list?","","Yes","No", "Remove One")
 					switch(Choice)
 						if("Remove One")
-							usr<<"Enter a password to be removed from the list."
+							to_chat(usr, "Enter a password to be removed from the list.")
 							password-=input(usr,"Enter the password.","",text) as text
 						if("Yes")
-							usr<<"Enter a password."
+							to_chat(usr, "Enter a password.")
 							password+=input(usr,"Enter the password.","",text) as text
 			verb/Check_Passwords()
 				set category = null
 				set src in view(1)
 				if(!password)
-					usr<<"You don't have any passwords on this key."
+					to_chat(usr, "You don't have any passwords on this key.")
 				if(password&&upgraded==0)
 					var/P
 					for(var/S in password)
 						P+=1
-						usr<<"Password [P]:[S]."
+						to_chat(usr, "Password [P]:[S].")
 				if(password&&upgraded==1)
-					usr<<"You have [password.len] password(s) on this key."
+					to_chat(usr, "You have [password.len] password(s) on this key.")
 					var/P
 					for(var/S in password)
 						P+=1
-						usr<<"Password [P]:[S]."
+						to_chat(usr, "Password [P]:[S].")
 			verb/Upgrade()
 				set category = null
 				set src in view(1)
@@ -202,12 +202,12 @@ obj
 					switch(Choice)
 						if("Yes")
 							if(usr.zenni>=1000)
-								usr<<"Upgraded."
+								to_chat(usr, "Upgraded.")
 								upgraded=1
 							else
-								usr<<"You don't have enough Zenni. (You need 1,000)."
+								to_chat(usr, "You don't have enough Zenni. (You need 1,000).")
 				else
-					usr<<"You've already upgraded this item."
+					to_chat(usr, "You've already upgraded this item.")
 			verb/Set_Password_On_Door(var/turf/build/Door/A in view(1))
 				set category = null
 				set src in view(1)
@@ -222,16 +222,16 @@ obj
 				set src in usr
 				if(equipped==0)
 					suffix="*Equipped*"
-					usr<<"<b>You equip your shovel.</b>"
+					to_chat(usr, "<b>You equip your shovel.</b>")
 					equipped=1
 				else
 					suffix=""
 					usr.hasdrill=0
-					usr<<"<b>You unequip your shovel.</b>"
+					to_chat(usr, "<b>You unequip your shovel.</b>")
 					equipped=0
 			verb/Dig()
 				set category="Skills"
-				usr<<"You begin digging for resources (see Items tab)."
+				to_chat(usr, "You begin digging for resources (see Items tab).")
 				usr.dig=1
 				while(src.equipped && usr.dig)
 					if(!usr.beaming&&!usr.charging&&!usr.flight&&!usr.KO&&usr.canfight)
@@ -255,11 +255,11 @@ obj
 										sleep(1)
 									m.Move(usr.loc)
 							else
-								usr<<"You stop digging."
+								to_chat(usr, "You stop digging.")
 								usr.dig=0
 					else break
 					sleep(50)
-				usr<<"You stop digging."
+				to_chat(usr, "You stop digging.")
 				usr.dig=0
 		Hand_Drill
 			icon='Drill Hand.dmi'
@@ -273,16 +273,16 @@ obj
 					suffix="*Equipped*"
 					usr.hasdrill=1
 					if(upgraded) usr.hasdrill = 2
-					usr<<"<b>You turn on your Hand Drill. This will enable more zenni obtained while digging."
+					to_chat(usr, "<b>You turn on your Hand Drill. This will enable more zenni obtained while digging.")
 					equipped=1
 				else
 					suffix=""
 					usr.hasdrill=0
-					usr<<"<b>You turn off your Hand Drill."
+					to_chat(usr, "<b>You turn off your Hand Drill.")
 					equipped=0
 			verb/Dig()
 				set category="Skills"
-				usr<<"You begin digging for resources (see Items tab)."
+				to_chat(usr, "You begin digging for resources (see Items tab).")
 				usr.dig=1
 				while(src.equipped && usr.dig)
 					var/nm = 1
@@ -308,11 +308,11 @@ obj
 										sleep(1)
 									m.Move(usr.loc)
 							else
-								usr<<"You stop digging."
+								to_chat(usr, "You stop digging.")
 								usr.dig=0
 					else break
 					sleep(30 - (nm*5))
-				usr<<"You stop digging."
+				to_chat(usr, "You stop digging.")
 				usr.dig=0
 			verb/Upgrade()
 				set category=null
@@ -324,9 +324,9 @@ obj
 							usr.zenni -= 7000
 							icon = 'Drill Hand 2.dmi'
 							upgraded = 1
-							usr<<"<b>Hand Drill upgraded."
+							to_chat(usr, "<b>Hand Drill upgraded.")
 						else
-							usr << "Not enough zenni."
+							to_chat(usr, "Not enough zenni.")
 							return
 				else
 					if(alert(usr,"Upgrade for 7000 zenni?","","Yes","No")=="Yes"&&!upgraded && usr.techskill > 30)
@@ -335,9 +335,9 @@ obj
 							icon = 'Drill Hand 2.dmi'
 							upgraded = 1
 							usr.hasdrill=2
-							usr<<"<b>Hand Drill upgraded."
+							to_chat(usr, "<b>Hand Drill upgraded.")
 						else
-							usr << "Not enough zenni."
+							to_chat(usr, "Not enough zenni.")
 							return
 		Artificial_Moon
 			icon='Moon.dmi'
@@ -350,30 +350,30 @@ obj
 				if(!mooning)
 					mooning=1
 					icon_state="On"
-					view(usr)<<"[usr] activates an artificial moon!"
+					to_chat(view(usr), "[usr] activates an artificial moon!")
 					while(mooning)
 						sleep(5)
 						for(var/mob/M in view(src))
 							if(M.genome.race_percent("Saiyan") >= 50)
 								if(!M.Apeshit&&M.Tail)
-									M<<"You catch a glimpse of the moon."
+									to_chat(M, "You catch a glimpse of the moon.")
 									M.Apeshit()
 							else if(M.Race=="Saiyan")
 								if(!M.Apeshit&&M.Tail)
-									M<<"You catch a glimpse of the moon!"
+									to_chat(M, "You catch a glimpse of the moon!")
 									M.Apeshit()
 									if(M.hasssj)
 										spawn(100)
 										M.Apeshit_Revert()
 										M.GoldenApeshit()
 						spawn(100) del(src)
-				else usr<<"It has already been activated..."
+				else to_chat(usr, "It has already been activated...")
 			verb/Upgrade_Moon()
 				set category=null
 				set src in oview(1)
 				var/cost = 1000000
 				if(usr.zenni<cost&&usr.techskill>=50)
-					usr<<"You do not have enough money ([cost]z) or your tech skill isn't high enough (50 tech needed.)"
+					to_chat(usr, "You do not have enough money ([cost]z) or your tech skill isn't high enough (50 tech needed.)")
 					return
 				if(usr.zenni>cost)
 					var/confirm=alert(usr,"Pay 1 million zeni?","","Yes","No")
@@ -394,20 +394,20 @@ obj
 				if(!mooning)
 					mooning=1
 					icon_state="On"
-					view(usr)<<"[usr] activates an artificial moon!"
+					to_chat(view(usr), "[usr] activates an artificial moon!")
 					while(mooning)
 						sleep(5)
 						for(var/mob/M in view(src))
 							if(M.Race=="Saiyan"&&!M.hasssj|M.genome.race_percent("Saiyan") >= 50)
 								if(!M.Apeshit&&M.Tail)
-									M<<"You catch a glimpse of the black moon!"
+									to_chat(M, "You catch a glimpse of the black moon!")
 									M.Apeshit()
 							else if(M.Race=="Saiyan"&&M.hasssj)
 								if(!M.Apeshit&&M.Tail)
-									M<<"You catch a glimpse of the black moon!"
+									to_chat(M, "You catch a glimpse of the black moon!")
 									M.GoldenApeshit()
 						spawn(100) del(src)
-				else usr<<"It has already been activated..."
+				else to_chat(usr, "It has already been activated...")
 		Punching_Bag
 			icon='PunchingBag.dmi'
 			fragile=1
@@ -436,13 +436,13 @@ obj
 				if(x&&y&&z&&!Bolted)
 					switch(input("Are you sure you want to bolt this to the ground so nobody can ever pick it up? Not even you?","",text) in list("Yes","No",))
 						if("Yes")
-							view(src)<<"<font size=1>[usr] bolts the [src] to the ground."
+							to_chat(view(src), "<font size=1>[usr] bolts the [src] to the ground.")
 							Bolted=1
 							boltersig=usr.signature
 				else if(Bolted&&boltersig==usr.signature)
 					switch(input("Unbolt?","",text) in list("Yes","No",))
 						if("Yes")
-							view(src)<<"<font size=1>[usr] unbolts the [src] from the ground."
+							to_chat(view(src), "<font size=1>[usr] unbolts the [src] from the ground.")
 							Bolted=0
 		Punching_Machine
 			icon='punchmachine.dmi'
@@ -472,13 +472,13 @@ obj
 				if(x&&y&&z&&!Bolted)
 					switch(input("Are you sure you want to bolt this to the ground so nobody can ever pick it up? Not even you?","",text) in list("Yes","No",))
 						if("Yes")
-							view(src)<<"<font size=1>[usr] bolts the [src] to the ground."
+							to_chat(view(src), "<font size=1>[usr] bolts the [src] to the ground.")
 							Bolted=1
 							boltersig=usr.signature
 				else if(Bolted&&boltersig==usr.signature)
 					switch(input("Unbolt?","",text) in list("Yes","No",))
 						if("Yes")
-							view(src)<<"<font size=1>[usr] unbolts the [src] from the ground."
+							to_chat(view(src), "<font size=1>[usr] unbolts the [src] from the ground.")
 							Bolted=0
 		Bandages
 			icon='Bandage.dmi'
@@ -492,13 +492,13 @@ obj
 				set category=null
 				set src in usr
 				if(usr.bandaging)
-					usr<<"You are currently bandaging someone!"
+					to_chat(usr, "You are currently bandaging someone!")
 					return
 				if(usr.KO)
-					usr<<"You can't use this while unconscious!"
+					to_chat(usr, "You can't use this while unconscious!")
 					return
 				if(M==usr)
-					usr<<"You begin bandaging yourself. Don't move."
+					to_chat(usr, "You begin bandaging yourself. Don't move.")
 					mloc=usr.loc
 					usr.bandaging=1
 					counter=10
@@ -506,11 +506,11 @@ obj
 					while(usr.bandaging&&counter&&!usr.KO)
 						sleep(5)
 						if(mloc!=usr.loc)
-							usr<<"You moved, and your bandaging has failed"
+							to_chat(usr, "You moved, and your bandaging has failed")
 							usr.bandaging=0
 							break
 						if(prevHP>usr.HP)
-							usr<<"Being damaged interrupted you!"
+							to_chat(usr, "Being damaged interrupted you!")
 							usr.bandaging=0
 							break
 						usr.SpreadHeal(2,0,0)
@@ -518,8 +518,8 @@ obj
 					usr.bandaging=0
 					del(src)
 				else
-					usr<<"You begin bandaging [M.name]. If either of you move, this will fail."
-					M<<"[usr.name] is bandaging you. If either of you move, this will fail."
+					to_chat(usr, "You begin bandaging [M.name]. If either of you move, this will fail.")
+					to_chat(M, "[usr.name] is bandaging you. If either of you move, this will fail.")
 					uloc=usr.loc
 					mloc=M.loc
 					usr.bandaging=1
@@ -528,17 +528,17 @@ obj
 					while(usr.bandaging&&counter&&!usr.KO)
 						sleep(5)
 						if(mloc!=M.loc)
-							usr<<"[M.name] moved, and your bandaging has failed."
-							M<<"You moved, and [usr.name]'s bandaging has failed."
+							to_chat(usr, "[M.name] moved, and your bandaging has failed.")
+							to_chat(M, "You moved, and [usr.name]'s bandaging has failed.")
 							usr.bandaging=0
 							break
 						if(uloc!=usr.loc)
-							usr<<"You moved, and your bandaging has failed."
-							M<<"[usr.name] moved, and [usr.name]'s bandaging has failed."
+							to_chat(usr, "You moved, and your bandaging has failed.")
+							to_chat(M, "[usr.name] moved, and [usr.name]'s bandaging has failed.")
 							usr.bandaging=0
 							break
 						if(prevHP>usr.HP)
-							usr<<"Being damaged interrupted you!"
+							to_chat(usr, "Being damaged interrupted you!")
 							usr.bandaging=0
 							break
 						M.SpreadHeal(2,1,0)

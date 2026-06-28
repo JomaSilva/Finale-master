@@ -86,7 +86,7 @@ obj/items
 										if(prob(5))
 											if(M.Mutations)
 												M.Mutations-=1
-												view(src)<<"[src]: Mutation found within [M]. Removed."
+												to_chat(view(src), "[src]: Mutation found within [M]. Removed.")
 										if(prob(min(max(efficiency,1),100)))
 											var/list/limbselection = list()
 											for(var/datum/Body/C in M.body)
@@ -104,7 +104,7 @@ obj/items
 														choice.health += 1*efficiency
 														choice.health = min(choice.health,choice.maxhealth)
 							if(Energy<=0)
-								view(src)<<"[src]: Battery has been completely drained."
+								to_chat(view(src), "[src]: Battery has been completely drained.")
 								usable=0
 								M.inregen = 0
 								overlays -= podlayer
@@ -116,13 +116,13 @@ obj/items
 										break
 							if(T&&!(T.loc==M.loc))
 								M.loc = locate(T)
-								view(src)<<"[src]: Ejecting [M]."
+								to_chat(view(src), "[src]: Ejecting [M].")
 					for(var/turf/T in view(0,src)) if(T.gravity>10*Durability&&usable)
 						usable=0
-						view(src)<<"The [src] is crushed by the force of the gravity!"
+						to_chat(view(src), "The [src] is crushed by the force of the gravity!")
 						overlays -= podlayer
 					if(prob(NanoCore*0.1)&&Energy<MaxEnergy*0.1)
-						view(src)<<"[src]: Nanite Regeneration activated. Battery fully recharged."
+						to_chat(view(src), "[src]: Nanite Regeneration activated. Battery fully recharged.")
 						Energy=MaxEnergy
 					if(mobinview)
 						overlays -= overlays
@@ -133,10 +133,10 @@ obj/items
 						overlays -= podlayer
 				else if(prob(NanoCore*0.1))
 					usable=1
-					view(src)<<"[src]: Nanite Regeneration activated. Damage fully restored."
+					to_chat(view(src), "[src]: Nanite Regeneration activated. Damage fully restored.")
 				else if(Energy>=0&&Bolted)
 					usable=1
-					view(src)<<"[src]: Operational."
+					to_chat(view(src), "[src]: Operational.")
 				sleep(10)
 			spawn(20) Ticker()
 		plane= 0
@@ -151,11 +151,11 @@ obj/items
 		verb/Info()
 			set src in oview(1)
 			set category=null
-			usr<<"Battery Life: [Energy*100] / [MaxEnergy*100]"
-			usr<<"Regeneration: +[efficiency]%"
-			usr<<"Durability: [Durability*10]x"
-			if(NanoCore) usr<<"Nano Regeneration: [NanoCore]"
-			usr<<"Cost to make: [techcost]z"
+			to_chat(usr, "Battery Life: [Energy*100] / [MaxEnergy*100]")
+			to_chat(usr, "Regeneration: +[efficiency]%")
+			to_chat(usr, "Durability: [Durability*10]x")
+			if(NanoCore) to_chat(usr, "Nano Regeneration: [NanoCore]")
+			to_chat(usr, "Cost to make: [techcost]z")
 		verb/Upgrade()
 			set src in oview(1)
 			set category=null
@@ -175,32 +175,32 @@ obj/items
 			if(A=="Heal Injuries (5000z)")
 				cost=5000
 				if(usr.zenni<cost)
-					usr<<"You do not have enough money ([cost]z)"
+					to_chat(usr, "You do not have enough money ([cost]z)")
 				injuryheal = 1
 			if(A=="Recharge ([500*MaxEnergy]z)")
 				cost=250*MaxEnergy
 				if(usr.zenni<cost)
-					usr<<"You do not have enough money ([cost]z)"
-				usr<<"Battery recharged."
+					to_chat(usr, "You do not have enough money ([cost]z)")
+				to_chat(usr, "Battery recharged.")
 				Energy=MaxEnergy
 			if(A=="Battery Life ([500*MaxEnergy]z)")
 				cost=500*MaxEnergy
 				if(usr.zenni<cost)
-					usr<<"You do not have enough money ([cost]z)"
-				usr<<"Battery expanded and recharged."
+					to_chat(usr, "You do not have enough money ([cost]z)")
+				to_chat(usr, "Battery expanded and recharged.")
 				MaxEnergy+=1
 				Energy=MaxEnergy
 			if(A=="Recovery Speed ([1000*efficiency]z)")
 				cost=1000*efficiency
 				if(usr.zenni<cost)
-					usr<<"You do not have enough money ([cost]z)"
-				usr<<"Healing Speed increased."
+					to_chat(usr, "You do not have enough money ([cost]z)")
+				to_chat(usr, "Healing Speed increased.")
 				efficiency+=1
 			if(A=="Durability ([1000*Durability]z)")
 				cost=1000*Durability
 				if(usr.zenni<cost)
-					usr<<"You do not have enough money ([cost]z)"
-				usr<<"Durability increased and fully repaired"
+					to_chat(usr, "You do not have enough money ([cost]z)")
+				to_chat(usr, "Durability increased and fully repaired")
 				Durability+=1
 				if(!usable)
 					usable=1
@@ -208,10 +208,10 @@ obj/items
 			if(A=="Nano Regeneration ([2000*(NanoCore+1)]z)")
 				cost=2000*(NanoCore+1)
 				if(usr.zenni<cost)
-					usr<<"You do not have enough money ([cost]z)"
-				usr<<"Nanite Regeneration increased."
+					to_chat(usr, "You do not have enough money ([cost]z)")
+				to_chat(usr, "Nanite Regeneration increased.")
 				NanoCore+=1
-			usr<<"Cost: [cost]z"
+			to_chat(usr, "Cost: [cost]z")
 			usr.zenni-=cost
 			tech+=1
 			techcost+=cost
@@ -222,7 +222,7 @@ obj/items
 			if(x&&y&&z&&!Bolted)
 				switch(input("Are you sure you want to bolt this to the ground so nobody can ever pick it up? Not even you?","",text) in list("Yes","No",))
 					if("Yes")
-						view(src)<<"<font size=1>[usr] bolts the [src] to the ground."
+						to_chat(view(src), "<font size=1>[usr] bolts the [src] to the ground.")
 						Bolted=1
 						boltersig=usr.signiture
 	Radar
@@ -238,13 +238,13 @@ obj/items
 				if(O.z==usr.z&&istype(O,radarType))
 					if(istype(O,/obj/DB))
 						var/obj/DB/nD = O
-						if(!nD.IsInactive) view(src)<<"<font color=green>------------<br>Dragonball found at ([O.x],[O.y],[O.z])"
+						if(!nD.IsInactive) to_chat(view(src), "<font color=green>------------<br>Dragonball found at ([O.x],[O.y],[O.z])")
 					else
-						view(src)<<"<font color=green>------------<br>[O] found at ([O.x],[O.y],[O.z])"
+						to_chat(view(src), "<font color=green>------------<br>[O] found at ([O.x],[O.y],[O.z])")
 		verb/Set_Type(obj/O as obj in view(2))
 			set category = null
 			set src in view(1)
-			view(usr)<<"[usr] set the [src]'s radar type to [O]"
+			to_chat(view(usr), "[usr] set the [src]'s radar type to [O]")
 			radarType = O.type
 mob/var/HasEnergyDrain=0
 obj/items
@@ -263,7 +263,7 @@ obj/items
 			set category=null
 			set src in usr
 			for(var/obj/items/Energy_Drain_Gloves/A in usr.contents) if(A!=src&&A.suffix=="*Equipped*")
-				usr<<"You already have one equipped."
+				to_chat(usr, "You already have one equipped.")
 				return
 			if(equipped==0)
 				equipped=1
@@ -273,7 +273,7 @@ obj/items
 				usr.BPrestriction+=1.25
 				usr.genome.add_to_stat("Energy Level",0.05)
 				usr.HasEnergyDrain+=1
-				usr<<"You put on the [src]."
+				to_chat(usr, "You put on the [src].")
 			else
 				equipped=0
 				if(suffix=="*Worn*")
@@ -283,7 +283,7 @@ obj/items
 				usr.overlayList-=icon
 				usr.overlaychanged=1
 				usr.HasEnergyDrain-=1
-				usr<<"You take off the [src]."
+				to_chat(usr, "You take off the [src].")
 	Energy_Drain_Boots
 		icon='Clothes_Boots.dmi'
 		NotSavable=1
@@ -299,7 +299,7 @@ obj/items
 			set category=null
 			set src in usr
 			for(var/obj/items/Energy_Drain_Boots/A in usr.contents) if(A!=src&&A.suffix=="*Equipped*")
-				usr<<"You already have one equipped."
+				to_chat(usr, "You already have one equipped.")
 				return
 			if(equipped==0)
 				equipped=1
@@ -309,7 +309,7 @@ obj/items
 				usr.BPrestriction+=1.25
 				usr.genome.add_to_stat("Energy Level",0.05)
 				usr.HasEnergyDrain+=1
-				usr<<"You put on the [src]."
+				to_chat(usr, "You put on the [src].")
 			else
 				equipped=0
 				if(suffix=="*Worn*")
@@ -319,7 +319,7 @@ obj/items
 				usr.overlayList-=icon
 				usr.overlaychanged=1
 				usr.HasEnergyDrain-=1
-				usr<<"You take off the [src]."
+				to_chat(usr, "You take off the [src].")
 	Scouter
 		icon='Scouter.dmi'
 		SaveItem=1
@@ -335,16 +335,16 @@ obj/items
 						var/obj/items/Scouter/nO = O
 						if(nO.suffix&&ismob(nO.loc)&&channel==nO.channel)
 							var/mob/M = nO.loc
-							M<<"(Scouter)<[usr.SayColor]>[usr] says, '[msg]'"
+							to_chat(M, "(Scouter)<[usr.SayColor]>[usr] says, '[msg]'")
 					if(istype(O,/obj/Spacepod))
 						var/obj/Spacepod/nO = O
 						if(channel==nO.link)
-							view(O)<<"(Scouter)<[usr.SayColor]>[usr] says, '[msg]'"
+							to_chat(view(O), "(Scouter)<[usr.SayColor]>[usr] says, '[msg]'")
 					if(istype(O,/obj/items/Communicator))
 						var/obj/items/Communicator/nO = O
 						if(channel in nO.freqlist)
 							nO.messagelist+={"<html><head><title></title></head><body><body bgcolor="#000000"><font size=1><font color="#0099FF"><b><i>(Scouter)<[usr.SayColor]>[usr] says, '[msg]'</font><br></body><html>"}
-							if(nO.hasbroadcaster) view(nO) << "(Scouter)<[usr.SayColor]>[usr] says, '[msg]'"
+							if(nO.hasbroadcaster) to_chat(view(nO), "(Scouter)<[usr.SayColor]>[usr] says, '[msg]'")
 			Change_Channel(chann as text)
 				set category = null
 				set src in usr
@@ -355,13 +355,13 @@ obj/items
 				if(!usr.scouteron)
 					usr.scouteron=1
 
-					usr<<"You put on the [src]."
+					to_chat(usr, "You put on the [src].")
 					usr.overlayList+=icon
 					usr.overlaychanged=1
 					suffix="*Equipped*"
 				else
 					usr.scouteron=0
-					usr<<"You take off the [src]."
+					to_chat(usr, "You take off the [src].")
 					usr.overlayList-=icon
 					usr.overlaychanged=1
 
@@ -378,23 +378,23 @@ obj/items
 				else accuracy=1000000
 				if(usr.scouteron)
 					if(M.BP<maxscan)
-						usr<<"<font color=green><br>-----<br>Scanning..."
+						to_chat(usr, "<font color=green><br>-----<br>Scanning...")
 						sleep(20)
-						usr<<"<font color=green>Battle Power: [num2text((round(M.BP,accuracy)),20)]<br>-Scan Complete-"
-						if(M.Race=="Saiyan") usr<<"<font color=green>Records show this [M.Race] was born with [M.FirstYearPower] Battle Power."
+						to_chat(usr, "<font color=green>Battle Power: [num2text((round(M.BP,accuracy)),20)]<br>-Scan Complete-")
+						if(M.Race=="Saiyan") to_chat(usr, "<font color=green>Records show this [M.Race] was born with [M.FirstYearPower] Battle Power.")
 					else
-						usr<<"<font color=green><br>-----<br>Scanning..."
+						to_chat(usr, "<font color=green><br>-----<br>Scanning...")
 						sleep(20)
-						usr<<"<font color=green>..."
+						to_chat(usr, "<font color=green>...")
 						sleep(20)
-						usr<<"<font color=green>Battle Power: [num2text((round((M.BP+rand(10,accuracy)),accuracy)),20)]<br>-Scan Complete-"
-						if(M.Race=="Saiyan") usr<<"<font color=green>Records show this [M.Race] was born with [M.FirstYearPower] Battle Power."
-						view(usr)<<"<font color=red>*[usr]'s scouter explodes!*"
+						to_chat(usr, "<font color=green>Battle Power: [num2text((round((M.BP+rand(10,accuracy)),accuracy)),20)]<br>-Scan Complete-")
+						if(M.Race=="Saiyan") to_chat(usr, "<font color=green>Records show this [M.Race] was born with [M.FirstYearPower] Battle Power.")
+						to_chat(view(usr), "<font color=red>*[usr]'s scouter explodes!*")
 						usr.scouteron=0
 						usr.overlayList-=icon
 						suffix=""
 						del(src)
-				else usr<<"You must equip the scouter."
+				else to_chat(usr, "You must equip the scouter.")
 			Upgrade()
 				set category=null
 				set src in view(1)
@@ -402,8 +402,8 @@ obj/items
 				if((usr.techmod*usr.intBPcap)>maxscan)
 
 					maxscan=usr.techmod*usr.intBPcap
-					view(6)<<"[usr] upgrades the scouters max scan to [num2text((round(maxscan)),20)]"
-				else usr<<"This is already beyond any of your machine skills."
+					to_chat(view(6), "[usr] upgrades the scouters max scan to [num2text((round(maxscan)),20)]")
+				else to_chat(usr, "This is already beyond any of your machine skills.")
 			Scan_Planet()
 				set category=null
 				for(var/mob/M)
@@ -415,8 +415,8 @@ obj/items
 					else if(M.BP<10000000) accuracy=100000
 					else accuracy=1000000
 					if(usr.scouteron&&M.Player&&M.key!=usr.key&&M.BP>=100&&M.z==usr.z)
-						if(M.BP<=maxscan) usr<<"<font color=green>[num2text((round(M.BP,accuracy)),20)] at ([M.x],[M.y])"
-						else usr<<"<font color=green>Immeasurable BP at ([M.x],[M.y])"
+						if(M.BP<=maxscan) to_chat(usr, "<font color=green>[num2text((round(M.BP,accuracy)),20)] at ([M.x],[M.y])")
+						else to_chat(usr, "<font color=green>Immeasurable BP at ([M.x],[M.y])")
 	Medical_Scanner
 		icon='Lab2.dmi'
 		icon_state="WallDisplayA"
@@ -430,31 +430,31 @@ obj/items
 		Click()
 			scanperson(usr)
 		proc/scanperson(var/mob/targetmob)
-			view(src)<<"<font color=gray>Physical Age=[targetmob.Age]"
-			view(src)<<"<font color=gray>Old Age At=[targetmob.DeclineAge]"
-			view(src)<<"<font color=gray>Race=[targetmob.Race] - [targetmob.Class]"
-			view(src)<<"<font color=gray>Gender=[targetmob.pgender]"
-			view(src)<<"<font color=gray>Damage=[FullNum((round(100-targetmob.HP)),20)]%"
-			view(src)<<"<font color=gray>Energy=[FullNum(targetmob.Ki)]"
-			view(src)<<"<font color=gray>Grav Mastered=[round(targetmob.GravMastered)]"
+			to_chat(view(src), "<font color=gray>Physical Age=[targetmob.Age]")
+			to_chat(view(src), "<font color=gray>Old Age At=[targetmob.DeclineAge]")
+			to_chat(view(src), "<font color=gray>Race=[targetmob.Race] - [targetmob.Class]")
+			to_chat(view(src), "<font color=gray>Gender=[targetmob.pgender]")
+			to_chat(view(src), "<font color=gray>Damage=[FullNum((round(100-targetmob.HP)),20)]%")
+			to_chat(view(src), "<font color=gray>Energy=[FullNum(targetmob.Ki)]")
+			to_chat(view(src), "<font color=gray>Grav Mastered=[round(targetmob.GravMastered)]")
 			for(var/datum/Body/S in targetmob.body)
 				if(!S.lopped&&!S.artificial)
-					view(src)<<"<font color=gray>[S.name] is at [S.health] out of [S.maxhealth]"
+					to_chat(view(src), "<font color=gray>[S.name] is at [S.health] out of [S.maxhealth]")
 				else
-					view(src)<<"<font color=gray>[S.name] is missing!"
+					to_chat(view(src), "<font color=gray>[S.name] is missing!")
 			if(targetmob.Mutations)
-				view(src)<<"[targetmob.Mutations] Mutation(s) found!"
+				to_chat(view(src), "[targetmob.Mutations] Mutation(s) found!")
 		verb/Bolt()
 			set category=null
 			set src in oview(1)
 			if(x&&y&&z&&!Bolted)
 				switch(input("Are you sure you want to bolt this to the ground so nobody can ever pick it up? Not even you?","",text) in list("Yes","No",))
 					if("Yes")
-						view(src)<<"<font size=1>[usr] bolts the [src] to the ground."
+						to_chat(view(src), "<font size=1>[usr] bolts the [src] to the ground.")
 						Bolted=1
 						boltersig=usr.signiture
 			else if(Bolted&&boltersig==usr.signiture)
 				switch(input("Unbolt?","",text) in list("Yes","No",))
 					if("Yes")
-						view(src)<<"<font size=1>[usr] unbolts the [src] from the ground."
+						to_chat(view(src), "<font size=1>[usr] unbolts the [src] from the ground.")
 						Bolted=0

@@ -15,7 +15,7 @@
 			logger.styleList.Add(attachedstyle)
 			attachedstyle.savant = logger
 	after_learn()
-		savant<<"You feel more complex in both body and movement."
+		to_chat(savant, "You feel more complex in both body and movement.")
 		attachedstyle = new
 		savant.styleList.Add(attachedstyle)
 		savant.availableStyles += attachedstyle
@@ -24,7 +24,7 @@
 			savant.currentStyle = attachedstyle //if no current style, change that shit nigga
 
 	before_forget()
-		savant<<"You feel like something neccessary was removed from your form."
+		to_chat(savant, "You feel like something neccessary was removed from your form.")
 		savant.styleList.Cut(attachedstyle)
 		del(attachedstyle)
 

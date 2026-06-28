@@ -155,7 +155,7 @@ mob/proc/isBuffed(obj/buff/B)
 mob/verb/Clear_Buffs()
 	set category = "Other"
 	usr.clearbuffs()
-	usr<<"Buffs Cleared"
+	to_chat(usr, "Buffs Cleared")
 
 var/trans_drain = 0.2
 mob/Admin3/verb/Trans_Drain()

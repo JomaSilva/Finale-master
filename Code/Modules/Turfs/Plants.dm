@@ -33,14 +33,14 @@ obj/Trees
 			suffix=""
 			IsEquipped = 0
 		if(equipped|suffix=="*Equipped*")
-			TargetMob<<"You must unequip it first"
+			to_chat(TargetMob, "You must unequip it first")
 			return FALSE
 		TargetMob.overlayList-=icon
 		TargetMob.overlaychanged=1
 		loc=TargetMob.loc
 		Savable = 0
 		step(src,TargetMob.dir)
-		view(TargetMob)<<"<font size=1><font color=teal>[TargetMob] drops [src]."
+		to_chat(view(TargetMob), "<font size=1><font color=teal>[TargetMob] drops [src].")
 		return TRUE
 	AppleTree
 		name = "Apple Tree"
@@ -55,7 +55,7 @@ obj/Trees
 			if(appleCount)
 				appleCount-=1
 				new/obj/items/food/Apple(locate(usr.x,usr.y,usr.z))
-				view(usr) << "[usr] picks an apple."
+				to_chat(view(usr), "[usr] picks an apple.")
 		New()
 			..()
 			spawn CheckApples()
@@ -491,9 +491,9 @@ obj/Plants
 		set category = null
 		set src in view(1)
 		if(Harvest())
-			view(usr)<<"[usr] harvested [name]"
+			to_chat(view(usr), "[usr] harvested [name]")
 		else
-			view(usr)<<"[usr] tried to pick a crop that wasn't ready yet, destroying it."
+			to_chat(view(usr), "[usr] tried to pick a crop that wasn't ready yet, destroying it.")
 
 
 	proc/Harvest()
@@ -637,13 +637,13 @@ obj/items/food
 		verb/Refine()
 			set category=null
 			set src in usr
-			usr << "You refine the Wheat. You get some wheat dust from it."
+			to_chat(usr, "You refine the Wheat. You get some wheat dust from it.")
 			usr.contents += new /obj/items/food/Wheat_Flour
 			del(src)
 		verb/Seed()
 			set category=null
 			set src in usr
-			usr << "You seed the Wheat. You get some seeds from it."
+			to_chat(usr, "You seed the Wheat. You get some seeds from it.")
 			usr.contents += new /obj/items/food/Seed
 			usr.contents += new /obj/items/food/Seed
 			usr.contents += new /obj/items/food/Seed
@@ -657,7 +657,7 @@ obj/items/food
 		verb/Refine()
 			set category=null
 			set src in usr
-			usr << "You refine the wheat dust and make food out of it."
+			to_chat(usr, "You refine the wheat dust and make food out of it.")
 			switch(alert(usr,"Customize the food? You can choose its name, icon, and flavor. Otherwise the default is bread.","","No","Yes"))
 				if("No")
 					usr.contents += new /obj/items/food/Bread
@@ -687,14 +687,14 @@ obj/items/food
 		Eat()
 			if(!usr.might)
 				usr.might=1
-				usr<<"You eat the Might Fruit and feel your strength miraculously increase."
+				to_chat(usr, "You eat the Might Fruit and feel your strength miraculously increase.")
 				if(usr.BP<usr.relBPmax) usr.BP += usr.capcheck((usr.relBPmax/5))
 				if(usr.baseKi<=usr.baseKiMax)usr.baseKi+=usr.kicapcheck(5*usr.KiMod)
 				usr.Ki+=(usr.MaxKi*1500)/100 //Turles had at the very least a 15x power increase from eating the Fruit from the Tree of Might.
 				usr.overcharge = 1
 				if(SuperChargeMe)
-					usr << "The Might Fruit was grown in a Heaven or Hell biome! The power contained within skyrockets!"
-					view(usr) << "[usr]'s power increases even further than fifteen times."
+					to_chat(usr, "The Might Fruit was grown in a Heaven or Hell biome! The power contained within skyrockets!")
+					to_chat(view(usr), "[usr]'s power increases even further than fifteen times.")
 					usr.Ki+=(usr.MaxKi*1000)/100
 					//if(usr.BP<usr.relBPmax) usr.BP += usr.capcheck((usr.relBPmax/20))
 					//usr.BPadd += (usr.BP/2)
@@ -702,11 +702,11 @@ obj/items/food
 					usr.PowerCooldown(usr.BP/2)
 				usr.Senzu+=1
 				if(usr.Senzu>=3)
-					view(usr)<<"[usr] is greatly weakened by eating too many boosting food!"
+					to_chat(view(usr), "[usr] is greatly weakened by eating too many boosting food!")
 					usr.SpreadDamage(25)
 					usr.Ki *=0.25
 			else
-				usr<<"You eat it, but nothing happens."
+				to_chat(usr, "You eat it, but nothing happens.")
 			..()
 	Apple_Of_Eden
 		icon='Might Fruit.dmi'
@@ -718,7 +718,7 @@ obj/items/food
 			spawn(10) del(src)
 			if(!usr.eden)
 				usr.eden=1
-				usr<<"You eat the Apple of Eden and feel faster and more durable."
+				to_chat(usr, "You eat the Apple of Eden and feel faster and more durable.")
 				//if(usr.BP<usr.relBPmax) usr.BP += usr.capcheck((usr.relBPmax/20))
 				if(usr.baseKi<=usr.baseKiMax)usr.baseKi+=usr.kicapcheck(3*usr.KiMod)
 				usr.overcharge = 1
@@ -728,7 +728,7 @@ obj/items/food
 				//	usr.HP *=0.25
 				//	usr.Ki *=0.25
 			else
-				usr<<"You eat the Apple of Eden and feel the energy."
+				to_chat(usr, "You eat the Apple of Eden and feel the energy.")
 				if(usr.BP<usr.relBPmax) usr.BP += usr.capcheck((usr.relBPmax/35))
 				if(usr.baseKi<=usr.baseKiMax)usr.baseKi+=usr.kicapcheck(1*usr.KiMod)
 				usr.overcharge = 1
@@ -744,8 +744,8 @@ obj/items/food
 		verb/Refine()
 			set category=null
 			set src in usr
-			usr << "You refine the apple and make food out of it."
-			view(usr)<<"[usr] refines the apple into candy!"
+			to_chat(usr, "You refine the apple and make food out of it.")
+			to_chat(view(usr), "[usr] refines the apple into candy!")
 			switch(alert(usr,"Customize the food? You can choose its name, icon, and flavor. Otherwise the default is candy.","","No","Yes"))
 				if("No")
 					usr.contents += new /obj/items/food/Candy
@@ -774,8 +774,8 @@ obj/items/food
 		verb/Refine()
 			set category=null
 			set src in usr
-			usr << "You refine the Orange and make food out of it."
-			view(usr)<<"[usr] refines the Orange fruit into juice!"
+			to_chat(usr, "You refine the Orange and make food out of it.")
+			to_chat(view(usr), "[usr] refines the Orange fruit into juice!")
 			switch(alert(usr,"Customize the food? You can choose its name, icon, and flavor. Otherwise the default is juice.","","No","Yes"))
 				if("No")
 					usr.contents += new /obj/items/food/Juice
@@ -802,18 +802,18 @@ obj/items/food
 		flavor="The fruit's soury bits get out of the way, but regardless they're nearly as good as apples."
 		Eat()
 			if(usr.yemmas<3)
-				usr<<"Wow, these things taste good! You feel a bit stronger now."
+				to_chat(usr, "Wow, these things taste good! You feel a bit stronger now.")
 				usr.yemmas+=1
 				//if(usr.BP<usr.relBPmax) usr.BP += usr.capcheck((usr.relBPmax/1000))
 				if(usr.baseKi<=usr.baseKiMax)usr.baseKi+=usr.kicapcheck(10*usr.KiMod)
 			else
-				usr<<"Nothing happens... but they are a decent snack."
+				to_chat(usr, "Nothing happens... but they are a decent snack.")
 			..()
 		verb/Refine()
 			set category=null
 			set src in usr
-			usr << "You refine the Yemma and make food out of it."
-			view(usr)<<"[usr] refines the Yemma fruit into ice cream!"
+			to_chat(usr, "You refine the Yemma and make food out of it.")
+			to_chat(view(usr), "[usr] refines the Yemma fruit into ice cream!")
 			switch(alert(usr,"Customize the food? You can choose its name, icon, and flavor. Otherwise the default is ice cream.","","No","Yes"))
 				if("No")
 					usr.contents += new /obj/items/food/Ice_Cream
@@ -863,7 +863,7 @@ obj/items/food
 			var/turf/T = get_step(usr,dir)
 			var/ratemod = 1+usr.FarmingSkill/25
 			if(T.Water)
-				usr<<"You drop the seed in the water. It sinks to the bottom. You may be forgetting a crucial element in planting..."
+				to_chat(usr, "You drop the seed in the water. It sinks to the bottom. You may be forgetting a crucial element in planting...")
 				del(src)
 			else
 				switch(planttype)
@@ -871,54 +871,54 @@ obj/items/food
 						//var/area/a = GetArea()
 						var/type = /obj/Plants/Tree_Of_Might
 						if(locate(type) in obj_list)
-							usr<<"Planting seed. It'll take a bit to grow."
+							to_chat(usr, "Planting seed. It'll take a bit to grow.")
 							sleep(10)
 							spawnExplosion(loc,null,usr.expressedBP/2,3)
-							usr<<"The plant explodes!"
+							to_chat(usr, "The plant explodes!")
 						else
-							usr<<"Planting seed. It'll take a bit to grow."
+							to_chat(usr, "Planting seed. It'll take a bit to grow.")
 							var/obj/Plants/Tree_Of_Might/A = new
 							A.loc = locate(usr.x,usr.y,usr.z)
 							A.SaveItem = 1
 							A.planter = usr.signature
 					if("Yemma")
-						usr<<"Planting seed. It'll take a bit to grow."
+						to_chat(usr, "Planting seed. It'll take a bit to grow.")
 						var/obj/Plants/Yemma_Tree/A = new
 						A.loc = locate(usr.x,usr.y,usr.z)
 						A.SaveItem = 1
 						A.planter = usr.signiture
 						A.growthSpeed*=ratemod
 					if("Apple")
-						usr<<"Planting seed."
+						to_chat(usr, "Planting seed.")
 						var/obj/Trees/AppleTree/A = new
 						A.loc = locate(usr.x,usr.y,usr.z)
 						A.SaveItem = 1
 					if("Orange")
-						usr<<"Planting seed. It'll take a bit to grow."
+						to_chat(usr, "Planting seed. It'll take a bit to grow.")
 						var/obj/Plants/Orange/A = new
 						A.loc = locate(usr.x,usr.y,usr.z)
 						A.SaveItem=1
 						A.planter = usr.signiture
 						A.growthSpeed*=ratemod
-						usr<<"Orange root planted!"
+						to_chat(usr, "Orange root planted!")
 					if("Opuntia")
-						usr<<"Planting seed. It'll take a bit to grow."
+						to_chat(usr, "Planting seed. It'll take a bit to grow.")
 						var/obj/Plants/Opuntia/A = new
 						A.loc = locate(usr.x,usr.y,usr.z)
 						A.SaveItem=1
 						A.planter = usr.signiture
 						A.growthSpeed*=ratemod
-						usr<<"Opuntia root planted!"
+						to_chat(usr, "Opuntia root planted!")
 					if(null)
 						var/obj/Plants/Wheat/A = new
 						A.loc = locate(usr.x,usr.y,usr.z)
 						A.SaveItem=1
 						A.planter = usr.signiture
 						A.growthSpeed*=ratemod
-						usr<<"A grass grows in place of a fruit."
+						to_chat(usr, "A grass grows in place of a fruit.")
 				AddExp(usr,/datum/mastery/Life/Farming,100)
 				del(src)
 		verb/Description()
 			set category = null
 			set src in view(1)
-			usr<<"Plant a seed, and you'll grow a bit of the fruit specified. This is a [planttype] seed."
+			to_chat(usr, "Plant a seed, and you'll grow a bit of the fruit specified. This is a [planttype] seed.")

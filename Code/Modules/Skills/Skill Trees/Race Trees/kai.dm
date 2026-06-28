@@ -22,10 +22,10 @@
 	enabled = 0
 
 /datum/skill/kai/Mystic/after_learn()
-	savant<<"You feel calm and confident as your ki adapts to the new Mystic form you have just learned."
+	to_chat(savant, "You feel calm and confident as your ki adapts to the new Mystic form you have just learned.")
 	assignverb(/mob/keyable/verb/Mystic)
 /datum/skill/kai/Mystic/before_forget()
-	savant<<"You forget how to unleash your Mystic form."
+	to_chat(savant, "You forget how to unleash your Mystic form.")
 	unassignverb(/mob/keyable/verb/Mystic)
 /datum/skill/kai/Mystic/login()
 	..()
@@ -35,14 +35,14 @@
 obj/Mystify/verb/Mystify(mob/M in view(1))
 	set category="Skills"
 	if(M.hasmystic==1)
-		usr<<"They already have this."
+		to_chat(usr, "They already have this.")
 		return
 	else if(usr.mystified<2)
 		usr.mystified+=1
-		usr<<"You have turned [usr.mystified] people into Mystics, you can use this a max of <font color=red>2 times."
+		to_chat(usr, "You have turned [usr.mystified] people into Mystics, you can use this a max of <font color=red>2 times.")
 		M.hasmystic=1
 		M.learnSkill(new /datum/skill/kai/Mystic, 0,0)
-	else usr<<"You cannot turn more than 2 people into Mystics."
+	else to_chat(usr, "You cannot turn more than 2 people into Mystics.")
 	Again, as I said in Demon.dm, don't need this obj. Teachables already cover this ground. Commenting out for any possible future usage.
 */
 /datum/skill/kai/Revive
@@ -56,7 +56,7 @@ obj/Mystify/verb/Mystify(mob/M in view(1))
 
 /datum/skill/kai/Revive/after_learn()
 	assignverb(/mob/keyable/verb/Revive)
-	savant<<"You can revive!"
+	to_chat(savant, "You can revive!")
 
 /datum/skill/kai/Revive/login(var/mob/logger)
 	..()
@@ -67,18 +67,18 @@ mob/keyable/verb/Revive()
 	if(!usr.dead)
 		if(!target) target = input(usr,"Target someone.") as mob in view(1)
 		var/mob/M=target
-		if(M==usr) usr<<"You cannot revive yourself."
+		if(M==usr) to_chat(usr, "You cannot revive yourself.")
 		else if(M.dead)
 			switch(input(usr,"This will revive one dead person and bring them back to your location.","",text) in list ("No","Yes",))
 				if("Yes")
-					usr<<"You revive [M] and bring them to your location!"
+					to_chat(usr, "You revive [M] and bring them to your location!")
 					M.ReviveMe()
 					M.overlayList-='Halo.dmi'
 					M.overlaychanged=1
-					M<<"[usr] has brought you back to the living world!"
+					to_chat(M, "[usr] has brought you back to the living world!")
 					M.loc=locate(usr.x,usr.y,usr.z)
-		else usr<<"They are not dead."
-	else usr<<"You must be alive to revive someone."
+		else to_chat(usr, "They are not dead.")
+	else to_chat(usr, "You must be alive to revive someone.")
 
 /datum/skill/kai/Teleport
 	skilltype = "Ki"
@@ -93,15 +93,15 @@ mob/keyable/verb/Revive()
 	common_sense = TRUE
 
 /datum/skill/kai/Teleport/after_learn()
-	savant<<"You can teleport!"
+	to_chat(savant, "You can teleport!")
 	if(savant.Race=="Kai")
-		savant<<"Ready to go stalk the ningen?"
+		to_chat(savant, "Ready to go stalk the ningen?")
 	else
-		savant<<"You marvel at your new ability granted from the gods themselves. Space travel has never been easier!"
+		to_chat(savant, "You marvel at your new ability granted from the gods themselves. Space travel has never been easier!")
 	assignverb(/mob/keyable/verb/Kai_Kai)
 /datum/skill/kai/Teleport/before_forget()
-	savant<<"You don't remember how to teleport."
-	if(!teacher)savant<<"Guess you're stuck paying for airfare again, eh?"
+	to_chat(savant, "You don't remember how to teleport.")
+	if(!teacher)to_chat(savant, "Guess you're stuck paying for airfare again, eh?")
 	unassignverb(/mob/keyable/verb/Kai_Kai)
 /datum/skill/kai/Teleport/login(var/mob/logger)
 	..()
@@ -113,27 +113,27 @@ mob/keyable/verb/Kai_Kai()
 	set category = "Skills"
 	if(!usr.canmove || usr.KO || usr.deathregening || usr.grabParalysis || usr.stagger) return
 	if(!usr.KO&&canfight&&!usr.med&&!usr.train&&usr.Ki>=usr.MaxKi&&usr.Planet!="Sealed"&&!usr.inteleport)
-		view(6)<<"[usr] seems to be concentrating"
+		to_chat(view(6), "[usr] seems to be concentrating")
 		var/choice = input(usr,"Where would you like to go?", "", text) in list ("Earth", "Namek", "Vegeta", "Icer Planet", "Arconia", "Desert", "Arlia", "Large Space Station", "Small Space Station", "Afterlife", "Hell", "Heaven", "Nevermind",)
 		if(choice!="Nevermind")
 			usr.Ki=0
-			view(6)<<"[usr] shouts out 'Kai Kai!' and suddenly disappears!"
+			to_chat(view(6), "[usr] shouts out 'Kai Kai!' and suddenly disappears!")
 			usr.inteleport=1
 			emit_Sound('Instant_Pop.wav')
 			spawn for(var/mob/V in oview(1))
-				view(6)<<"[V] suddenly disappears!"
+				to_chat(view(6), "[V] suddenly disappears!")
 				if(!V.inteleport)
 					V.inteleport=1
 					while(usr.inteleport)
 						sleep(1)
 					V.loc = locate(usr.x,usr.y,usr.z)
 					V.inteleport=0
-					V<<"[usr] brings you with them using teleportation."
-					view(6)<<"[V] suddenly appears!"
+					to_chat(V, "[usr] brings you with them using teleportation.")
+					to_chat(view(6), "[V] suddenly appears!")
 			GotoPlanet(choice)
 			usr.inteleport=0
 			emit_Sound('Instant_Pop.wav')
 			spawn(1)
-				view(6)<<"[usr] suddenly appears!"
+				to_chat(view(6), "[usr] suddenly appears!")
 		else return
-	else usr<<"You need full ki and total concentration to use this."
+	else to_chat(usr, "You need full ki and total concentration to use this.")

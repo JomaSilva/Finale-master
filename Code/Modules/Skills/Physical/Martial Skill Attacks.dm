@@ -16,10 +16,10 @@ mob/var
 	expbarrier = 100
 	maxlevel = 3
 	after_learn()
-		savant<<"You can now appear next to your target!"
+		to_chat(savant, "You can now appear next to your target!")
 		assignverb(/mob/keyable/verb/Zanzoken_Rush)
 	before_forget()
-		savant<<"You forget how to appear next to your target!"
+		to_chat(savant, "You forget how to appear next to your target!")
 		unassignverb(/mob/keyable/verb/Zanzoken_Rush)
 	login(var/mob/logger)
 		..()
@@ -36,21 +36,21 @@ mob/var
 				if(levelup)
 					levelup = 0
 					savant.rushmod = 2
-					savant<<"You feel as if you can appear twice!"
+					to_chat(savant, "You feel as if you can appear twice!")
 				if(savant.currush)
 					exp+=1
 			if(2)
 				if(levelup)
 					levelup = 0
 					savant.rushmod = 3
-					savant<<"You think you can appear three times now!"
+					to_chat(savant, "You think you can appear three times now!")
 				if(savant.currush)
 					exp+=1
 			if(3)
 				if(levelup)
 					levelup = 0
 					savant.rushmod = 4
-					savant<<"You can appear an astounding four times!"
+					to_chat(savant, "You can appear an astounding four times!")
 
 mob/keyable/verb/Zanzoken_Rush()
 	set category = "Skills"
@@ -61,27 +61,27 @@ mob/keyable/verb/Zanzoken_Rush()
 	var/targarea
 	get_me_a_target()
 	if(usr.Ki>=staminaReq&&usr.target&&usr.target!=usr&&get_dist(usr,usr.target)<20&&!usr.KO&&usr.currush<1)
-		usr<<"You attempt to appear next to your target!"
+		to_chat(usr, "You attempt to appear next to your target!")
 		Ki-=staminaReq
 		usr.rushmax=max(round(usr.rushmod*log(usr.Espeed)), 1)
 		usr.currush=1
 		while(rushcount<usr.rushmax)
 			rushcount++
 			if(!canmove||usr.KO)
-				usr<<"Your attack failed because you can't move!"
+				to_chat(usr, "Your attack failed because you can't move!")
 				break
 			if(usr.z!=target.z)
-				usr<<"Your target is out of range!"
+				to_chat(usr, "Your target is out of range!")
 				break
 			flick('Zanzoken.dmi',usr)
 			targarea=locate(target.x+pick(-1,1),target.y+pick(-1,1),target.z)
 			usr.Move(targarea)
 			if(usr.loc!=targarea)
-				usr<<"Your attack was stopped by an obstacle!"
+				to_chat(usr, "Your attack was stopped by an obstacle!")
 				break
 			usr.dir=get_dir(usr,target)
 			usr.MeleeAttack()
-			view(3,target)<<"[usr] appears and strikes [target]!"
+			to_chat(view(3,target), "[usr] appears and strikes [target]!")
 			emit_Sound('teleport.wav')
 			sleep(jumpspeed)
 		usr.currush=2
@@ -89,13 +89,13 @@ mob/keyable/verb/Zanzoken_Rush()
 		usr.currush=0
 		rushcount=0
 	else if(!usr.target||get_dist(usr,usr.target)>=12||usr.target==usr)
-		usr << "You need a valid target..."
+		to_chat(usr, "You need a valid target...")
 	else if(usr.Ki<=staminaReq)
-		usr << "You need at least [staminaReq] Ki to use this skill."
+		to_chat(usr, "You need at least [staminaReq] Ki to use this skill.")
 	else if(usr.currush==1)
-		usr << "You are already using this skill!"
+		to_chat(usr, "You are already using this skill!")
 	else if(usr.currush==2)
-		usr << "You are still exhausted from your rush..."
+		to_chat(usr, "You are still exhausted from your rush...")
 
 
 /datum/skill/MartialSkill/Special_Multihit
@@ -110,10 +110,10 @@ mob/keyable/verb/Zanzoken_Rush()
 	expbarrier = 100
 	maxlevel = 3
 	after_learn()
-		savant<<"You can now barrage your opponent with blows!"
+		to_chat(savant, "You can now barrage your opponent with blows!")
 		assignverb(/mob/keyable/verb/Special_Multihit)
 	before_forget()
-		savant<<"You forget how to barrage your opponent with blows!"
+		to_chat(savant, "You forget how to barrage your opponent with blows!")
 		unassignverb(/mob/keyable/verb/Special_Multihit)
 	login(var/mob/logger)
 		..()
@@ -127,7 +127,7 @@ mob/keyable/verb/Special_Multihit()
 		var/amount = min(10,Etechnique * 2)
 		if(BarrageAttack(2,FALSE,FALSE,"fires a punch at",amount,2))
 			usr.Ki-=kireq
-	else usr<<"You must be combat ready (not be stunned, be able to attack, and not have a cooldown happening (Basic CD = -[basicCD/10]- seconds)) and have at least [kireq] ki."
+	else to_chat(usr, "You must be combat ready (not be stunned, be able to attack, and not have a cooldown happening (Basic CD = -[basicCD/10]- seconds)) and have at least [kireq] ki.")
 
 /datum/skill/MartialSkill/Wolf_Fang_Fist
 	skilltype = "Physical"
@@ -141,10 +141,10 @@ mob/keyable/verb/Special_Multihit()
 	expbarrier = 100
 	maxlevel = 3
 	after_learn()
-		savant<<"You can now punch with the ferocity of the wolf! You learned Wolf Fang Fist!"
+		to_chat(savant, "You can now punch with the ferocity of the wolf! You learned Wolf Fang Fist!")
 		assignverb(/mob/keyable/verb/Wolf_Fang_Fist)
 	before_forget()
-		savant<<"You forget how to use the Wolf Fang Fist!!"
+		to_chat(savant, "You forget how to use the Wolf Fang Fist!!")
 		unassignverb(/mob/keyable/verb/Wolf_Fang_Fist)
 	login(var/mob/logger)
 		..()
@@ -156,21 +156,21 @@ mob/keyable/verb/Wolf_Fang_Fist()
 	var/kireq=usr.Ephysoff*10*BaseDrain
 	if(!usr.med&&!usr.train&&!usr.KO&&usr.Ki>=kireq&&!usr.basicCD&&usr.canfight)
 		if(!unarmed&&(weaponeq>1||twohanding))
-			usr<<"You need a free hand to use this!"
+			to_chat(usr, "You need a free hand to use this!")
 			return
 		if(usr.meleeCD)
-			usr<<"Melee skills on CD for [meleeCD/10] seconds."
+			to_chat(usr, "Melee skills on CD for [meleeCD/10] seconds.")
 			return
 		if(usr.canfight<=0||usr.KO||usr.med||usr.stamina<8)
-			usr<<"You can't use this now!"
+			to_chat(usr, "You can't use this now!")
 			return
 		get_me_a_target()
 		if(!usr.target)
-			usr<<"You have no target."
+			to_chat(usr, "You have no target.")
 			return
 		else
 			if(get_dist(usr,target)>1)
-				usr<<"You must be next to your target to use this!"
+				to_chat(usr, "You must be next to your target to use this!")
 				return
 		usr.basicCD+=15
 		target.AddEffect(/effect/stun)
@@ -184,7 +184,7 @@ mob/keyable/verb/Wolf_Fang_Fist()
 		target.kbdur=4
 		target.AddEffect(/effect/knockback)
 		usr.stamina-=8
-	else usr<<"You must be combat ready (not be stunned, be able to attack, and not have a cooldown happening (Basic CD = -[basicCD/10]- seconds)) and have at least [kireq] ki."
+	else to_chat(usr, "You must be combat ready (not be stunned, be able to attack, and not have a cooldown happening (Basic CD = -[basicCD/10]- seconds)) and have at least [kireq] ki.")
 
 /datum/skill/MartialSkill/Wolf_Hurricane
 	skilltype = "Physical"
@@ -200,10 +200,10 @@ mob/keyable/verb/Wolf_Fang_Fist()
 	expbarrier = 100
 	maxlevel = 3
 	after_learn()
-		savant<<"You can now use the Wolf Fang Hurricane!"
+		to_chat(savant, "You can now use the Wolf Fang Hurricane!")
 		assignverb(/mob/keyable/verb/Wolf_Fang_Hurricane)
 	before_forget()
-		savant<<"You forget how to use the Wolf Fang Hurricane!!"
+		to_chat(savant, "You forget how to use the Wolf Fang Hurricane!!")
 		unassignverb(/mob/keyable/verb/Wolf_Fang_Hurricane)
 	login(var/mob/logger)
 		..()
@@ -237,7 +237,7 @@ mob/keyable/verb/Wolf_Fang_Hurricane()
 				doAttack(target,2,null,null,"throws a fist, almost shaped like a fang into",null,1)
 		knockbackon = saveknock
 		attacking = 0
-	else usr<<"You must be combat ready (not be stunned, be able to attack, and not have a cooldown happening (Basic CD = -[basicCD/10]- seconds)) and have at least [kireq] ki."
+	else to_chat(usr, "You must be combat ready (not be stunned, be able to attack, and not have a cooldown happening (Basic CD = -[basicCD/10]- seconds)) and have at least [kireq] ki.")
 mob/keyable/verb/Dash_Attack()
 	set category = "Skills"
 	var/kireq=usr.Ephysoff*8*BaseDrain
@@ -262,19 +262,19 @@ mob/keyable/verb/Dash_Attack()
 		while(dist)
 			dist--
 			if(!canmove)
-				src<<"Your rush fails since you can't move!"
+				to_chat(src, "Your rush fails since you can't move!")
 				break
 			step(src,rushdir)
 			for(var/mob/M in oview(1))
 				doAttack(target,20,1,null,"dropkicks",null,3)
 				succ=1
 			if(dist==0)
-				src<<"All this moving is exhausting..."
+				to_chat(src, "All this moving is exhausting...")
 				break
 			sleep(rushSpeed)
 		if(!succ)
 			stagger += 1
-			src<<"You fell because you missed the enemy. You're stunned!"
+			to_chat(src, "You fell because you missed the enemy. You're stunned!")
 			sleep(4)
 			stagger -= 1
 		switch(flighted)
@@ -284,7 +284,7 @@ mob/keyable/verb/Dash_Attack()
 			if(2)
 				stop_superflight()
 		attacking = 0
-	else usr<<"You must be combat ready (not be stunned, be able to attack, and not have a cooldown happening (Basic CD = -[basicCD/10]- seconds)) and have at least [kireq] ki."
+	else to_chat(usr, "You must be combat ready (not be stunned, be able to attack, and not have a cooldown happening (Basic CD = -[basicCD/10]- seconds)) and have at least [kireq] ki.")
 
 mob/keyable/verb/Flip()
 	set category = "Skills"
@@ -320,7 +320,7 @@ mob/keyable/verb/Flip()
 					grabCounter += 5
 
 			else grabParalysis = 0
-	else usr<<"You must be combat ready (not be stunned, be able to attack, and not have a cooldown happening (Basic CD = -[basicCD/10]- seconds)) and have at least [kireq] ki."
+	else to_chat(usr, "You must be combat ready (not be stunned, be able to attack, and not have a cooldown happening (Basic CD = -[basicCD/10]- seconds)) and have at least [kireq] ki.")
 
 mob/keyable/verb/Spin_Attack()
 	set category = "Skills"
@@ -335,7 +335,7 @@ mob/keyable/verb/Spin_Attack()
 				if(amount > 2) break
 				doAttack(M)
 		attacking = 0
-	else usr<<"You must be combat ready (not be stunned, be able to attack, and not have a cooldown happening (Basic CD = -[basicCD/10]- seconds)) and have at least [kireq] ki."
+	else to_chat(usr, "You must be combat ready (not be stunned, be able to attack, and not have a cooldown happening (Basic CD = -[basicCD/10]- seconds)) and have at least [kireq] ki.")
 
 mob/keyable/verb/Stun_Attack()
 	set category = "Skills"
@@ -351,7 +351,7 @@ mob/keyable/verb/Stun_Attack()
 					target.stunCount+=25
 		RushComplete=0
 		attacking = 0
-	else usr<<"You must be combat ready (not be stunned, be able to attack, and not have a cooldown happening (Basic CD = -[basicCD/10]- seconds)) and have at least [kireq] ki."
+	else to_chat(usr, "You must be combat ready (not be stunned, be able to attack, and not have a cooldown happening (Basic CD = -[basicCD/10]- seconds)) and have at least [kireq] ki.")
 mob/keyable/verb/Takedown()
 	set category = "Skills"
 	var/kireq=usr.Ephysoff*20*BaseDrain
@@ -364,14 +364,14 @@ mob/keyable/verb/Takedown()
 			usr.Ki-=kireq
 			var/tdmg = 1
 			if(t_m.flight)
-				view(src)<<"[t_m] is taken down by [src]!!"
+				to_chat(view(src), "[t_m] is taken down by [src]!!")
 				tdmg++
 				t_m.stunCount+=35
 				t_m.flight = 0
 			else
-				view(src)<<"[t_m] is taken down by [src]!!"
+				to_chat(view(src), "[t_m] is taken down by [src]!!")
 			var/punchrandomsnd=pick('ARC_BTL_CMN_Hit_Midle-A.ogg','punch_med.wav','mediumpunch.wav','mediumkick.wav','hit_m.wav')
 			usr.emit_Sound(punchrandomsnd,0.33)
 			var/dmg = NormDamageCalc(t_m) * tdmg
 			damage_mob(t_m,dmg)
-	else usr<<"You must be combat ready (not be stunned, be able to attack, and not have a cooldown happening (Basic CD = -[basicCD/10]- seconds)) and have at least [kireq] ki."
+	else to_chat(usr, "You must be combat ready (not be stunned, be able to attack, and not have a cooldown happening (Basic CD = -[basicCD/10]- seconds)) and have at least [kireq] ki.")

@@ -29,7 +29,7 @@ obj/overlay/effects/MajinEffect
 	var/storedpower
 	Buff()
 		..()
-		container<<"<font color=yellow>You channel your inner demons into your Majin form."
+		to_chat(container, "<font color=yellow>You channel your inner demons into your Majin form.")
 		container.MajinPcnt=container.MajinMod
 		container.MajinAdd = ((container.BP*container.MajinMod*(container.MaxAnger/100))/10)
 		container.BPadd += container.MajinAdd
@@ -39,12 +39,12 @@ obj/overlay/effects/MajinEffect
 		container.updateOverlay(/obj/overlay/effects/MajinEffect)
 		container.emit_Sound('chargeaura.wav')
 	DeBuff()
-		container<<"<font color=yellow>Your rage subsides as you calm down."
+		to_chat(container, "<font color=yellow>Your rage subsides as you calm down.")
 		container.BPadd -= container.MajinAdd
 		container.MajinPcnt=1
 		container.angerMod*=1.2
 		container.physoffMod/=1.3
 		container.kiregenMod-=0.5
-		container<<"You stop using your Majin power."
+		to_chat(container, "You stop using your Majin power.")
 		container.removeOverlay(/obj/overlay/effects/MajinEffect)
 		..()

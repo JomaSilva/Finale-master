@@ -102,7 +102,7 @@ mob/proc/AgeCheck(var/skipTimeText)
 				Body=25-((Age-DeclineAge)*0.5*DeclineMod)
 				GreyHair()
 		if(Body<0.1)
-			view(src)<<"[src] dies from old age."
+			to_chat(view(src), "[src] dies from old age.")
 			hairchanges=0
 			AgeDiv=DeclineAge/Age
 			EnteredHBTC=0

@@ -9,7 +9,7 @@ mob/proc/stathuman()
 		else if(hroll <= 15) Class = "Triclops Descendant"
 		else if(hroll <= 40) Class = "Peak Human"
 		else Class = "Normal"
-		src << "<font color=#cda434><b>You were born a [Class].</b></font>"
+		to_chat(src, "<font color=#cda434><b>You were born a [Class].</b></font>")
 	if(!genome)
 		genome = new/datum/genetics/Human(/datum/genetics/proto/Human)
 		genome.this_class = Class

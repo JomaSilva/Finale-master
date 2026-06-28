@@ -166,14 +166,14 @@ mob/proc/PickStyle()
 	if(isnull(choice))
 	else if(choice == "No style.")
 		if(prob(1))
-			view()<<"<font color=yellow size=3>HE HAS NO GRACE</font>"
-			view()<<"<font color=yellow size=3>THIS KONG HAS</font>"
-			view()<<"<font color=yellow size=3>A FUNNY FACE</font>"
-		view()<<"[usr] [currentStyle.stanceOFFtext]!"
+			to_chat(view(), "<font color=yellow size=3>HE HAS NO GRACE</font>")
+			to_chat(view(), "<font color=yellow size=3>THIS KONG HAS</font>")
+			to_chat(view(), "<font color=yellow size=3>A FUNNY FACE</font>")
+		to_chat(view(), "[usr] [currentStyle.stanceOFFtext]!")
 		currentStyle = null
 	else
 		currentStyle = choice
-		view()<<"[usr] [currentStyle.stanceONtext]!"
+		to_chat(view(), "[usr] [currentStyle.stanceONtext]!")
 
 mob/proc/viewavailablestyles()
 	var/list/pickstylelist = list()

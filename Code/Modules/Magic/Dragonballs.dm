@@ -15,14 +15,14 @@ obj/DragonObject
 		set category = null
 		set src in view(1)
 		if(usr.expressedBP>=WishPower)
-			view()<<"[usr] kills [src]! This renders the balls inert!"
+			to_chat(view(), "[usr] kills [src]! This renders the balls inert!")
 			for(var/obj/DB/A)
 				if(A.BallID == BallID)
 					A.CompletelyInert = 1
 			del(src)
 		else
-			view()<<"[usr] tries to kill [src]!"
-			view()<<"It fails!"
+			to_chat(view(), "[usr] tries to kill [src]!")
+			to_chat(view(), "It fails!")
 
 obj/DragonStatue
 	SaveItem = 1
@@ -50,7 +50,7 @@ obj/DragonStatue
 		set category = null
 		set src in view(1)
 		CompletelyInert = 1
-		view()<<"[usr] destroys [src]! This renders the balls dead!"
+		to_chat(view(), "[usr] destroys [src]! This renders the balls dead!")
 		for(var/obj/DB/A)
 			if(A.BallID == BallID)
 				del(A)
@@ -59,7 +59,7 @@ obj/DragonStatue
 		set category = null
 		set src in view(1)
 		if(Creator == usr)
-			view()<<"[usr] is reconfiguring the [src]!"
+			to_chat(view(), "[usr] is reconfiguring the [src]!")
 			view()<<"[src] upgraded to [usr.scouteron ? "[usr.BP]" : "???"]!" //don't broadcast the creator's BP unless they can actually read it (scouter)
 			Wishs = max(min((input(usr,"Set the number of wishes, from 1 to 3.","",1) as num),3),1)
 			WishPower = usr.BP
@@ -90,7 +90,7 @@ obj/DragonStatue
 		set category = null
 		set src in view(1)
 		if(Creator == usr&&!usr.dead)
-			view()<<"[usr] revived the [src]!"
+			to_chat(view(), "[usr] revived the [src]!")
 			CompletelyInert = 0
 			var/ballcount
 			for(var/obj/DB/A)
@@ -177,7 +177,7 @@ obj/DB
 		set category = null
 		set src in view(1)
 		HomeStatue.CompletelyInert = 1
-		view()<<"[usr] destroys [src]! This renders the balls inert!"
+		to_chat(view(), "[usr] destroys [src]! This renders the balls inert!")
 		del(src)
 	verb/D_Wish()
 		set category = null
@@ -222,6 +222,7 @@ obj/DB
 				else
 					inbetween = "!"
 				view(7)<<output("<font size=[4]><font color=red><font face=Old English Text MT>[dragonname] says, 'I AM [dragonname][inbetween][title]! STATE YOUR WISH!'","Chatpane.Chat")
+				chatcast(view(7), "<font size=[4]><font color=red><font face=Old English Text MT>[dragonname] says, 'I AM [dragonname][inbetween][title]! STATE YOUR WISH!'", "say")
 				usr.emit_Sound('dragonballsuse.ogg')
 			usr.summoning = 1
 			WishCount += GenerateWishList(usr)
@@ -238,7 +239,7 @@ obj/DB
 			usr.emit_Sound('dragonballsdone.ogg')
 			usr.summoning = 0
 		else
-			usr<<"Wish failed!"
+			to_chat(usr, "Wish failed!")
 
 	proc/Scatter()
 		usr.emit_Sound('db_flying.wav')
@@ -327,14 +328,14 @@ obj/DB
 		spawn(100) Tick()
 	proc/OnGrab()
 		Move(container)
-		view(container)<<"<font color=teal><font size=1>[container] picks up [src]."
+		to_chat(view(container), "<font color=teal><font size=1>[container] picks up [src].")
 		WriteToLog("rplog","[container] picks up [src]    ([time2text(world.realtime,"Day DD hh:mm")])")
 		return
 
 	proc/OnRelease()
 		loc=container.loc
 		step(src,usr.dir)
-		view(container)<<"<font size=1><font color=teal>[container] drops [src]."
+		to_chat(view(container), "<font size=1><font color=teal>[container] drops [src].")
 		container = null
 		return
 	verb
@@ -345,7 +346,7 @@ obj/DB
 				if(!usr.KO)
 					container = usr
 					OnGrab()
-				else usr<<"You cant, you are knocked out."
+				else to_chat(usr, "You cant, you are knocked out.")
 		Drop()
 			set category=null
 			set src in usr
@@ -374,5 +375,5 @@ mob/Admin3/verb/View_Ball_ID(var/obj/A)
 	set hidden = 1
 	set category = "Admin"
 	if(istype(A,/obj/DB)||istype(A,/obj/DragonStatue))
-		usr<<"Ball ID = [A:BallID]"
+		to_chat(usr, "Ball ID = [A:BallID]")
 	return usr << "Not a Dragonball or Dragon Statue."

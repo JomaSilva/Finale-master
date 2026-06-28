@@ -20,13 +20,13 @@ mob/verb/Steal()
 					realchoice.GetMe(usr,1)
 					usr.contents += realchoice
 					WriteToLog("rplog","[usr] steals [realchoice] from [M]   ([time2text(world.realtime,"Day DD hh:mm")])")
-					view(usr) << "<font color=teal><font size=1>[usr] steals [realchoice] from [M]!"
+					to_chat(view(usr), "<font color=teal><font size=1>[usr] steals [realchoice] from [M]!")
 					return
 			else if(choice == "Zenni")
-				view(usr)<<"[src]([displaykey]) steals [M]'s zenni! ([M.zenni]z)"
+				to_chat(view(usr), "[src]([displaykey]) steals [M]'s zenni! ([M.zenni]z)")
 				zenni+=M.zenni
 				M.zenni=0
-		else usr<<"They must be knocked out to steal this."
+		else to_chat(usr, "They must be knocked out to steal this.")
 	//stealing needs a rework
 mob/var/tmp
 	mob/grabbee //who is grabbing you
@@ -61,7 +61,7 @@ mob/verb
 			if(grabbee||objgrabbee)
 				grabMode = 0
 				if(grabbee)
-					usr<<"You release [grabbee]."
+					to_chat(usr, "You release [grabbee].")
 					emit_Sound('groundhit.wav')
 					is_choking = 0
 					//canfight=1
@@ -70,7 +70,7 @@ mob/verb
 					grabbee.grabber = null
 					grabbee=null
 				if(objgrabbee)
-					usr<<"You release [objgrabbee]."
+					to_chat(usr, "You release [objgrabbee].")
 					emit_Sound('groundhit.wav')
 					//canfight=1
 					objgrabbee=null
@@ -78,19 +78,19 @@ mob/verb
 		if(grabMode==1)
 			if(grabbee||objgrabbee)
 				if(grabbee)
-					usr<<"You pick up [grabbee]."
+					to_chat(usr, "You pick up [grabbee].")
 					grabMode = 2
 					grabbee.grabberSTR*=1.5
 				if(objgrabbee)
 					if(usr.CheckInventory()==TRUE)return
 					if(usr.inven_min<usr.inven_max)
-						usr<<"You pick up [objgrabbee]."
+						to_chat(usr, "You pick up [objgrabbee].")
 						grabMode = 2
 						usr.inven_min++
 						usr.InvenSet()
 						spawn objgrab()
 					else
-						usr<<"You have no space in your inventory."
+						to_chat(usr, "You have no space in your inventory.")
 						return
 				return
 		if(KO||attacking||!canfight) return
@@ -119,11 +119,11 @@ mob/verb
 			return
 		if(istype(A,/obj))
 			if(A.Bolted)
-				src<<"It is bolted to the ground, you cannot get it."
+				to_chat(src, "It is bolted to the ground, you cannot get it.")
 				return
 		if(istype(A,/obj/Zenni))
-			usr<<"You pick up [A]."
-			oview(usr)<<"<font size=1><font color=teal>[usr] picks up [A.zenni]z."
+			to_chat(usr, "You pick up [A].")
+			to_chat(oview(usr), "<font size=1><font color=teal>[usr] picks up [A.zenni]z.")
 			WriteToLog("rplog","[usr] picks up [A.zenni]z    ([time2text(world.realtime,"Day DD hh:mm")])")
 			usr.zenni+=A.zenni
 			del(A)
@@ -134,7 +134,7 @@ mob/verb
 					A:GetMe(usr)
 					if(A == /obj/items/Nav_System)
 						src.hasnav=1
-				else usr<<"You can't, you are knocked out."
+				else to_chat(usr, "You can't, you are knocked out.")
 			return
 		if(istype(A,/obj/Modules))
 			if(src)
@@ -143,24 +143,24 @@ mob/verb
 					A.Move(src)
 					if(A == /obj/items/Nav_System)
 						src.hasnav=1
-					view(src)<<"<font color=teal><font size=1>[src] picks up [A]."
+					to_chat(view(src), "<font color=teal><font size=1>[src] picks up [A].")
 					WriteToLog("rplog","[usr] picks up [A]    ([time2text(world.realtime,"Day DD hh:mm")])")
-				else usr<<"You can't, you are knocked out."
+				else to_chat(usr, "You can't, you are knocked out.")
 			return
 		if(A.type in typesof(/obj/Artifacts))
 			var/obj/Artifacts/C = A
 			if(C.Unmovable)
-				src<<"It is still. You cannot get it."
+				to_chat(src, "It is still. You cannot get it.")
 				return
 			if(src)
 				if(!KO)
 					C.container = usr
 					C.OnGrab()
-				else usr<<"You can't, you are knocked out."
+				else to_chat(usr, "You can't, you are knocked out.")
 			return
 		if(istype(A,/obj)) //If grab doesn't work on mobs/objs, change it to A.type in typesof(/obj) or A.type in typesof(/mob)
 			if(!objgrabbee)
-				usr<<"You latch on to [A]! You can throw [A] by moving!"
+				to_chat(usr, "You latch on to [A]! You can throw [A] by moving!")
 				objgrabbee=A
 				grabMode = 1
 				//canfight=0
@@ -168,7 +168,7 @@ mob/verb
 		if(istype(A,/mob)) //See above
 			var/mob/M = A
 			if(!grabbee&&!M.grabber)
-				usr<<"You grab [M]! You can throw [M] by moving!"
+				to_chat(usr, "You grab [M]! You can throw [M] by moving!")
 				M.totalTime = 0
 				emit_Sound('mediumpunch.wav')
 				grabbee=M
@@ -186,7 +186,7 @@ mob/proc/grab()
 			grabbee.dir=turn(dir,180)
 		grabbee.grabParalysis = 1
 		if(KO||grabbee.z!=usr.z||totalTime==0||(grabMode==1 && !grabbee in get_step(src,dir)))
-			view()<<"[usr] is forced to release [grabbee]!"
+			to_chat(view(), "[usr] is forced to release [grabbee]!")
 			emit_Sound('groundhit2.wav')
 			grabbee.grabberSTR=null
 			grabbee.grabber = null
@@ -206,7 +206,7 @@ mob/proc/objgrab()
 	while(objgrabbee)
 		objgrabbee.loc=locate(x,y,z)
 		if(KO)
-			view()<<"[usr] is forced to release [objgrabbee]!"
+			to_chat(view(), "[usr] is forced to release [objgrabbee]!")
 			emit_Sound('mediumpunch.wav')
 			objgrabbee=null
 		sleep(1)
@@ -219,7 +219,7 @@ obj/items
 			set category=null
 			set src in oview(1)
 			if(Bolted)
-				usr<<"It is bolted to the ground, you cannot get it."
+				to_chat(usr, "It is bolted to the ground, you cannot get it.")
 				return FALSE
 			if(usr.CheckInventory()==TRUE)return
 			usr.inven_min++
@@ -244,7 +244,7 @@ obj/items
 						GetMe(M,1)
 						M.contents += src
 						WriteToLog("rplog","[usr] gives [src] to [M]   ([time2text(world.realtime,"Day DD hh:mm")])")
-						view(usr) << "<font color=teal><font size=1>[usr] gives [src] to [M]"
+						to_chat(view(usr), "<font color=teal><font size=1>[usr] gives [src] to [M]")
 						return
 			if(n>src.amount)n=src.amount //if it's above the items amount
 			if(n<=0)n=1 //if it's below 0
@@ -263,7 +263,7 @@ obj/items
 	proc
 		GetMe(var/mob/TargetMob,messageless)
 			if(Bolted)
-				TargetMob<<"It is bolted to the ground, you cannot get it."
+				to_chat(TargetMob, "It is bolted to the ground, you cannot get it.")
 				return FALSE
 			if(TargetMob)
 				if(TargetMob.inven_min<TargetMob.inven_max)
@@ -271,26 +271,26 @@ obj/items
 						//for(var/turf/G in view(src)) G.gravity=0
 						Move(TargetMob)
 						if(!messageless)
-							view(TargetMob)<<"<font color=teal><font size=1>[TargetMob] picks up [src]."
+							to_chat(view(TargetMob), "<font color=teal><font size=1>[TargetMob] picks up [src].")
 							WriteToLog("rplog","[TargetMob] picks up [src]    ([time2text(world.realtime,"Day DD hh:mm")])")
 						return TRUE
 					else
-						TargetMob<<"You cant, you are knocked out."
+						to_chat(TargetMob, "You cant, you are knocked out.")
 						return FALSE
-				TargetMob<<"You have no space in your inventory."
+				to_chat(TargetMob, "You have no space in your inventory.")
 				return
 
 
 		DropMe(var/mob/TargetMob,messageless)
 			if(equipped|suffix=="*Equipped*")
-				TargetMob<<"You must unequip it first"
+				to_chat(TargetMob, "You must unequip it first")
 				return FALSE
 			TargetMob.overlayList-=icon
 			TargetMob.overlaychanged=1
 			loc=TargetMob.loc
 			step(src,TargetMob.dir)
 			if(!messageless)
-				view(TargetMob)<<"<font size=1><font color=teal>[TargetMob] drops [src]."
+				to_chat(view(TargetMob), "<font size=1><font color=teal>[TargetMob] drops [src].")
 				WriteToLog("rplog","[TargetMob] drops [src]    ([time2text(world.realtime,"Day DD hh:mm")])")
 
 			return TRUE
@@ -332,7 +332,7 @@ mob/proc/get_me_a_grab(grb_type)
 	if(grabList.len)
 		var/mob/M = pick(grabList)
 		if(!grabbee&&!M.grabber)
-			usr<<"You grab [M]! You can throw [M] by moving!"
+			to_chat(usr, "You grab [M]! You can throw [M] by moving!")
 			spawn grab()
 			emit_Sound('mediumpunch.wav')
 			grabbee=M
@@ -342,7 +342,7 @@ mob/proc/get_me_a_grab(grb_type)
 			M.grabParalysis = 1
 			//canfight=0
 			if(grb_type)
-				usr<<"You pick up [grabbee]."
+				to_chat(usr, "You pick up [grabbee].")
 				grabMode = 2
 				grabbee.grabberSTR*=1.5
 			return TRUE
