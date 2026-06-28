@@ -9,6 +9,10 @@ var
 	timecaprate = 0.25 //differenciation between caprate and timecap rate makes this easier
 	catchupcap = 2
 	relcaprate = 1
+	bpGainSoftcap = 1000000000 //BP above this gets DIMINISHING training returns. Raw per-tick gain is ∝ relBPmax ∝ BP,
+	                           //so in the billions a single tick adds billions (absurd, esp. at 500x grav + weights). 0 = off.
+	bpGainSoftStrength = 1 //how hard to damp ABOVE the softcap: 0 = off (pure exponential), 1 = gain stops scaling with BP
+	                       //(~linear growth past the cap), 0.5 = sqrt(BP). Lower it for a gentler taper that still accelerates.
 
 
 mob/Admin3/verb

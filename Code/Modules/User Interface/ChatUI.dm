@@ -13,6 +13,8 @@
 mob/var/tmp
 	last_chat_cat = "say"
 	chatUIready = 0
+	list/chat_log = null //rolling backlog (last ~250 lines) so messages sent before the browser
+	                     //finishes loading (e.g. the class hint at spawn) can be replayed once it's ready
 
 // <meta IE=edge> so the embedded browser supports flexbox/modern CSS.
 var/CHAT_PAGE = {"
@@ -66,20 +68,51 @@ function setTab(t){
 <span class='tab' data-t='announce' onclick="setTab('announce')">Events</span>
 </div>
 <div id='log'></div>
-</div></body></html>
+</div>
+<script>
+(function(){
+ var done=false, url='byond://?src=__REF__;chatReady=1';
+ function ping(){
+  if(done){return;} done=true;
+  try{ var a=document.createElement('a'); a.href=url; document.body.appendChild(a);
+       if(a.click){ a.click(); return; } }catch(e){}
+  try{ window.location=url; }catch(e2){} // fallback
+ }
+ if(window.addEventListener){ window.addEventListener('load',ping,false); }
+ else if(window.attachEvent){ window.attachEvent('onload',ping); }
+ setTimeout(ping,80); // fire once the page DOM+addMsg are ready so DM can replay the backlog
+})();
+</script>
+</body></html>
 "}
 
 mob/proc/OpenChatUI()
 	if(!client) return
-	src << browse(CHAT_PAGE, "window=Chatpane.chatbrowser") //load the page once
+	chatUIready = 0 //the page reloads from scratch; wait for its ready-ping before live-pushing
+	var/page = replacetext(CHAT_PAGE, "__REF__", "\ref[src]") //inject this mob's ref into the ready-ping URL
+	src << browse(page, "window=Chatpane.chatbrowser")
+	//The page pings byond://?chatReady=1 once its DOM/addMsg are ready -> Topic calls FlushChat()
+	//to replay the backlog. Fallback: if that callback never arrives, flush anyway after ~5s so the
+	//log is never permanently stuck empty.
+	spawn(50) if(!chatUIready) FlushChat()
+
+//Replay the buffered backlog into the freshly-loaded page, then go live.
+mob/proc/FlushChat()
 	chatUIready = 1
+	if(!client || !chat_log) return
+	for(var/entry in chat_log)
+		src << output(entry, "Chatpane.chatbrowser:addMsg")
 
 mob/proc/to_chat_html(html, category)
-	if(!client || !chatUIready) return
+	if(!client) return
 	if(!category) category = "system"
 	var/p = findtext(html, "<") //strip a leading \icon[...] (it renders as the whole sprite-sheet in a browser); messages always start with <font...> after it
 	if(p > 1) html = copytext(html, p)
-	src << output("<div class='m c-[category]'>[html]</div>", "Chatpane.chatbrowser:addMsg") //DM->JS append
+	var/entry = "<div class='m c-[category]'>[html]</div>"
+	if(!chat_log) chat_log = list()
+	chat_log += entry //always buffer so nothing sent before the browser loads is lost
+	if(chat_log.len > 250) chat_log.Cut(1, chat_log.len - 249) //keep the last ~250 lines
+	if(chatUIready) src << output(entry, "Chatpane.chatbrowser:addMsg") //DM->JS live append
 
 proc/chatcast(targets, html, category) //mirror a line to recipients' HTML chat; accepts a mob, client, world, or a view()/list
 	if(!targets) return

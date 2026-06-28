@@ -4,7 +4,7 @@ mob/Admin2/verb/Balance_Settings()
 	set category = "Admin"
 	switch(input(usr,"Which settings? Most are NOT toggled. They will tell you what their default is.","Balanced Settings", "Cancel") in list("Cancel","Train","Ki Attack Damage","Ki Drain", \
 		"Melee Damage", "Melee Speed","Melee Anti-Speed","Stamina Drain","Grav Gain","Grav Gain Div","Grav Accustom","Food Stamina Gain","Ki Exp Rate","Resource Gains","grav Balance","power Mult","globalkiarmormod","Tech Gains Mult","Net Cap",\
-		"Spar Gains","Train Gains","Med Gains","Blast Gains","Train Meditation To Hidden Potential","NPC Sparring","Legends Pre-Ascension","Legends Override"))
+		"Spar Gains","Train Gains","Med Gains","Blast Gains","BP Softcap","BP Softcap Strength","Train Meditation To Hidden Potential","NPC Sparring","Legends Pre-Ascension","Legends Override"))
 		if("Train") trainmult = input(usr,"Set the current train mult. Normally 1x.","",trainmult) as num
 		if("Ki Attack Damage") globalKiDamage = input("Put in the Ki attack mult. 5x is default.","",globalKiDamage) as num
 		if("Ki Drain") globalKiDrainMod = input(usr,"Global Ki drain mod. Normally 1x","",globalKiDrainMod) as num
@@ -30,6 +30,8 @@ mob/Admin2/verb/Balance_Settings()
 		if("Train Gains") global_train_gain = input(usr,"Training gains mult [initial(global_train_gain)]x","",global_train_gain) as num
 		if("Med Gains") global_med_gain = input(usr,"Meditating gains mult [initial(global_med_gain)]x","",global_med_gain) as num
 		if("Blast Gains") global_blast_gain = input(usr,"Blasting gains mult [initial(global_blast_gain)]x","",global_blast_gain) as num
+		if("BP Softcap") bpGainSoftcap = input(usr,"DIMINISHING RETURNS: base BP above this trains slower (raw gains are proportional to BP, which is absurd in the billions). 0 = off. Normally [initial(bpGainSoftcap)].","",bpGainSoftcap) as num
+		if("BP Softcap Strength") bpGainSoftStrength = input(usr,"How hard to damp gains above the BP softcap: 0 = off (pure exponential), 1 = gain stops scaling with BP (~linear growth), 0.5 = sqrt. Normally [initial(bpGainSoftStrength)].","",bpGainSoftStrength) as num
 		if("Train Meditation To Hidden Potential")
 			if(train_med_to_hp)
 				train_med_to_hp = 0

@@ -486,6 +486,9 @@ mob/proc/RenderSkillBrowser()
 
 // ---- href routing: tab clicks + verb buttons -------------------------------
 mob/Topic(href, list/href_list)
+	if(href_list["chatReady"]) //the HTML chat page finished loading -> replay the backlog, then go live
+		if(!chatUIready) FlushChat()
+		return
 	if(href_list["statsTab"])
 		statsUItab = href_list["statsTab"]
 		last_stats_html = "" //force re-render on tab change

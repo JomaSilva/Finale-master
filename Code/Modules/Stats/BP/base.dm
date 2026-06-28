@@ -175,6 +175,12 @@ mob/proc
 		Gaintimer=50
 		Buffertimer=0
 		gap *= StamBPGainMod
+		//DIMINISHING RETURNS at very high BP: every gain source feeds capcheck a `gap` proportional to relBPmax
+		//(which is proportional to BP), so the raw gain scales with BP -> in the billions a single tick adds
+		//billions (absurd, esp. with 500x gravity + weights stacked). Above bpGainSoftcap we damp the gain so
+		//it stops scaling with BP. strength 1 = gain ~constant past the cap (linear growth); 0.5 = sqrt; 0 = off.
+		if(bpGainSoftcap > 0 && bpGainSoftStrength > 0 && BP > bpGainSoftcap)
+			gap *= (bpGainSoftcap / BP) ** bpGainSoftStrength
 		//world << "DEBUG: gap: [gap]"
 		if(BPBuffer)
 			if(BPBuffer-gap>0)
