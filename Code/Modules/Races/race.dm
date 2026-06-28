@@ -36,6 +36,20 @@ mob/proc/pickRace(var/A) //for devs: later update will slam ALL racial statshit 
 mob/proc/StatRace(choice,genome_override) //choice of race, and then whether or not to overwrite a genome
 	var/saveBP
 	if(BP > 2) saveBP = BP
+	//ADMIN DEBUG (Force Rarest Class): if this account is flagged, pre-set Class to the race's rarest BEFORE the stat proc runs.
+	//This funnel ALWAYS runs on the connected creating mob, so its ckey is reliable (finalize_Race can run on a not-yet-bound mob).
+	//A pre-set, non-"None" Class is treated as an explicit class ("admin wins") by statsaiyan/statmajin/etc., so the rare class's stats apply too.
+	if(!Class || Class == "None")
+		var/pk = ckey
+		if(!pk && key) pk = ckey(key)
+		if(!pk && client) pk = client.ckey
+		if(pk && (pk in force_rarest_class))
+			var/rc = rarest_class_for_race(choice)
+			if(rc)
+				Class = rc
+				force_rarest_class -= pk //one-time
+				Save_Settings()
+				to_chat(src, "<font color=yellow><b>\[ADMIN]</b> Forced rarest class for your account: you were born a <b>[rc]</b>.</font>")
 	if(genome_override)
 		genome = null //genome is being overwritten, vanish it.
 		genome_override = genome //just in case

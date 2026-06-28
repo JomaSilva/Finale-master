@@ -63,7 +63,25 @@ mob/Admin2/verb/Force_Rarest_Class()
 	force_rarest_class |= k
 	Save_Settings()
 	to_chat(usr, "<font color=yellow>[k] flagged: their next NEW character will be the rarest class of whatever race they pick (Legendary Saiyan, Corrupted Majin, etc.).</font>")
+	to_chat(usr, "<font color=gray>(For reference, YOUR own account key is '[ckey(usr.ckey)]' - if you are flagging yourself, this must match the value above.)</font>")
 	WriteToLog("admin","[usr]([usr.key]) flagged [k] for forced-rarest-class    ([time2text(world.realtime,"Day DD hh:mm")])")
+
+//Returns the rarest (lowest-weight) real class for a race, read straight from the race PROTOTYPE's Class_Spread.
+//Used by the Force Rarest Class debug: works from just the race-pick name, before any genome exists.
+proc/rarest_class_for_race(racename)
+	var/datum/genetics/proto = fetch_race_by_Name("[racename]")
+	if(!proto) return null
+	var/list/cs = proto.Class_Spread
+	if(!cs || !cs.len) return null
+	var/rarest = null
+	var/minw = null
+	for(var/cls in cs)
+		if(cls == "None") continue //"None" is not a real class to force
+		var/w = cs[cls]
+		if(isnull(minw) || w < minw)
+			minw = w
+			rarest = cls
+	return rarest
 
 mob/Admin2/verb/Play_Music(V as sound)
 	set category="Admin"

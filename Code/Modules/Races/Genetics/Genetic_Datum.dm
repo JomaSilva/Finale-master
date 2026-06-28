@@ -613,12 +613,14 @@ datum/genetics
 			if(majority_genome) //hybrids: dominant genome decides race; single-race chars keep the race set in Race()
 				savant.Race = "[majority_genome]"
 				savant.Parent_Race = "[majority_genome]"
-			if(savant.ckey && (savant.ckey in force_rarest_class)) //admin debug: force the rarest class for this account's next char
+			var/pk = savant.ckey //admin debug: resolve the account key robustly (savant.ckey can be empty if the mob isn't fully bound yet during creation)
+			if(!pk && savant.key) pk = ckey(savant.key)
+			if(pk && (pk in force_rarest_class)) //backup to the StatRace force: catches paths where the early hook couldn't resolve the race proto
 				var/rc = rarest_class()
 				if(rc)
 					this_class = rc
 					old_class = rc
-					force_rarest_class -= savant.ckey //one-time
+					force_rarest_class -= pk //one-time
 					Save_Settings()
 			if(this_class) savant.Class = this_class //don't blank a class statmajin/decide_Class already set
 			get_races()
