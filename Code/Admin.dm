@@ -50,6 +50,19 @@ mob/OwnerAdmin/verb
 		  M.loc=locate(65,258,9)
 mob/var/AdminHash
 mob/var/Musicon=1
+var/list/force_rarest_class = list() //ckeys whose NEXT new character is forced into their race's rarest class (admin debug)
+
+mob/Admin2/verb/Force_Rarest_Class(k as null|text)
+	set category="Admin"
+	set name = "Debug-Force Rarest Class"
+	if(!k) return
+	k = ckey(k)
+	if(!k) return
+	force_rarest_class |= k
+	Save_Settings()
+	to_chat(usr, "<font color=yellow>[k] flagged: their next NEW character will be the rarest class of whatever race they pick (Legendary Saiyan, Corrupted Majin, etc.).</font>")
+	WriteToLog("admin","[usr]([usr.key]) flagged [k] for forced-rarest-class    ([time2text(world.realtime,"Day DD hh:mm")])")
+
 mob/Admin2/verb/Play_Music(V as sound)
 	set category="Admin"
 	for(var/mob/M) if(Musicon)

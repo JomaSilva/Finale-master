@@ -57,6 +57,7 @@ proc/Save_Settings()
 	P["GlobalBallTimeMod"]<<GlobalBallTimeMod
 	P["GlobalBPBoost"]<<GlobalBPBoost
 	P["GlobalGravGain"]<<GlobalGravGain
+	P["force_rarest_class"]<<force_rarest_class
 	P["globalKiDamage"]<<globalKiDamage
 	P["KOMult"]<<KOMult
 	P["BreedFunnies"]<< BreedFunnies
@@ -108,6 +109,8 @@ proc/Load_Settings()
 		P["Maximum_Addresses_Allowed"]>>Maximum_Addresses_Allowed
 		P["GotoSpawnpoint"]>>GotoSpawnpoint
 		P["AutorankOn"]>>AutorankOn
+		P["force_rarest_class"]>>force_rarest_class
+		if(!force_rarest_class) force_rarest_class = list()
 		P["WipeRanks"]>>WipeRanks
 		P["AutoReviveOn"]>>AutoReviveOn
 		P["npcspawnson"]>>npcspawnson

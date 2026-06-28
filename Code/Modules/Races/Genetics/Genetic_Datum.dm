@@ -591,12 +591,30 @@ datum/genetics
 				this_class = class_override//if, for some reason, you can change classes, you can specify within here.
 			old_class = this_class
 			return this_class
+
+		rarest_class() //the lowest-weight (rarest) entry in this genome's Class_Spread
+			if(!Class_Spread || !Class_Spread.len) return null
+			var/rarest = null
+			var/minw = null
+			for(var/cls in Class_Spread)
+				var/w = Class_Spread[cls]
+				if(isnull(minw) || w < minw)
+					minw = w
+					rarest = cls
+			return rarest
 				
 		finalize_Race()
 			if(!savant) return FALSE //no savant, we return.
 			if(majority_genome) //hybrids: dominant genome decides race; single-race chars keep the race set in Race()
 				savant.Race = "[majority_genome]"
 				savant.Parent_Race = "[majority_genome]"
+			if(savant.ckey && (savant.ckey in force_rarest_class)) //admin debug: force the rarest class for this account's next char
+				var/rc = rarest_class()
+				if(rc)
+					this_class = rc
+					old_class = rc
+					force_rarest_class -= savant.ckey //one-time
+					Save_Settings()
 			savant.Class = this_class
 			get_races()
 			return TRUE
