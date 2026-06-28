@@ -52,11 +52,13 @@ mob/proc/DemonEvolveCinematic(newicon)
 	emit_Sound('rockmoving.wav')
 	emit_TransformMusic('Dragon Ball Z Dokkan Battle - PHY LR Super Janemba OST (Extended).mp3', 600) // ~60s, ducks listeners' battle music
 	to_chat(view(src), "<font color=#b048d0>*A black aura coils around [src] as something monstrous begins to surface...*</font>", "combat")
-	// --- slow build: scattered lightning + dust + tremors (~16s) ---
+	// --- slow build: pedras subindo (foco) + tornados + raios espalhados + tremores (~16s) ---
 	for(var/cyc = 1 to 16)
-		spawn for(var/turf/T in view(rand(3,7),src))
-			if(prob(8)) createLightningmisc(T, rand(2,4))
-			else if(prob(10)) createDustmisc(T, 2)
+		spawn for(var/turf/T in view(9,src))
+			if(get_dist(T,src) < 3) continue //espaca: nada colado no personagem
+			if(prob(5)) createDustmisc(T, 2) //pedrinhas subindo (foco)
+			else if(prob(4)) createDustmisc(T, 3) //tornados de pedra (bastante)
+			else if(prob(3)) createLightningmisc(T, rand(2,4))
 		if(cyc % 4 == 0) spawn Quake()
 		sleep(10)
 	// --- the rising surge: aura overlay + quakes + 8-way ground beams (~12s) ---
@@ -83,9 +85,11 @@ mob/proc/DemonEvolveCinematic(newicon)
 		spawn(50) del(A)
 		amount--
 	for(var/cyc = 1 to 12)
-		spawn for(var/turf/T in view(rand(4,8),src))
-			if(prob(16)) createLightningmisc(T, rand(3,6))
-			if(prob(5)) createCrater(T, 1)
+		spawn for(var/turf/T in view(10,src))
+			if(get_dist(T,src) < 3) continue //espaca
+			if(prob(6)) createDustmisc(T, 2) //pedrinhas (foco)
+			else if(prob(5)) createDustmisc(T, 3) //tornados (bastante)
+			else if(prob(4)) createLightningmisc(T, rand(3,6))
 		if(cyc % 3 == 0) spawn Quake()
 		sleep(10)
 	// --- climax: shockwave + crater + the irreversible body change ---

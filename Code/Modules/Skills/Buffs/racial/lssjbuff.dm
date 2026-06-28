@@ -129,7 +129,7 @@ obj/buff/LSSJ/DeBuff()
 		container.removeOverlay(/obj/overlay/effects/menacing_aura) //tira a aura ameacadora do Wrathful ao reverter
 		container.overlayList-='AuraLSSjBig.dmi'
 		container.updateOverlay(/obj/overlay/hairs/hair)
-		container.lssj=0
+		if(!container.LoggingOut) container.lssj=0 //no LOGOUT preserva a forma (relog restaura, igual SSJ); no revert normal o Revert() ja zera
 	..()
 mob/var
 	rssj=0
@@ -197,9 +197,19 @@ mob/proc/Restrained_SSj()
 			to_chat(view(6), "<font color=#76ff7a>*[src] snaps instantly into the Wrathful state.*")
 			transing=0
 			return
-		if(!wrathful_music_played) //Wrathful (the first Legendary transformation) theme, first time only
+		if(!wrathful_music_played) //PRIMEIRA vez nessa forma: cinematica GRANDE (timing do Demon Evolve)
 			wrathful_music_played=1
 			emit_TransformMusic(file("Sounds/Music/22. Broly Evolves   DBS Broly Original Soundtrack.mp3"), 2109) //~211s; file()+full path (runtime)
+			attackable=0
+			lssj_grand_cinematic()
+			if(!hasssj) genome.add_to_stat("Battle Power",2)
+			hasssj=1
+			lssj=1
+			if(!isBuffed(/obj/buff/LSSJ)) startbuff(/obj/buff/LSSJ,'SSJIcon.dmi')
+			to_chat(view(6), "<font color=#76ff7a>*[src] erupts into the Wrathful state for the first time!*")
+			transing=0
+			attackable=1
+			return
 		attackable=0
 		lssj_transform_buildup()
 		if(restssjdrain>=0.015)
@@ -207,7 +217,6 @@ mob/proc/Restrained_SSj()
 			dir=SOUTH
 			if(!firsttime) Super_Saiyan_Stats()
 			BLASTICON='BlastsAscended.dmi'
-			emit_Sound('rockmoving.wav')
 			blastR=200
 			blastG=200
 			blastB=50
@@ -291,9 +300,19 @@ mob/proc/Unrestrained_SSj()
 			to_chat(view(6), "<font color=#76ff7a>*[src] snaps instantly into the Super Saiyan C-Type form.*")
 			transing=0
 			return
-		if(!ctype_music_played) //Super Saiyan C-Type theme, first time only
+		if(!ctype_music_played) //PRIMEIRA vez nessa forma: cinematica GRANDE (timing do Demon Evolve)
 			ctype_music_played=1
 			emit_TransformMusic(file("Sounds/Music/Dragon Ball Super - Broly's Transformation Theme (HQ Epic Cover).mp3"), 1983) //~198s; file()+full path (the apostrophe in "Broly's" can't live in a 'literal')
+			attackable=0
+			lssj_grand_cinematic()
+			lssj=2
+			if(!hasssj2) unrestssjat/=2
+			hasssj2=1
+			if(!isBuffed(/obj/buff/LSSJ)) startbuff(/obj/buff/LSSJ,'SSJIcon.dmi')
+			to_chat(view(6), "<font color=#76ff7a>*[src] erupts into the Super Saiyan C-Type for the first time!*")
+			transing=0
+			attackable=1
+			return
 		attackable=0
 		lssj_transform_buildup()
 		if(unrestssjdrain>=0.025)
@@ -301,7 +320,6 @@ mob/proc/Unrestrained_SSj()
 			dir=SOUTH
 			if(firsttime==1) Super_Saiyan_Stats()
 			BLASTICON='BlastsAscended.dmi'
-			emit_Sound('rockmoving.wav')
 			blastR=200
 			blastG=200
 			blastB=50
@@ -372,13 +390,20 @@ mob/proc/LSSj()
 			to_chat(view(6), "<font color=#76ff7a>*[src] snaps instantly into the Super Saiyan Full Power form.*")
 			transing=0
 			return
-		if(!fullpower_music_played) //Super Saiyan Full Power theme, first time only
+		if(!fullpower_music_played) //PRIMEIRA vez nessa forma: cinematica GRANDE (timing do Demon Evolve)
 			fullpower_music_played=1
 			emit_TransformMusic(file("Sounds/Music/Dragon Ball Super Broly - Rage & Sorrow Movie Version.mp3"), 1723) //~172s; file()+full path (runtime)
+			attackable=0
+			lssj_grand_cinematic()
+			lssj=3
+			if(!isBuffed(/obj/buff/LSSJ)) startbuff(/obj/buff/LSSJ,'SSJIcon.dmi')
+			to_chat(view(6), "<font color=#76ff7a>*[src] erupts into the Super Saiyan Full Power for the first time!*")
+			transing=0
+			attackable=1
+			return
 		attackable=0
 		lssj_transform_buildup()
 		//Flashy stuff
-		emit_Sound('rockmoving.wav')
 		for(var/turf/T in view(9,src))
 			if(prob(6)) createDustmisc(T,2)
 			if(prob(3)) createDustmisc(T,2)
@@ -431,11 +456,17 @@ mob/proc/lssj_transform_buildup() //buildup compartilhado das transformacoes Leg
 	emit_Sound('rockmoving.wav') //som de pedras se movendo JA no inicio da animacao de transformacao (Wrathful/C-Type/Full Power)
 	to_chat(view(7), "<font color=#76ff7a>*The ground around [src] trembles violently; loose rocks tear free and drift slowly upward...*")
 	for(var/i=1 to 5)
-		for(var/j=1 to 2) //1-2 redemoinhos de pedra por ciclo, espalhados -> bem mais espacado
-			var/turf/T = locate(x + rand(-5,5), y + rand(-5,5), z)
+		for(var/j=1 to 6) //mais pedrinhas subindo (Rising Rocks) por ciclo, espalhadas em volta
+			var/turf/T = locate(x + rand(-7,7), y + rand(-7,7), z)
 			if(T && !T.density) createDustmisc(T,2)
-		if(prob(55)) createShockwavemisc(loc,1)
-		if(prob(45)) Quake()
+		for(var/k=1 to 3) //mais tornados de pedra espalhados
+			var/turf/T2 = locate(x + rand(-6,6), y + rand(-6,6), z)
+			if(T2 && !T2.density) createDustmisc(T2,3)
+		for(var/li=1 to 2) //raios caindo em volta (tipos variados)
+			var/turf/Tl = locate(x + rand(-7,7), y + rand(-7,7), z)
+			if(Tl) createLightningmisc(Tl, pick(2,4,5,9))
+		if(prob(70)) createShockwavemisc(loc,1)
+		if(prob(55)) Quake()
 		sleep(rand(7,11))
 	to_chat(view(8), "<font size=[TextSize]><[SayColor]>[src]: RRRAAAAAAAGH!!!")
 	to_chat(view(6), "<font color=#76ff7a>*[src] lets out a furious, earth-shaking roar as the legendary power erupts!*")
@@ -450,3 +481,69 @@ mob/proc/lssj_instant_fx() //transformacao Legendary INSTANTANEA (forma dominada
 	emit_Sound('chargeaura.wav')
 	createCrater(loc,5)
 	spawn Quake()
+
+mob/proc/lssj_grand_cinematic() //cinematica GRANDE da PRIMEIRA transformacao Legendary (timing ~28s do Demon Evolve): build lento + surto + climax. So visual; quem chama toca a musica e troca a forma.
+	var/turf/Td
+	var/image/I
+	var/obj/A
+	var/cyc
+	var/q
+	var/amount
+	move = 0
+	dir = SOUTH
+	emit_Sound('rockmoving.wav')
+	to_chat(view(src), "<font color=#76ff7a>*A monstrous green aura coils around [src] as a legendary power begins to surface...*", "combat")
+	for(cyc = 1 to 16) //build lento (~16s): pedras subindo (foco) + tornados + raios, espalhados + tremores
+		for(q = 1 to 3)
+			Td = locate(x + rand(-8,8), y + rand(-8,8), z)
+			if(Td && !Td.density) createDustmisc(Td,2)
+		if(prob(55))
+			Td = locate(x + rand(-7,7), y + rand(-7,7), z)
+			if(Td && !Td.density) createDustmisc(Td,3)
+		if(prob(45))
+			Td = locate(x + rand(-8,8), y + rand(-8,8), z)
+			if(Td) createLightningmisc(Td, pick(2,4,5,9))
+		if(cyc % 4 == 0) spawn Quake()
+		sleep(10)
+	I = image(icon='Aurabigcombined.dmi') //surto (~12s): aura grande + feixes de chao 8 direcoes + mais pedras/raios
+	I.plane = 7
+	overlayList += I
+	overlaychanged = 1
+	emit_Sound('chargeaura.wav')
+	to_chat(view(src), "<font color=#76ff7a>*The ground erupts as [src]'s power tears the air apart!*", "combat")
+	Quake()
+	spawn Quake()
+	amount = 8
+	while(amount)
+		A = new/obj
+		A.loc = locate(x,y,z)
+		A.icon = 'Electricgroundbeam2.dmi'
+		if(amount==8) spawn(rand(1,40)) walk(A,NORTH,2)
+		if(amount==7) spawn(rand(1,40)) walk(A,SOUTH,2)
+		if(amount==6) spawn(rand(1,40)) walk(A,EAST,2)
+		if(amount==5) spawn(rand(1,40)) walk(A,WEST,2)
+		if(amount==4) spawn(rand(1,40)) walk(A,NORTHWEST,2)
+		if(amount==3) spawn(rand(1,40)) walk(A,NORTHEAST,2)
+		if(amount==2) spawn(rand(1,40)) walk(A,SOUTHWEST,2)
+		if(amount==1) spawn(rand(1,40)) walk(A,SOUTHEAST,2)
+		spawn(50) del(A)
+		amount--
+	for(cyc = 1 to 12)
+		for(q = 1 to 4)
+			Td = locate(x + rand(-8,8), y + rand(-8,8), z)
+			if(Td && !Td.density) createDustmisc(Td, pick(2,2,2,3))
+		if(prob(55))
+			Td = locate(x + rand(-9,9), y + rand(-9,9), z)
+			if(Td) createLightningmisc(Td, pick(3,5,9))
+		if(cyc % 3 == 0) spawn Quake()
+		sleep(10)
+	to_chat(view(8), "<font size=[TextSize]><[SayColor]>[src]: RRRAAAAAAAAGH!!!") //climax
+	createShockwavemisc(loc, 3)
+	for(q = 1 to 10)
+		Td = locate(x + rand(-6,6), y + rand(-6,6), z)
+		if(Td && !Td.density) createDustmisc(Td, pick(2,2,3))
+	emit_Sound('aura.wav')
+	overlayList -= I
+	overlaychanged = 1
+	createShockwavemisc(loc, 2)
+	move = 1

@@ -40,7 +40,7 @@ effect
 			target.canfight -= 1
 			dir = target.kbdir
 			pow = target.kbpow
-			duration = min(target.kbdur,30)//maxes out at 30 tiles
+			duration = min(target.kbdur,10)//cap do knockback: anda ~2 tiles/tick, entao 10 ticks ~= 20 tiles. Mantem o lado forte sendo arremessado, mas SEM voar o mapa inteiro (o BPModulus agora e ilimitado p/ dano/acerto, mas o knockback fica contido). Skills de knockback fixo (4-8) nao mudam.
 			if("KB" in icon_states(target.icon))
 				target.icon_state = "KB"
 			target.emit_Sound('throw.ogg')

@@ -40,7 +40,7 @@ proc/ArmorCalc(var/damage, var/armor, var/truearmor)
 // fighter dealt 10x, etc.) plus a weird >2x-weaker "floor of 1.0" cliff. Now a single linear
 // ratio clamped both ends, so the BP gap maps to combat power smoothly and predictably.
 var/bpmod_min = 0.01 //floor: a far weaker attacker barely scratches a far stronger one — brutal gap
-var/bpmod_max = 100  //ceiling: damage scales LINEARLY with the BP ratio up to 100x (2x BP = 2x damage, 100x BP = 100x)
+var/bpmod_max = 100  //(LEGADO) teto removido: o escalonamento de BP agora e ILIMITADO pro lado forte. Mantido so como referencia (re-adicione o min(...,bpmod_max) em BPModulus pra re-capar)
 proc/BPModulus(var/yourBP, var/theirBP)
 	if(ismob(yourBP))
 		var/mob/nM  = yourBP
@@ -51,7 +51,7 @@ proc/BPModulus(var/yourBP, var/theirBP)
 	if(!yourBP||!theirBP) return 1
 	if(theirBP==0) return 999
 	if(yourBP==0) return 0
-	return max(min(round((yourBP/theirBP),0.05),bpmod_max),bpmod_min) //linear, clamped both ends
+	return max(round((yourBP/theirBP),0.05),bpmod_min) //linear SEM teto: a diferenca de BP reflete 100% na vantagem (ilimitado pro lado forte); o piso bpmod_min so evita 0/insignificancia pro lado fraco
 
 mob/var
 	deflection = 0
