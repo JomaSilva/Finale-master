@@ -98,12 +98,16 @@ obj/treewindow/verb
 		usr.updateWindow = 0
 		winset(usr,"SkillsListWindow.loglabel","text=\"Switched Modes!\"")
 		winset(usr,"SkillsListWindow.amirefunding","text=\"Learning Mode\"")
+		usr.last_skill_html = ""
+		usr.RenderSkillBrowser()
 	refundskill()
 		set hidden = 1
 		usr.LearnSkillMode = 1
 		usr.updateWindow = 0
 		winset(usr,"SkillsListWindow.loglabel","text=\"Switched Modes!\"")
 		winset(usr,"SkillsListWindow.amirefunding","text=\"Forget Mode\"")
+		usr.last_skill_html = ""
+		usr.RenderSkillBrowser()
 	backbutton()
 		set hidden = 1
 		usr.GetTreeMode = 0
@@ -114,6 +118,8 @@ obj/treewindow/verb
 		usr.IsLearning = 0
 		winshow(usr, "SkillsListWindow",0)
 		winshow(usr, "SkillTreeWindow",1)
+		usr.last_tree_html = ""
+		usr.RenderTreeBrowser()
 	donebutton()
 		set hidden = 1
 		usr.updateWindow = 0
@@ -273,6 +279,7 @@ mob/proc/SkillWindowOpen()
 	WhichSkillWindow=2
 	updateWindow = 0
 	usr.IsLearning = 0
+	RenderSkillBrowser()
 
 mob/proc/TreeWindowClose()
 	omegastun = 0 //keeps users from doing shit when they're fighting.

@@ -2801,6 +2801,15 @@ window "SkillsListWindow"
 		text = "Done"
 		command = "donebutton"
 
+	elem "skillbrowser"
+		type = BROWSER
+		pos = 0,71
+		size = 640x442
+		anchor1 = 0,13
+		anchor2 = 100,93
+		background-color = #15171c
+		saved-params = ""
+
 window "StyleSelector"
 	elem "StyleSelector"
 		type = MAIN

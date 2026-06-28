@@ -43,6 +43,13 @@ var/UI_CSS = {"
  .tcard{background:#1b1e25;color:#e8e8e8;padding:8px 12px;border-radius:7px;text-decoration:none;font-size:12px;border:1px solid #2b303a}
  .tcard:hover{background:#2b303a;border-color:#33a0e0}
  .tnone{color:#5a6068;font-size:11px;font-style:italic}
+ .irow{display:flex;justify-content:space-between;align-items:center;padding:5px 2px;border-bottom:1px solid #1b1e25;gap:6px}
+ .iname{color:#e8e8e8;flex:1}
+ .ibtns{display:flex;gap:4px;flex-shrink:0}
+ .ibtn{background:#1b1e25;color:#aab2bd;padding:3px 8px;border-radius:5px;text-decoration:none;font-size:10px;border:1px solid #2b303a}
+ .ibtn:hover{background:#33a0e0;color:#fff}
+ .ion{background:#23402a;color:#9fe0a8}
+ .ides:hover{background:#c0392b;border-color:#c0392b}
 </style>
 "}
 
@@ -156,11 +163,14 @@ mob/proc/ui_tab_items()
 		if(!(istype(o, /obj/items) || istype(o, /obj/Trees) || istype(o, /obj/Artifacts) || istype(o, /obj/DB) || istype(o, /obj/Spacepod) || istype(o, /obj/Boat) || istype(o, /obj/bodyparts)))
 			continue
 		found++
-		var/tag = ""
+		var/list/btns = list()
 		if(istype(o, /obj/items/Equipment))
 			var/obj/items/Equipment/e = o
-			if(e.equipped) tag = "<span class='hi'>equipped</span>"
-		h += ui_row(html_encode(o.name), tag, "mut")
+			if(e.equipped) btns += "<a class='ibtn ion' href='byond://?src=\ref[src];itemact=unequip;iref=\ref[o]'>Unequip</a>"
+			else btns += "<a class='ibtn' href='byond://?src=\ref[src];itemact=equip;iref=\ref[o]'>Equip</a>"
+		btns += "<a class='ibtn' href='byond://?src=\ref[src];itemact=drop;iref=\ref[o]'>Drop</a>"
+		btns += "<a class='ibtn ides' href='byond://?src=\ref[src];itemact=destroy;iref=\ref[o]'>Destroy</a>"
+		h += "<div class='irow'><span class='iname'>[html_encode(o.name)]</span><span class='ibtns'>[jointext(btns, "")]</span></div>"
 	if(!found) h += "<div class='row'><span class='mut'>Your pockets are empty.</span></div>"
 	return jointext(h, "")
 
@@ -386,6 +396,47 @@ mob/proc/RenderTreeBrowser()
 	last_tree_html = html
 	src << browse(html, "window=SkillTreeWindow.treebrowser")
 
+// ---- SKILLS sub-window (the per-tree skills; SkillsListWindow.skillbrowser) -
+mob/var/tmp/last_skill_html = ""
+
+mob/proc/BuildSkillHTML()
+	var/datum/skill/tree/T = CurrentTree
+	if(!T) return "<html><head>[UI_CSS]</head><body><div class='wrap'><div class='tnone'>No tree open.</div></div></body></html>"
+	var/list/SkillList = list()
+	if(!LearnSkillMode) //LEARN: tree skills you don't have yet (mirrors PopulateSkillWindow)
+		for(var/datum/skill/A in T.constituentskills)
+			if(locate(A.type) in learned_skills) continue
+			if(A.enabled == 0 || A.override == 1) continue
+			if(A.tier > T.allowedtier) continue
+			SkillList |= A
+	else //FORGET: learned skills you can refund
+		for(var/datum/skill/A in T.investedskills)
+			if(!(locate(A.type) in learned_skills)) continue
+			if(A.can_forget == FALSE) continue
+			SkillList |= A
+	var/list/byTier = list()
+	for(var/t in list(6,5,4,3,2,1,0)) byTier["[t]"] = list()
+	for(var/datum/skill/A in SkillList)
+		var/tk = "[A.tier]"
+		if(byTier[tk]) byTier[tk] += A
+	var/list/h = list()
+	h += "<div class='sec'>[html_encode(T.name)] &mdash; [LearnSkillMode ? "FORGET mode" : "LEARN mode"]</div>"
+	for(var/t in list(6,5,4,3,2,1,0))
+		var/list/sk = byTier["[t]"]
+		h += "<div class='tier'><div class='tlbl'>Tier [t]</div><div class='trow'>"
+		if(!sk.len) h += "<span class='tnone'>&mdash;</span>"
+		for(var/datum/skill/A in sk)
+			h += "<a class='tcard' href='byond://?src=\ref[src];skillact=\ref[A]'>[html_encode(A.name)]</a>"
+		h += "</div></div>"
+	return "<html><head>[UI_CSS]</head><body><div class='wrap'>[jointext(h, "")]</div></body></html>"
+
+mob/proc/RenderSkillBrowser()
+	if(!client) return
+	var/html = BuildSkillHTML()
+	if(html == last_skill_html) return
+	last_skill_html = html
+	src << browse(html, "window=SkillsListWindow.skillbrowser")
+
 // ---- href routing: tab clicks + verb buttons -------------------------------
 mob/Topic(href, list/href_list)
 	if(href_list["statsTab"])
@@ -396,6 +447,28 @@ mob/Topic(href, list/href_list)
 	if(href_list["runverb"])
 		var/cmd = replacetext(href_list["runverb"], " ", "-") //BYOND's command form hyphenates spaces ("Learn Skill" -> "Learn-Skill"); passing the spaced name made it read word 2 as a bad arg
 		winset(src, null, "command=[cmd]")
+		return
+	if(href_list["itemact"]) //Items-tab action buttons
+		var/obj/O = locate(href_list["iref"])
+		if(O && (O in contents))
+			switch(href_list["itemact"])
+				if("equip", "unequip")
+					if(istype(O, /obj/items/Equipment))
+						var/obj/items/Equipment/e = O
+						e.Wear(src) //Wear() toggles equip/unequip
+				if("drop")
+					if(O.equipped) src << "Unequip [O] first."
+					else
+						O.loc = loc
+						step(O, dir)
+						view(src) << "<font size=1 color=teal>[src] drops [O].</font>"
+				if("destroy")
+					if(O.equipped) src << "Unequip [O] first."
+					else
+						view(src) << "<font size=1 color=teal>[src] destroys [O].</font>"
+						del(O)
+			last_stats_html = "" //inventory changed -> re-render the Items tab
+			RefreshStatsUI()
 		return
 	if(href_list["treeget"]) //clicked a skill-tree card -> mirror DummyTree.Click() per the current GetTreeMode
 		var/datum/skill/tree/A = locate(href_list["treeget"])
@@ -413,5 +486,20 @@ mob/Topic(href, list/href_list)
 			IsLearning = 0
 			last_tree_html = "" //the card set may have changed -> force a re-render
 			RenderTreeBrowser()
+		return
+	if(href_list["skillact"]) //clicked a skill card in the SkillsListWindow -> mirror DummySkill.Click()
+		var/datum/skill/A = locate(href_list["skillact"])
+		if(istype(A) && CurrentTree && !IsLearning)
+			IsLearning = 1
+			if(LearnSkillMode)
+				for(var/datum/skill/S in CurrentTree.investedskills)
+					if(S == A && S.can_forget) { CurrentTree.attemptforget(S); break }
+			else
+				for(var/datum/skill/S in CurrentTree.constituentskills)
+					if(S == A) { CurrentTree.attemptlearn(S); break }
+			updateWindow = 0
+			IsLearning = 0
+			last_skill_html = ""
+			RenderSkillBrowser()
 		return
 	..()
