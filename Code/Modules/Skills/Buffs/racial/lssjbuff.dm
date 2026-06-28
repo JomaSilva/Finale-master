@@ -425,6 +425,7 @@ mob/var
 	haslssjboost=0
 
 mob/proc/lssj_transform_buildup() //buildup compartilhado das transformacoes Legendary: detritos subindo lentamente + ondas de choque + grito no chat (mais detalhado e mais longo)
+	emit_Sound('rockmoving.wav') //som de pedras se movendo JA no inicio da animacao de transformacao (Wrathful/C-Type/Full Power)
 	to_chat(view(7), "<font color=#76ff7a>*The ground around [src] trembles violently; loose rocks tear free and drift slowly upward...*")
 	for(var/i=1 to 5)
 		for(var/j=1 to 2) //1-2 redemoinhos de pedra por ciclo, espalhados -> bem mais espacado
