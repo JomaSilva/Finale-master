@@ -37,6 +37,10 @@ datum/genetics
 					if("Spirit Doll") skin_list+='Spirit Doll.dmi'
 					if("Saibamen") skin_list+='Saibaman - Form 1.dmi'
 					if("Makyo") skin_list+='Makyojin.dmi'
+					if("Majin") //gender-correct Majin bodies (a colour picker then tints them, see body_custom.dm)
+						if(gender == "Female") skin_list += list('Female Majin.dmi','female majin base (small).dmi')
+						else skin_list += list('Majin.dmi','Majin1.dmi')
+					if("Demon") skin_list += list('Base_Skully.dmi','Demon - Form 1.dmi','Demon4.dmi','DemonForm1.dmi','Satan.dmi')
 					else //if you're not a alien with a spehscial icon, then you're one of below.
 						switch(gender)
 							if("Male")

@@ -67,5 +67,5 @@ datum/mastery/Crafting
 
 		levelstat()
 			..()
-			to_chat(savant, "Your technology skill improves! Your Technology is now level [level]!")
 			savant.techskill++
+			to_chat(savant, "<font color=#5fc0e0>Your study pays off — your Technology level rises to [savant.techskill]!</font>", "system")

@@ -7,7 +7,7 @@ mob/proc/statdemon()
 /datum/genetics/proto/Demon
 	name = "Demon" //Name of race.
 	base_icon = 'White Male.dmi' //doesn't really do anything right now, as icons are controlled by other things.
-	alternate_icon_flags = list("Human","Demon") //These actually do control what racial bodytypes you see. Flags are combined from all parent races.
+	alternate_icon_flags = list("Demon") //These actually do control what racial bodytypes you see. Flags are combined from all parent races.
 	special_icon_list = list() //icon 'list' flags. Human gives you human-like bodies, Alien alien. 
 	prevalance = 2 //remember that this is multiplying the ratio of a genome.
 	m_stats = list(

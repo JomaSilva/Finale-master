@@ -334,7 +334,7 @@ obj/Modules/Repair_Core
 								limbselection += C
 						if(limbselection.len>=1)
 							var/datum/Body/choice = pick(limbselection)
-							if(!isnull(choice)&&prob(10))
+							if(!isnull(choice)&&prob(10)&&(!savant.combatTag||savant.fastRegen))
 								if(choice.lopped&&prob(1))
 									choice.RegrowLimb()
 								else

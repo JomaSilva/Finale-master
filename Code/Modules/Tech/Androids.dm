@@ -163,7 +163,7 @@ obj/Modules/Basic_Repair_Core
 									limbselection += C
 							if(limbselection.len>=1)
 								var/datum/Body/choice = pick(limbselection)
-								if(!isnull(choice)&&prob(5))
+								if(!isnull(choice)&&prob(5)&&(!savant.combatTag||savant.fastRegen))
 									if(choice.lopped)
 									else
 										choice.health += 1

@@ -18,7 +18,7 @@ Often they absorb clothing, which is really just the mimicry they subconsciously
 /datum/genetics/proto/Majin
 	name = "Majin" //Name of race.
 	base_icon = 'White Male.dmi' //doesn't really do anything right now, as icons are controlled by other things.
-	alternate_icon_flags = list("Alien","Human") //These actually do control what racial bodytypes you see. Flags are combined from all parent races.
+	alternate_icon_flags = list("Majin") //These actually do control what racial bodytypes you see. Flags are combined from all parent races.
 	special_icon_list = list() //icon 'list' flags. Human gives you human-like bodies, Alien alien. 
 	prevalance = 1 //remember that this is multiplying the ratio of a genome.
 	m_stats = list(
@@ -65,6 +65,6 @@ Often they absorb clothing, which is really just the mimicry they subconsciously
 			"Regeneration" = 70,
 			"Anger" = 2.4,
 			"Spar Mod" = 2.2,
-			"Starting BP" = 1100
+			"Starting BP" = 500000
 		)
 	)

@@ -28,7 +28,7 @@ var/list/VEG_FURN = list(
 )
 // "." = floor, "+" = door, " " = leave the tile untouched
 
-proc/veg_stamp(list/rows, ox, oy, oz, floortype)
+proc/veg_stamp(list/rows, ox, oy, oz, floortype, area/inside)
 	var/h = rows.len
 	for(var/r = 1 to h)
 		var/row = rows[r]
@@ -39,6 +39,7 @@ proc/veg_stamp(list/rows, ox, oy, oz, floortype)
 			var/xx = ox + (cc - 1)
 			var/turf/cur = locate(xx, yy, oz)
 			if(!cur) continue
+			if(inside) inside.contents += cur //mark the building footprint as indoors (InsideArea) so weather effects skip it; turf replacements below inherit this area
 			if(VEG_WALL[ch])
 				if(istype(cur, /turf/CastleWall)) continue // already a wall here -> don't stack another
 				var/wt = VEG_WALL[ch]
@@ -67,6 +68,7 @@ proc/Build_Vegeta_Structures()
 	var/oz = 3
 	var/carpet = /turf/CastleFloor/Carpet  // cozy house interior
 	var/labfl  = /turf/Tile/Tile16          // clean lab interior
+	var/area/vinside = locate(/area/Vegeta/Inside)  // the InsideArea subarea -> tiles added here get no weather
 
 	// ---- a furnished Saiyan house (11 x 9): bed, drawers, table, piano, bookshelves, windows ----
 	var/list/house = list(
@@ -95,12 +97,12 @@ proc/Build_Vegeta_Structures()
 	)
 
 	// two laboratories on the west side
-	veg_stamp(lab, 60, 333, oz, labfl)
-	veg_stamp(lab, 60, 318, oz, labfl)
+	veg_stamp(lab, 60, 333, oz, labfl, vinside)
+	veg_stamp(lab, 60, 318, oz, labfl, vinside)
 	// six houses (3 columns x 2 rows) on the east side
 	for(var/hx in list(78, 92, 106))
-		veg_stamp(house, hx, 338, oz, carpet)
-		veg_stamp(house, hx, 320, oz, carpet)
+		veg_stamp(house, hx, 338, oz, carpet, vinside)
+		veg_stamp(house, hx, 320, oz, carpet, vinside)
 
 	// one-time cleanup: collapse any pre-existing stacks of research benches that share a tile
 	// (left over from boots before veg_stamp checked, or baked into the saved map) -> keep one per tile

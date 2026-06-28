@@ -194,6 +194,7 @@ mob/keyable/verb
 				spawn(3) usr.icon_state=""
 				usr.MeleeAttack(15)
 			sleep(30)
+			usr.attacking=0 //reset the melee animation lock; Lariat never did this -> permanent freeze
 			usr.dashtired=0
 		else if(!usr.target||get_dist(usr,usr.target)>=12||usr.target==usr)
 			to_chat(usr, "You need a valid target...")

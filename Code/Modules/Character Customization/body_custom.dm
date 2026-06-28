@@ -54,7 +54,7 @@ mob
 			while(inAwindow)
 				sleep(5)
 			if(Class=="Genie"||Class=="Ogre"||Race=="Majin")
-				alert("Choose a body color.")
+				alert("Now choose your body colour — it tints the body you just selected.")
 				var/rgbsuccess
 				rgbsuccess=input("Choose a color.","Color",0) as color
 				var/list/oldrgb=0
@@ -68,6 +68,7 @@ mob
 				var/Playericon=icon
 				Playericon += rgb(red,green,blue)
 				icon=Playericon
+				if(Race=="Majin") majin_color = rgb(red,green,blue) //keep this colour on every saga form
 			if(r_race=="Heran")
 				var/red=HairR
 				var/green=HairG
