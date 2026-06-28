@@ -87,6 +87,7 @@ obj/buff/LSSJ/Loop()
 				container.trueKiMod = container.ussjenergymod
 				container.Ki *= container.trueKiMod
 				container.updateOverlay(/obj/overlay/hairs/ssj/ssj1,container.ssjhair)
+				container.updateOverlay(/obj/overlay/effects/menacing_aura) //C-Type: mesma aura ameacadora do Wrathful
 				if(!container.canRSSJ)
 					pastAngerMod = container.angerMod
 					container.angerMod /= 10
@@ -101,11 +102,13 @@ obj/buff/LSSJ/Loop()
 				if(container.icon=='White Male Muscular 2.dmi'|container.icon=='White Male.dmi'&&!container.doexpandicon3) container.icon = 'White Male Muscular 3.dmi'
 				container.ssjBuff = container.lssj_form_mult()
 				container.updateOverlay(/obj/overlay/hairs/ssj/lssjhair,container.ussjhair,0,100,0)
+				container.updateOverlay(/obj/overlay/effects/menacing_aura) //Full Power: mesma aura ameacadora do Wrathful
 			if(4) //Super Saiyan Full Power (Controlled)
 				container.trueKiMod = container.lssjenergymod
 				container.Ki *= container.trueKiMod
 				container.ssjBuff = container.lssj_form_mult()
 				container.updateOverlay(/obj/overlay/hairs/ssj/lssjhair,container.ussjhair,0,100,0)
+				container.updateOverlay(/obj/overlay/effects/menacing_aura) //Full Power: mesma aura ameacadora do Wrathful
 	if(container.godki && container.trans_min_val)
 		if(container.godki.usage && container.trans_min_val < container.lssj-1)
 			container.Revert()
@@ -155,25 +158,49 @@ mob/var
 	fullpower_music_played = 0
 	tmp/combatTime = 0 //ticks de combate continuo (GlobalStats ~4/s); alimenta o bonus de combate +0%..+20% das formas Legendary
 
-mob/proc/lssj_form_mult() //Form Rising: multiplicador EFETIVO = (base->max conforme a maestria da forma) * (1 + bonus de combate ate +20%)
+mob/proc/lssj_form_mult() //multiplicador EFETIVO = max(piso pela maestria, rampa de combate). O COMBATE sobe o mult do MIN ao MAX em ~3 min de luta continua; a maestria so define um PISO (100% de maestria => sempre no max).
+	var/lo = 1
+	var/hi = 1
+	var/mstry = 0
 	switch(lssj)
-		if(1) . = 1.5 + (10 - 1.5) * lssj1mastery / 100 //Wrathful: 1.5x -> 10x
-		if(2) . = 12 + (20 - 12) * lssj2mastery / 100 //Super Saiyan C-Type: 12x -> 20x
-		if(3) . = 25 + (40 - 25) * lssj3mastery / 100 //Super Saiyan Full Power: 25x -> 40x
-		if(4) . = 50 //Super Saiyan Full Power (Controlled): 50x fixo
+		if(1)
+			lo = 1.5
+			hi = 10
+			mstry = lssj1mastery //Wrathful: 1.5x -> 10x
+		if(2)
+			lo = 12
+			hi = 20
+			mstry = lssj2mastery //Super Saiyan C-Type: 12x -> 20x
+		if(3)
+			lo = 25
+			hi = 40
+			mstry = lssj3mastery //Super Saiyan Full Power: 25x -> 40x
+		if(4)
+			return 50 //Super Saiyan Full Power (Controlled): 50x fixo
 		else
 			return 1
-	. *= 1 + min(combatTime / 720, 1) * 0.2 //bonus de combate continuo: +0% a +20% ao longo de ~180s (720 ticks @ ~4/s)
+	var/floor_mult = lo + (hi - lo) * mstry / 100 //piso: cresce com a maestria (100% = max)
+	var/combat_mult = lo + (hi - lo) * min(combatTime / 720, 1) //combate: rampa MIN->MAX em ~3 min de luta continua (720 ticks @ ~4/s)
+	return max(floor_mult, combat_mult)
 
 
 mob/proc/Restrained_SSj()
 	if(!transing)
 		if(ssj) return
 		transing=1
+		if(lssj1mastery >= 50) //dominou 50% do Wrathful -> transformacao instantanea (sem cinematica)
+			if(!hasssj) genome.add_to_stat("Battle Power",2)
+			hasssj=1
+			lssj=1
+			if(!isBuffed(/obj/buff/LSSJ)) startbuff(/obj/buff/LSSJ,'SSJIcon.dmi')
+			to_chat(view(6), "<font color=#76ff7a>*[src] snaps instantly into the Wrathful state.*")
+			transing=0
+			return
 		if(!wrathful_music_played) //Wrathful (the first Legendary transformation) theme, first time only
 			wrathful_music_played=1
 			emit_TransformMusic(file("Sounds/Music/22. Broly Evolves   DBS Broly Original Soundtrack.mp3"), 2109) //~211s; file()+full path (runtime)
 		attackable=0
+		lssj_transform_buildup()
 		if(restssjdrain>=0.015)
 			move=0
 			dir=SOUTH
@@ -236,8 +263,6 @@ mob/proc/Restrained_SSj()
 			if(!hasssj)
 				genome.add_to_stat("Battle Power",2)
 			hasssj=1
-			overlayList-='AuraLSSjBig.dmi'
-			overlayList+='AuraLSSjBig.dmi'
 			overlaychanged=1
 			to_chat(view(src), "<font color=#76ff7a>*The air turns cold and heavy. A crushing, murderous aura erupts from [src], splitting the ground beneath an unspeakable, mounting rage!*")
 			emit_Sound('chargeaura.wav')
@@ -245,10 +270,10 @@ mob/proc/Restrained_SSj()
 			spawn Quake()
 			createShockwavemisc(loc,4)
 			createCrater(loc,5)
-			sleep(50)
-			to_chat(view(src), "<font color=#76ff7a>*[src]'s eyes go cold and empty as a monstrous Legendary fury takes hold - the menacing aura howls like a living thing, and everything nearby seems to recoil in terror.*")
-			lssj=1
+			lssj=1 //transforma + ativa o buff JA no climax (antes era so depois do sleep -> parecia que demorava)
 			startbuff(/obj/buff/LSSJ,'SSJIcon.dmi')
+			sleep(8)
+			to_chat(view(src), "<font color=#76ff7a>*[src]'s eyes go cold and empty as a monstrous Legendary fury takes hold - the menacing aura howls like a living thing, and everything nearby seems to recoil in terror.*")
 		transing=0
 		attackable=1
 
@@ -256,10 +281,19 @@ mob/proc/Unrestrained_SSj()
 	if(!transing)
 		if(ssj) return
 		transing=1
+		if(lssj2mastery >= 50) //dominou 50% do C-Type -> transformacao instantanea
+			lssj=2
+			if(!hasssj2) unrestssjat/=2
+			hasssj2=1
+			if(!isBuffed(/obj/buff/LSSJ)) startbuff(/obj/buff/LSSJ,'SSJIcon.dmi')
+			to_chat(view(6), "<font color=#76ff7a>*[src] snaps instantly into the Super Saiyan C-Type form.*")
+			transing=0
+			return
 		if(!ctype_music_played) //Super Saiyan C-Type theme, first time only
 			ctype_music_played=1
 			emit_TransformMusic(file("Sounds/Music/Dragon Ball Super - Broly's Transformation Theme (HQ Epic Cover).mp3"), 1983) //~198s; file()+full path (the apostrophe in "Broly's" can't live in a 'literal')
 		attackable=0
+		lssj_transform_buildup()
 		if(unrestssjdrain>=0.025)
 			move=0
 			dir=SOUTH
@@ -314,35 +348,39 @@ mob/proc/Unrestrained_SSj()
 			unrestssjat/=2
 		hasssj2=1
 		if(!isBuffed(/obj/buff/LSSJ)) startbuff(/obj/buff/LSSJ,'SSJIcon.dmi')
-		overlayList-='Elec.dmi'
-		overlayList+='Elec.dmi'
 		overlaychanged=1
-		var/ssjcolor = "yellow"
-		if(godki && godki.usage) ssjcolor = "blue"
-		to_chat(view(6), "<font color=[ssjcolor]>*A great wave of power emanates from [src] as a [ssjcolor] aura bursts around them!*")
+		to_chat(view(6), "<font color=#76ff7a>*The earth caves as [src]'s aura erupts into a vast, menacing green inferno!*")
+		to_chat(view(8), "<font size=[TextSize]><[SayColor]>[src]: RRRAAAAAAAGH!!!")
 		emit_Sound('chargeaura.wav')
 		createShockwavemisc(loc,1)
 		createCrater(loc,5)
 		spawn if(ssj2drain<250) Quake()
 		sleep(50)
-		to_chat(view(6), "<font color=[ssjcolor]>*Blue sparks begin to burst around [src]!*")
+		to_chat(view(6), "<font color=#76ff7a>*Jagged green sparks crackle violently around [src]!*")
 		transing=0
 		attackable=1
 mob/proc/LSSj()
 	if(!transing)
 		if(ssj) return
 		transing=1
+		if(lssj3mastery >= 50) //dominou 50% do Full Power -> transformacao instantanea
+			lssj=3
+			if(!isBuffed(/obj/buff/LSSJ)) startbuff(/obj/buff/LSSJ,'SSJIcon.dmi')
+			to_chat(view(6), "<font color=#76ff7a>*[src] snaps instantly into the Super Saiyan Full Power form.*")
+			transing=0
+			return
 		if(!fullpower_music_played) //Super Saiyan Full Power theme, first time only
 			fullpower_music_played=1
 			emit_TransformMusic(file("Sounds/Music/Dragon Ball Super Broly - Rage & Sorrow Movie Version.mp3"), 1723) //~172s; file()+full path (runtime)
 		attackable=0
+		lssj_transform_buildup()
 		//Flashy stuff
 		emit_Sound('rockmoving.wav')
-		for(var/turf/T in view(24,src))
-			if(prob(20)) createDustmisc(T,2)
-			if(prob(1)) createDustmisc(T,3)
-			if(prob(1)) createLightningmisc(T,9)
-			if(prob(1)) createLightningmisc(T,5)
+		for(var/turf/T in view(9,src))
+			if(prob(6)) createDustmisc(T,2)
+			if(prob(3)) createDustmisc(T,3)
+			if(prob(2)) createLightningmisc(T,9)
+			if(prob(2)) createLightningmisc(T,5)
 		var/image/I=image(icon='Aurabigcombined.dmi')
 		I.plane = 7
 		overlayList+=I
@@ -353,14 +391,10 @@ mob/proc/LSSj()
 		sleep(0)
 		lssj=3
 		if(!isBuffed(/obj/buff/LSSJ)) startbuff(/obj/buff/LSSJ,'SSJIcon.dmi')
-		var/ssjcolor = "yellow"
-		if(godki && godki.usage) ssjcolor = "blue"
-		to_chat(view(6), "<font color=[ssjcolor]>*[src]'s hair spikes even further and turns green!*")
-		overlayList-='Elec.dmi'
-		overlayList-='Electric_Blue.dmi'
-		overlayList+='Electric_Blue.dmi'
+		to_chat(view(6), "<font color=#76ff7a>*[src]'s hair blazes a deeper, jagged green as the power keeps surging!*")
+		to_chat(view(8), "<font size=[TextSize]><[SayColor]>[src]: HRRAAAAAAAAGH!!!")
 		overlaychanged=1
-		to_chat(view(6), "<font color=[ssjcolor]>*A great wave of power emanates from [src] as a green aura bursts around them!*")
+		to_chat(view(6), "<font color=#76ff7a>*A monstrous wave of power erupts from [src] as a vast green aura tears the ground apart!*")
 		emit_Sound('chargeaura.wav')
 		createShockwavemisc(loc,2)
 		createCrater(loc,5)
@@ -369,7 +403,7 @@ mob/proc/LSSj()
 		Quake()
 		spawn Quake()
 		sleep(50)
-		to_chat(view(6), "<font color=[ssjcolor]>*[src]'s aura spikes upward as their power becomes maximum!*")
+		to_chat(view(6), "<font color=#76ff7a>*[src]'s aura roars skyward as the legendary power reaches its peak!*")
 		transing=0
 		attackable=1
 mob/proc/LSSj_Controlled() //Super Saiyan Full Power (Controlled): 50x; so apos masterizar 100% o Full Power (lssj=3)
@@ -389,3 +423,17 @@ mob/proc/LSSj_Controlled() //Super Saiyan Full Power (Controlled): 50x; so apos 
 		attackable=1
 mob/var
 	haslssjboost=0
+
+mob/proc/lssj_transform_buildup() //buildup compartilhado das transformacoes Legendary: detritos subindo lentamente + ondas de choque + grito no chat (mais detalhado e mais longo)
+	to_chat(view(7), "<font color=#76ff7a>*The ground around [src] trembles violently; loose rocks tear free and drift slowly upward...*")
+	for(var/i=1 to 5)
+		for(var/j=1 to 2) //1-2 redemoinhos de pedra por ciclo, espalhados -> bem mais espacado
+			var/turf/T = locate(x + rand(-5,5), y + rand(-5,5), z)
+			if(T && !T.density) createDustmisc(T,3)
+		if(prob(55)) createShockwavemisc(loc,1)
+		if(prob(45)) Quake()
+		sleep(rand(7,11))
+	to_chat(view(8), "<font size=[TextSize]><[SayColor]>[src]: RRRAAAAAAAGH!!!")
+	to_chat(view(6), "<font color=#76ff7a>*[src] lets out a furious, earth-shaking roar as the legendary power erupts!*")
+	createShockwavemisc(loc,2)
+	sleep(rand(8,14))

@@ -111,9 +111,15 @@ obj/overlay/hairs/tails/saiyantail
 					icon += rgb(13, 73, 238)
 			else
 				icon += rgb(218, 218, 38) //plain Super Saiyan gold
+		else if(container.lssj) //Legendary: C-Type dourado, Full Power verde; Wrathful mantem a cor base do cabelo
+			if(container.lssj==2)
+				icon += rgb(218, 218, 38) //C-Type (cabelo SSJ loiro) -> rabo dourado
+			else if(container.lssj>=3)
+				icon += rgb(0, 110, 0) //Full Power (cabelo verde) -> rabo verde
 	EffectLoop()
-		if((container.ssj && !pssj) || (!container.ssj && pssj)) //ssj state changed -> re-derive the tail color
-			pssj = container.ssj ? 1 : 0
+		var/curform = container.ssj ? container.ssj : container.lssj //rastreia o NIVEL da forma (SSJ ou LSSJ) p/ pegar troca de tier (ssj1->2, lssj1->2, etc.)
+		if(curform != pssj) //a forma mudou -> re-deriva a cor do rabo
+			pssj = curform
 			gdkid = (container.godki && container.godki.usage==1) ? 1 : 0
 			EffectStart()
 		else if(container.godki) //God Ki toggled while ssj stayed -> re-derive the tail color

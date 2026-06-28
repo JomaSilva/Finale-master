@@ -326,6 +326,18 @@ mob/proc/ui_tab_sense()
 // ---- FORMS & MASTERY -------------------------------------------------------
 mob/proc/ui_tab_forms()
 	var/list/h = list()
+	if(Class == "Legendary" || ssj1mastery || ssj2mastery || ssj3mastery || ssj4mastery || ssj4fpmastery) //maestria de formas (0-100%); ao 50% a transformacao vira instantanea
+		h += ui_sec("FORM MASTERY")
+		if(Class == "Legendary")
+			h += ui_row("Wrathful", "[round(lssj1mastery)]%", "")
+			h += ui_row("Super Saiyan C-Type", "[round(lssj2mastery)]%", "")
+			h += ui_row("Super Saiyan Full Power", "[round(lssj3mastery)]%", "")
+		else
+			if(ssj1mastery) h += ui_row("Super Saiyan", "[round(ssj1mastery)]%", "")
+			if(ssj2mastery) h += ui_row("Super Saiyan 2", "[round(ssj2mastery)]%", "")
+			if(ssj3mastery) h += ui_row("Super Saiyan 3", "[round(ssj3mastery)]%", "")
+		if(ssj4mastery) h += ui_row("Super Saiyan 4", "[round(ssj4mastery)]%", "")
+		if(ssj4fpmastery) h += ui_row("SSJ4 Full Power", "[round(ssj4fpmastery)]%", "")
 	h += ui_sec("ACTIVE MULTIPLIERS")
 	h += ui_row("Total BP Mult", "[round(expressedBP / max(BP,1), 0.01)]x", "")
 	if(round(ssjBuff, 0.01) != 1)   h += ui_row("Form (SSJ ladder)", "[round(ssjBuff, 0.01)]x", "")

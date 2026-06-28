@@ -73,6 +73,11 @@ mob/var
 					if(savant.expressedBP>=(savant.unrestssjat*2.2))
 						savant.hasssj=1
 						savant.Unrestrained_SSj()
+		if(savant.Class=="Legendary" && savant.anger_ssj && savant.Emotion=="Very Angry" && !savant.transing) if(!TurnOffAscension||savant.AscensionAllowed) //rage sobe a escada LSSJ sozinha (Wrathful -> C-Type -> Full Power)
+			if(savant.lssj==1 && savant.BP>=savant.unrestssjat)
+				savant.Unrestrained_SSj()
+			else if(savant.lssj==2 && savant.BP>=savant.lssjat)
+				savant.LSSj()
 		if(!(savant.Class=="Legendary") && savant.anger_ssj) if(!TurnOffAscension||savant.AscensionAllowed) //super sand regular angers (for SSJ 1 and 2. 3 is gained through mastery...)
 			if(!savant.hasssj&&savant.expressedBP>=savant.ssjat&&savant.BP>=savant.ssjat*0.8)
 				switch(savant.Emotion)

@@ -153,10 +153,10 @@ obj/overlay/auras/EffectLoop()
 					icon = 'AuraLSSjBig.dmi' //Wrathful (Legendary): aura LSSJ grande, nao a SSj amarela
 					scale = list(1,1)
 				if(2)
-					icon = container.form2aura
+					icon = 'AuraLSSjBig.dmi' //C-Type: mesma aura LSSJ do Wrathful
 					scale = list(1,1.25)
 				if(3)
-					icon = container.form3aura
+					icon = 'AuraLSSjBig.dmi' //Full Power: mesma aura LSSJ do Wrathful
 					scale = list(1.25,1.5)
 			if(container.godki?.usage)
 				icon = container.sgkaura
