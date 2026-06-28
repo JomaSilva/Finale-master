@@ -193,6 +193,7 @@ mob/proc/Restrained_SSj()
 			hasssj=1
 			lssj=1
 			if(!isBuffed(/obj/buff/LSSJ)) startbuff(/obj/buff/LSSJ,'SSJIcon.dmi')
+			lssj_instant_fx() //animacao curta (cratera + ondas de choque) estilo SSJ1 masterizado; a aura/overlay verde do LSSJ vem do form-apply
 			to_chat(view(6), "<font color=#76ff7a>*[src] snaps instantly into the Wrathful state.*")
 			transing=0
 			return
@@ -286,6 +287,7 @@ mob/proc/Unrestrained_SSj()
 			if(!hasssj2) unrestssjat/=2
 			hasssj2=1
 			if(!isBuffed(/obj/buff/LSSJ)) startbuff(/obj/buff/LSSJ,'SSJIcon.dmi')
+			lssj_instant_fx() //animacao curta (cratera + ondas de choque) estilo SSJ1 masterizado; a aura/overlay verde do LSSJ vem do form-apply
 			to_chat(view(6), "<font color=#76ff7a>*[src] snaps instantly into the Super Saiyan C-Type form.*")
 			transing=0
 			return
@@ -366,6 +368,7 @@ mob/proc/LSSj()
 		if(lssj3mastery >= 50) //dominou 50% do Full Power -> transformacao instantanea
 			lssj=3
 			if(!isBuffed(/obj/buff/LSSJ)) startbuff(/obj/buff/LSSJ,'SSJIcon.dmi')
+			lssj_instant_fx() //animacao curta (cratera + ondas de choque) estilo SSJ1 masterizado; a aura/overlay verde do LSSJ vem do form-apply
 			to_chat(view(6), "<font color=#76ff7a>*[src] snaps instantly into the Super Saiyan Full Power form.*")
 			transing=0
 			return
@@ -378,7 +381,7 @@ mob/proc/LSSj()
 		emit_Sound('rockmoving.wav')
 		for(var/turf/T in view(9,src))
 			if(prob(6)) createDustmisc(T,2)
-			if(prob(3)) createDustmisc(T,3)
+			if(prob(3)) createDustmisc(T,2)
 			if(prob(2)) createLightningmisc(T,9)
 			if(prob(2)) createLightningmisc(T,5)
 		var/image/I=image(icon='Aurabigcombined.dmi')
@@ -430,7 +433,7 @@ mob/proc/lssj_transform_buildup() //buildup compartilhado das transformacoes Leg
 	for(var/i=1 to 5)
 		for(var/j=1 to 2) //1-2 redemoinhos de pedra por ciclo, espalhados -> bem mais espacado
 			var/turf/T = locate(x + rand(-5,5), y + rand(-5,5), z)
-			if(T && !T.density) createDustmisc(T,3)
+			if(T && !T.density) createDustmisc(T,2)
 		if(prob(55)) createShockwavemisc(loc,1)
 		if(prob(45)) Quake()
 		sleep(rand(7,11))
@@ -438,3 +441,12 @@ mob/proc/lssj_transform_buildup() //buildup compartilhado das transformacoes Leg
 	to_chat(view(6), "<font color=#76ff7a>*[src] lets out a furious, earth-shaking roar as the legendary power erupts!*")
 	createShockwavemisc(loc,2)
 	sleep(rand(8,14))
+
+mob/proc/lssj_instant_fx() //transformacao Legendary INSTANTANEA (forma dominada >=50%): animacao curta estilo SSJ1 masterizado (cratera + ondas de choque + sons). A aura/overlay verde do LSSJ vem do form-apply do buff.
+	emit_Sound('powerup.wav')
+	createShockwavemisc(loc,2)
+	spawn Quake()
+	sleep(4)
+	emit_Sound('chargeaura.wav')
+	createCrater(loc,5)
+	spawn Quake()
