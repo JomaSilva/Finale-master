@@ -1,5 +1,6 @@
 mob/var/zenkaiStore = 0
 mob/var/zenkaiTimer = 0
+mob/var/tmp/zenkaiWarn = 0 //world.realtime gate for the 'Zenkai on cooldown' notice (rate-limit + post-grant suppression)
 var/zenkaiInjuryFraction = 0.45 //share of body parts that must be Broken/lopped to count as "extremely injured" (bumps a defeat's Zenkai to 15% of the foe's BP and a 3x-base-BP ceiling)
 // Zenkai is a passive EXCLUSIVE to Saiyan DNA (Saiyan, Half-Saiyan, Primal/Legendary lineages, Saiyan-blooded)
 // plus Cell-type Bio-Androids who carry Saiyan cells. Every other race has NO Zenkai whatsoever.
@@ -19,15 +20,40 @@ mob/proc/has_zenkai()
 mob/proc/gain_zenkai(enemyBP)
 	if(!enemyBP || enemyBP <= BP) return //only a stronger enemy triggers Zenkai
 	if(dead) return
-	if(world.realtime < zenkaiReady) return //1-hour cooldown still ticking (realtime = wall-clock, so it survives logout AND world reboots)
 	if(!has_zenkai()) return //Saiyan DNA only
+	if(world.realtime < zenkaiReady) //the 1h cooldown is still ticking (realtime = wall-clock, survives logout/reboot)
+		if(client && world.realtime >= zenkaiWarn) //defeated by a stronger foe but Zenkai isn't recharged yet -> warn (rate-limited)
+			zenkaiWarn = world.realtime + 300
+			var/left = max(zenkaiReady - world.realtime, 0)
+			var/mins = round(left / 600)
+			var/cdtxt = (mins >= 1) ? "give it roughly [mins] more minute(s)" : "barely a moment more"
+			to_chat(src, "<font color=#b07a38>Your body reaches for a Zenkai, but it hasn't recovered from the last one and refuses to surge again so soon ([cdtxt]).</font>", "combat")
+		return
 	var/pcnt = 0.1 //10% of the foe's BP...
 	var/capmult = 2 //...capped so one Zenkai never banks more than 2x your own base BP
 	if(extremely_injured())
 		pcnt = 0.15 //battered to the brink -> 15% of the foe's BP...
 		capmult = 3 //...and a higher 3x base-BP ceiling
-	zenkaiStore += min(pcnt*enemyBP, BP*capmult) //bank the RAW amount; the relBPmax-respecting cap is applied later when zenkaiStore drips into BP (Stats.dm). The 2x/3x base-BP ceiling is already enforced by the min(). (Do NOT wrap in capcheck — that throttle zeroes the reward for anyone at their BP cap and eats BPBuffer.)
-	zenkaiReady = world.realtime + 36000 //1-hour cooldown (deciseconds of wall-clock time)
+	var/raw = pcnt*enemyBP //10%/15% of the foe's BP
+	var/cap = BP*capmult //ceiling: 2x/3x your own base BP -- the MOST a single Zenkai can bank
+	zenkaiStore += min(raw, cap) //bank the RAW amount; the relBPmax-respecting cap is applied later (Stats.dm). Do NOT wrap in capcheck.
+	zenkaiReady = world.realtime + 36000 //1-hour realtime cooldown
+	zenkaiWarn = world.realtime + 600 //don't nag about cooldown for ~1 min after a grant (a KO then the killing blow in one sequence)
+	if(client) to_chat(src, zenkai_message(min(raw, cap), raw >= cap), "combat") //notice scales with gained/baseBP; max-tier when the ceiling binds; no numbers
+
+//Player-facing Zenkai notice, scaled to how big the surge was RELATIVE to current base BP (gained/BP),
+//never a number. `maxed` = the 2x/3x base-BP ceiling was hit, i.e. the largest Zenkai possible.
+mob/proc/zenkai_message(gained, maxed)
+	var/prop = gained / max(BP, 1)
+	if(maxed)
+		return "<font color=#ffd24a><b>ZENKAI!</b> Dragged back from the brink of death, your body blazes with the very greatest surge it could ever hold. There is nothing more it could possibly have drawn in; you feel utterly remade.</font>"
+	if(prop >= 1)
+		return "<font color=#f3c84e><b>ZENKAI!</b> A colossal rush tears through your broken body. Your power swells far past what it was.</font>"
+	if(prop >= 0.5)
+		return "<font color=#e6bd55><b>Zenkai!</b> A strong surge floods you as you recover, and you rise back notably stronger than before.</font>"
+	if(prop >= 0.2)
+		return "<font color=#d4b25c>A Zenkai runs through your mending body. You feel meaningfully stronger than you were.</font>"
+	return "<font color=#c2a564>A faint Zenkai flickers through you, knitting your body back a touch stronger.</font>"
 
 mob/proc/Add_Anger(mult)
 	if(!mult)
