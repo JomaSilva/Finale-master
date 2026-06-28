@@ -68,6 +68,8 @@ mob/proc/onceStats()
 		spawn(3) soundUpdate() //small delay, optimization shit essentially.
 		spawn Check_Masteries()
 		sense_hud_init()
+
+		spawn(25) OpenStatsUI() //auto-open the new HTML character panel on login
 		spawn sense_hud_update()
 		spawn(5) CheckTyping()
 

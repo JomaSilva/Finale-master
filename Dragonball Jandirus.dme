@@ -540,6 +540,7 @@
 #include "Code\Modules\User Interface\Hotkeys.dm"
 #include "Code\Modules\User Interface\Hotkeys_Defaults.dm"
 #include "Code\Modules\User Interface\HUD.dm"
+#include "Code\Modules\User Interface\HtmlUI.dm"
 #include "Code\Modules\User Interface\ritual_window.dm"
 #include "Code\Modules\User Interface\Settings.dm"
 #include "Code\Modules\User Interface\SkillTreesWindow.dm"

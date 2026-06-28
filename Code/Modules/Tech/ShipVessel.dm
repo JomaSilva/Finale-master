@@ -71,6 +71,8 @@ obj/PlayerShip
 	desc = "A personal starship. Touch or click it to board; the bridge computer inside lets you observe, pilot, or launch."
 	icon = 'Ship.dmi'
 	icon_state = ""
+	pixel_x = -48 //the 128x138 (4x4-tile) sprite anchors bottom-left; shift it left so the loc/dense tile sits under the DOOR (hitbox = the visible door)
+	pixel_y = 0
 	density = 1
 	plane = 6
 	SaveItem = 1
