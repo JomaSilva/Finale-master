@@ -110,7 +110,7 @@ mob/proc/powerlevel()
 	//if(godki && godki.transform_adjust) netBuff *= formBuff
 	nnetBuff = netCap(netBuff)
 	// base BP calc
-	var/tempBP = BP + BPadd + FuseBuff + HVBPAdd + CooldownAmount
+	var/tempBP = BP + BPadd + FuseBuff + HVBPAdd + CooldownAmount + majin_absorb_bp
 	if(AbsorbDeterminesBP&&AbsorbBP) tempBP = (tempBP + AbsorbBP) / 2
 	else tempBP = tempBP + AbsorbBP
 	//

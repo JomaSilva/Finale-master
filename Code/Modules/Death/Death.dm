@@ -6,6 +6,7 @@ mob
 mob/proc/Death()
 	if(isdying) return
 	isdying = 1
+	if(absorbed_into) absorbed_into.majin_release_by_mob(src) //died inside a Majin -> break free
 	var/mob/deathKiller = (combatTag || IsInFight) ? lastDamager : null //capture the killer NOW, before StopFightingStatus clears combat state (no stale lastDamager raging on a later environmental death)
 	Revert()
 	if(last_attkd_sig && IsInFight)
@@ -71,6 +72,7 @@ mob/proc/Death()
 					if(M.check_relation(src,list("Good","Very Good","Love","Rival/Good")) || M.is_friend(src)) deathanger=1
 					if(deathanger==1 && killedByEnemy)
 						M.Do_Anger_Stuff()
+						if(M.is_corrupted_majin() && M.majin_saga_form == 1) spawn M.majin_advance_form(2, "thin transformation") //rage -> Majin Form 2
 						view(M)<<output("<font color=red>You notice [M] has become EXTREMELY enraged!!!","Chatpane.Chat")
 						chatcast(view(M), "<font color=red>You notice [M] has become EXTREMELY enraged!!!", "combat")
 						WriteToLog("rplog","[M] has become EXTREMELY angry    ([time2text(world.realtime,"Day DD hh:mm")])")

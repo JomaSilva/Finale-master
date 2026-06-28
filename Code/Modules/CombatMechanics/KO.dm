@@ -10,6 +10,9 @@ var/KOMult = 1
 mob/proc/KO(var/KOtimer, var/ForceKO)
 	set waitfor = 0
 	set background = 1
+	if((Race=="Majin"||Parent_Race=="Majin") && majin_absorbed && majin_absorbed.len)
+		majin_escape_all()
+		spawn majin_check_pure_unlock()
 	//if(Race=="Android"&&prob(95)&&!ForceKO)
 		//HP = 1
 		//return

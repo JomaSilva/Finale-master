@@ -80,6 +80,11 @@ obj/Buu_Absorb
 		usr.AbsorbDeterminesBP = 1
 		if(!usr.absorbing&&M.absorbable&&!usr.KO&&usr.Planet!="Sealed")
 			usr.absorbing=1
+			if(usr.Race=="Majin"||usr.Parent_Race=="Majin") //pocket-dimension absorption (MajinSaga.dm)
+				usr.majin_absorb(M)
+				sleep(20)
+				usr.absorbing=0
+				return
 			if(M.KO&&!M.dead)
 				M.buudead="force"
 				var/ismajor = usr.AbsorbDatum:absorb(M,2,6)
