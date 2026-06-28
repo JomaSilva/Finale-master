@@ -52,12 +52,14 @@ mob/var/AdminHash
 mob/var/Musicon=1
 var/list/force_rarest_class = list() //ckeys whose NEXT new character is forced into their race's rarest class (admin debug)
 
-mob/Admin2/verb/Force_Rarest_Class(k as null|text)
+mob/Admin2/verb/Force_Rarest_Class()
 	set category="Admin"
-	set name = "Debug-Force Rarest Class"
+	set name = "Force Rarest Class"
+	var/k = input(usr, "BYOND account (key) to flag. Their NEXT new character will be forced into their race's RAREST class (Legendary Saiyan, Corrupted Majin, etc.).", "Force Rarest Class") as null|text
 	if(!k) return
 	k = ckey(k)
 	if(!k) return
+	if(!force_rarest_class) force_rarest_class = list()
 	force_rarest_class |= k
 	Save_Settings()
 	to_chat(usr, "<font color=yellow>[k] flagged: their next NEW character will be the rarest class of whatever race they pick (Legendary Saiyan, Corrupted Majin, etc.).</font>")
