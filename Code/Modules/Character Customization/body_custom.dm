@@ -21,7 +21,20 @@ mob
 				return
 			var/list/skin_list = list()
 			//see Genetic_Icons.dm
-			if(Race == "Saiyan" || Race == "Human") //Saiyans and Humans are limited to the five approved base bodies
+			if(Race == "Majin") //proper Majin bodies (genome flags don't reliably carry "Majin")
+				if(pgender == "Female")
+					skin_list += 'Female Majin.dmi'
+					skin_list += 'female majin base (small).dmi'
+				else
+					skin_list += 'Majin.dmi'
+					skin_list += 'Majin1.dmi'
+			else if(Race == "Demon")
+				skin_list += 'Base_Skully.dmi'
+				skin_list += 'Demon - Form 1.dmi'
+				skin_list += 'Demon4.dmi'
+				skin_list += 'DemonForm1.dmi'
+				skin_list += 'Satan.dmi'
+			else if(Race == "Saiyan" || Race == "Human") //Saiyans and Humans are limited to the five approved base bodies
 				switch(pgender)
 					if("Male")
 						skin_list += 'NewPaleMale.dmi'
