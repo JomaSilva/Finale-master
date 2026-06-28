@@ -83,16 +83,23 @@ obj/SplitForm
 			Splitforms+=1
 			usr.splitformCount+=1
 		if(Splitforms<Splitformskill)
+			var/mob/npc/Splitform/nS = usr.makeCopy(2,usr.Race,"None",/mob/npc/Splitform,FALSE)
+			if(!istype(nS)) //makeCopy failed -> don't crash on nS.master and don't waste the Ki
+				to_chat(usr, "Your body refuses to split right now.")
+				return
+			nS.master = usr //set FIRST so the New() auto-delete loop never sees a null master
+			nS.HP = max(usr.HP, 100) //a fresh copy can read HP 0 and get instantly culled by its own loop
+			nS.KO = 0
+			nS.attackable = 1
+			nS.loc = locate(usr.x,usr.y,usr.z)
+			step(nS,usr.dir)
+			nS.checkState()
+			usr.Ki-=usr.MaxKi*(0.5/Splitformskill) //charge only AFTER the copy actually exists
 			if(prob(50/(Splitformskill*5)))
 				to_chat(usr, "Your Split form skill has increased..")
 				Splitformskill+=1
 				usr.splitformMastery+=0.2
-			usr.Ki-=usr.MaxKi*(0.5/Splitformskill)
-			var/mob/npc/Splitform/nS = usr.makeCopy(2,usr.Race,"None",/mob/npc/Splitform,FALSE)
-			nS.master = usr
-			nS.checkState()
-			nS.loc = locate(usr.x,usr.y,usr.z)
-			step(nS,usr.dir)
+			to_chat(usr, "You split your body in two!")
 		else to_chat(usr, "You do not have the skill to create this many Splitforms.")
 
 mob/var/tmp/splitformCount

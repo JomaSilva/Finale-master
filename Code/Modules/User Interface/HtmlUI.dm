@@ -345,6 +345,7 @@ mob/proc/ui_tab_verbs(category)
 	for(var/V in verbs)
 		if(V:category != category) continue
 		var/vname = "[V:name]"
+		if(findtext(vname, "Face ") == 1) continue //hide the 8 directional "Face North/South/..." verbs that clutter Skills
 		if(vname in seen) continue
 		seen += vname
 		found++

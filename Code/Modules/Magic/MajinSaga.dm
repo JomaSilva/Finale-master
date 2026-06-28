@@ -183,7 +183,7 @@ mob/proc/MajinSagaCinematic(newform, animstate)
 	move = 0
 	dir = SOUTH
 	emit_Sound('rockmoving.wav')
-	emit_TransformMusic('Dragon Ball Z Dokkan Battle - PHY LR Super Janemba OST (Extended).mp3', 500)
+	emit_TransformMusic('Super Buu Theme (FULL).mp3', 1730) //~173s; the Majin saga Form 1-4 transformations
 	to_chat(view(src), "<font color=#d050c0>*A wave of pink energy detonates around [src]!*</font>", "combat")
 	for(var/cyc = 1 to 14)
 		spawn for(var/turf/T in view(rand(3,7), src))
@@ -296,7 +296,7 @@ mob/proc/MajinSagaCinematicPure()
 	poweruprunning = 1
 	move = 0
 	emit_Sound('rockmoving.wav')
-	emit_TransformMusic('Dragon Ball Z Dokkan Battle - PHY LR Super Janemba OST (Extended).mp3', 500)
+	emit_TransformMusic('Buu Is Fighting.mp3', 1060) //~106s; plays EVERY time Pure Form is activated
 	to_chat(view(src), "<font color=#ff70d0>*[src]'s flesh boils and shrinks as a pure, ancient power surfaces!*</font>", "combat")
 	icon = 'MajinForm11.dmi'
 	if(majin_color) icon += majin_color
