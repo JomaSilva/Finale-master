@@ -51,7 +51,7 @@ Depending on their abilities, (specifically 3 combination race biodroids) they c
 		"Starting BP" = 75,//starting BP
 		"Tech Modifier" = 5)//how naturally good you are at technology
 		//gravity mastered is a product of your home planet's gravity. nothing more, nothing less.
-	Class_Spread = list("None" = 80,"Majin" = 20)
+	Class_Spread = list("None" = 80,"Majin-Type" = 20)
 	//format is list("class_name" = weight) //CLASS NAME HERE MUST BE THE SAME AS CLASS NAME BELOW (wont work otherwise.)
 	class_stats = list(
 		"Majin-Type" = list(

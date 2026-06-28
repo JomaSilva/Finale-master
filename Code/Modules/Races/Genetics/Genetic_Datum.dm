@@ -592,12 +592,17 @@ datum/genetics
 			old_class = this_class
 			return this_class
 
-		rarest_class() //the lowest-weight (rarest) entry in this genome's Class_Spread
-			if(!Class_Spread || !Class_Spread.len) return null
+		rarest_class() //the lowest-weight (rarest) entry in the race's Class_Spread
+			var/list/cs = Class_Spread
+			if(!cs || !cs.len) //menu-created chars can have an empty genome spread -> fall back to the race proto's
+				var/datum/genetics/proto = fetch_race_by_Name(name)
+				if(proto) cs = proto.Class_Spread
+			if(!cs || !cs.len) return null
 			var/rarest = null
 			var/minw = null
-			for(var/cls in Class_Spread)
-				var/w = Class_Spread[cls]
+			for(var/cls in cs)
+				if(cls == "None") continue //"None" isn't a real class to force (single-None races would otherwise be blanked)
+				var/w = cs[cls]
 				if(isnull(minw) || w < minw)
 					minw = w
 					rarest = cls
@@ -615,7 +620,7 @@ datum/genetics
 					old_class = rc
 					force_rarest_class -= savant.ckey //one-time
 					Save_Settings()
-			savant.Class = this_class
+			if(this_class) savant.Class = this_class //don't blank a class statmajin/decide_Class already set
 			get_races()
 			return TRUE
 		

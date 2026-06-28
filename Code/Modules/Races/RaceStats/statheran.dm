@@ -73,7 +73,7 @@ mob/proc/statheran()
 		"Starting BP" = 150,//starting BP
 		"Tech Modifier" = 2.5)//how naturally good you are at technology
 		//gravity mastered is a product of your home planet's gravity. nothing more, nothing less.
-	Class_Spread = list("Normal" = 45,"Low-Class" = 45,"Elite" = 4,"Legendary" = 1)
+	Class_Spread = list("Omega" = 5,"Epsilon" = 47,"Low-Class" = 48) //real Heran classes (Omega = the rare one); Low-Class LAST as the force-last fallback. (Was Saiyan-style Normal/Elite/Legendary, which had no class_stats.)
 	//format is list("class_name" = weight) //CLASS NAME HERE MUST BE THE SAME AS CLASS NAME BELOW (wont work otherwise.)
 	class_stats = list(
 		"Low-Class" = list(
