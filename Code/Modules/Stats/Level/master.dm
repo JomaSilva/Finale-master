@@ -177,7 +177,7 @@ mob/proc/statify()
 	var/hdnptlmod = 1
 	if(hdnptltoBP>1)
 		hdnptlmod = max(log(4,hdnptltoBP),1) //shouldn't affect other stats, just power up shit. (uub mode)
-	MaxAnger=max(120,hdnptlmod*Ewillpower*angerMod*baseAnger) //floor so a missing/collapsed baseAnger can't force permanent "Very Angry"
+	MaxAnger=max(120,hdnptlmod*Ewillpower*angerMod*baseAnger) + legendaryAngerBonus //floor so a missing/collapsed baseAnger can't force permanent "Very Angry"; + bonus da skill Legendary Anger (+100 = +1x ao teto, cap 2x -> 3x)
 	MaxKi = baseKi*KiMod*kiAmp*trueKiMod*hdnptlmod*max(0.01,kicapacity_remove)*TMaxKi
 	kicapacity = 1.3*kicapacityMod*max((MaxKi*max(log(8,max((kicirculationskill/10)*(kigatheringskill/10),1)*KiMod*hdnptlmod*max(Ekiskill,0.1)),1))*OozaruBuff,1.3*MaxKi)
 	powerupcap = max((1.4*max(log(7,max((kicirculationskill/10)*(kicontrolskill/10),1)*KiMod*kicapacityMod*hdnptlmod*max(Ekiskill,0.1)),1))*OozaruBuff,1.4) //makes power capacity n shit dynamic.

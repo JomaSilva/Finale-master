@@ -150,7 +150,7 @@ obj/overlay/auras/EffectLoop()
 					scale = list(1.25,1)
 			switch(container.lssj)
 				if(1)
-					icon = container.form1aura
+					icon = 'AuraLSSjBig.dmi' //Wrathful (Legendary): aura LSSJ grande, nao a SSj amarela
 					scale = list(1,1)
 				if(2)
 					icon = container.form2aura

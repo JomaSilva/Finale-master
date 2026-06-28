@@ -27,6 +27,9 @@ obj/overlay/effects/ssj4lb_sparks //aura constante do SSJ4 Limit Breaker
 obj/overlay/effects/ssj4lb_lightning
 	icon = 'Lightning - Blue.dmi'
 	temporary = 0
+obj/overlay/effects/menacing_aura //overlay constante "aura ameacadora" do Wrathful (Legendary), estilo os raios do SSJ2
+	icon = 'LSSJpowerz.dmi'
+	temporary = 0
 
 obj/overlay/effects/flickeffects
 	var/icon/flickicon

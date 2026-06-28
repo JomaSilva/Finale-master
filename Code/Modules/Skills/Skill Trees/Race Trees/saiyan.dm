@@ -31,35 +31,45 @@ mob/proc/saiyantreeget(var/N)
 				getTree(new /datum/skill/tree/lssj)
 
 //Legendary masterys to make it faster.
+mob/var
+	legendaryAngerBonus = 0 //+aditivo ao teto de MaxAnger dado pela skill Legendary Anger (+100 = +1x; cap 2x -> 3x). Persiste no save.
+	legAngerMigrated = 0    //migracao 1-vez: conserta chars que aprenderam a versao ANTIGA (sacrificava a 1a forma + penalidades de genome)
+
 /datum/skill/lssj/Legendary_Anger
 	skilltype = "Mind Buff"
 	name = "Legendary Anger"
-	desc = "You're a legend, but there is actually two types of legendaries. Sacrifice your first form for a immense anger, zenkai, sparring boost. After ascension, the anger, zenkai, and sparring boost is increased further. But, training, meditation, blast mods, and BP mod, Physicals are decreased heavily."
+	desc = "You're a true legend, with fury that runs deeper than any other Saiyan. When you rage, it pushes your power a full extra 1x past the normal limit (your rage cap goes from 2x to 3x). That's all it does- no sacrificed form, no drawbacks."
 	can_forget = FALSE
 	common_sense = FALSE
 	skillcost = 1
 	enabled=0
 	tier = 2
-	var/has_post_ascension = 0
+	var/has_post_ascension = 0 //legado: lido apenas pela migracao para reverter o bonus pos-ascension da versao antiga
 	after_learn()
 		to_chat(savant, "Your anger... it's astonishing!!")
-		savant.canRSSJ = 0
-		savant.angerMod = 500
-		savant.genome.add_to_stat("Zenkai",5)
-		savant.genome.add_to_stat("Spar Mod",2)
-		savant.genome.sub_to_stat("Train Mod",0.1)
-		savant.genome.sub_to_stat("Med Mod",0.1)
-		savant.genome.sub_to_stat("Physical Offense",0.2)
-		savant.genome.sub_to_stat("Physical Defense",0.2)
-		savant.genome.sub_to_stat("Energy Level",0.5)
-		savant.genome.sub_to_stat("Battle Power",2)
-	effector()
-		if(savant.BP>=1000000 && AscensionStarted && !has_post_ascension)
-			has_post_ascension = 1
-			savant.angerMod = 2000
-			savant.genome.add_to_stat("Zenkai",5)
-			savant.genome.add_to_stat("Spar Mod",3)
+		savant.legendaryAngerBonus = 100 //+1x ao teto de raiva (cap 2x -> 3x)
+		savant.legAngerMigrated = 1 //aprendeu a versao NOVA: nao ha penalidade antiga para reverter
+	login(mob/logger)
 		..()
+		if(savant && !savant.legAngerMigrated) //conserta UMA vez quem tinha a versao ANTIGA da skill
+			savant.legAngerMigrated = 1
+			savant.legendaryAngerBonus = 100 //agora a skill concede +1x de raiva
+			savant.angerMod = 1 //limpa o angerMod=500/2000 antigo (master.dm ja reseta, mas garantimos)
+			//NAO mexo em canRSSJ aqui: a skill nova nao remove mais a 1a forma, entao o Wrathful volta a sair naturalmente (ver caveat sobre saves antigos)
+			if(savant.genome) //reverte EXATAMENTE as penalidades/bonus de genome da versao antiga
+				savant.genome.sub_to_stat("Zenkai",5)
+				savant.genome.sub_to_stat("Spar Mod",2)
+				savant.genome.add_to_stat("Train Mod",0.1)
+				savant.genome.add_to_stat("Med Mod",0.1)
+				savant.genome.add_to_stat("Physical Offense",0.2)
+				savant.genome.add_to_stat("Physical Defense",0.2)
+				savant.genome.add_to_stat("Energy Level",0.5)
+				savant.genome.add_to_stat("Battle Power",2)
+				if(has_post_ascension) //tambem reverte o bonus pos-ascension, se havia disparado
+					savant.genome.sub_to_stat("Zenkai",5)
+					savant.genome.sub_to_stat("Spar Mod",3)
+			has_post_ascension = 0
+			to_chat(savant, "Your Legendary Anger settles into its true form: the old drawbacks are gone, and your rage now adds a flat +1x to your power cap.")
 
 /datum/skill/tree/saiyan/SaiyanFormMastery
 	name="Saiyan Form Evolution"

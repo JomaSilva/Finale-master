@@ -344,15 +344,16 @@ mob
 				alert("System Info: Popups ON")
 				GetPops=1
 		Lethal_Setting()
+			set name = "Lethal Setting"
 			set category="Other"
 			if(!murderToggle)
 				murderToggle=1
-				usr<<"Intent set to kill."
-				view()<<"[usr]'s intent shifts maliciously!"
+				to_chat(usr,"Intent set to <b>KILL</b>.") //to_chat: aparece no chat HTML visivel (usr<< puro ia pro painel nativo escondido atras do browser)
+				chatcast(view(),"[usr]'s intent shifts maliciously!","combat")
 			else
 				murderToggle=0
-				usr<<"Intent set to knock out."
-				view()<<"[usr]'s intent shifts passively!"
+				to_chat(usr,"Intent set to <b>KNOCK OUT</b>.")
+				chatcast(view(),"[usr]'s intent shifts passively!","combat")
 		DeflectionSetting()
 			set category="Other"
 			if(DRenabled)

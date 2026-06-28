@@ -1,6 +1,7 @@
 mob/proc/Revert(var/DontRevertSSJ)
 	if(DontRevertSSJ == 0)
 		overlayList-='SSj Aura.dmi'
+		overlayList-='AuraLSSjBig.dmi'
 		overlayList-='Elec.dmi'
 		overlayList-='Electric_Blue.dmi'
 		overlayList-='ElecAura1.dmi'

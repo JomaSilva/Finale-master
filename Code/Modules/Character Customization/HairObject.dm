@@ -153,6 +153,7 @@ mob/proc/RemoveHair()
 	removeOverlay(/obj/overlay/hairs/ssj/ussj)
 	removeOverlay(/obj/overlay/hairs/ssj/rlssjhair)
 	removeOverlay(/obj/overlay/hairs/ssj/lssjhair)
+	removeOverlay(/obj/overlay/effects/menacing_aura) //limpa a aura ameacadora do Wrathful ao trocar/limpar o cabelo
 	return TRUE
 
 mob/proc/AddHair()
@@ -187,7 +188,8 @@ mob/proc/AddHair()
 			updateOverlay(/obj/overlay/hairs/ssj/ssj4) //SSJ4 Limit Breaker usa o cabelo do SSJ4
 	switch(lssj)
 		if(1)
-			updateOverlay(/obj/overlay/hairs/ssj/rlssjhair,hair,0,0,100)
+			updateOverlay(/obj/overlay/hairs/hair) //Wrathful mantem o cabelo BASE (sem tint azul)
+			updateOverlay(/obj/overlay/effects/menacing_aura) //aura ameacadora no corpo
 		if(2)
 			updateOverlay(/obj/overlay/hairs/ssj/ssj1,ssjhair)
 		if(3)

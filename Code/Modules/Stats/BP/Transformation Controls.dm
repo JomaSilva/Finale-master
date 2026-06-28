@@ -83,9 +83,9 @@ mob/proc/Transformations_Activate()
 						if(usr.godki && usr.godki.usage)
 							if(usr.godki.tier < 2) return //SSJ Blue requires God Ki tier 2
 						usr.Unrestrained_SSj()
-				// restrained SSJ
+				// restrained SSJ (Wrathful) = forma de ENTRADA estilo SSJ1: mesmo req de BP do SSJ1 (ssjat)
 				if(usr.lssj==0 && canRSSJ)
-					if(usr.BP>=usr.restssjat)
+					if(usr.BP>=usr.ssjat)
 						if(usr.hasssj)
 							usr.Restrained_SSj()
 	usr.Cell4()

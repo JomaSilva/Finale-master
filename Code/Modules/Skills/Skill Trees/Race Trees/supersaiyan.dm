@@ -46,18 +46,18 @@ mob/var
 		if(prob(5) && savant.ssj && !savant.transing && !savant.isBuffed(/obj/buff/SuperSaiyan) && !savant.isBuffed(/obj/buff/Werewolf))
 			savant.ssj = 0
 		if(savant.Class=="Legendary" && savant.anger_ssj) if(!TurnOffAscension||savant.AscensionAllowed)
-			if(!savant.hasssj&&savant.expressedBP>=savant.restssjat&&savant.BP>=savant.restssjat*0.8 && savant.canRSSJ)
+			if(!savant.hasssj&&savant.expressedBP>=savant.ssjat&&savant.BP>=savant.ssjat*0.8 && savant.canRSSJ) //Wrathful = entrada estilo SSJ1 (mesmo req ssjat) + raiva
 				switch(savant.Emotion)
 					if("Very Angry")
 						savant.hasssj=1
 						usr.restssjat*=0.5
 						savant.Restrained_SSj()
 					if("Angry")
-						if(savant.expressedBP>=(savant.restssjat*1.5))
+						if(savant.expressedBP>=(savant.ssjat*1.5))
 							savant.hasssj=1
 							savant.Restrained_SSj()
 					if("Annoyed")
-						if(savant.expressedBP>=(savant.restssjat*2.2))
+						if(savant.expressedBP>=(savant.ssjat*2.2))
 							savant.hasssj=1
 							savant.Restrained_SSj()
 			else if(!savant.hasssj&&savant.expressedBP>=savant.unrestssjat&&savant.BP>=savant.unrestssjat*0.8 && !savant.canRSSJ)
@@ -252,7 +252,7 @@ mob/keyable
 				usr.Revert()
 				switch(SSJchoice)
 					if(1)
-						if(usr.hasssj&&usr.expressedBP>=usr.restssjat)
+						if(usr.hasssj&&usr.expressedBP>=usr.ssjat) //Wrathful = entrada estilo SSJ1 (mesmo req ssjat)
 							usr.Restrained_SSj()
 					if(2)
 						if(usr.BP>=usr.unrestssjat)

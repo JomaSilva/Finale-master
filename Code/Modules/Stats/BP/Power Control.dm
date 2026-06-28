@@ -26,6 +26,7 @@ mob/proc/AuraCheck()
 		FlashPoint = 0
 		src.overlayList-='snamek Elec.dmi'
 		src.overlayList-='SSj Aura.dmi'
+		src.overlayList-='AuraLSSjBig.dmi'
 		src.overlayList-='Sparks LSSj.dmi'
 		overlaychanged=1
 		removeOverlay(/obj/overlay/auras/aura)

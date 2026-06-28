@@ -80,7 +80,8 @@ obj/buff/LSSJ/Loop()
 				container.ssjBuff = container.lssj_form_mult()
 				container.trueKiMod = container.rssjenergymod
 				container.Ki *= container.trueKiMod
-				container.updateOverlay(/obj/overlay/hairs/ssj/rlssjhair,container.hair,0,0,100)
+				container.updateOverlay(/obj/overlay/hairs/hair) //Wrathful mantem o cabelo BASE (sem tint azul)
+				container.updateOverlay(/obj/overlay/effects/menacing_aura) //aura ameacadora no corpo (estilo raios do SSJ2)
 			if(2)
 				container.ssjBuff = container.lssj_form_mult()
 				container.trueKiMod = container.ussjenergymod
@@ -122,6 +123,8 @@ obj/buff/LSSJ/DeBuff()
 		container.overlayList-=container.ussjhair
 		for(var/obj/overlay/hairs/ssj/X in container.overlayList)
 			container.removeOverlay(X)
+		container.removeOverlay(/obj/overlay/effects/menacing_aura) //tira a aura ameacadora do Wrathful ao reverter
+		container.overlayList-='AuraLSSjBig.dmi'
 		container.updateOverlay(/obj/overlay/hairs/hair)
 		container.lssj=0
 	..()
@@ -182,13 +185,13 @@ mob/proc/Restrained_SSj()
 			blastB=50
 			spawn if(src)
 				removeOverlay(/obj/overlay/hairs/hair)
-				updateOverlay(/obj/overlay/hairs/ssj/rlssjhair,hair,0,0,100)
+				updateOverlay(/obj/overlay/hairs/hair) //Wrathful mantem o cabelo BASE: sem flicker de cabelo azul
 				sleep(rand(6,20))
 				removeOverlay(/obj/overlay/hairs/ssj/rlssjhair)
 				updateOverlay(/obj/overlay/hairs/hair)
 				sleep(rand(6,20))
 				removeOverlay(/obj/overlay/hairs/hair)
-				updateOverlay(/obj/overlay/hairs/ssj/rlssjhair,hair,0,0,100)
+				updateOverlay(/obj/overlay/hairs/hair) //Wrathful mantem o cabelo BASE: sem flicker de cabelo azul
 				sleep(rand(6,20))
 				removeOverlay(/obj/overlay/hairs/ssj/rlssjhair)
 				updateOverlay(/obj/overlay/hairs/hair)
@@ -233,17 +236,17 @@ mob/proc/Restrained_SSj()
 			if(!hasssj)
 				genome.add_to_stat("Battle Power",2)
 			hasssj=1
-			overlayList-='SSj Aura.dmi'
-			overlayList+='SSj Aura.dmi'
+			overlayList-='AuraLSSjBig.dmi'
+			overlayList+='AuraLSSjBig.dmi'
 			overlaychanged=1
-			to_chat(view(src), "<font color=yellow>*A great wave of power emanates from [src] as a yellow aura bursts around them!*")
+			to_chat(view(src), "<font color=#76ff7a>*The air turns cold and heavy. A crushing, murderous aura erupts from [src], splitting the ground beneath an unspeakable, mounting rage!*")
 			emit_Sound('chargeaura.wav')
 			spawn Quake()
 			spawn Quake()
 			createShockwavemisc(loc,4)
 			createCrater(loc,5)
 			sleep(50)
-			to_chat(view(src), "<font color=yellow>*[src]'s hair becomes more ridged and turns blue!*")
+			to_chat(view(src), "<font color=#76ff7a>*[src]'s eyes go cold and empty as a monstrous Legendary fury takes hold - the menacing aura howls like a living thing, and everything nearby seems to recoil in terror.*")
 			lssj=1
 			startbuff(/obj/buff/LSSJ,'SSJIcon.dmi')
 		transing=0
