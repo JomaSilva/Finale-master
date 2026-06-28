@@ -8,7 +8,7 @@
 	can_refund = FALSE
 	compatible_races = list("Majin")
 	constituentskills = list(new/datum/skill/general/Hardened_Body,new/datum/skill/general/LankyLegs,new/datum/skill/general/Willed,\
-	new/datum/skill/namek/bigform,new/datum/skill/general/buuabsorb,new/datum/skill/general/splitform,new/datum/skill/general/regenerate,new/datum/skill/majin/Purification,new/datum/skill/majin/Super_Majin)
+	new/datum/skill/namek/bigform,new/datum/skill/general/buuabsorb,new/datum/skill/general/splitform,new/datum/skill/general/regenerate,new/datum/skill/majin/Super_Majin)
 
 /datum/skill/general/splitform
 	skilltype = "Creation"
@@ -48,11 +48,11 @@
 	skillcost = 2
 
 	after_learn()
-		assignverb(/mob/keyable/verb/Purification)
+		unassignverb(/mob/keyable/verb/Purification)
 		to_chat(savant, "You can purfiy your essence!")
 	login()
 		..()
-		assignverb(/mob/keyable/verb/Purification)
+		unassignverb(/mob/keyable/verb/Purification)
 
 
 mob/keyable/verb/Purification()

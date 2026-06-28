@@ -341,11 +341,22 @@ mob/proc/ui_tab_verbs(category)
 	h += ui_sec(uppertext(category))
 	var/found = 0
 	var/list/vh = list()
+	var/list/seen = list()
 	for(var/V in verbs)
 		if(V:category != category) continue
-		found++
 		var/vname = "[V:name]"
+		if(vname in seen) continue
+		seen += vname
+		found++
 		vh += "<a class='verb' href='byond://?src=\ref[src];runverb=[url_encode(vname)]'>[html_encode(vname)]</a>"
+	for(var/obj/O in src) //obj-based skills (SplitForm, Buu Absorb, ...) live as verbs on carried objects, not on the mob
+		for(var/V in O.verbs)
+			if(V:category != category) continue
+			var/vname = "[V:name]"
+			if(vname in seen) continue
+			seen += vname
+			found++
+			vh += "<a class='verb' href='byond://?src=\ref[src];runverb=[url_encode(vname)]'>[html_encode(vname)]</a>"
 	if(!found)
 		h += "<div class='row'><span class='mut'>No actions here.</span></div>"
 		return jointext(h, "")
