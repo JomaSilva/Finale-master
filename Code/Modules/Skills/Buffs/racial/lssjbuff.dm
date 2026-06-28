@@ -147,6 +147,9 @@ mob/var
 	lssj1mastery = 0 //Form Rising: maestria por-forma (0-100). Cada forma Legendary escala do multiplicador base ao maximo.
 	lssj2mastery = 0
 	lssj3mastery = 0
+	wrathful_music_played = 0 //first-time gates for the Legendary transformation themes (Wrathful / C-Type / Full Power); persist across relog
+	ctype_music_played = 0
+	fullpower_music_played = 0
 	tmp/combatTime = 0 //ticks de combate continuo (GlobalStats ~4/s); alimenta o bonus de combate +0%..+20% das formas Legendary
 
 mob/proc/lssj_form_mult() //Form Rising: multiplicador EFETIVO = (base->max conforme a maestria da forma) * (1 + bonus de combate ate +20%)
@@ -164,6 +167,9 @@ mob/proc/Restrained_SSj()
 	if(!transing)
 		if(ssj) return
 		transing=1
+		if(!wrathful_music_played) //Wrathful (the first Legendary transformation) theme, first time only
+			wrathful_music_played=1
+			emit_TransformMusic(file("Sounds/Music/22. Broly Evolves   DBS Broly Original Soundtrack.mp3"), 2109) //~211s; file()+full path (runtime)
 		attackable=0
 		if(restssjdrain>=0.015)
 			move=0
@@ -247,6 +253,9 @@ mob/proc/Unrestrained_SSj()
 	if(!transing)
 		if(ssj) return
 		transing=1
+		if(!ctype_music_played) //Super Saiyan C-Type theme, first time only
+			ctype_music_played=1
+			emit_TransformMusic(file("Sounds/Music/Dragon Ball Super - Broly's Transformation Theme (HQ Epic Cover).mp3"), 1983) //~198s; file()+full path (the apostrophe in "Broly's" can't live in a 'literal')
 		attackable=0
 		if(unrestssjdrain>=0.025)
 			move=0
@@ -320,6 +329,9 @@ mob/proc/LSSj()
 	if(!transing)
 		if(ssj) return
 		transing=1
+		if(!fullpower_music_played) //Super Saiyan Full Power theme, first time only
+			fullpower_music_played=1
+			emit_TransformMusic(file("Sounds/Music/Dragon Ball Super Broly - Rage & Sorrow Movie Version.mp3"), 1723) //~172s; file()+full path (runtime)
 		attackable=0
 		//Flashy stuff
 		emit_Sound('rockmoving.wav')

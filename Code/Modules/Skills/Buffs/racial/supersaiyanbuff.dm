@@ -26,6 +26,7 @@ mob/var
 	ssj2_music_played=0
 	blue_music_played=0
 	ssj4_music_played=0
+	legprimal_lssj_music_played=0 //Primal Legendary's "Legendary Super Saiyan" (ssj=2) theme, first time only
 	trans=0
 	hastrans=0
 	hastrans2=0
@@ -405,6 +406,10 @@ mob/proc/SSj2()
 			if(!blue_music_played) //SSJ2 while in God Ki = Super Saiyan Blue: Blue theme from the START (first time only)
 				blue_music_played=1
 				emit_TransformMusic('Dragon Ball Z Dokkan Battle AGL LR Super Saiyan Blue Goku & Vegeta Intro OST (Extended).mp3', 6236) //Blue theme: plays to everyone nearby + ducks listeners' battle music for the track (~10.4min)
+		else if(Class=="Legendary Primal Saiyan") //for the Primal Legendary, ssj=2 IS the "Legendary Super Saiyan" form -> its own theme (not the normal SSJ2 one)
+			if(!legprimal_lssj_music_played)
+				legprimal_lssj_music_played=1
+				emit_TransformMusic(file("Sounds/Music/10's.mp3"), 2899) //~290s; file()+full path (the apostrophe in "10's" can't live in a 'literal')
 		else
 			if(!ssj2_music_played) //first regular Super Saiyan 2: SSJ2 theme from the START
 				ssj2_music_played=1
