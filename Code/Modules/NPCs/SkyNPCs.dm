@@ -20,12 +20,12 @@ mob/npc/Talker
 	KingKai
 		name = "King Kai"
 		gender = "male"
-		icon = 'King Kai.dmi'
+		icon = 'DBZ.dmi'
 		New()
 			..()
 			// trava no frame 1 OLHANDO PRA BAIXO: extrai uma imagem estatica
-			// (dir SOUTH, frame 1, parado) do estado default animado -> nao anima mais.
-			icon = icon('King Kai.dmi', "", SOUTH, 1, 0)
+			// (dir SOUTH, frame 1, parado) do estado "King Kaio" do DBZ.dmi -> nao anima mais.
+			icon = icon('DBZ.dmi', "King Kaio", SOUTH, 1, 0)
 			dir = SOUTH
 
 	EnmaDaioh
@@ -37,6 +37,16 @@ mob/npc/Talker
 			..()
 			dir = SOUTH
 
+	Korin
+		name = "Korin"
+		gender = "male"
+		icon = 'DBZ.dmi'
+		New()
+			..()
+			// trava no frame 1 OLHANDO PRA BAIXO (estado "Korin" do DBZ.dmi) -> nao anima mais.
+			icon = icon('DBZ.dmi', "Korin", SOUTH, 1, 0)
+			dir = SOUTH
+
 var/sky_npcs_built = 0
 proc/Build_Sky_NPCs()
 	set waitfor = 0
@@ -45,6 +55,7 @@ proc/Build_Sky_NPCs()
 	while(worldloading) sleep(1) // espera o boot/mapa terminar: o New() de mob/npc tem um while(worldloading) que travaria a criacao
 	place_sky_talker(/mob/npc/Talker/KingKai,  42, 336, 6)
 	place_sky_talker(/mob/npc/Talker/EnmaDaioh, 176, 134, 6)
+	place_sky_talker(/mob/npc/Talker/Korin,      142, 63, 12) //Korin na Torre (z12)
 
 proc/place_sky_talker(ntype, px, py, pz)
 	var/turf/T = locate(px, py, pz)
@@ -101,8 +112,8 @@ mob/proc/enma_interact()
 	var/choice = input(src, "What will you do?", "Enma Daioh") in list(revopt, trainopt, stayopt)
 	if(choice == revopt) enma_zeni_revive()
 	else if(choice == trainopt)
-		to_chat(src, "<font color=#76ff7a>You set off down Snake Way toward King Kai's planet...</font>")
-		loc = locate(43,336,6) //ao lado do Sr. Kaioh (42,336,6)
+		//sem teleporte: King Kai fica em (42,336,6) z6 e o player precisa ir ATE LA andando por Snake Way.
+		to_chat(src, "<font color=#76ff7a><b>Enma Daioh</b>: \"King Kai's planet lies at the very end of Snake Way. If you want his training, you'll have to make the journey there on your own two feet. Best start walking!\"</font>")
 
 //----- mandado pro Inferno (src = o condenado) -----
 mob/proc/enma_judge_to_hell()
@@ -161,3 +172,11 @@ mob/npc/Talker/KingKai/Click()
 		to_chat(P, "You need to get closer to King Kai to speak with him.")
 		return
 	P.kingkai_interact()
+
+mob/npc/Talker/Korin/Click()
+	var/mob/P = usr
+	if(!istype(P) || !P.client) return
+	if(get_dist(src, P) > 2)
+		to_chat(P, "You need to get closer to Korin to speak with him.")
+		return
+	to_chat(P, "<font color=#e0c060><b>Korin</b> twirls his staff: \"Made it all the way up the Tower, huh? Train hard and maybe - MAYBE - I'll part with a Senzu bean.\"</font>")
