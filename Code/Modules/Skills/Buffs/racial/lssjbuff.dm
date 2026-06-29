@@ -546,4 +546,5 @@ mob/proc/lssj_grand_cinematic() //cinematica GRANDE da PRIMEIRA transformacao Le
 	overlayList -= I
 	overlaychanged = 1
 	createShockwavemisc(loc, 2)
+	createCrater(loc, 3) //cratera final, igual ao climax da transformacao Evolve do Demon
 	move = 1
