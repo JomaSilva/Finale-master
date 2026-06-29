@@ -326,7 +326,7 @@ mob/proc/ui_tab_sense()
 // ---- FORMS & MASTERY -------------------------------------------------------
 mob/proc/ui_tab_forms()
 	var/list/h = list()
-	if(Class == "Legendary" || ssj1mastery || ssj2mastery || ssj3mastery || ssj4mastery || ssj4fpmastery) //maestria de formas (0-100%); ao 50% a transformacao vira instantanea
+	if(Class == "Legendary" || ssj1mastery || ssj2mastery || ssj3mastery || ssj4mastery || ssj4fpmastery || KaiokenMastery > 1) //maestria de formas (0-100%); ao 50% a transformacao vira instantanea
 		h += ui_sec("FORM MASTERY")
 		if(Class == "Legendary")
 			h += ui_row("Wrathful", "[round(lssj1mastery)]%", "")
@@ -338,14 +338,49 @@ mob/proc/ui_tab_forms()
 			if(ssj3mastery) h += ui_row("Super Saiyan 3", "[round(ssj3mastery)]%", "")
 		if(ssj4mastery) h += ui_row("Super Saiyan 4", "[round(ssj4mastery)]%", "")
 		if(ssj4fpmastery) h += ui_row("SSJ4 Full Power", "[round(ssj4fpmastery)]%", "")
-	h += ui_sec("ACTIVE MULTIPLIERS")
-	h += ui_row("Total BP Mult", "[round(expressedBP / max(BP,1), 0.01)]x", "")
-	if(round(ssjBuff, 0.01) != 1)   h += ui_row("Form (SSJ ladder)", "[round(ssjBuff, 0.01)]x", "")
-	if(round(transBuff, 0.01) != 1) h += ui_row("Transformation", "[round(transBuff, 0.01)]x", "")
-	if(round(formsBuff, 0.01) != 1) h += ui_row("Forms", "[round(formsBuff, 0.01)]x", "")
-	if(godki && godki.usage)        h += ui_row("God Ki", "[round((god_form_mult() || godki.godki_mult), 0.01)]x", "")
-	if(round(angerBuff, 0.01) != 1) h += ui_row("Anger", "[round(angerBuff, 0.01)]x", "")
-	if(KaiokenMastery > 1)          h += ui_row("Kaio-Ken Mastery", "x[round(KaiokenMastery, 0.1)]", "")
+		if(KaiokenMastery > 1) h += ui_row("Kaio-Ken (mastered max)", "x[round(KaiokenMastery, 0.1)]", "mut") //capability cap, NOT a live BP multiplier (the live Kaio-Ken boost is the KaioPcnt power-up row)
+	var/concealed = (isconcealed && expressedBP <= 5) //Conceal Power hard-caps expressedBP to 5, bypassing every multiplier below
+	if(concealed)
+		h += ui_sec("POWER CONCEALED")
+		h += ui_row("Conceal Power", "active &mdash; output suppressed to [FullNum(round(expressedBP))]", "lo")
+	h += ui_sec("ACTIVE BP MULTIPLIERS")
+	var/totmult = expressedBP ? round(expressedBP / max(BP,1), 0.01) : 1
+	h += ui_row("Total BP Mult", "x[totmult]", totmult < 1 ? "lo" : "hi")
+	//--- multiplicative factors (these MULTIPLY your BP); each shown only when != 1x -----------
+	if(round(BPBoost, 0.01) != 1)      h += ui_row("Ascension (BP Boost)", "[round(BPBoost, 0.01)]x", "")
+	if(round(ssjBuff, 0.01) != 1)      h += ui_row("Form (SSJ / SSJ4 ladder)", "[round(ssjBuff, 0.01)]x", "")
+	if(round(transBuff, 0.01) != 1)    h += ui_row("Transformation", "[round(transBuff, 0.01)]x", "")
+	if(round(formsBuff, 0.01) != 1)    h += ui_row("Forms", "[round(formsBuff, 0.01)]x", "")
+	if(round(gateBuff, 0.01) != 1)     h += ui_row("Gate of Hell", "[round(gateBuff, 0.01)]x", "")
+	if(round(HellstarBuff, 0.01) != 1) h += ui_row("Hellstar", "[round(HellstarBuff, 0.01)]x", "")
+	//--- God Ki: mirrors powerlevel() (GT mode, god-form mult that replaces SSJ, or the permanent base boost) ---
+	if(godki_gt_mode)
+		var/gtm = godki_boost * gt_boost
+		if(godki && godki.adjust_me) gtm *= godki.transform_adjust
+		if(round(gtm, 0.01) != 1)      h += ui_row("God Ki (GT mode)", "[round(gtm, 0.01)]x", "")
+	else
+		if(godki && godki.usage)
+			var/gfm = god_form_mult()
+			var/gkmult = gfm ? gfm / max(ssjBuff, 1) : godki.godki_mult
+			if(round(gkmult, 0.01) != 1) h += ui_row("God Ki (form)", "[round(gkmult, 0.01)]x", gkmult < 1 ? "lo" : "")
+		if(godki_give_mult && SaiyanLineage != "Primal Saiyan" && round(godki_give_mult, 0.01) != 1)
+			h += ui_row("God Ki (base boost)", "[round(godki_give_mult, 0.01)]x", "")
+	if(angerBuff && round(angerBuff, 0.01) != 1) h += ui_row("Anger", "[round(angerBuff, 0.01)]x", "")
+	if(round(powerMod, 0.01) != 1)     h += ui_row("Power Control", "[round(powerMod, 0.01)]x", powerMod < 1 ? "lo" : "hi")
+	if(round(nnetBuff, 0.01) != 1)     h += ui_row("Net (buffs / status / debuffs)", "[round(nnetBuff, 0.01)]x", nnetBuff < 1 ? "lo" : "")
+	if(zeni_revive_debuff_until && world.realtime < zeni_revive_debuff_until) h += ui_row("Zeni Revive Debuff", "0.25x", "lo") //base.dm: cuts expressedBP to 25% for 1h after a Zeni revive
+	//--- additive modifiers: these ADD to (or subtract from) base BP before the multipliers --------
+	var/list/pus = list()
+	if(KaioPcnt && round(KaioPcnt, 0.01) != 1)                 pus += ui_row("Kaio-Ken", "[round(KaioPcnt, 0.01)]x", "")
+	if(MysticPcnt && round(MysticPcnt, 0.01) != 1)            pus += ui_row("Mystic / Ultimate", "[round(MysticPcnt, 0.01)]x", "")
+	if(MajinPcnt && round(MajinPcnt, 0.01) != 1)              pus += ui_row("Majin Power-Up", "[round(MajinPcnt, 0.01)]x", "")
+	if(fusionBuff && round(fusionBuff, 0.01) != 1)            pus += ui_row("Fusion", "[round(fusionBuff, 0.01)]x", "")
+	if(ParanormalBPMult && round(ParanormalBPMult, 0.01) != 1) pus += ui_row("Vampire / Werewolf", "[round(ParanormalBPMult, 0.01)]x", "")
+	if(aurasBuff && round(aurasBuff, 0.01) != 1)              pus += ui_row("Aura", "[round(aurasBuff, 0.01)]x", "")
+	if(gravBuff && round(gravBuff, 0.01) != 1)                pus += ui_row("Gravity", "[round(gravBuff, 0.01)]x", gravBuff < 1 ? "lo" : "")
+	if(pus.len)
+		h += ui_sec("BASE BP MODIFIERS (additive)")
+		h += jointext(pus, "")
 	if(islist(buffoutput) && buffoutput.len >= 3)
 		h += ui_sec("BUFFS")
 		h += ui_row("Buff", html_encode("[buffoutput[1]]"), "mut")
