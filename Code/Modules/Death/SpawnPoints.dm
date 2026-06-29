@@ -168,10 +168,7 @@ mob/proc/Locate()
 					return
 
 	if(dead) //dead characters (e.g. logging in while dead) go to the death checkpoint, NOT their homeworld
-		if(HasSoul)
-			loc=locate(187,104,6)
-		else
-			loc=locate(187,104,7)
+		loc=locate(187,104,6) //Outro Mundo: todo morto vai pro checkpoint do Enma (com ou sem alma)
 	else if(spawnPlanet)
 		GotoPlanet(spawnPlanet,1)
 	else

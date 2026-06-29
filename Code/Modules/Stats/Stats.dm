@@ -265,6 +265,7 @@ mob/proc/Stats()
 					SSj4()
 		//Afterlife Return Timer...
 		if(client)
+			afterlife_alignment_check() //karma: libera do Inferno qdo a pena acaba + expira o debuff de BP do revive por Zeni
 			if(dead) if(Planet&&Planet!="Afterlife"&&Planet!="Heaven"&&Planet!="Hell"&&Planet!="Sealed")
 				if(KeepsBody)
 					if(Ki<=(MaxKi/6))
@@ -275,19 +276,13 @@ mob/proc/Stats()
 							if(prob(5))
 								SpreadHeal(100,1,1)
 								to_chat(view(usr), "[src]'s time in the living world has expired.")
-								if(HasSoul)
-									loc=locate(187,104,6) //And finally, send them to the death checkpoint...
-								else if(!HasSoul)
-									loc=locate(187,104,7) //And finally, send them to the death checkpoint...
+								loc=locate(187,104,6) //Outro Mundo: todo morto vai pro checkpoint do Enma
 								returning=0
 								sleep(1)
 				else if(!KeepsBody)
 					SpreadHeal(100,1,1)
 					to_chat(view(usr), "[src] cannot exist outside of the Afterlife.")
-					if(HasSoul)
-						loc=locate(187,104,6) //And finally, send them to the death checkpoint...
-					else if(!HasSoul)
-						loc=locate(187,104,7) //And finally, send them to the death checkpoint...
+					loc=locate(187,104,6) //Outro Mundo: todo morto vai pro checkpoint do Enma
 					returning=0
 					sleep(1)
 

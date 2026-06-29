@@ -254,6 +254,7 @@
 #include "Code\Modules\NPCs\NPCDrops.dm"
 #include "Code\Modules\NPCs\NPClist.dm"
 #include "Code\Modules\NPCs\NPCspawner.dm"
+#include "Code\Modules\NPCs\SkyNPCs.dm"
 #include "Code\Modules\Players\Achievements.dm"
 #include "Code\Modules\Players\BattleMusic.dm"
 #include "Code\Modules\Players\Character_Bios.dm"

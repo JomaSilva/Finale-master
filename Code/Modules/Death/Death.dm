@@ -100,18 +100,12 @@ mob/proc/Death()
 				overlayList+='Halo.dmi'
 				overlaychanged=1
 				reviveTime=36000*log(max(deathcounter,1))
-				if(HasSoul)
-					loc=locate(187,104,6) //And finally, send them to the death checkpoint...
-				else if(!HasSoul)
-					loc=locate(187,104,7) //And finally, send them to the death checkpoint...
+				loc=locate(187,104,6) //Outro Mundo (Checkpoint): TODO morto (com ou sem alma) vai pro Enma ser julgado
 				SpreadHeal(100,1,1)
 				inteleport=0 //This is only here for the poor saps who die in the BossRush so they can teleport again.
 			else if(dead)
 				move=1
-				if(HasSoul)
-					loc=locate(187,104,6) //And finally, send them to the death checkpoint...
-				else if(!HasSoul)
-					loc=locate(187,104,7) //And finally, send them to the death checkpoint...
+				loc=locate(187,104,6) //Outro Mundo (Checkpoint): TODO morto (com ou sem alma) vai pro Enma ser julgado
 				SpreadHeal(100,1,1)
 				KO(20)
 				inteleport=0
@@ -141,6 +135,7 @@ mob/proc/Death()
 
 mob/proc/ReviveMe()
 	SpreadHeal(100,1,1)
+	pk_karma_taken = 0 //reviveu -> a proxima morte pode contabilizar karma de novo
 	Ki = MaxKi
 	stamina = maxstamina
 	for(var/datum/Body/B in body)

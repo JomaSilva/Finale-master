@@ -384,6 +384,7 @@ mob/proc/LSSj()
 		if(ssj) return
 		transing=1
 		if(lssj3mastery >= 50) //dominou 50% do Full Power -> transformacao instantanea
+			fullpower_music_played=1 //Full Power ja desbloqueado (robustez p/ o gate do auto-climb)
 			lssj=3
 			if(!isBuffed(/obj/buff/LSSJ)) startbuff(/obj/buff/LSSJ,'SSJIcon.dmi')
 			lssj_instant_fx() //animacao curta (cratera + ondas de choque) estilo SSJ1 masterizado; a aura/overlay verde do LSSJ vem do form-apply

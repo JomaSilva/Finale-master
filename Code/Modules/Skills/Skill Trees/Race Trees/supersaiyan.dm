@@ -73,8 +73,8 @@ mob/var
 					if(savant.expressedBP>=(savant.unrestssjat*2.2))
 						savant.hasssj=1
 						savant.Unrestrained_SSj()
-		if(savant.Class=="Legendary" && savant.anger_ssj && !savant.transing) if(!TurnOffAscension||savant.AscensionAllowed) //rage sobe a escada LSSJ sozinha (Wrathful -> C-Type -> Full Power) nos MESMOS estados de raiva que destravam as formas de entrada (transformar gasta a raiva, entao nao da pra exigir "Very Angry" pra cada degrau)
-			if(savant.lssj==1) //Wrathful -> C-Type
+		if(savant.Class=="Legendary" && savant.anger_ssj && !savant.transing) if(!TurnOffAscension||savant.AscensionAllowed) //rage AUTO-transforma so na PRIMEIRA vez de cada forma (pra DESBLOQUEAR), nos mesmos estados de raiva das formas de entrada. Forma ja desbloqueada => transformacao MANUAL (C), igual o SSJ normal
+			if(savant.lssj==1 && !savant.hasssj2) //Wrathful -> C-Type (auto SO se o C-Type ainda nao foi desbloqueado)
 				switch(savant.Emotion)
 					if("Very Angry")
 						if(savant.BP>=savant.unrestssjat) savant.Unrestrained_SSj()
@@ -82,7 +82,7 @@ mob/var
 						if(savant.BP>=savant.unrestssjat*1.5) savant.Unrestrained_SSj()
 					if("Annoyed")
 						if(savant.BP>=savant.unrestssjat*2.2) savant.Unrestrained_SSj()
-			else if(savant.lssj==2) //C-Type -> Full Power
+			else if(savant.lssj==2 && !savant.fullpower_music_played) //C-Type -> Full Power (auto SO se o Full Power ainda nao foi desbloqueado)
 				switch(savant.Emotion)
 					if("Very Angry")
 						if(savant.BP>=savant.lssjat) savant.LSSj()

@@ -83,6 +83,7 @@ mob/proc/killer_stuff(var/mob/M)
 					spawn nP.chaseState()
 		M.death_stuff(BP)
 		M.friend_harmed_by(usr, ENMITY_FRIEND_KILL) //a rival killing you embitters your nearby friends
+		if(src.Player) gain_kill_karma(M) //karma: matar inocente -> mau; matar vilao (karma<0) -> bom
 		if(!dead) if(King_of_Vegeta==M.key)
 			if(Race=="Saiyan")
 				to_chat(usr, "By killing the former King Vegeta, you have become the new King Vegeta!")

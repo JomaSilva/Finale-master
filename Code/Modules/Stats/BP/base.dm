@@ -137,6 +137,7 @@ mob/proc/powerlevel()
 				else tempBP *= godki.godki_mult
 			if(godki_give_mult && SaiyanLineage != "Primal Saiyan") tempBP *= godki_give_mult //Primal nao recebe o boost de BP do God Ki (o God Ki dele so ativa o SSJ4 Limit Breaker)
 		expressedBP = (round(max((tempBP),1) * nnetBuff * angerBuff) + expressedAdd) * powerMod
+		if(zeni_revive_debuff_until && world.realtime < zeni_revive_debuff_until) expressedBP = round(expressedBP * 0.25) //debuff do revive por Zeni: BP em 25% por 1h
 
 	relBPmax = BP * (1 + UPMod) * relcaprate //PERSONAL ceiling from own BP+Potential (no server AverageBP). relcaprate = global growth-speed knob.
 	//server BPCap clamp removed - individual progression

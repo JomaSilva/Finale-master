@@ -38,6 +38,7 @@ mob/proc/TestDeathRegen() //true if dead, false if not dead.
 			WriteToLog("rplog","[src] was rebuilt. ([time2text(world.realtime,"Day DD hh:mm")])")
 			loc = locate(CC.x,CC.y,CC.z)
 			return FALSE
+	if(!immortal && !DeathRegenTmp) return TRUE //SEM respawn automatico por tempo: jogador comum morre de vez e vai pro Outro Mundo falar com o Enma (immortal/regen-temporario/computador ainda revivem)
 	if(DeathRegenTmp)
 		if(DeathRegenTmp>=0.5)
 			DeathRegenTmp-=0.1
