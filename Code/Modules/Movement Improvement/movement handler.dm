@@ -47,7 +47,7 @@ mob/proc
 				returnz=z
 			mobTime += 0.3 //its so high because step_size is lower.
 			mobTime += max(log(3.6,Epspeed),0.1) //max prevents negatives from DESTROYING US ALL
-			if(dashing) mobTime += 0.5*Epspeed
+			if(dashing && !legsLost) mobTime += 0.5*Epspeed //sem perna(s) o dash nao acelera mais
 			//if(flight) density = 0 causes all sorts of wonky stuff, just add special calls in the bump proc for walls. (tile hierachies need to be redone anyways)
 			if(flight&&!flightspeed) mobTime += 0.25
 			if(flight&&flightspeed) mobTime += max(log(8,Espeed),0.40)
@@ -124,6 +124,7 @@ mob/proc
 			if(!canmove)mobTime=0
 			if(!move)mobTime=0 //legacy var
 			if(gravParalysis)mobTime=0
+			if(legsLost >= 2 && !flight) mobTime = 0 //sem as 2 pernas so da pra se mover voando
 			if(!ThrowStrength && !KB)
 				if(KBParalysis) KBParalysis=0
 			if(KBParalysis) mobTime=0
@@ -157,7 +158,7 @@ mob/proc
 			if(attacking>0)
 				canfight=0
 				canbeleeched=1
-				if(hasTime) attacking = max(0,attacking-1) //melee cooldown decays 2x faster -> punches come out twice as readily (fights were dragging on missed-punch cooldowns)
+				if(hasTime) attacking = max(0,attacking-(armsLost>=2 ? 0.5 : 1)) //melee cooldown decays 2x faster -> punches come out twice as readily (fights were dragging on missed-punch cooldowns)
 			else
 				attacking = 0
 				canbeleeched=0

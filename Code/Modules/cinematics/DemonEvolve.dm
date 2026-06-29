@@ -50,7 +50,7 @@ mob/proc/DemonEvolveCinematic(newicon)
 	move = 0
 	dir = SOUTH
 	emit_Sound('rockmoving.wav')
-	emit_TransformMusic('Dragon Ball Z Dokkan Battle - PHY LR Super Janemba OST (Extended).mp3', 600) // ~60s, ducks listeners' battle music
+	emit_TransformMusic('Dragon Ball Z Dokkan Battle - PHY LR Super Janemba OST (Extended).mp3', 6567) //Janemba theme (~657s/~10.9min): duck dura o tempo TODO da faixa, igual SSJ1/Blue -> a musica de batalha nunca toca por cima
 	to_chat(view(src), "<font color=#b048d0>*A black aura coils around [src] as something monstrous begins to surface...*</font>", "combat")
 	// --- slow build: pedras subindo (foco) + tornados + raios espalhados + tremores (~16s) ---
 	for(var/cyc = 1 to 16)

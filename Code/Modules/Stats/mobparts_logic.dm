@@ -25,6 +25,8 @@ mob
 		GraspLimbnum=1
 		Legnum=1
 		bupdateseed
+		armsLost = 0 //bracos decepados (recontados no HealthSync) -> debuffs de amputacao
+		legsLost = 0 //pernas decepadas
 		list/body = list()
 
 datum/Body

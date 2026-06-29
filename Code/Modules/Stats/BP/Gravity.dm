@@ -121,6 +121,17 @@ mob/proc/Grav()
 	else if(Race=="Demon" && Planet == "Hell") transBuff = 1.25
 	else if(Race=="Demon"||Race=="Kai") transBuff = 1
 	//
+	//Campo da MAQUINA de gravidade: recalculado TODO tick (igual o Planetgrav), em vez de depender dos deltas
+	//Cross/Uncross da bounding box (que dessincronizavam -> o campo aparecia nos stats/ganho de BP mas o dano/slow
+	//ficavam pra tras, deixando a maquina bem mais fraca que um planeta de mesma gravidade). Modelo SET = robusto.
+	var/fieldgrav = 0
+	for(var/obj/items/Gravity/GM in range(7, src))
+		if(GM.Grav <= 0 || GM.Energy <= 0) continue //maquina desligada/sem bateria nao conta
+		for(var/obj/bounding_box/bx in GM.BB)
+			if(src in bounds(bx)) //dentro do campo dessa maquina
+				fieldgrav += GM.Grav
+				break
+	gravmult = fieldgrav
 	Grav_Gain()
 
 

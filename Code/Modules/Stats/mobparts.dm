@@ -149,6 +149,7 @@ datum/Body
 			isnested=1
 			targetchance = 30
 			bodypartType = /obj/bodyparts/Brain
+			req_parent_limb = /datum/Body/Head
 	Torso
 		icon_state = "Torso"
 		capacity = 3
@@ -206,6 +207,7 @@ datum/Body
 		healthweight = 3
 		targetchance = 30
 		bodypartType = /obj/bodyparts/Guts
+		req_parent_limb = /datum/Body/Torso
 	Reproductive_Organs
 		icon_state = "SOrgans"
 		targettype = "abdomen"
@@ -232,7 +234,7 @@ datum/Body
 		maxeslots=2
 		vital = 0
 		regenerationrate = 2
-		symmetry_info = list(1,"")
+		symmetry_info = list(1,"",0)
 		isnested=0
 		targetchance = 80
 		healthweight = 0.125
@@ -247,13 +249,15 @@ datum/Body
 			isnested=1
 			targetchance = 65
 			bodypartType = /obj/bodyparts/Hands
+			req_parent_limb = /datum/Body/Arm
+			symmetry_info = list(1,"",0)
 	Leg
 		icon_state = "Limb"
 		targettype = "leg"
 		capacity = 2
 		eslots = 2
 		maxeslots = 2
-		symmetry_info = list(1,"")
+		symmetry_info = list(1,"",0)
 		vital = 0
 		regenerationrate = 2
 		isnested=0
@@ -268,6 +272,8 @@ datum/Body
 			isnested=1
 			targetchance = 70
 			bodypartType = /obj/bodyparts/Foot
+			req_parent_limb = /datum/Body/Leg
+			symmetry_info = list(1,"",0)
 	Tail
 		icon_state = "Guts" //temp
 		targettype = "abdomen"

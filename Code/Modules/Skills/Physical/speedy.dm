@@ -33,6 +33,9 @@ mob/verb
 mob/default/verb
 	Dash()
 		set category="Skills"
+		if(legsLost)
+			to_chat(src, "You can't dash with a leg torn off!")
+			return
 		if(candash)
 			if(dashing==0)
 				dashing=1
@@ -48,6 +51,7 @@ mob/default/verb
 mob/verb
 	SttDash()
 		set hidden = 1
+		if(legsLost) return
 		//if(!candash)
 		//	sleep(15)
 		if(dashing==0  && candash == 1)

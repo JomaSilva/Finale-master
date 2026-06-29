@@ -177,6 +177,7 @@ mob/proc/Fight()
 mob/proc/hitProc(var/mob/M,dmg,var/iscrit,var/customFlavor,var/forcehit,type)
 	var/hit = 2
 	var/bhit = (Etechnique/M.Espeed)*BPModulus(expressedBP,M.expressedBP)*100-M.deflection+accuracy//two perfectly matched players will hit 100% of the time
+	if(armsLost) bhit *= max(1 - armsLost * 0.25, 0.1) //braco(s) decepado(s): -25% de chance de acerto por braco
 	if(iscrit) hit = 3
 	if(forcehit) hit = 2
 	if(!prob(bhit) && !M.blocking) hit = 0

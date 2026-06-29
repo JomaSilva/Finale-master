@@ -216,8 +216,13 @@ mob/proc/HealthSync()
 		var/coreDead = 0
 		var/coreBroken = 0
 		zenkaicount=0
+		var/_armslost = 0 //recontados a cada HealthSync
+		var/_legslost = 0
 		for(var/datum/Body/S in body)
 			S.health = max(-5,S.health)//bottoming out at 0 often makes a regen source tick before it lops
+			if(S.lopped) //conta bracos/pernas decepados (Hand/Foot sao subtipos, por isso o !istype)
+				if(istype(S, /datum/Body/Arm) && !istype(S, /datum/Body/Arm/Hand)) _armslost++
+				else if(istype(S, /datum/Body/Leg) && !istype(S, /datum/Body/Leg/Foot)) _legslost++
 			if(S.maxhealth!=100*healthmod*S.maxhpmod)
 				var/wasfull = S.health >= S.maxhealth //a healthy limb should stay full when its max changes
 				S.maxhealth = 100*healthmod*S.maxhpmod
@@ -261,6 +266,8 @@ mob/proc/HealthSync()
 				if(S.lopped || S.health <= 0) coreDead++
 				else if(S.health < 0.2 * S.maxhealth) coreBroken++
 		if(limbcount) HP = round(healthtotal / limbcount, 0.01)
+		armsLost = _armslost
+		legsLost = _legslost
 		//DEATH: a core vital destroyed ("lethal") = instant death. Regen-skin races (canheallopped) instead drop into a coma
 		//and regrow it - unless ALL THREE core vitals are gone at once, which still kills them.
 		if(coreDead >= 1 && (!canheallopped || coreDead >= 3) && !KB)
