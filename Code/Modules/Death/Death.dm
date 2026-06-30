@@ -136,6 +136,7 @@ mob/proc/Death()
 mob/proc/ReviveMe()
 	SpreadHeal(100,1,1)
 	pk_karma_taken = 0 //reviveu -> a proxima morte pode contabilizar karma de novo
+	kaiTrainingAllowed = 0 //voltou a vida -> a proxima morte exige nova permissao do Enma pra cruzar a barreira
 	Ki = MaxKi
 	stamina = maxstamina
 	for(var/datum/Body/B in body)

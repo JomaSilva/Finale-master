@@ -106,6 +106,10 @@ mob/proc/Grav()
 		if("Makyo Star")
 			if(prob(1)&&prob(1)) Planetgrav = rand(10,155)
 		else Planetgrav=1
+	//Planeta do King Kai (z6): 10x de gravidade dentro do retangulo ao redor dele (vertices 29,350 e 49,273).
+	//So a variavel Planetgrav -> SEM efeito visual; conduz treino/slow/BP igual a qualquer planeta. Sobrescreve o Afterlife=1.
+	if(z == 6 && x >= 29 && x <= 49 && y >= 273 && y <= 350)
+		Planetgrav = 10
 	regionalGains = 1
 	if(in_Dungeon && BP < relBPmax)
 		regionalGains = 1.5

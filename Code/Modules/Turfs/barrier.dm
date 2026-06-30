@@ -56,6 +56,28 @@ obj/barrier
 	fragile = 1
 	canGrab=0
 	IsntAItem=1
+
+// Spirit barrier on Snake Way (z6): blocks the path to King Kai until Enma Daioh grants the dead soul leave to
+// train (mob.kaiTrainingAllowed). Barriers block via selectivecollide/NOENTER (NOT native density), so a permitted
+// soul passes through with no extra handling. Placed by code each boot (place_kaio_gate in SkyNPCs.dm), never saved.
+obj/barrier/kaio_gate
+	name = "Spirit Barrier"
+	icon = null       //INVISIVEL: sem sprite nenhum. A colisao (selectivecollide) e a mensagem NAO dependem do icone.
+	NOENTER = ALL_DIR
+	tall = 1          //blocks even flying souls
+	opacity = 0
+	mouse_opacity = 0 //sem pixels -> cliques atravessam a barreira invisivel
+	fragile = 0       //indestructible
+	canGrab = 0
+	IsntAItem = 1
+	Savable = 0
+	selectivecollide(mob/M)
+		if(istype(M) && M.client)
+			if(M.kaiTrainingAllowed) return FALSE //Enma granted passage -> the barrier parts
+			if((M.dir in NOENTER) && world.time >= M.lastGateMsg)
+				M.lastGateMsg = world.time + 30 //rate-limit the notice (~3s)
+				to_chat(M, "<font color=#76ff7a>A shimmering spirit barrier seals the way to King Kai. Speak with <b>Enma Daioh</b> first - only he can grant you leave to train.</font>", "system")
+		return ..()
 obj/barrier/Edges // -- barrier typing will be the most basal type of destroyable barriers
 	icon='Edges.dmi'
 	canbuild=1

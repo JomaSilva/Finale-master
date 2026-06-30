@@ -4,12 +4,18 @@ mob/var/Incarnate
 mob/proc/CheckIncarnate()
 	if(!Created&&client.ReincarnationBonus)
 		if(ckey==client.ReincarnationBonus.ckey)
-			BP += max((client.ReincarnationBonus.oldBP/(100/BPMod)),2*BPMod) //self-based: bonus de BP baseado so no seu BP anterior (oldBP), sem a media do servidor
-			hiddenpotential += client.ReincarnationBonus.oldBP
-			if(godki) godki.naturalization = client.ReincarnationBonus.naturalization
-			to_chat(src, "You just had a reincarnation bonus applied to this character!")
+			var/Reincarnator/R = client.ReincarnationBonus
+			if(R.startBPMult > 0) //reencarnacao via Enma: renasce com uma FRACAO do BP antigo (comeca pequeno e cresce de novo), sem o despejo de potential
+				BP = max(BP, round(R.oldBP * R.startBPMult))
+				to_chat(src, "<font color=#d8a0ff>You are reborn, carrying a faint echo of your past power. (Reincarnation)</font>")
+			else
+				BP += max((R.oldBP/(100/BPMod)),2*BPMod) //self-based: bonus de BP baseado so no seu BP anterior (oldBP), sem a media do servidor
+				hiddenpotential += R.oldBP
+				to_chat(src, "You just had a reincarnation bonus applied to this character!")
+			if(godki) godki.naturalization = R.naturalization
+			client.ReincarnationBonus = null //consumido uma unica vez -> nao re-aplica nem vaza pra um proximo personagem da mesma conta
 
-mob/proc/Reincarnate()
+mob/proc/Reincarnate(var/bpmult = 0)
 	var/datum/Fusion/MF = my_active_fusion()
 	if(Fusee && MF && MF.FType == 3 && MF.Keeper) //passenger in a permanent (Namekian) fusion -> permanently fold your power into the controller
 		MF.Keeper.FuseBuff -= MF.KeeperFuseDelta //drop the temporary doubled buff...
@@ -24,11 +30,12 @@ mob/proc/Reincarnate()
 	var/datum/Fusion/KF = active_fusion_as_keeper()
 	if(KF) KF.Defuse(1) //I am the controller leaving this character -> split first so my partner is not stranded
 	to_chat(src, "Don't log off. You may lose some bonuses you'd normally have. You must create a new character to claim these bonuses within this login session.")
-	do_reincarnation()
-mob/proc/do_reincarnation()
+	do_reincarnation(bpmult)
+mob/proc/do_reincarnation(var/bpmult = 0)
 	var/Reincarnator/A = new
 	A.ckey = ckey
 	A.oldBP = BP
+	A.startBPMult = bpmult //>0 -> o novo personagem comeca com essa fracao do BP antigo (reencarnacao via Enma = 0.1)
 	if(godki) A.naturalization = godki.naturalization
 	src.client.ReincarnationBonus = A
 	fdel(GetSavePath(src.save_path))
@@ -47,6 +54,7 @@ Reincarnator //You only get your old BP as potential.
 	var/ckey
 	var/oldBP
 	var/naturalization
+	var/startBPMult = 0 //>0 -> reencarnacao via Enma: o novo personagem nasce com essa fracao do oldBP (0.1 = 10%), em vez do bonus legado
 
 var/reincarnationver = 0
 

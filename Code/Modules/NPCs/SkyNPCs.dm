@@ -25,7 +25,8 @@ mob/npc/Talker
 			..()
 			// trava no frame 1 OLHANDO PRA BAIXO: extrai uma imagem estatica
 			// (dir SOUTH, frame 1, parado) do estado "King Kaio" do DBZ.dmi -> nao anima mais.
-			icon = icon('DBZ.dmi', "King Kaio", SOUTH, 1, 0)
+			// moving=1: o estado "King Kaio" so tem frames de MOVIMENTO (movement=1 no .dmi); moving=0 pedia o frame PARADO (inexistente) -> icone VAZIO/invisivel.
+			icon = icon('DBZ.dmi', "King Kaio", SOUTH, 1, 1)
 			dir = SOUTH
 
 	EnmaDaioh
@@ -44,7 +45,8 @@ mob/npc/Talker
 		New()
 			..()
 			// trava no frame 1 OLHANDO PRA BAIXO (estado "Korin" do DBZ.dmi) -> nao anima mais.
-			icon = icon('DBZ.dmi', "Korin", SOUTH, 1, 0)
+			// moving=1: "Korin" tambem so tem frames de MOVIMENTO (movement=1); moving=0 deixava o Korin invisivel pelo mesmo motivo do King Kai.
+			icon = icon('DBZ.dmi', "Korin", SOUTH, 1, 1)
 			dir = SOUTH
 
 var/sky_npcs_built = 0
@@ -56,6 +58,11 @@ proc/Build_Sky_NPCs()
 	place_sky_talker(/mob/npc/Talker/KingKai,  42, 336, 6)
 	place_sky_talker(/mob/npc/Talker/EnmaDaioh, 176, 134, 6)
 	place_sky_talker(/mob/npc/Talker/Korin,      142, 63, 12) //Korin na Torre (z12)
+	//Barreira espiritual nas portas de Snake Way: bloqueadas ate o Enma liberar o treino com o King Kai.
+	place_kaio_gate(176, 137, 6)
+	place_kaio_gate(177, 137, 6)
+	place_kaio_gate(177, 91, 6)
+	place_kaio_gate(176, 91, 6)
 
 proc/place_sky_talker(ntype, px, py, pz)
 	var/turf/T = locate(px, py, pz)
@@ -63,6 +70,12 @@ proc/place_sky_talker(ntype, px, py, pz)
 	for(var/mob/npc/Talker/E in T) // ja tem esse Talker nesse tile? nao duplica
 		if(istype(E, ntype)) return
 	new ntype(T)
+
+proc/place_kaio_gate(px, py, pz)
+	var/turf/T = locate(px, py, pz)
+	if(!T) return // z/coord nao existe nesse boot
+	for(var/obj/barrier/kaio_gate/G in T) return // idempotente: nao duplica a barreira
+	new /obj/barrier/kaio_gate(T)
 
 // =====================================================================
 // ALINHAMENTO / KARMA  +  JULGAMENTO DO ENMA  +  REVIVE POR ZENI
@@ -82,7 +95,9 @@ mob/var
 	karma = 0                     //alinhamento moral (PERSISTENTE: sem tmp)
 	hell_lockout_until = 0        //world.realtime ate quando fica preso no Inferno
 	zeni_revive_debuff_until = 0  //world.realtime ate quando o BP fica em 25% (revive por Zeni)
+	kaiTrainingAllowed = 0        //Enma liberou a alma a cruzar a barreira espiritual rumo ao King Kai (resetado no ReviveMe)
 	tmp/pk_karma_taken = 0        //trava: killer_stuff pode rodar 2x na mesma morte -> nao conta karma 2x (zerado no ReviveMe)
+	tmp/lastGateMsg = 0           //world.time: rate-limit da mensagem "fale com o Enma" da barreira espiritual
 
 //----- karma ao matar um PLAYER (chamado no killer_stuff; src = o assassino) -----
 mob/proc/gain_kill_karma(var/mob/victim)
@@ -108,12 +123,15 @@ mob/proc/enma_interact()
 	to_chat(src, "<font color=#d8a0ff><b>Enma Daioh</b> reads your file: \"A balanced soul. You may rest in the Other World.\"</font>")
 	var/revopt = "Return to life (pay [ZENI_REVIVE_COST] Zeni)"
 	var/trainopt = "Go train with King Kai"
+	var/reincopt = "Reincarnate into a new life (reborn at 10% of your power)"
 	var/stayopt = "Stay a while"
-	var/choice = input(src, "What will you do?", "Enma Daioh") in list(revopt, trainopt, stayopt)
+	var/choice = input(src, "What will you do?", "Enma Daioh") in list(revopt, trainopt, reincopt, stayopt)
 	if(choice == revopt) enma_zeni_revive()
+	else if(choice == reincopt) enma_reincarnate()
 	else if(choice == trainopt)
-		//sem teleporte: King Kai fica em (42,336,6) z6 e o player precisa ir ATE LA andando por Snake Way.
-		to_chat(src, "<font color=#76ff7a><b>Enma Daioh</b>: \"King Kai's planet lies at the very end of Snake Way. If you want his training, you'll have to make the journey there on your own two feet. Best start walking!\"</font>")
+		//Enma libera a passagem pela barreira espiritual; sem teleporte: King Kai fica em (42,336,6) z6 e o player vai ATE LA andando por Snake Way.
+		kaiTrainingAllowed = 1
+		to_chat(src, "<font color=#76ff7a><b>Enma Daioh</b> stamps your file: \"Very well - the spirit barrier will part for you. King Kai's planet lies at the very end of Snake Way. Make the journey on your own two feet. Best start walking!\"</font>")
 
 //----- mandado pro Inferno (src = o condenado) -----
 mob/proc/enma_judge_to_hell()
@@ -134,6 +152,13 @@ mob/proc/enma_zeni_revive()
 	to_chat(src, "<font color=#d8a0ff><b>Enma Daioh</b> stamps your file: \"Back to the land of the living with you!\"</font>")
 	to_chat(src, "<font color=#cc8844>Your body is frail from the journey - your power is capped at 25% for 1 hour.</font>")
 	Revive(src, "Enma Daioh sends your soul back into your body!")
+
+//----- reencarnar via Enma (src = quem reencarna) -> novo personagem (nova raca, ou a mesma) com 10% do BP atual -----
+mob/proc/enma_reincarnate()
+	var/conf = alert(src, "Reincarnation severs you from this life FOREVER. Your current character is gone, and you are reborn as a new soul - a new race if you wish, or the same - with only 10% of your current power. Do not log off until you've made the new character. Proceed?", "Enma Daioh", "Reincarnate", "Cancel")
+	if(conf != "Reincarnate") return
+	to_chat(src, "<font color=#d8a0ff><b>Enma Daioh</b>: \"A soul that chooses to begin anew... so be it. Go - be reborn, and carry but an echo of who you were.\"</font>")
+	Reincarnate(0.1) //recria o personagem; CheckIncarnate semeia o novo BP em 10% do antigo
 
 //----- treino com o Sr. Kaioh (src = quem clicou) -----
 mob/proc/kingkai_interact()
