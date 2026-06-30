@@ -204,6 +204,7 @@
 #include "Code\Modules\Globals\Lists.dm"
 #include "Code\Modules\Globals\readme.dm"
 #include "Code\Modules\Globals\VegetaCity.dm"
+#include "Code\Modules\Globals\PlanetPopulation.dm"
 #include "Code\Modules\Globals\World.dm"
 #include "Code\Modules\Globals\World_Lists.dm"
 #include "Code\Modules\Globals\WorldClock.dm"
