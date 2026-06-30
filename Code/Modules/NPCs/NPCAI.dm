@@ -117,9 +117,9 @@ mob
 					else Attack()
 				else if(haszanzo) Attack()
 				var/testactspeed = Eactspeed
-				testactspeed = Eactspeed * 1.25 / (globalmeleeattackspeed*hitspeedMod)
+				testactspeed = Eactspeed * 0.6 / (globalmeleeattackspeed*hitspeedMod) //more aggressive: ~2x faster swings (was 1.25)
 				if(target.stagger) testactspeed /= 2
-				if(combo_count > 3) testactspeed *= 4
+				if(combo_count > 3) testactspeed *= 2 //smaller post-combo cooldown so it keeps pressuring (was *4)
 				next_attack = world.time + testactspeed
 				spawn(testactspeed)
 					if(blocking)
@@ -184,7 +184,8 @@ mob
 				if(!MaxKi) MaxKi = baseKi
 				Ki = MaxKi
 				stamina = maxstamina
-				currentNutrition = max(currentNutrition,1000) //sparring NPCs don't starve mid-fight
+				maxNutrition = 100
+				currentNutrition = 100 //full nutrition for NPCs (default 50 nerfs them); they don't starve mid-fight
 				npc_stats_inited = 1
 
 			NPCStaminaTick() //real stamina: drains under sustained combat, recovers between exchanges

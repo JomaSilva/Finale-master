@@ -33,6 +33,8 @@ mob/npc/Citizen
 	attackable = 1
 	dropsCorpse = 1
 	itemrarity = 0
+	behavior_vals = list(80, 70, 5, 50) //aggressive: high courage (won't flee), high rage (barrages), LOW kindness (NO mercy-disengage), normal logic
+	chase_speed = 2 //snappier reactions & movement than the default 3
 	var
 		pop_planet = ""        // "Vegeta" / "Earth" / "Namek"
 		pop_role = "commoner"  // "commoner" / "prince" / "king"
@@ -85,6 +87,36 @@ mob/npc/Citizen
 			sleep(rand(45,95))
 			if(!src || AIRunning || KO || dead || target) continue
 			if(prob(35)) step_rand(src)
+
+	// a trainable citizen never runs home or goes intangible (attackable=0) on disengage: it stops,
+	// STAYS hittable, and recovers in place -- so you can always re-engage (refresh_combat_tag re-provokes).
+	resetState()
+		set waitfor = 0
+		target = null
+		aggro_loc = null
+		attackable = 1
+		IsInFight = 0
+		AIRunning = 0
+		if(KO) spawn Un_KO()
+		if(grabber)
+			grabber.grabbee = null
+			grabber.attacking = 0
+			grabber.canfight = 1
+		grabber = null
+		grabberSTR = null
+		grabParalysis = 0
+		ai_powered_up = 0
+		ai_powerup_tier = 0
+		ai_powerup_cd = 0
+		for(var/a = 1, a <= behavior_vals.len, a++)
+			behavior_vals_t[a] = 0
+			e_behavior_vals[a] = 0
+		SpreadHeal(150,1,1)
+		for(var/datum/Body/B in body)
+			if(B.lopped) B.RegrowLimb()
+			B.health = B.maxhealth
+		Ki = MaxKi
+		stamina = maxstamina
 
 	// -----------------------------------------------------------------------
 	// The King of Vegeta: slaying him (as a Saiyan) makes the killer the new King.
@@ -202,10 +234,18 @@ proc/init_citizen(turf/T, mobtype, race, class, planet, bp, mgender)
 	// body icon (bypass the client body-picker window)
 	M.icon = npc_pick_body(race, mgender)
 	M.oicon = M.icon
-	// fixed battle power
+	// fixed battle power. Normalise the buffs powerlevel() reads so expressedBP ~= BP:
+	// staminadeBuff is ONLY set by CheckNutrition (client-gated) -> stuck at the default 1 for any
+	// NPC, which made staminaratio=0.3 and DEFLATED expressedBP to ~0.3x BP (the Sense %% bug).
 	M.pop_seed_bp = bp
 	M.BP = bp
-	M.powerlevel()
+	M.statify()            // compute MaxKi / effective stats from the new BP
+	M.Ki = M.MaxKi         // full Ki -> kiratio = 1
+	M.staminadeBuff = 100  // full stamina -> staminaratio = 1
+	M.maxNutrition = 100   // full nutrition (default 50 was nerfing NPC regen/stamina)
+	M.currentNutrition = 100
+	M.Anger = 100          // calm -> angerBuff = 1
+	M.powerlevel()         // expressedBP now reflects BP
 	return M
 
 // hairstyle pools (verified names from selecthair)
