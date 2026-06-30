@@ -17,8 +17,9 @@ mob/proc/has_zenkai()
 //death_stuff (Murder.dm) so both routes obey the same reward: 10% of the foe's BP, capped at 2x your own (base) BP,
 //once per hour, Saiyan-DNA only. If your body is extremely injured at that moment (large part Broken or ripped off),
 //the brush with death squeezes out more: 15% of the foe's BP and a higher 3x-base-BP ceiling.
-mob/proc/gain_zenkai(enemyBP)
-	if(!enemyBP || enemyBP <= BP) return //only a stronger enemy triggers Zenkai
+mob/proc/gain_zenkai(enemyBP) //enemyBP = the foe's EFFECTIVE power (expressedBP, form-inclusive) -- NOT base BP
+	var/myPower = max(expressedBP, BP) //compare EFFECTIVE power on BOTH sides: a transformed foe with a lower BASE BP still counts as "stronger". Using base BP here is why high-base builds (notably Primal Saiyan) got no Zenkai from a transformed opponent.
+	if(!enemyBP || enemyBP <= myPower) return //only a genuinely stronger (effective) enemy triggers Zenkai
 	if(dead) return
 	if(!has_zenkai()) return //Saiyan DNA only
 	if(world.realtime < zenkaiReady) //the 1h cooldown is still ticking (realtime = wall-clock, survives logout/reboot)

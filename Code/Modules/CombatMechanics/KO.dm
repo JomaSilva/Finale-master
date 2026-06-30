@@ -39,7 +39,7 @@ mob/proc/KO(var/KOtimer, var/ForceKO)
 				WriteToLog("rplog","[M] has become very angry    ([time2text(world.realtime,"Day DD hh:mm")])")
 			if(koByEnemy && M.check_relation(src,list("Good","Rival/Good")) == TRUE) M.StoredAnger+=20
 		if(koFoe) friend_harmed_by(koFoe, ENMITY_FRIEND_KO) //a rival KO'd you in view of your friends -> their hatred grows (already rival-gated inside)
-		if(koFoe) gain_zenkai(koFoe.BP) //Zenkai ALSO triggers on being KNOCKED OUT by a stronger foe (not only on death); the 1h cooldown stops a follow-up finishing blow from granting it twice
+		if(koFoe) gain_zenkai(max(koFoe.expressedBP, koFoe.BP)) //Zenkai ALSO triggers on being KNOCKED OUT by a stronger foe (not only on death); pass the foe's EFFECTIVE (form-inclusive) power so a TRANSFORMED opponent counts even if its base BP is below yours. The 1h cooldown stops a follow-up finishing blow from granting it twice
 		//---
 		if(Savable) icon_state="KO"
 		emit_Sound('groundhit2.wav')

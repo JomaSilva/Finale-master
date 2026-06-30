@@ -52,7 +52,7 @@ mob/verb/Finish()
 
 mob/var/zenkaiReady = 0 //world.realtime when Zenkai may next trigger (1 hour cooldown). PERSISTENT (not tmp) + realtime so a logout/login can't reset it and a world reboot can't wrongly block it.
 mob/proc/death_stuff(inputPl)
-	gain_zenkai(inputPl) //Zenkai from being KILLED by a stronger foe (inputPl = killer's BP). KO defeats are handled in KO().
+	gain_zenkai(inputPl) //Zenkai from being KILLED by a stronger foe (inputPl = killer's EFFECTIVE power). KO defeats are handled in KO().
 	//Onlooker ANGRY
 	for(var/mob/A in view()) //A being the friend looking...
 		var/DyerIsGood=0
@@ -81,7 +81,7 @@ mob/proc/killer_stuff(var/mob/M)
 					nP.target = src
 					nP.get_pissed()
 					spawn nP.chaseState()
-		M.death_stuff(BP)
+		M.death_stuff(max(expressedBP, BP)) //pass the killer's EFFECTIVE (form-inclusive) power so a transformed foe with lower base BP still grants the victim Zenkai
 		M.friend_harmed_by(usr, ENMITY_FRIEND_KILL) //a rival killing you embitters your nearby friends
 		if(src.Player) gain_kill_karma(M) //karma: matar inocente -> mau; matar vilao (karma<0) -> bom
 		if(!dead) if(King_of_Vegeta==M.key)

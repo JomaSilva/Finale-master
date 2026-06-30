@@ -243,7 +243,7 @@ mob/proc/HealthSync()
 						else if(S.health<0.2*S.maxhealth)
 							S.limbstatus = "<font color=purple>Broken"
 						S.status = "Damaged [S.health]"
-					if(!S.artificial&&S.regenerationrate&&(!combatTag||fastRegen))
+					if(!S.artificial&&S.regenerationrate&&(!combatTag||fastRegen)&&(stamina > 0 || currentNutrition > 0)) //limbs can't knit back together with no energy left: stop natural limb regen while BOTH starving (0 nutrition) and out of stamina
 						if(prob(10)||(prob(20)&&S.vital))
 							S.health += 0.1 * S.regenerationrate
 				else if(S.health>=S.maxhealth)
@@ -282,10 +282,10 @@ mob/proc/HealthSync()
 			//core vitals recovered above the broken line -> wake from the coma
 			if(KO) Un_KO()
 			vitalKOd = 0
-		if(prob(5)&&(!combatTag||fastRegen)) //no passive trickle-heal while In Battle, unless a true regen-passive race
+		if(prob(5)&&(!combatTag||fastRegen)&&(stamina > 0 || currentNutrition > 0)) //no passive trickle-heal while In Battle, or while both starving (0 nutrition) and out of stamina
 			if(prob(1))
 				SpreadHeal(1)
-		if(passiveRegen && (!combatTag || fastRegen)) //no passive healing while In Battle, UNLESS your race has a true regen passive
+		if(passiveRegen && (!combatTag || fastRegen) && (stamina > 0 || currentNutrition > 0)) //no passive healing while In Battle, or while both starving (0 nutrition) and out of stamina
 			if(prob(75) && HP < 99.99) SpreadHeal(0.1 * passiveRegen)
 			if(canheallopped&&(prob(5*activeRegen)||prob(2*DeathRegen)))
 				limbregenbuffer += 1

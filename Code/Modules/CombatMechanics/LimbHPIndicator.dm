@@ -40,11 +40,21 @@ proc/health_hud_color(pct)
 	//SHAPE is a single uniform silhouette frame (the yellow "Slightly Injured" art, present + identical-shape on
 	//every part); we recolour it per part via .color so the hue comes 100% from HP, not from the baked art.
 	var/shape = "Slightly Injured"
+	//The per-part torso art (health_hud_torso.dmi "Slightly Injured") is only a small MID-BODY BAND -- it does NOT
+	//cover the upper chest/shoulders, so that large region falls back to this base silhouette. Tinting the base by
+	//OVERALL HP made a wrecked torso show GREEN there while the head (full-coverage art) correctly turned orange.
+	//Tint the base by the TORSO's OWN HP so the chest tracks torso damage; every other region is painted over by
+	//its own part overlay below, so this only changes the otherwise-uncovered chest.
+	var/torsoColor = health_hud_color(round(savant.HP)) //fallback: overall HP if no torso part is somehow present
+	for(var/datum/Body/T in savant.body)
+		if(T.type == /datum/Body/Torso)
+			torsoColor = T.lopped ? LOPPED_LIMB_COLOR : health_hud_color(round((T.health / T.maxhealth) * 100, 1))
+			break
 	var/image/baseI = image('health_hud_base.dmi', shape)
-	baseI.color = health_hud_color(round(savant.HP))
+	baseI.color = torsoColor
 	overlayList += baseI
 	for(var/datum/Body/S in savant.body)
-		if(istype(S,/datum/Body/Arm) || istype(S,/datum/Body/Leg) || istype(S,/datum/Body/Organs) || istype(S,/datum/Body/Head/Brain)) continue
+		if(istype(S,/datum/Body/Arm) || istype(S,/datum/Body/Leg) || istype(S,/datum/Body/Organs) || istype(S,/datum/Body/Head/Brain) || istype(S,/datum/Body/Tail)) continue //Tail (Saiyan) has no paperdoll art -> it would otherwise fall through to the DEFAULT torso.dmi and stamp a 2nd torso band tinted by TAIL hp, mis-colouring the chest
 		//reasoning for excluding organs/brain this is because brain doesn't have a seperate status icon. We only show what's needed, and also adding duplicate overlays screws shit. Reproductive organs are shown and have status icons, so they're good.
 		var/bodytype = 'health_hud_torso.dmi'
 		switch(S.type)

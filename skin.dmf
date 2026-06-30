@@ -3911,65 +3911,17 @@ window "rpane"
 		can-minimize = false
 		can-resize = false
 		is-pane = true
-	elem "button4"
-		type = BUTTON
-		pos = 144,472
-		size = 136x20
-		anchor1 = 26,96
-		anchor2 = 51,100
-		text-color = #d6d9df
-		background-color = #15171c
-		border = sunken
-		saved-params = "is-checked"
-		text = "LOOC"
-		command = "LOOC2 "
 	elem "rpanechild"
 		type = CHILD
 		pos = 0,0
-		size = 552x472
+		size = 552x490
 		anchor1 = 0,0
-		anchor2 = 100,96
+		anchor2 = 100,100
 		background-color = #15171c
 		saved-params = "splitter"
 		left = "Infopane"
-		right = "Chatswitch"
+		right = "Chatpane"
 		is-vert = false
-	elem "oocbutton"
-		type = BUTTON
-		pos = 0,472
-		size = 144x20
-		anchor1 = 0,96
-		anchor2 = 26,100
-		text-color = #d6d9df
-		background-color = #15171c
-		border = sunken
-		saved-params = "is-checked"
-		text = "OOC"
-		command = "OOC2 "
-	elem "button5"
-		type = BUTTON
-		pos = 280,472
-		size = 136x20
-		anchor1 = 51,96
-		anchor2 = 75,100
-		text-color = #d6d9df
-		background-color = #15171c
-		border = sunken
-		saved-params = "is-checked"
-		text = "Say"
-		command = "Say2"
-	elem "button6"
-		type = BUTTON
-		pos = 416,472
-		size = 136x20
-		anchor1 = 75,96
-		anchor2 = 100,100
-		text-color = #d6d9df
-		background-color = #15171c
-		border = sunken
-		saved-params = "is-checked"
-		text = " Emote"
-		command = "Roleplay2"
 
 window "sensewindow"
 	elem "sensewindow"
