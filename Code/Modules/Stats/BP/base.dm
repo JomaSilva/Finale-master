@@ -74,9 +74,6 @@ mob/proc/powerlevel()
 	if(BP==0)return
 	CHECK_TICK
 	kiratio = max((Ki/MaxKi),0.6)
-	var/kiratiobuff = 0
-	if(kiratio > 1)
-		kiratiobuff =  min(kiratio ** powerMult, 2) //cap the 'Ki above 100%' overcharge at 2x (was unbounded; with Brutal Clarity / Extreme Burst it ballooned BP ~10x)
 	hpratio = max((HP/100),0.6)
 	CHECK_TICK
 	staminaratio = max((staminadeBuff/100),0.3)
@@ -86,10 +83,10 @@ mob/proc/powerlevel()
 	formBuff = ssjBuff * transBuff * formsBuff * gateBuff * HellstarBuff//buff chunk 2 does not get capped
 	CHECK_TICK
 	deBuff = 1/max((weight*BPrestriction*splitformdeBuff),1) //anything in the divisor
-	statusBuff = (max(kiratio,kiratiobuff)*hpratio*staminaratio) //energy, hp -- don't add or subtract shit, no wonder everything was haywire
+	statusBuff = (kiratio*hpratio*staminaratio) //Ki overcharge is now PURELY LINEAR: Ki% == multiplier (100%=1x, 200%=2x, 300%=3x...). Was max(kiratio, min(kiratio**powerMult,2)) which inflated the 100-200% band (150%->1.66x, 175%->2x) before going linear above 200%. (hpratio/staminaratio still modulate when hurt/tired; at full HP/stamina the Ki bonus == Ki% exactly.)
 	fusionBuff = max(FuseDanceMod * FPotaraMod,1)
 	CHECK_TICK
-	angerBuff = Anger/100 //anger
+	angerBuff = min(Anger/100, 2 + legendaryAngerBonus/100) //anger -> BP multiplier, CAPPED at 2x (or 3x for LSSJ with the Legendary Anger skill: legendaryAngerBonus=100 -> +1x). Was uncapped (Anger/100, up to MaxAnger/100), so boosted rage stacked to ~4x+ and ballooned BP on top of the Ki overcharge (the "rage + 230% Ki -> 10x" the player saw was rage, not Ki)
 	gravFelt = 1
 	gravFelt = GravMastered/max(1,(Planetgrav+gravmult))
 	expressedAdd =  HVBPExpAdd + MagAdd + TMagAdd

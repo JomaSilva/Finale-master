@@ -1,4 +1,9 @@
 mob/var/tmp/inZanzoClash = 0
+mob/var/tmp/lastMeleeTick = 0   //world.time of this mob's most recent landed melee (for ZanzoClash simultaneous-strike detection)
+mob/var/tmp/lastMeleeFoe        //the mob it last landed that melee on
+mob/var/tmp/zanzoRollCool = 0   //world.time gate so a sustained mutual exchange rolls ZanzoClash at most once per zanzoClashRollCD
+var/zanzoClashWindow = 7        //deciseconds: two fighters' blows count as "at the same time" if landed within this gap (tunable)
+var/zanzoClashRollCD = 10       //deciseconds between a fighter's ZanzoClash 50% rolls -- so a sustained exchange rolls per-exchange, not per-tick (tunable)
 // Dynamic combat animation: when two fighters who both know Zanzoken (lvl>=1) trade blows at the
 // same instant, there's a chance they blur into a flurry of teleports around each other, each blink
 // tearing up the ground with shockwaves/craters. Built on the existing simultaneous-strike effects.
@@ -47,6 +52,8 @@ mob/proc/ZanzoClash(var/mob/M)
 	zanzo_settle(M, range) //end face-to-face, one empty tile apart, never inside a wall
 	inZanzoClash = 0
 	M.inZanzoClash = 0
+	zanzoRollCool = world.time + 30 //~3s breather after a clash so two Afterimage users don't chain clashes back-to-back into a constant teleport storm (tunable)
+	M.zanzoRollCool = world.time + 30
 	if(!KO && !M.KO)
 		view(src) << output("<font color=#aaeeff>[src] and [M] flicker back into view, the ground shattered around them!</font>","Chatpane.Chat")
 		chatcast(view(src), "<font color=#aaeeff>[src] and [M] flicker back into view, the ground shattered around them!</font>", "combat")
@@ -150,6 +157,16 @@ mob/proc/commonAttackProcs(var/mob/M,testactspeed,barrage)
 	if(Anger>100)
 		Anger-=((MaxAnger-100)/8000)
 	canbeleeched=1
+	//ZanzoClash: BOTH fighters have the Afterimage skill (haszanzo) and land melee on each OTHER at ~the same instant
+	//(a mutual exchange within zanzoClashWindow -- works facing-off OR via a Zanzoken closing strike) -> 50% chance to
+	//erupt into a full teleport clash. Independent of knockback / BP>=1000 / facing (the old trigger required all three + only prob(25)).
+	if(!barrage && haszanzo && M.haszanzo && !inZanzoClash && !M.inZanzoClash && move && M.move && !KO && !M.KO && !dead && !M.dead)
+		if(M.lastMeleeFoe == src && (world.time - M.lastMeleeTick) <= zanzoClashWindow && world.time >= zanzoRollCool && world.time >= M.zanzoRollCool)
+			zanzoRollCool = world.time + zanzoClashRollCD //one exchange = one roll (not every tick of a sustained flurry)
+			M.zanzoRollCool = world.time + zanzoClashRollCD
+			if(prob(50)) spawn ZanzoClash(M)
+	lastMeleeTick = world.time //record THIS strike so the foe's next blow can detect the mutual exchange
+	lastMeleeFoe = M
 	if(!rand_step_cool && !M.rand_step_cool && !barrage && knockbackon && !M.KO && M.dir == get_dir(M,src))
 		var/nu = 1
 		if(M.expressedBP >= 1000 && expressedBP >= 1000 && M.haszanzo && haszanzo) nu = rand(5,11)
@@ -160,8 +177,7 @@ mob/proc/commonAttackProcs(var/mob/M,testactspeed,barrage)
 			emit_Sound('teleport.wav')
 			rand_step_cool += 50
 			M.rand_step_cool += 50
-			if(haszanzo >= 1 && M.haszanzo >= 1 && !inZanzoClash && !M.inZanzoClash && prob(25))
-				spawn ZanzoClash(M) //chance to erupt into a full teleport clash
+			//(ZanzoClash now triggers from the mutual-strike check above, not from this knockback-only path)
 			var/token_strength
 			if(M.expressedBP >= 10000 && expressedBP >= 10000 && M.knockbackon)
 				token_strength++
