@@ -95,9 +95,9 @@ mob/proc/sayType(var/msg,var/typeversion)
 			WriteToLog("rplog","[src]([src.key])(LOOC): [msg]   ([time2text(world.realtime,"Day DD hh:mm")])")
 			if(Fusee && !isnamekd)
 				for(var/mob/M in view(screenx,Fusee))
-					M.TestListeners("<font size=3><[OOCColor]>[src]([src.key])(LOOC): [msg]</font></font>",1)
+					M.TestListeners("<font size=3><[OOCColor]>[src]([src.key])(LOOC): [html_encode(msg)]</font></font>",1)
 			for(var/mob/M in view(screenx,src))
-				M.TestListeners("<font size=3><[OOCColor]>[src]([src.key])(LOOC): [msg]</font></font>",1)
+				M.TestListeners("<font size=3><[OOCColor]>[src]([src.key])(LOOC): [html_encode(msg)]</font></font>",1)
 			chatcast(view(screenx,src), "<[OOCColor]>[name]([key])(LOOC): [html_encode(msg)]</font>", "looc")
 
 mob/verb

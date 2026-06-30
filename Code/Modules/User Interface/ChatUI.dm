@@ -35,6 +35,15 @@ var/CHAT_PAGE = {"
  .c-combat{border-left-color:#d65a5a;background:rgba(214,90,90,0.07)}
  .c-announce{border-left-color:#e0a030;background:rgba(224,160,48,0.10)}
  .c-system{border-left-color:#3a3f47}
+ #inbar{display:flex;align-items:center;gap:5px;padding:6px;background:#15171c;border-top:1px solid #23262e;flex-shrink:0;position:relative}
+ #emoji{background:#1b1e25;color:#c8cdd6;border:0;border-radius:6px;width:30px;height:28px;font-size:15px;cursor:pointer;flex-shrink:0;line-height:1;padding:0}
+ #emoji:hover{background:#2b303a}
+ #msg{flex:1;min-width:0;background:#0f1115;color:#e6e9ef;border:1px solid #2b303a;border-radius:6px;padding:6px 8px;font-size:12px;outline:none;font-family:inherit}
+ #msg:focus{border-color:#3a4150}
+ #chan{background:#1b1e25;color:#c8cdd6;border:1px solid #2b303a;border-radius:6px;padding:5px 4px;font-size:11px;font-weight:bold;cursor:pointer;flex-shrink:0;outline:none}
+ #emojibox{display:none;position:absolute;left:6px;bottom:42px;width:212px;max-height:92px;overflow-y:auto;background:#1b1e25;border:1px solid #2b303a;border-radius:8px;padding:6px;z-index:10;box-shadow:0 6px 16px rgba(0,0,0,0.55)}
+ #emojibox span{display:inline-block;width:26px;height:25px;text-align:center;font-size:16px;cursor:pointer;border-radius:5px;line-height:25px}
+ #emojibox span:hover{background:#2b303a}
 </style>
 <script>
 var curTab='all';
@@ -55,6 +64,13 @@ function setTab(t){
  for(i=0;i<ls.length;i++){ flt(ls.item(i)); }
  document.getElementById('log').scrollTop=document.getElementById('log').scrollHeight;
 }
+function cpToStr(cp){ if(cp>0xFFFF){ cp-=0x10000; return String.fromCharCode(0xD800+(cp>>10),0xDC00+(cp&0x3FF)); } return String.fromCharCode(cp); }
+function buildEmoji(){ var b=document.getElementById('emojibox'); if(!b){return;} var parts="128512,128514,129315,128517,128521,128526,128525,128557,128561,128545,129300,128064,128077,128078,128591,128170,128293,128165,9889,10024,10084,128128,127881,128009".split(","), h='', cp; while(parts.length){ cp=parts.shift(); h+="<span onclick='addEmoji("+cp+")'>&#"+cp+";</span>"; } b.innerHTML=h; }
+function toggleEmoji(){ var b=document.getElementById('emojibox'); if(!b){return;} b.style.display=(b.style.display=='block')?'none':'block'; }
+function addEmoji(cp){ var inp=document.getElementById('msg'); if(!inp){return;} inp.value=inp.value+cpToStr(cp); inp.focus(); var b=document.getElementById('emojibox'); if(b){ b.style.display='none'; } }
+function navByond(u){ try{ var a=document.createElement('a'); a.href=u; document.body.appendChild(a); if(a.click){ a.click(); document.body.removeChild(a); return; } }catch(e){} try{ window.location=u; }catch(e2){} }
+function sendMsg(){ var inp=document.getElementById('msg'); if(!inp){return;} var txt=inp.value; var t=(txt&&txt.trim)?txt.trim():txt; if(!t){ inp.value=''; return; } var sel=document.getElementById('chan'); var cat=sel?sel.value:'say'; navByond('byond://?src=__REF__;saySend=1;cat='+cat+';msg='+encodeURIComponent(t)); inp.value=''; inp.focus(); }
+function onMsgKey(e){ e=e||window.event; var k=e.keyCode||e.which; if(k==13){ if(e.preventDefault){e.preventDefault();} sendMsg(); return false; } return true; }
 </script>
 </head><body><div id='wrap'>
 <div id='tabs'>
@@ -68,8 +84,20 @@ function setTab(t){
 <span class='tab' data-t='announce' onclick="setTab('announce')">Events</span>
 </div>
 <div id='log'></div>
+<div id='inbar'>
+<button id='emoji' type='button' onclick='toggleEmoji()' title='Emoji'>&#128512;</button>
+<input id='msg' type='text' maxlength='500' autocomplete='off' placeholder='Type a message and press Enter...' onkeydown='return onMsgKey(event)'>
+<select id='chan' title='Channel'>
+<option value='say'>Say</option>
+<option value='emote'>Emote</option>
+<option value='ooc'>OOC</option>
+<option value='looc'>LOOC</option>
+</select>
+<div id='emojibox'></div>
+</div>
 </div>
 <script>
+buildEmoji();
 (function(){
  var done=false, url='byond://?src=__REF__;chatReady=1';
  function ping(){

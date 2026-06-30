@@ -47,6 +47,7 @@ mob/proc/KO(var/KOtimer, var/ForceKO)
 		chatcast(view(src), "[src] is knocked out!", "combat")
 		WriteToLog("rplog","[src] is knocked out!    ([time2text(world.realtime,"Day DD hh:mm")])")
 		KO=1
+		defuse_on_downed() //getting downed separates any active (temporary) fusion
 		LastKO=10000/Anger
 		if(ForceKO)
 			LastKO*= 0.5

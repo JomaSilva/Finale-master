@@ -644,6 +644,16 @@ mob/Topic(href, list/href_list)
 	if(href_list["chatReady"]) //the HTML chat page finished loading -> replay the backlog, then go live
 		if(!chatUIready) FlushChat()
 		return
+	if(href_list["saySend"]) //a message typed into the HTML chat input bar -> route to the chosen say channel
+		var/msg = href_list["msg"]
+		if(isnull(msg)) return
+		msg = copytext(msg, 1, 1000)
+		switch(href_list["cat"]) //every sayType path html_encodes msg internally, so no extra injection guard is needed
+			if("ooc") sayType(msg,1)
+			if("looc") sayType(msg,6)
+			if("emote") sayType(msg,5)
+			else sayType(msg,3)
+		return
 	if(href_list["statsTab"])
 		statsUItab = href_list["statsTab"]
 		last_stats_html = "" //force re-render on tab change

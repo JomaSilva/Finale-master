@@ -10,17 +10,19 @@ mob/proc/CheckIncarnate()
 			to_chat(src, "You just had a reincarnation bonus applied to this character!")
 
 mob/proc/Reincarnate()
-	if(Fusee&&!FuseTimer)
-		to_chat(Fusee, "[src] made the fusion permanent.")
-		Fusee.BP += BP
-		for(var/datum/Fusion/F)
-			if(F.KeeperSig==signature||F.LoserSig==signature)
-				if(F.IsActiveForKeeper||F.IsActiveForLoser)
-					F.OtherReincarnated = 1
-					F.IsActiveForLoser = 0
-	else if(FuseTimer)
+	var/datum/Fusion/MF = my_active_fusion()
+	if(Fusee && MF && MF.FType == 3 && MF.Keeper) //passenger in a permanent (Namekian) fusion -> permanently fold your power into the controller
+		MF.Keeper.FuseBuff -= MF.KeeperFuseDelta //drop the temporary doubled buff...
+		MF.Keeper.BP += BP //...and absorb the partner's BP into the controller (no double-count)
+		MF.CompletelyPerm = 1
+		MF.OtherReincarnated = 1
+		MF.IsActiveForLoser = 0
+		to_chat(MF.Keeper, "[src] becomes one with you - their power is now permanently yours.")
+	else if(Fusee && MF) //passenger in a temporary fusion -> can't reincarnate yet
 		to_chat(usr, "The fusion is temporary! Wait until it's over.")
 		return
+	var/datum/Fusion/KF = active_fusion_as_keeper()
+	if(KF) KF.Defuse(1) //I am the controller leaving this character -> split first so my partner is not stranded
 	to_chat(src, "Don't log off. You may lose some bonuses you'd normally have. You must create a new character to claim these bonuses within this login session.")
 	do_reincarnation()
 mob/proc/do_reincarnation()

@@ -125,8 +125,6 @@ mob/proc
 		else if(Ki<=MaxKi&&overcharge) overcharge=0
 		if((kiratio>1&&!KO)) //Ki drain.
 			if(baseKi<=baseKiMax) baseKi+=kicapcheck(0.005*BPrestriction*KiMod*powerMod)
-		if(kiratio>1&&FuseTimer)
-			FuseTimer-= (1 * kiratio) //If you're fused, powering up will fuck with it.
 
 mob/var
 	tmp/overcharge = 0 //whether or not the energy you have hurts you/decreases.

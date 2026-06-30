@@ -1,26 +1,83 @@
 var
 	list/FusionDatabase = list()
+	//--- Fusion Energy: drains over time. base drain 1/sec; a transformation adds (form mult / 50) per sec. ---
+	FUSION_DANCE_ENERGY = 900   //Fusion Dance: 900 energy = 15 min at base drain
+	FUSION_POTARA_ENERGY = 1800 //Potara Fusion: 1800 energy = 30 min at base drain
+	FUSION_COOLDOWN = 36000     //1h per-player cooldown after a fusion ends (world.realtime is in deciseconds)
+	//--- legacy globals (kept declared; the new logic no longer uses them) ---
 	DanceMod = 1.5
 	PotaraMod = 2.5
-	FuseTimeMin = 7000 //a little more than ten minutes is the minimum fusion time
-	FuseTimeMax = 36000 //lasts 1 hour at most.
+	FuseTimeMin = 7000
+	FuseTimeMax = 36000
 
 mob
 	var
-		FuseBuff
-		FuseDanceMod =1
-		FPotaraMod =1
-		FuseTimer = 0
-		PotaraTimer //Automagically set to FuseTimeMax when it matters, but it's nice as a reminder. Potara timers take after God ki.
+		FuseBuff //additive BP added to the controller so base BP = (BP_keeper + BP_loser) * 2
+		FuseDanceMod =1 //legacy: base.dm reads FuseDanceMod*FPotaraMod for fusionBuff; kept at 1 (fusion power now comes from FuseBuff)
+		FPotaraMod =1   //legacy: idem
+		FuseTimer = 0   //legacy (unused)
+		PotaraTimer     //legacy (unused)
 		FDanceClothes = 'Clothes_FusionPads.dmi'
 		PotaraEarringIcon = 'potara.dmi'
-		FDanceSkill = 0.25 //caps at 1.25. Increases by 0.25 each time you fuse.
+		FDanceSkill = 0.25 //legacy (unused)
 		fusing=0
 		tmp/mob/Fusee = null
 		isnamekd=0
+		tmp/FusionEnergy = 0      //mirror of the active fusion datum, for display
+		tmp/FusionEnergyMax = 0   //mirror of the active fusion datum, for display
+		fusion_cooldown_until = 0 //world.realtime until which this player cannot fuse again (persistent)
+		tmp/fusing_now = 0 //synchronous in-progress guard (closes the Potara double-fuse race)
 
-proc/FusionEquation(var/InputBP)
-	return max((FuseTimeMax / (log(InputBP)/5.5)),FuseTimeMin)
+mob/proc/current_form_mult() //the fused warrior's live transformation multiplier (drives the fusion-energy drain)
+	var/g = 0
+	if(godki && godki.usage) g = god_form_mult() //God forms (SSJG 22x / Blue-Rose 32x / Evolved 56x) live in god_form_mult, not ssjBuff
+	return max(g ? g : (ssjBuff * transBuff * formsBuff), 1)
+
+mob/proc/fusion_fresh_body() //a Fusion is a brand-new person: restore every limb to whole (no inherited lost limbs)
+	for(var/datum/Body/B in body)
+		if(B.lopped) B.RegrowLimb()
+		B.health = B.maxhealth
+
+mob/proc/fusion_snapshot_lopped() //record which limbs are missing so Defuse can re-apply them (no free regen exploit)
+	var/list/L = list()
+	for(var/datum/Body/B in body)
+		if(B.lopped) L += "[B.type]"
+	return L
+
+mob/proc/fusion_restore_lopped(var/list/types) //re-sever the limbs that were missing before the fusion
+	if(!types || !types.len) return
+	for(var/datum/Body/B in body)
+		if("[B.type]" in types)
+			B.lopped = 1
+			B.health = 0
+			B.status = "Missing"
+
+mob/proc/fusion_on_cooldown()
+	return (world.realtime < fusion_cooldown_until)
+
+mob/proc/in_active_fusion()
+	for(var/datum/Fusion/F in FusionDatabase)
+		if(F.IsActiveForKeeper && F.KeeperSig == signature) return 1
+		if(F.IsActiveForLoser && F.LoserSig == signature) return 1
+	return 0
+
+mob/proc/my_active_fusion()
+	for(var/datum/Fusion/F in FusionDatabase)
+		if(F.IsActiveForKeeper || F.IsActiveForLoser)
+			if(F.KeeperSig == signature || F.LoserSig == signature) return F
+	return null
+
+mob/proc/active_fusion_as_keeper()
+	for(var/datum/Fusion/F in FusionDatabase)
+		if(F.IsActiveForKeeper && F.KeeperSig == signature) return F
+	return null
+
+mob/proc/defuse_on_downed() //"Getting downed will separate the fusion" (called from KO())
+	for(var/datum/Fusion/F in FusionDatabase)
+		if(F.KeeperSig == signature || F.LoserSig == signature)
+			if(F.IsActiveForKeeper || F.IsActiveForLoser)
+				if(F.FType == 3) continue //Namekian fusion is permanent - a KO does not split it
+				F.Defuse(1)
 
 datum/Fusion
 	var/tmp/mob/Keeper
@@ -41,6 +98,14 @@ datum/Fusion
 	var/OtherReincarnated
 	var/LoserBackupLoc
 	var/CompletelyPerm
+	//--- new fusion model ---
+	var/FusedBaseBP = 0      //(BP_keeper + BP_loser) * 2, snapshot at fuse time (symmetric)
+	var/KeeperFuseDelta = 0  //amount currently added to the Keeper's FuseBuff (= FusedBaseBP - Keeper.BP)
+	var/FusionEnergy = 0     //authoritative remaining energy
+	var/FusionEnergyMax = 0  //0 for permanent (Namekian) fusions
+	var/tmp/EnergyRunning = 0 //guard so only one drain loop runs (tmp so a server reboot can't freeze a saved fusion)
+	var/KeeperOrigSpace = 0  //the controller's spacebreather before fusing (restored on defuse)
+	var/list/KeeperLoppedTypes //limbs missing before fusing, re-applied on defuse
 	//
 	//Customization stuff
 	var/icon/FuseIcon
@@ -145,7 +210,7 @@ datum/Fusion
 		if(FType==1) Keeper.updateOverlay(/obj/overlay/clothes/FusionPads)
 		if(FType==2) Keeper.updateOverlay(/obj/overlay/clothes/PotaraEarrings)
 	proc/undoOverlays()
-		Keeper.name = OldName
+		if(!isnull(OldName)) Keeper.name = OldName
 		Keeper.overlayList -= FuseOverlays
 		Keeper.overlaychanged=1
 		if(FuseIcon)
@@ -187,109 +252,153 @@ datum/Fusion
 
 	proc/Fuse()
 		CheckOnline()
-		if(Keeper&&Loser)
-			LoserContributedBP = Loser.BP
-			Keeper.FuseBuff += LoserContributedBP
-			switch(FType)
-				if(1)
-					Keeper.FDanceSkill += min((Keeper.FDanceSkill+0.25),1.5)
-					Loser.FDanceSkill += min((Loser.FDanceSkill+0.25),1.5)
-					FusionSkill = (Keeper.FDanceSkill + Loser.FDanceSkill)/2
-					PowerEqual = Keeper.expressedBP / Loser.expressedBP
-					PowerEqual = min(2,PowerEqual)
-					PowerEqual = (-((PowerEqual-1)**2) + 1)
-					if(PowerEqual<=0.05)
-						to_chat(Keeper, "You botched the fusion! Your power needs to be within two times each other!")
-						to_chat(Loser, "You botched the fusion! Your power needs to be within two times each other!")
-					else PowerEqual = 1
-					Keeper.FuseDanceMod += DanceMod * FusionSkill
-					Keeper.FuseTimer = FusionEquation(Keeper.expressedBP)
-					if(FusionSkill<1)
-						to_chat(Keeper, "You botched the fusion! You need to try it again in order to get it right!")
-						to_chat(Loser, "You botched the fusion! You need to try it again in order to get it right!")
-					spawn Keeper.FuseCheck()
-				if(2)
-					Keeper.FPotaraMod+= PotaraMod
-				if(3)
-					Loser.isnamekd = 1
-					to_chat(Keeper, "You feel [Loser] deep inside you. Is this the true dose?")
-			Loser.verblist += /verb/Set_Fusion_View
-			Loser.verbs += /verb/Set_Fusion_View
-			LoserBackupLoc = Loser.loc
-			Loser.Fusee = Keeper
-			IsActiveForKeeper = 1
-			IsActiveForLoser = 1
-			sleep(5)
-			Loser.GotoPlanet("Sealed")
-			Customize()
-			doOverlays()
-		else return
+		if(!(Keeper && Loser)) return
+		//--- BP: the fusion's base power = both fighters' BP summed, then doubled ---
+		FusedBaseBP = (Keeper.BP + Loser.BP) * 2
+		KeeperFuseDelta = FusedBaseBP - Keeper.BP
+		Keeper.FuseBuff += KeeperFuseDelta
+		//--- Fusion Energy (Dance/Potara are temporary; Namekian is permanent) ---
+		switch(FType)
+			if(1) FusionEnergyMax = FUSION_DANCE_ENERGY
+			if(2) FusionEnergyMax = FUSION_POTARA_ENERGY
+			else  FusionEnergyMax = 0
+		FusionEnergy = FusionEnergyMax
+		Keeper.FusionEnergy = FusionEnergy
+		Keeper.FusionEnergyMax = FusionEnergyMax
+		//--- brand-new person: whole body (temporary) + only Vacuum Breathing carries over ---
+		KeeperLoppedTypes = Keeper.fusion_snapshot_lopped()
+		Keeper.fusion_fresh_body()
+		KeeperOrigSpace = Keeper.spacebreather
+		if(Loser.spacebreather) Keeper.spacebreather = 1
+		if(FType==3) Loser.isnamekd = 1
+		//--- park the Loser as a sealed spectator passenger ---
+		Loser.verblist |= /verb/Set_Fusion_View
+		Loser.verbs += /verb/Set_Fusion_View
+		LoserBackupLoc = Loser.loc
+		Loser.Fusee = Keeper
+		IsActiveForKeeper = 1
+		IsActiveForLoser = 1
+		sleep(5)
+		if(!(IsActiveForKeeper && Keeper && Loser)) return //defused (e.g. KO) during the brief setup window
+		Loser.GotoPlanet("Sealed")
+		Customize()
+		if(!(IsActiveForKeeper && Keeper)) return //defused during the blocking customize prompt
+		doOverlays()
+		if(FusionEnergyMax > 0) spawn EnergyLoop()
 
 	proc/Defuse(var/Forced)
 		CheckOnline()
-		if(CompletelyPerm)
-			return
-		if(Keeper&&Loser&&IsActiveForLoser&&IsActiveForKeeper)
-			switch(FType)
-				if(1)//Dance
-					Keeper.FuseBuff -= LoserContributedBP
-					Keeper.FuseDanceMod -= DanceMod * FusionSkill
-					IsActiveForKeeper = 0
-					undoOverlays()
-				if(2)//Potara
-					if(LoseItFlag||Forced)
-						Keeper.FuseBuff -= LoserContributedBP
-						Keeper.FPotaraMod-= PotaraMod
-						IsActiveForKeeper = 0
-						undoOverlays()
-				if(3)//NamekFusion
-					if(LoseItFlag||Forced)
-						Keeper.FuseBuff -= LoserContributedBP
-						IsActiveForKeeper = 0
-						Loser.isnamekd = 0
-						undoOverlays()
-			if(LoseItFlag||FType==1||Forced)
-				Loser.verblist -= /verb/Set_Fusion_View
-				Loser.verbs -= /verb/Set_Fusion_View
-				Loser.loc = locate(Keeper.x,Keeper.y,Keeper.z)
-				Loser.Fusee = null
-				IsActiveForLoser = 0
-		if(Keeper&&IsActiveForKeeper)
-			if(FType!=1&&OtherReincarnated)
-				var/choice = alert(usr,"Your fusion is technically permanent, and the other person has reincarnated. Do you want to cancel the potential defuse and make this truly permanent? (OOC: Changes will be part of your core character.) Even Admins can't undo this!","","No","Yes")
-				if(choice=="Yes")
-					CompletelyPerm = 1
-					Keeper.FuseBuff -= LoserContributedBP
-					if(FType==2)
-						Keeper.FPotaraMod -= PotaraMod
-						LoserContributedBP *= PotaraMod
-					Keeper.BP += LoserContributedBP
-					return
-			switch(FType)
-				if(1)//Dance
-					Keeper.FuseBuff -= LoserContributedBP
-					Keeper.FuseDanceMod -= DanceMod * FusionSkill * PowerEqual
-					IsActiveForKeeper = 0
-					undoOverlays()
-				if(2)//Potara
-					if(LoseItFlag||Forced)
-						Keeper.FuseBuff -= LoserContributedBP
-						Keeper.FPotaraMod-= PotaraMod
-						IsActiveForKeeper = 0
-						undoOverlays()
-				if(3)//NamekFusion
-					if(LoseItFlag||Forced)
-						Keeper.FuseBuff -= LoserContributedBP
-						IsActiveForKeeper = 0
-						undoOverlays()
-		if(Loser&&IsActiveForLoser)
-			if(LoseItFlag||FType==1||Forced)
-				Loser.verblist -= /verb/Set_Fusion_View
-				Loser.verbs -= /verb/Set_Fusion_View
-				Loser.loc = LoserBackupLoc
-				Loser.Fusee = null
-				IsActiveForLoser = 0
+		if(CompletelyPerm) return
+		if(FType == 3 && !Forced) return //Namekian fusion is permanent unless forced (admin) or made core-permanent below
+		//--- passenger reincarnated out of a permanent (Namek) fusion -> option to bake it in for good ---
+		if(Keeper && IsActiveForKeeper && FType == 3 && OtherReincarnated)
+			var/choice = "Yes"
+			if(Keeper.client) choice = alert(Keeper,"Your fusion is permanent and your partner reincarnated. Make this truly permanent? (OOC: it becomes part of your core character - not even Admins can undo it.)","","No","Yes")
+			if(choice == "Yes")
+				CompletelyPerm = 1
+				Keeper.BP = FusedBaseBP //bake the full fused power into real BP
+				Keeper.FuseBuff -= KeeperFuseDelta
+				Keeper.FusionEnergy = 0
+				Keeper.FusionEnergyMax = 0
+				return
+		//--- restore the controller ---
+		if(Keeper && IsActiveForKeeper)
+			Keeper.FuseBuff -= KeeperFuseDelta
+			Keeper.FusionEnergy = 0
+			Keeper.FusionEnergyMax = 0
+			undoOverlays()
+			Keeper.spacebreather = KeeperOrigSpace //don't leak Vacuum Breathing past the fusion
+			Keeper.fusion_restore_lopped(KeeperLoppedTypes) //re-apply limbs that were missing before fusing
+			IsActiveForKeeper = 0
+			Keeper.fusion_cooldown_until = world.realtime + FUSION_COOLDOWN
+			to_chat(Keeper, "<font color=yellow>You split back apart!</font>")
+		//--- restore the passenger ---
+		if(Loser && IsActiveForLoser)
+			Loser.verblist -= /verb/Set_Fusion_View
+			Loser.verbs -= /verb/Set_Fusion_View
+			if(Loser.client && Loser.observingnow)
+				Loser.client.perspective = MOB_PERSPECTIVE
+				Loser.client.eye = Loser
+				Loser.observingnow = 0
+			Loser.loc = LoserBackupLoc ? LoserBackupLoc : (Keeper ? locate(Keeper.x,Keeper.y,Keeper.z) : Loser.loc)
+			Loser.Fusee = null
+			Loser.isnamekd = 0
+			IsActiveForLoser = 0
+			Loser.fusion_cooldown_until = world.realtime + FUSION_COOLDOWN
 		return TRUE
+
+	proc/EnergyLoop() //drains the fusion energy in real time; defuses when it hits 0
+		if(EnergyRunning) return
+		EnergyRunning = 1
+		var/lastrt = world.realtime
+		while(IsActiveForKeeper && FusionEnergy > 0 && Keeper)
+			sleep(10) //~1s tick; exact drain uses the realtime delta so fps/lag do not distort it
+			if(!IsActiveForKeeper || !Keeper) break
+			var/nowrt = world.realtime
+			var/dt = (nowrt - lastrt) / 10 //seconds elapsed (world.realtime is in deciseconds)
+			lastrt = nowrt
+			if(dt <= 0) continue
+			var/fm = Keeper.current_form_mult()
+			var/drainrate = 1 + (fm > 1 ? fm / 50 : 0) //base 1/sec; a form adds form_mult/50
+			FusionEnergy -= drainrate * dt
+			Keeper.FusionEnergy = max(FusionEnergy, 0)
+			Keeper.FusionEnergyMax = FusionEnergyMax
+			if(FusionEnergy <= 0)
+				to_chat(Keeper, "<font color=yellow>Your fusion runs out of energy and splits apart!</font>")
+				Defuse()
+				break
+		EnergyRunning = 0
+
+	proc/PassControl() //hand control of the fused warrior to the other player (symmetric: same power)
+		CheckOnline()
+		if(!(Keeper && Loser && IsActiveForKeeper && IsActiveForLoser)) return
+		if(!Loser.client) return //the other half must be online to take over
+		var/mob/oldK = Keeper
+		var/mob/oldL = Loser
+		var/turf/bodyloc = locate(oldK.x, oldK.y, oldK.z)
+		//--- strip the fused identity + BP + temporary traits from the old controller ---
+		undoOverlays()
+		oldK.FuseBuff -= KeeperFuseDelta
+		oldK.FusionEnergy = 0
+		oldK.FusionEnergyMax = 0
+		oldK.spacebreather = KeeperOrigSpace
+		oldK.fusion_restore_lopped(KeeperLoppedTypes)
+		//--- swap roles ---
+		Keeper = oldL
+		Loser = oldK
+		var/tmpsig = KeeperSig
+		KeeperSig = LoserSig
+		LoserSig = tmpsig
+		//--- seal the old controller as the new spectator passenger ---
+		Loser.verblist |= /verb/Set_Fusion_View
+		Loser.verbs |= /verb/Set_Fusion_View
+		LoserBackupLoc = bodyloc
+		Loser.Fusee = Keeper
+		if(Loser.client && Loser.observingnow)
+			Loser.client.perspective = MOB_PERSPECTIVE
+			Loser.client.eye = Loser
+			Loser.observingnow = 0
+		Loser.GotoPlanet("Sealed")
+		//--- bring the new controller out into the body ---
+		Keeper.verblist -= /verb/Set_Fusion_View
+		Keeper.verbs -= /verb/Set_Fusion_View
+		Keeper.Fusee = null
+		if(Keeper.client && Keeper.observingnow)
+			Keeper.client.perspective = MOB_PERSPECTIVE
+			Keeper.client.eye = Keeper
+			Keeper.observingnow = 0
+		Keeper.loc = bodyloc
+		KeeperFuseDelta = FusedBaseBP - Keeper.BP
+		Keeper.FuseBuff += KeeperFuseDelta
+		Keeper.FusionEnergy = max(FusionEnergy, 0)
+		Keeper.FusionEnergyMax = FusionEnergyMax
+		KeeperLoppedTypes = Keeper.fusion_snapshot_lopped()
+		Keeper.fusion_fresh_body()
+		KeeperOrigSpace = Keeper.spacebreather
+		if(oldK.spacebreather) Keeper.spacebreather = 1
+		doOverlays()
+		to_chat(Keeper, "<font color=yellow>You take control of the fused warrior!</font>")
+		to_chat(Loser, "<font color=yellow>You hand control of the fused warrior to your partner.</font>")
 
 	proc/MessageFusors(var/source,var/msg) //1 == Keeper, 2 == Loser
 		if(!source)
@@ -336,9 +445,12 @@ mob/Admin2/verb/Reset_Fusion(var/mob/M)
 				if(F.KeeperSig==signature||F.LoserSig==signature)
 					if(F.IsActiveForKeeper||F.IsActiveForLoser)
 						F.Defuse(1)
-			M.FuseBuff = 1
+			M.FuseBuff = 0
 			M.FuseDanceMod = 1
 			M.FPotaraMod = 1
+			M.FusionEnergy = 0
+			M.FusionEnergyMax = 0
+			M.fusion_cooldown_until = 0
 			M.verblist -= /verb/Set_Fusion_View
 			M.verbs -= /verb/Set_Fusion_View
 			M.Fusee = null
@@ -349,15 +461,23 @@ mob/proc/CheckFusion(var/RemoveReference)
 		if(F.LoserSig==signature) F.Loser = src
 	if(RemoveReference==1)
 		for(var/datum/Fusion/F in FusionDatabase)
-			if(F.KeeperSig==signature||F.LoserSig==signature)
-				if(F.FType==1)
-					F.undoOverlays()
+			if(F.KeeperSig==signature && F.IsActiveForKeeper) //only the CONTROLLER logging out reverts the fused look (relog re-applies it)
+				F.undoOverlays()
 	else if(RemoveReference==2)
 		for(var/datum/Fusion/F in FusionDatabase)
-			if(F.KeeperSig==signature)
+			if(F.KeeperSig==signature && F.IsActiveForKeeper)
 				F.Keeper = src
 				F.doOverlays()
-				if(FuseTimer >= 1) FuseCheck()
+				F.EnergyRunning = 0 //clear any stale (reboot-saved) guard so the drain loop actually restarts
+				if(F.FusionEnergyMax > 0) spawn F.EnergyLoop()
+			else if(F.LoserSig==signature && F.IsActiveForLoser)
+				F.Loser = src
+				Fusee = F.Keeper //re-link the spectator so Set_Fusion_View works after a relog
+		if(!in_active_fusion()) //un-strand: loaded inside the Sealed zone but no longer fused -> go home
+			var/turf/T = src.loc
+			if(isturf(T))
+				var/area/AR = T.loc //a turf loc IS its area in this engine
+				if(AR && AR.Planet == "Sealed" && spawnPlanet) spawn(10) GotoPlanet(spawnPlanet)
 	else for(var/datum/Fusion/F in FusionDatabase)
 		if(F.KeeperSig==signature||F.LoserSig==signature)
 			if(F.IsActiveForKeeper||F.IsActiveForLoser)
@@ -369,12 +489,7 @@ mob/proc/CheckFusion(var/RemoveReference)
 					F.Loser = null
 
 
-mob/proc/FuseCheck()
-	while(FuseTimer)
-		sleep(1)
-		FuseTimer-=1
-	if(FuseTimer<=0)
-		CheckFusion()
+//(FuseCheck removed - the energy drain is handled by datum/Fusion/EnergyLoop)
 
 
 verb/Set_Fusion_View()
@@ -388,7 +503,22 @@ verb/Set_Fusion_View()
 		usr.client.eye=usr
 		usr.observingnow=0
 
+mob/verb/Pass_Fusion_Control()
+	set category = "Other"
+	set name = "Pass Fusion Control"
+	var/datum/Fusion/F = active_fusion_as_keeper()
+	if(!F)
+		to_chat(usr, "You are not in control of a fusion.")
+		return
+	if(!F.Loser || !F.Loser.client)
+		to_chat(usr, "Your other half is not available to take control.")
+		return
+	F.PassControl()
+
 mob/proc/Fuse(var/mob/M,var/FuType)
+	if(in_active_fusion() || M.in_active_fusion() || fusing_now || M.fusing_now) return //guard: closes the Potara double-loop race + any double-fuse
+	fusing_now = 1
+	M.fusing_now = 1
 	var/FusionExists
 	if(M.name == name)
 		M.name += "1"
@@ -406,6 +536,8 @@ mob/proc/Fuse(var/mob/M,var/FuType)
 		F.LoserSig = M.signature
 		F.FType = FuType
 		F.Fuse()
+	fusing_now = 0 //fusion resolved (or aborted); release the in-progress guard
+	M.fusing_now = 0
 
 obj/Namekian_Fusion/verb/Namekian_Fusion()
 mob/keyable/verb/Namekian_Fusion()
@@ -415,12 +547,19 @@ mob/keyable/verb/Namekian_Fusion()
 	if(!M) return
 	if(M==usr) return
 	if(M.Race!="Namekian") return
+	if(usr.Race!="Namekian") return
 	if(fusing) return
+	if(usr.in_active_fusion() || M.in_active_fusion())
+		to_chat(usr, "One of you is already fused!")
+		return
+	if(usr.fusion_on_cooldown() || M.fusion_on_cooldown())
+		to_chat(usr, "One of you is still on fusion cooldown (1 hour after a fusion ends).")
+		return
 	usr.fusing=1
-	switch(input(M,"[usr] wishes to do a fusion with you, you will receive the offerer's power.", "", text) in list ("No", "Yes",))
+	switch(input(M,"[usr] wishes to permanently fuse with you. [usr] will control the fused being.", "", text) in list ("No", "Yes",))
 		if("Yes")
 			to_chat(view(9), "<font color=yellow>[usr] fuses with [M]!")
-			M.Fuse(usr,3)
+			usr.Fuse(M,3) //initiator (usr) controls
 	usr.fusing=0
 
 mob/var/Wearing_Potara_Earrings
@@ -428,7 +567,7 @@ mob/var/Wearing_Potara_Earrings
 obj/items/Potara_Earring
 	name = "Potara Earring (Left)"
 	icon = 'potaraleft.dmi'
-	desc = "Read the fine print: These things make you fuse with somebody else PERMANENTLY. Only admins can defuse people who have Namekian Fused and Potara Fused!"
+	desc = "Potara earrings: pair two, wear them, and touching another wearer fuses you. Potara fusion lasts about 30 minutes (more Fusion Energy than the Dance). Whoever initiates controls; control can be passed."
 	SaveItem = 1
 	verb
 		Pair_Earring(var/obj/items/Potara_Earring/A in view())
@@ -518,6 +657,13 @@ obj/items/Potara_Earring
 				if(Fusee==Fusor)
 					return
 				if(ismob(Fusee)&&ismob(Fusor))
+					if(Fusor.fusion_on_cooldown() || Fusee.fusion_on_cooldown())
+						to_chat(Fusor, "One of you is still on fusion cooldown (1 hour after a fusion ends).")
+						IsFusing = 0
+						return
+					if(Fusor.in_active_fusion() || Fusee.in_active_fusion())
+						IsFusing = 0
+						return
 					IsFusing = 1
 					var/distance = round(get_dist(Fusor,Fusee))
 					walk_to(Fusor,Fusee,distance)
@@ -527,10 +673,7 @@ obj/items/Potara_Earring
 					IsFusing = 0
 					equipped = 0
 					Fusor.removeOverlay(/obj/overlay/clothes/PotaraEarring)
-					if(icon == 'potararight.dmi')
-						Fusor.Fuse(Fusee,2)
-					else
-						Fusee.Fuse(Fusor,2)
+					Fusor.Fuse(Fusee,2) //the one who initiates (walks in) controls; use Pass Fusion Control to switch
 					return
 				else to_chat(usr, "Neither the [Fusor] or [Fusee] were mobs!")
 			sleep(50)
@@ -560,14 +703,20 @@ obj/items/Potara_Earring/var
 
 obj/Fusion_dance/verb/Fusion_Dance()
 	set category="Skills"
-	if(usr.FuseTimer)
+	if(usr.in_active_fusion())
 		to_chat(usr, "You're already fused!")
 		return
 	var/mob/M=input("Who?") as null|mob in oview(1)
 	if(!M) return
 	if(M==usr) return
-	switch(input(M,"[usr] wishes to do the Fusion Dance with you, you will receive the offerer's power.", "", text) in list ("No", "Yes",))
+	if(M.in_active_fusion())
+		to_chat(usr, "[M] is already fused!")
+		return
+	if(usr.fusion_on_cooldown() || M.fusion_on_cooldown())
+		to_chat(usr, "One of you is still on fusion cooldown (1 hour after a fusion ends).")
+		return
+	switch(input(M,"[usr] wishes to do the Fusion Dance with you. [usr] will control the fused warrior.", "", text) in list ("No", "Yes",))
 		if("Yes")
 			to_chat(view(9), "<font color=yellow>[usr] fuses with [M]!")
 			usr.emit_Sound('fusion.wav')
-			M.Fuse(usr,1)
+			usr.Fuse(M,1) //initiator (usr) controls
