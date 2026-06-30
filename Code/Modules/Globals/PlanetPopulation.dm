@@ -57,10 +57,12 @@ mob/npc/Citizen
 		if(pop_seed_bp) BP = pop_seed_bp
 		NPCAscension()
 
-	// fight back when attacked (peaceful-but-trainable)
-	DamageLimb(var/damage as num, var/theselection, var/enemymurderToggle as num, var/penetration as num)
-		. = ..()
-		if(damage > 0 && !target && !KO && !dead && world.time >= provoke_cd)
+	// fight back when ATTACKED -- even on a DODGE or BLOCK. commonAttackProcs (melee) and blast
+	// hits call refresh_combat_tag() on the victim BEFORE the hit/dodge is resolved, so this fires
+	// no matter the outcome -> a much-stronger NPC that dodges everything still turns and fights.
+	refresh_combat_tag()
+		..()
+		if(!target && !KO && !dead && !client && world.time >= provoke_cd)
 			provoke_cd = world.time + 5
 			spawn(2) provoke()
 
@@ -212,6 +214,18 @@ var/list/saiyan_hair_f = list("Caulifla","Kale","FemBroly","Female Long","Female
 var/list/human_hair_m  = list("Yamcha","Messy","Ponytail","Wavy","Shaggy","Stylish","Afro","Cloud","Bangless","Anime","Ren","Headband","Roxas","Toushiro","Hitsugaya","Kidd")
 var/list/human_hair_f  = list("Female Long","Female Long 2","Female Ponytail","Lyndis","Raphtalia","Chie","Muse","Side-tail")
 
+// race-appropriate name pools (random per NPC)
+var/list/saiyan_names = list("Vegeta","Nappa","Raditz","Turles","Broly","Paragus","Tarble","Cabba","Caulifla","Kale","Renso","Toma","Borgos","Shugesh","Fasha","Celipa","Gine","Onio","Leek","Cumber","Berry","Spinach","Daikon","Tsumuri","Totepo","Panbukin","Seripa","Caraya","Pumbukin","Letti")
+var/list/human_names = list("Krillin","Yamcha","Tien","Chiaotzu","Roshi","Hercule","Videl","Sharpner","Erasa","Mark","Jack","Sam","Lena","Mira","Otto","Lime","Suno","Upa","Bora","Pamput","Caroni","Pirozhki","Chobi","Nam","Annin")
+var/list/namek_names = list("Piccolo","Nail","Dende","Cargo","Guru","Kami","Slug","Katas","Tsuno","Moori","Esca","Maima","Taitan","Dengar","Saichi","Muri","Cymbal","Drum","Tambourine","Piano","Tamo")
+
+proc/npc_random_name(race)
+	switch(race)
+		if("Saiyan") return pick(saiyan_names)
+		if("Human") return pick(human_names)
+		if("Namekian") return pick(namek_names)
+	return "Stranger"
+
 // ---------------------------------------------------------------------------
 // Per-role builders
 // ---------------------------------------------------------------------------
@@ -221,7 +235,7 @@ proc/make_saiyan_commoner(turf/T)
 	var/bp = (class == "Normal") ? rand(2000,5000) : rand(800,2500)
 	var/mob/npc/Citizen/M = init_citizen(T, /mob/npc/Citizen, "Saiyan", class, "Vegeta", bp, g)
 	if(!M) return
-	M.name = pick("Saiyan Warrior","Saiyan Soldier","Saiyan Fighter","Saiyan")
+	M.name = npc_random_name("Saiyan")
 	npc_apply_hair(M, pick(g == "female" ? saiyan_hair_f : saiyan_hair_m), 0, 0, 0)  // canonical black Saiyan hair
 	// common Saiyan battle armor (Armor 8 gets a random color)
 	var/armor = pick('Armor 8.dmi','Armor Bardock.dmi','Nappa Armor.dmi','RaditzArmorTobiUchiha.dmi')
@@ -233,7 +247,8 @@ proc/make_saiyan_elite(turf/T, role, bp, cape)
 	var/mob/npc/Citizen/M = init_citizen(T, (role == "king") ? /mob/npc/Citizen/King : /mob/npc/Citizen, "Saiyan", "Elite", "Vegeta", bp, g)
 	if(!M) return
 	M.pop_role = role
-	M.name = (role == "king") ? "King Vegeta" : "Prince Vegeta"
+	var/rn = npc_random_name("Saiyan")
+	M.name = (role == "king") ? "King [rn]" : "Prince [rn]"
 	npc_apply_hair(M, (role == "king") ? "Vegeta" : "Vegeta Junior", 0, 0, 0)
 	// elite armor + saiyan gloves & shoes
 	npc_wear_armor_icon(M, pick('Armor_Elite.dmi','Clothes_VegetaSaiyanSagaArmor.dmi'), 0)
@@ -248,7 +263,7 @@ proc/make_human(turf/T)
 	var/bp = (class == "Peak Human") ? rand(1500,3500) : rand(500,2500)
 	var/mob/npc/Citizen/M = init_citizen(T, /mob/npc/Citizen, "Human", class, "Earth", bp, g)
 	if(!M) return
-	M.name = pick("Martial Artist","Villager","Fighter","Townsperson")
+	M.name = npc_random_name("Human")
 	npc_apply_hair(M, pick(g == "female" ? human_hair_f : human_hair_m), rand(0,255), rand(0,255), rand(0,255))
 	// gi or mundane clothes
 	if(prob(50))
@@ -265,7 +280,7 @@ proc/make_namekian(turf/T)
 	var/bp = rand(1500,4000)
 	var/mob/npc/Citizen/M = init_citizen(T, /mob/npc/Citizen, "Namekian", class, "Namek", bp, "male")
 	if(!M) return
-	M.name = pick("Namekian Warrior","Namekian","Dragon Clansman")
+	M.name = npc_random_name("Namekian")
 	npc_apply_hair(M, "Bald", 0, 0, 0)  // Namekians are always bald
 	// namek-themed garb
 	if(prob(60)) npc_wear_simple(M, /obj/items/clothes/Namekjacket)
