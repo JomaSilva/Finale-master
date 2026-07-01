@@ -23,6 +23,8 @@ mob/proc/ZanzoClash(var/mob/M)
 		if(Ki < MaxKi*0.015 || M.Ki < M.MaxKi*0.015) break //out of Ki -> the clash ends
 		Ki = max(Ki - MaxKi*0.015, 0)
 		M.Ki = max(M.Ki - M.MaxKi*0.015, 0)
+		refresh_combat_tag() //a clash IS combat -> keep the 90s "In Battle" tag (and its battle music) alive; the teleport-blows skip the normal hit path that refreshes it, so a clash-heavy fight could let the tag lapse and cut the music
+		M.refresh_combat_tag()
 		flick('Zanzoken.dmi',src)
 		flick('Zanzoken.dmi',M)
 		emit_Sound('teleport.wav')

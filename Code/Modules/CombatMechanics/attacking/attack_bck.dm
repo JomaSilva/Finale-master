@@ -43,7 +43,7 @@ mob/verb/Attack()
 	if(grabbee && !is_choking && !is_stretched && !choke_cooldown)
 		is_choking = 1
 		emit_Sound('mediumpunch.wav')
-		to_chat(view(usr), "<b><font color=red>[usr] is choking [grabbee]!!!")
+		to_chat(view(src), "<b><font color=red>[src] is choking [grabbee]!!!") //src not usr: when an NPC chokes, usr = the player (wrong name)
 		choke_cooldown = 1
 		spawn(5) choke_cooldown = 0//because sometimes this goes by very fast
 		pressing_space=0
@@ -52,11 +52,11 @@ mob/verb/Attack()
 		is_choking = 0
 		choke_cooldown = 1
 		spawn(5) choke_cooldown = 0
-		to_chat(view(usr), "<b><font color=red>[usr] is no longer choking [grabbee]!")
+		to_chat(view(src), "<b><font color=red>[src] is no longer choking [grabbee]!")
 		pressing_space=0
 		return
 	else if(is_stretched)
-		to_chat(view(usr), "<b><font color=red>[usr] slams [grabbee] into the ground!!")
+		to_chat(view(src), "<b><font color=red>[src] slams [grabbee] into the ground!!")
 	if(KBcanCancel && KBParalysis && !kbcanceled)
 		if(Ki >= MaxKi * 0.05)
 			Ki -= MaxKi * 0.05

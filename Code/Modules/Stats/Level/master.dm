@@ -182,8 +182,8 @@ mob/proc/statify()
 	kicapacity = 1.3*kicapacityMod*max((MaxKi*max(log(8,max((kicirculationskill/10)*(kigatheringskill/10),1)*KiMod*hdnptlmod*max(Ekiskill,0.1)),1))*OozaruBuff,1.3*MaxKi)
 	powerupcap = max((1.4*max(log(7,max((kicirculationskill/10)*(kicontrolskill/10),1)*KiMod*kicapacityMod*hdnptlmod*max(Ekiskill,0.1)),1))*OozaruBuff,1.4) //makes power capacity n shit dynamic.
 	KIregen = (kiregenMod*basekiregen*kiregenStyle*trueKiMod*hdnptlmod*Tkiregen*Ekiskill*max(Emagiskill,Etechnique)*(MaxKi/100)*(statstamina*5)*concealeddeBuff*log(10,max(kigatheringskill,10)))/900 //always involves ki skill and bounced over technique or magical skill, whichever is greater
-	if(HP>25 && HP < 99.99 && (!combatTag||fastRegen) && (stamina > 0 || currentNutrition > 0)) SpreadHeal(0.001 * Ephysdef * max(staminapercent*10,1) * HPregenbuff * THPregen) //no free passive heal while BOTH starving (0 nutrition) AND out of stamina -- otherwise charging Ki out of combat regenerated the body for free (HealthRegen() is inert because HPregen is always 0, so this is the ONLY passive regen and it had no energy gate)
-	if(HP<=25 && (!combatTag||fastRegen) && (stamina > 0 || currentNutrition > 0)) SpreadHeal(0.02 * THPregen) //regen slowly if under 100, but not while both starving and out of stamina
+	if(HP>25 && HP < 99.99 && (!combatTag||fastRegen) && has_regen_energy()) SpreadHeal(0.001 * Ephysdef * max(staminapercent*10,1) * HPregenbuff * THPregen) //no free passive heal while BOTH starving (0 nutrition) AND out of stamina -- otherwise charging Ki out of combat regenerated the body for free (HealthRegen() is inert because HPregen is always 0, so this is the ONLY passive regen and it had no energy gate)
+	if(HP<=25 && (!combatTag||fastRegen) && has_regen_energy()) SpreadHeal(0.02 * THPregen) //regen slowly if under 100, but not while both starving and out of stamina
 	HP = max(HP,0)
 	MagicCap = 2000 * Emagiskill * mana_cap_mod
 	if(Magic > MagicCap) Magic -= 1 * log(9,Magic)
@@ -215,7 +215,7 @@ mob/proc/statify()
 
 mob/proc/HealthRegen()
 	CHECK_TICK
-	if(HP<100&&stamina>=0&&!KO&&(!combatTag||fastRegen)) //hpregen
+	if(HP<100&&has_regen_energy()&&!KO&&(!combatTag||fastRegen)) //hpregen (energy-gated too)
 		SpreadHeal(HPregen*staminapercent*0.1)
 		if(immortal) SpreadHeal(HPregen*staminapercent)
 		stamina-=(HPregen*staminapercent*2)

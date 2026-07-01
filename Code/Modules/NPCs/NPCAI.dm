@@ -58,6 +58,9 @@ mob
 			tmp/ai_powerup_cd = 0 //world.time gate between surges
 			tmp/npc_stats_inited = 0 //one-time heavy stat init done
 			tmp/reaggro_running = 0 //a passive re-aggro sweep is already running
+			tmp/state_alive = 0      //bumped by every live state-proc iteration; the watchdog re-enters a state if this stops advancing (the state thread died)
+			tmp/last_state_alive = -1
+			tmp/state_stall = 0
 
 
 		//helper functions
@@ -236,14 +239,12 @@ mob
 					npc_kiai()
 					if(prob(40)) npc_combat_chat(pick("Get back!","Away from me!","Enough!"))
 					return
-				if(d < 2 && !grabbee && !target.grabber && !target.grabbee && rage >= 60 && prob(8 + rage/10)) //rage grapple
-					if(get_me_a_grab(0)) return //latch hold (not carry/throw) - cleaner for an AI grappler
 				if(isBlaster && ki_ratio > 0.2 && d >= 2) //ranged poke; reckless (low logic) blasts more often
 					var/blast_chance = 20 + (power_ratio >= 1.2 ? 35 : 0) + max(0,(50 - logic)/2)
 					if(prob(blast_chance))
 						blast()
 						return
-				if(d < 2 && rage >= 70 && Ki >= 10 * BaseDrain && !attacking && prob(30)) //enraged melee flurry
+				if(d < 2 && rage >= 45 && Ki >= 10 * BaseDrain && !attacking && prob(45)) //melee flurry -- fires more often now that NPCs punch instead of grab
 					BarrageAttack(,,,,rand(2,4),2)
 					next_attack = world.time + max(6,round(Eactspeed))
 					if(prob(isBoss ? 45 : 30)) npc_combat_chat(pick("RAAAH!","Disappear!","I'll finish this!","Take THIS!"))
@@ -268,6 +269,7 @@ mob
 				var/blastbreak = 0
 				var/dashBreak = 0
 				while(d>keep_dist && src.hasAI && target)
+					state_alive++
 					//if the Target is out of range or dead, bail out.
 					if(!src.target.client)//repetition to ensure AI doesn't attack AI.
 						src.lostTarget()
@@ -326,6 +328,7 @@ mob
 				set waitfor=0
 				var/d
 				while(target && src.target.HP>0 && src.hasAI && target)
+					state_alive++
 					d = get_dist(src,target)
 					//if the Target is too far away, chase
 					if(d>src.keep_dist)
@@ -377,6 +380,7 @@ mob
 					return
 				var/d = get_dist(src,target)
 				while(d <= strafe_Dist && src.hasAI)
+					state_alive++
 					d = get_dist(src,target)
 					if(d>src.strafe_Dist + 3)
 						chaseState()
@@ -403,7 +407,7 @@ mob
 						chaseState()
 						return
 				if(world.time>=next_attack) blast()
-				chaseState()
+				spawn(1) chaseState()
 
 			randattackState()
 				set waitfor=0
@@ -413,6 +417,7 @@ mob
 				var/d
 				var/zanzoamount = 3
 				while(src.target.HP>0 && !src.target.KO && src.hasAI)
+					state_alive++
 					d = get_dist(src,target)
 					if(zanzoamount >= 1)
 						zanzoamount -= 1
@@ -432,12 +437,13 @@ mob
 								step_rand(src)
 						//if we are eligible to attack, do it.
 						flick('Zanzoken.dmi',src)
+						if(!target) break //don't deref target.x on a target that vanished mid-loop (a runtime error would kill this proc)
 						src.loc = pick(block(locate(target.x + 1,target.y + 1,target.z),locate(target.x - 1,target.y - 1,target.z)))
 						src.dir = get_dir(src,target)
 						if(world.time>=next_attack)
 							attack()
 					sleep(chase_speed * 5)
-				attackState()
+				spawn(1) attackState()
 
 			wanderState()
 				set waitfor=0
@@ -466,6 +472,7 @@ mob
 				set waitfor=0
 				var/d = get_dist(src,target)
 				while(src.HP <= 25 && d <= aggro_dist && src.hasAI)
+					state_alive++
 					if(src.HP > 25)
 						if(e_behavior_vals[1]>50||d > keep_dist)
 							chaseState()
@@ -599,6 +606,18 @@ mob
 				while(src && src.AIRunning)
 					//
 					sleep(chase_speed)
+					//WATCHDOG: AIRunning is on but if NO state proc has iterated for ~3 ticks, the state machine
+					//DIED (a runtime error silently aborted the proc, or a waitfor=0 handoff dropped the last loop).
+					//This loop is guaranteed alive whenever AIRunning=1, so re-enter a state to un-freeze the NPC.
+					if(target && hasAI && !client && !KO)
+						if(state_alive == last_state_alive)
+							state_stall++
+							if(state_stall >= 3)
+								state_stall = 0
+								spawn(1) chaseState()
+						else
+							state_stall = 0
+						last_state_alive = state_alive
 					mobTime += 0.4 
 					mobTime += max(log(5,Espeed),0.1) //max prevents negatives from DESTROYING US ALL
 					CHECK_TICK
@@ -636,7 +655,7 @@ mob
 					if(attacking>0)
 						canfight=0
 						canbeleeched=1
-						if(hasTime) attacking = max(0,attacking-0.5)
+						attacking = max(0,attacking-1) //ALWAYS recover from a swing (even while stun-pressured); the hasTime-gate left 'attacking' stuck high under a stunlock, so testAttack() blocked the NPC forever = punching bag
 					else
 						attacking=0
 						canbeleeched=0
@@ -670,7 +689,7 @@ mob
 					//if(eshotCD) canfight = 0
 					if(sding) canfight = 0
 					if(passive_block) canfight = 0
-					if(stagger) canfight = 0
+					if(stagger >= 3) canfight = 0 //only HEAVY stagger blocks fighting (players don't lock on light stagger; this was an NPC-only punching-bag penalty)
 					//
 					if(prob(15) && grabParalysis && grabber && grabber.is_choking)
 						var/dmg = grabber.NormDamageCalc(src) + grabCounter

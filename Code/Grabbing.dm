@@ -174,6 +174,10 @@ mob/verb
 				grabbee=M
 				M.grabber = src
 				M.grabberSTR=(Ephysoff*expressedBP)
+				M.refresh_combat_tag() //grabbing counts as an attack -> the target enters combat
+				if(M.isNPC && istype(M, /mob/npc)) //a grabbed NPC now fights back (once it breaks free) instead of ignoring grab/choke/throw
+					var/mob/npc/gN = M
+					if(gN.hasAI && !gN.target && !gN.client) gN.foundTarget(src)
 				grabMode = 1
 				M.grabParalysis = 1
 				spawn grab()
@@ -186,7 +190,7 @@ mob/proc/grab()
 			grabbee.dir=turn(dir,180)
 		grabbee.grabParalysis = 1
 		if(KO||grabbee.z!=usr.z||totalTime==0||(grabMode==1 && !grabbee in get_step(src,dir)))
-			to_chat(view(), "[usr] is forced to release [grabbee]!")
+			to_chat(view(), "[src] is forced to release [grabbee]!") //src not usr: NPC grabbers showed the player's name
 			emit_Sound('groundhit2.wav')
 			grabbee.grabberSTR=null
 			grabbee.grabber = null
@@ -206,7 +210,7 @@ mob/proc/objgrab()
 	while(objgrabbee)
 		objgrabbee.loc=locate(x,y,z)
 		if(KO)
-			to_chat(view(), "[usr] is forced to release [objgrabbee]!")
+			to_chat(view(), "[src] is forced to release [objgrabbee]!")
 			emit_Sound('mediumpunch.wav')
 			objgrabbee=null
 		sleep(1)

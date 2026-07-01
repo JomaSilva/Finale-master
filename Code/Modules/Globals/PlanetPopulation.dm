@@ -64,16 +64,17 @@ mob/npc/Citizen
 	// no matter the outcome -> a much-stronger NPC that dodges everything still turns and fights.
 	refresh_combat_tag()
 		..()
-		if(!target && !KO && !dead && !client && world.time >= provoke_cd)
-			provoke_cd = world.time + 5
-			spawn(2) provoke()
+		if(!KO && !dead && !client && !AIRunning && world.time >= provoke_cd) //re-provoke on ANY hit while idle; gate on !AIRunning (not !target) so it can't stack loops, short 1-tick cooldown so a combo during the reset window still re-engages
+			provoke_cd = world.time + 1
+			spawn(1) provoke()
 
 	proc/provoke()
-		if(target || KO || dead || !hasAI || client) return
+		if(KO || dead || !hasAI || client || AIRunning) return //AIRunning guard: never double-engage / stack checkState loops
+		if(target) return
 		var/mob/atk = lastDamager
-		if(!(atk && atk.client))  // blasts don't set lastDamager -> fall back to a nearby in-combat player
-			for(var/mob/P in view(6,src))
-				if(P.client && (P.IsInFight || P.combatTag) && !P.dead)
+		if(!(atk && atk.client && !atk.dead))  // ki kills / stale lastDamager -> widen the search
+			for(var/mob/P in oview(12,src))     // wider than 6, and drop the IsInFight/combatTag requirement so a fresh grabber/attacker is always found
+				if(P.client && !P.dead && !P.KO)
 					atk = P
 					break
 		if(atk && atk.client && atk != src && !atk.dead)

@@ -207,6 +207,11 @@ mob/var
 	//
 
 
+mob/proc/has_regen_energy() //regen needs USABLE energy. A sub-1% residual (HUD rounds it to 0%, and CheckStomach
+	//keeps quietly topping stamina up from it) must NOT count as 'fed' -- else a player reading 0% stamina AND 0%
+	//nutrition on screen (e.g. big-pool Primal Saiyans) still regenerated HP while 'starving'.
+	return (stamina > maxstamina*0.01) || (currentNutrition > maxNutrition*0.01)
+
 mob/proc/HealthSync()
 	set waitfor =0
 	if(client||target)
@@ -243,7 +248,7 @@ mob/proc/HealthSync()
 						else if(S.health<0.2*S.maxhealth)
 							S.limbstatus = "<font color=purple>Broken"
 						S.status = "Damaged [S.health]"
-					if(!S.artificial&&S.regenerationrate&&(!combatTag||fastRegen)&&(stamina > 0 || currentNutrition > 0)) //limbs can't knit back together with no energy left: stop natural limb regen while BOTH starving (0 nutrition) and out of stamina
+					if(!S.artificial&&S.regenerationrate&&(!combatTag||fastRegen)&&has_regen_energy()) //limbs can't knit back together with no energy left: stop natural limb regen while BOTH starving (0 nutrition) and out of stamina
 						if(prob(10)||(prob(20)&&S.vital))
 							S.health += 0.1 * S.regenerationrate
 				else if(S.health>=S.maxhealth)
@@ -282,10 +287,10 @@ mob/proc/HealthSync()
 			//core vitals recovered above the broken line -> wake from the coma
 			if(KO) Un_KO()
 			vitalKOd = 0
-		if(prob(5)&&(!combatTag||fastRegen)&&(stamina > 0 || currentNutrition > 0)) //no passive trickle-heal while In Battle, or while both starving (0 nutrition) and out of stamina
+		if(prob(5)&&(!combatTag||fastRegen)&&has_regen_energy()) //no passive trickle-heal while In Battle, or while both starving (0 nutrition) and out of stamina
 			if(prob(1))
 				SpreadHeal(1)
-		if(passiveRegen && (!combatTag || fastRegen) && (stamina > 0 || currentNutrition > 0)) //no passive healing while In Battle, or while both starving (0 nutrition) and out of stamina
+		if(passiveRegen && (!combatTag || fastRegen) && has_regen_energy()) //no passive healing while In Battle, or while both starving (0 nutrition) and out of stamina
 			if(prob(75) && HP < 99.99) SpreadHeal(0.1 * passiveRegen)
 			if(canheallopped&&(prob(5*activeRegen)||prob(2*DeathRegen)))
 				limbregenbuffer += 1

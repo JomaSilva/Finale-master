@@ -56,6 +56,7 @@ mob/proc/KO(var/KOtimer, var/ForceKO)
 		med=0
 		KOcount++
 		StopFightingStatus()
+		refresh_combat_tag() //a downed fighter STAYS "In Battle" until the tag naturally expires -- they don't drop out of combat the instant they faint, so they remain a finishable, fully-exposed target
 		if(prob(10))
 			if(AbsorbDatum)
 				AbsorbDatum.expell()

@@ -199,6 +199,7 @@ mob/proc/hitProc(var/mob/M,dmg,var/iscrit,var/customFlavor,var/forcehit,type)
 	if(M.countering)
 		M.countering--
 		hit = 1
+	if(M.KO) hit = 2 //a knocked-out target is completely exposed: no dodge, no block, no counter -- every hit lands clean
 	Attack_MasteryGain(1 + type)
 	switch(hit)
 		if(3)//crit
@@ -294,7 +295,7 @@ mob/proc/hitProc(var/mob/M,dmg,var/iscrit,var/customFlavor,var/forcehit,type)
 
 	if(hit>=2&&M.dir==dir&&murderToggle&&M.Tail)
 		if(M.hpratio<0.6&&dmg>5)
-			to_chat(view(M), "[usr] punches [M]'s tail off!")
-			to_chat(M, "[usr] punches your tail off!")
+			to_chat(view(M), "[src] punches [M]'s tail off!") //src = the attacker (usr is wrong for NPC attackers)
+			to_chat(M, "[src] punches your tail off!")
 			M.Lop_Tail()
 	return hit
