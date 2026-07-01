@@ -114,7 +114,7 @@ mob/proc/majin_absorb(mob/M)
 	for(var/mob/A in view(M))
 		if(A == M || A == src || A.isNPC) continue
 		if(A.check_relation(M, list("Good","Very Good")) == TRUE || A.is_friend(M))
-			A.Do_Anger_Stuff()
+			A.Do_Anger_Stuff(1) //watching a friend get ABSORBED reads as watching them die -> EXTREMELY enraged -> full cinematic + rage theme
 			chatcast(view(A), "<font color=red>You notice [A] has become EXTREMELY enraged!!!", "combat")
 			WriteToLog("rplog","[A] has become EXTREMELY angry (saw [M] get absorbed)    ([time2text(world.realtime,"Day DD hh:mm")])")
 	// stuff them into the pocket dimension, alive, at a random interior spot (so multiple prisoners don't stack)

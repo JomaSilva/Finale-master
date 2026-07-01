@@ -71,7 +71,7 @@ mob/proc/Death()
 					var/deathanger=0
 					if(M.check_relation(src,list("Good","Very Good","Love","Rival/Good")) || M.is_friend(src)) deathanger=1
 					if(deathanger==1 && killedByEnemy)
-						M.Do_Anger_Stuff()
+						M.Do_Anger_Stuff(1) //friend was KILLED by an enemy -> EXTREMELY enraged -> full cinematic + rage theme
 						if(M.is_corrupted_majin() && M.majin_saga_form == 1) spawn M.majin_advance_form(2, "thin transformation") //rage -> Majin Form 2
 						view(M)<<output("<font color=red>You notice [M] has become EXTREMELY enraged!!!","Chatpane.Chat")
 						chatcast(view(M), "<font color=red>You notice [M] has become EXTREMELY enraged!!!", "combat")

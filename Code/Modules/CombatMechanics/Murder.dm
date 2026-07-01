@@ -59,7 +59,7 @@ mob/proc/death_stuff(inputPl)
 		if(!isNPC)
 			if(A.check_relation(src,list("Good","Very Good")) == TRUE || A.is_friend(src)) DyerIsGood=1
 			if((DyerIsGood))
-				A.Do_Anger_Stuff()
+				A.Do_Anger_Stuff(1) //friend actually DIED -> EXTREMELY enraged -> full cinematic + rage theme
 				view(A)<<output("<font color=red>You notice [A] has become EXTREMELY enraged!!!","Chatpane.Chat")
 				chatcast(view(A), "<font color=red>You notice [A] has become EXTREMELY enraged!!!", "combat")
 				WriteToLog("rplog","[A] has become EXTREMELY angry    ([time2text(world.realtime,"Day DD hh:mm")])")
@@ -109,15 +109,16 @@ mob/proc/killer_stuff(var/mob/M)
 
 mob/var/tmp/rageExpire = 0 //world.time at which the current rage spike ends (rage lasts at most 2 minutes)
 mob/var/tmp/rageCinematicCD = 0 //world.time gate so the rage cinematic + theme never replay back-to-back
-mob/proc/Do_Anger_Stuff()
+mob/proc/Do_Anger_Stuff(var/extreme = 0) //extreme=1 ONLY for the "EXTREMELY enraged" beat (a friend actually DIES/is absorbed). A friend merely fainting/KO'd ("very angry"), a death threat, or a self-buff pass 0 -> rage buff still applies, but NO cinematic/music.
 	var/wasRaging = (rageExpire > world.time) //already mid-rage? then this is just a refresh, not a fresh eruption
 	Anger = max(Anger, MaxAnger) //take the HIGHER of current/new rage — never stack, sum, or multiply (kills the 20x anomaly)
 	rageExpire = world.time + 1200 //(re)start the 2-minute rage timer (1200 deciseconds)
 	StoredAnger=100
-	//ENTERING the rage (extremely angry) -> shockwave burst + Gohan's anger theme. BUT if this rage can power them
-	//UP a form (SSJ/SSJ2), the transformation owns the moment: skip the anger cinematic and let the transform
-	//cinematic + theme play instead (the rage cinematic is ONLY for when the anger unlocks nothing).
-	if(!wasRaging && client && !anger_will_transform()) AngerCinematic()
+	//The rage cinematic + Gohan's anger theme are reserved for the EXTREMELY-angry beat (seeing a friend DIE). A friend
+	//simply going down ("very angry") applies the rage buff but plays NO cinematic/music (extreme=0). AND if this rage can
+	//power them UP a form (SSJ/SSJ2), the transformation owns the moment: skip the anger cinematic so the transform
+	//cinematic + theme play instead (the rage cinematic is ONLY for a death that unlocks nothing).
+	if(extreme && !wasRaging && client && !anger_will_transform()) AngerCinematic()
 
 //Would this rage let the character ascend a form right now (so the transformation should own the cinematic)?
 //Called right after Do_Anger_Stuff set Anger=MaxAnger, i.e. the character IS "Very Angry", so the Emotion-gated
