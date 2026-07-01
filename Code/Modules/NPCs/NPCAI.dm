@@ -1,4 +1,38 @@
 //Monster AI
+
+// ============================================================================
+// CONFIG -- IA DE COMBATE DOS NPCs (Sistema 1: gestao de recursos)
+// TODOS os numeros de ajuste da IA ficam AQUI. Fracoes sao 0..1 (0.30 = 30%).
+// Tempos sao em ticks do mundo (10 ticks = 1 segundo real).
+// ============================================================================
+#define NPC_AI_KI_LOW             0.30  // abaixo disto o NPC esperto evita gastar ki (prioriza corpo-a-corpo)
+#define NPC_AI_KI_CRIT            0.10  // ki criticamente baixo (junto com stamina critica -> recuar e recarregar)
+#define NPC_AI_STAM_LOW           0.30  // abaixo disto o NPC esperto joga defensivo (bloqueia mais, evita barrage)
+#define NPC_AI_STAM_CRIT          0.12  // stamina criticamente baixa
+#define NPC_AI_WARN_KI            0.35  // limiar do AVISO de ki baixo no chat
+#define NPC_AI_WARN_STAM          0.35  // limiar do AVISO de cansaco no chat
+#define NPC_AI_WARN_CD            300   // cooldown entre avisos no chat (300 ticks = 30s)
+#define NPC_AI_WARN_HYST          0.15  // histerese: so avisa de novo depois de recuperar acima de (limiar + isto)
+#define NPC_AI_FINISH_HP          25    // alvo com HP <= isto -> modo FINALIZADOR (pressao total)
+#define NPC_AI_BLAST_KI_COST      15    // custo de Ki do blast do NPC (x BaseDrain); da sentido a economia de ki
+#define NPC_AI_RECHARGE_TO        0.75  // recarrega ate esta fracao do MaxKi antes de voltar a lutar
+#define NPC_AI_RECHARGE_RATE      90    // Ki ganho por tick parado = MaxKi / isto (mesmo ritmo do C do player)
+#define NPC_AI_RECHARGE_STAM      0.012 // fracao da stamina maxima recuperada por tick enquanto recarrega parado
+#define NPC_AI_RECHARGE_DIST      6     // distancia "segura" do alvo para parar de recuar e comecar a carregar
+#define NPC_AI_RECHARGE_MAX       200   // duracao maxima (em ticks de estado) do modo recarga (anti-travamento)
+#define NPC_AI_RECHARGE_ABORT_DMG 15    // se perder este tanto de HP enquanto recarrega, desiste e volta a lutar
+#define NPC_AI_DEF_BLOCK_PROB     55    // prob (%) de levantar a guarda por tick no modo defensivo (stamina baixa)
+#define NPC_AI_INT_DEFAULT        35    // inteligencia padrao (0-100): chance de aplicar cada decisao "esperta"
+#define NPC_AI_AGGR_DEFAULT       50    // agressividade padrao (0-100): chance de entrar no modo finalizador
+#define NPC_AI_INT_BOSS           85    // piso de inteligencia de NPCs com isBoss=1
+#define NPC_AI_AGGR_BOSS          75    // piso de agressividade de NPCs com isBoss=1
+
+// frases dos avisos e do modo finalizador (escolhidas ao acaso; edite a vontade)
+var/list/npc_ki_warn_lines = list("Droga, estou ficando sem ki...","Meu ki esta se esgotando!","Nao posso desperdicar mais energia...")
+var/list/npc_stam_warn_lines = list("huf huf... isso esta me cansando...","Ofegante... preciso recuperar o folego...","Minhas pernas estao pesadas...")
+var/list/npc_recharge_lines = list("Preciso recuperar minhas energias!","Voce nao vai me derrotar assim... HAAAA!","So um instante... HRAAA!")
+var/list/npc_finisher_lines = list("Hora de acabar com isso!","Voce esta acabado!","E o seu fim!")
+
 mob/var
 	isBlaster // whether or not a specific mob's AI will blast shit.
 
@@ -22,6 +56,10 @@ mob
 			zanzoAI = 0
 			strafeAI = 0
 			allied = 0 //says if a npc will "find" player targets.
+			//---- Sistema 1: knobs de "cerebro" por NPC (escalaveis: NPC burro ate boss foda) ----
+			ai_intelligence = NPC_AI_INT_DEFAULT //0-100: chance de usar cada decisao esperta (economia de ki, defesa, recarga)
+			ai_aggression = NPC_AI_AGGR_DEFAULT  //0-100: chance de entrar no modo finalizador com o alvo quase caido
+			ai_no_powerup = 0                    //1 = nunca usa o power-up de tiers (bosses de evento tem BP fixo)
 			//
 			hasAI = 1
 			AIRunning=0
@@ -63,6 +101,12 @@ mob
 			tmp/state_stall = 0
 			tmp/ai_freeze_log_cd = 0 //rate-limit the freeze diagnostic dump to DEBUG.log
 			tmp/stuck_notime = 0    //consecutive ticks engaged with NO action-time (hasTime=0); a long run = FROZEN
+			//---- Sistema 1: estado interno da gestao de recursos ----
+			tmp/ai_warned_ki = 0    //ja avisou "sem ki" (reseta por histerese quando recupera)
+			tmp/ai_warned_stam = 0  //ja avisou "cansado"
+			tmp/ai_warn_cd = 0      //cooldown proprio dos avisos de recurso (separado das falas de combate)
+			tmp/ai_recharging = 0   //esta dentro do rechargeState
+			tmp/ai_charge_fx = 0    //aura/som de carga de ki ativos
 
 
 		//helper functions
@@ -136,6 +180,8 @@ mob
 					canmove = 1 //ALWAYS restore movement after a swing/brace. The choreoattk branch above sets canmove=0 and NOTHING else in the NPC combat path ever restores it, so a single 15% brace pinned the action clock (checkState: if(!canmove)totalTime=0) forever -> the NPC kept spinning in-state (watchdog saw no stall) but never attacked or turned to face you. THIS was the residual "stands facing nothing after a while" freeze.
 
 			blast()
+				if(Ki < NPC_AI_BLAST_KI_COST * BaseDrain) return //sem ki para o blast (Sistema 1: ataques de ki custam ki)
+				Ki -= NPC_AI_BLAST_KI_COST * BaseDrain
 				var/bcolor='12.dmi'
 				bcolor+=rgb(blastR,blastG,blastB)
 				var/obj/attack/blast/A=new/obj/attack/blast/
@@ -162,6 +208,7 @@ mob
 				chatcast(view(src), "<font color=#FFCC00>[src.name]: [msg]", "say")
 
 			npc_power_up()
+				if(ai_no_powerup) return //bosses de evento: BP fixo anunciado, sem surto multiplicador
 				if(ai_powerup_cd && world.time < ai_powerup_cd) return //rate-limited tiers, not a one-shot
 				if(ai_powerup_tier >= (isBoss ? 3 : 4)) return //capped escalation (bosses cap one tier lower - they already start at ~2.8x average BP)
 				ai_powered_up = 1
@@ -196,6 +243,9 @@ mob
 				stamina = maxstamina
 				maxNutrition = 100
 				currentNutrition = 100 //full nutrition for NPCs (default 50 nerfs them); they don't starve mid-fight
+				if(isBoss) //Sistema 1: bosses sao naturalmente mais espertos/agressivos (pisos configuraveis no topo)
+					ai_intelligence = max(ai_intelligence, NPC_AI_INT_BOSS)
+					ai_aggression = max(ai_aggression, NPC_AI_AGGR_BOSS)
 				npc_stats_inited = 1
 
 			NPCStaminaTick() //real stamina: drains under sustained combat, recovers between exchanges
@@ -227,6 +277,54 @@ mob
 					spawn if(M && M.loc) M.KiKnockback(src,strength)
 				spawn(kiaionCD) kiaionCD = 0
 
+			//================= Sistema 1: helpers de gestao de recursos =================
+			npc_ki_ratio() //fracao 0..1 do Ki atual
+				return MaxKi > 0 ? (Ki / MaxKi) : 1
+
+			npc_stam_ratio() //fracao 0..1 da stamina atual
+				return maxstamina > 0 ? (stamina / maxstamina) : 1
+
+			npc_warn_say(var/msg) //fala de aviso: cooldown proprio (nao compete com as falas de combate). Retorna 1 se falou.
+				if(world.time < ai_warn_cd) return 0
+				ai_warn_cd = world.time + NPC_AI_WARN_CD
+				view(src) << output("<font color=#FFCC00>[src.name]: [msg]","Chatpane.Chat")
+				chatcast(view(src), "<font color=#FFCC00>[src.name]: [msg]", "say")
+				return 1
+
+			npc_resource_warnings() //avisa no chat quando ki/stamina caem dos limiares (com histerese pra nao spammar)
+				if(!IsInFight && !target) return
+				var/kr = npc_ki_ratio()
+				var/sr = npc_stam_ratio()
+				if(kr <= NPC_AI_WARN_KI)
+					if(!ai_warned_ki && npc_warn_say(pick(npc_ki_warn_lines)))
+						ai_warned_ki = 1
+				else if(kr >= NPC_AI_WARN_KI + NPC_AI_WARN_HYST)
+					ai_warned_ki = 0
+				if(sr <= NPC_AI_WARN_STAM)
+					if(!ai_warned_stam && npc_warn_say(pick(npc_stam_warn_lines)))
+						ai_warned_stam = 1
+				else if(sr >= NPC_AI_WARN_STAM + NPC_AI_WARN_HYST)
+					ai_warned_stam = 0
+
+			npc_charge_fx_start() //visual/som de "carregando ki" -- mimetiza o C do player, 100% livre de usr
+				if(ai_charge_fx) return
+				ai_charge_fx = 1
+				is_drawing = 1     //NAO usar a var 'charging' (e a flag de canalizar BEAM: travaria canfight e a IA)
+				started_draw = 1
+				poweruprunning = 1 //liga o loop de som de power-up
+				updateOverlay(/obj/overlay/auras/aura)
+				overlaychanged = 1
+				emit_Sound('chargeaura.wav')
+
+			npc_charge_fx_stop()
+				if(!ai_charge_fx) return
+				ai_charge_fx = 0
+				is_drawing = 0
+				started_draw = 0
+				poweruprunning = 0
+				FlashPoint = 1
+				removeOverlay(/obj/overlay/auras/aura)
+
 			npc_try_transform() //OPT-IN by data: only NPCs that ALREADY have the form (player clones / scripted Saiyans) ever transform; a no-op for normal mobs
 				if(transing || ssj) return
 				if(!(Race == "Saiyan" || Parent_Race == "Saiyan" || Race == "Heran" || Parent_Race == "Heran")) return
@@ -241,17 +339,34 @@ mob
 				var/power_ratio = (expressedBP > 0 && target.expressedBP > 0) ? (target.expressedBP / expressedBP) : 1
 				var/rage = e_behavior_vals[2]
 				var/logic = e_behavior_vals[4]
+				var/sr = npc_stam_ratio()
 				dir = get_dir(src,target)
+				//FINALIZADOR (Sistema 1): alvo quase caido -> pressao total, ignora a rotacao normal (chance = agressividade)
+				if(target.HP <= NPC_AI_FINISH_HP && !target.KO && prob(ai_aggression))
+					if(prob(35)) npc_combat_chat(pick(npc_finisher_lines))
+					if(d >= 2 && isBlaster && Ki >= NPC_AI_BLAST_KI_COST * BaseDrain)
+						blast()
+						return
+					if(d < 2 && sr > NPC_AI_STAM_CRIT && Ki >= 10 * BaseDrain && !attacking)
+						BarrageAttack(,,,,rand(3,5),2)
+						next_attack = world.time + max(6,round(Eactspeed))
+						return
+					attack()
+					return
 				if(d <= 1 && ki_ratio <= 0.3 && stagger && !kiaionCD && Ki >= 40 * BaseDrain) //cornered & low Ki -> make space
 					npc_kiai()
 					if(prob(40)) npc_combat_chat(pick("Get back!","Away from me!","Enough!"))
+					return
+				//ECONOMIA DE KI (Sistema 1): com ki baixo o NPC esperto troca pro corpo-a-corpo em vez de queimar ki
+				if(ki_ratio <= NPC_AI_KI_LOW && prob(ai_intelligence))
+					attack()
 					return
 				if(isBlaster && ki_ratio > 0.2 && d >= 2) //ranged poke; reckless (low logic) blasts more often
 					var/blast_chance = 20 + (power_ratio >= 1.2 ? 35 : 0) + max(0,(50 - logic)/2)
 					if(prob(blast_chance))
 						blast()
 						return
-				if(d < 2 && rage >= 45 && Ki >= 10 * BaseDrain && !attacking && prob(45)) //melee flurry -- fires more often now that NPCs punch instead of grab
+				if(d < 2 && rage >= 45 && Ki >= 10 * BaseDrain && !attacking && (sr > NPC_AI_STAM_LOW || !prob(ai_intelligence)) && prob(45)) //melee flurry -- fires more often now that NPCs punch instead of grab; o esperto poupa a stamina baixa
 					BarrageAttack(,,,,rand(2,4),2)
 					next_attack = world.time + max(6,round(Eactspeed))
 					if(prob(isBoss ? 45 : 30)) npc_combat_chat(pick("RAAAH!","Disappear!","I'll finish this!","Take THIS!"))
@@ -358,6 +473,16 @@ mob
 					// Power-up when losing badly or clearly outmatched
 					if(HP <= 45 || (expressedBP > 0 && target.expressedBP >= expressedBP * 1.5))
 						npc_power_up() //tiered escalation when losing badly or outmatched
+					//===== Sistema 1: gestao de recursos (gate probabilistico = inteligencia) =====
+					var/kr = npc_ki_ratio()
+					var/sr = npc_stam_ratio()
+					if(!ai_recharging && kr <= NPC_AI_KI_CRIT && sr <= NPC_AI_STAM_CRIT && prob(ai_intelligence))
+						rechargeState() //sem ki E sem folego: recua e recarrega em vez de morrer batendo
+						return
+					if(sr <= NPC_AI_STAM_LOW && prob(ai_intelligence)) //folego no chao: postura defensiva
+						if(d <= 1 && !blocking && stagger < 3 && prob(NPC_AI_DEF_BLOCK_PROB))
+							holdblock()
+							spawn(rand(8,15)) if(blocking) stopblock() //auto-solta pra nunca travar na guarda
 					npc_defensive_check(d) //guard / shake off pressure when staggered or hurt
 					//if the Target is too close, avoid
 					if(totalTime >= OMEGA_RATE && !grabParalysis)
@@ -495,6 +620,43 @@ mob
 					sleep(chase_speed)
 				resetState()
 
+			rechargeState() //Sistema 1: recuar e RECARREGAR KI quando ki E stamina estao criticos (mimetiza o C do player)
+				set waitfor=0
+				if(ai_recharging) return
+				ai_recharging = 1
+				npc_warn_say(pick(npc_recharge_lines))
+				var/startHP = HP
+				var/ticks = 0
+				while(src && hasAI && AIRunning && !KO && MaxKi > 0 && Ki < MaxKi * NPC_AI_RECHARGE_TO && ticks < NPC_AI_RECHARGE_MAX)
+					state_alive++ //mantem o watchdog do checkState satisfeito (senao ele re-entraria chaseState em paralelo)
+					ticks++
+					if(HP < startHP - NPC_AI_RECHARGE_ABORT_DMG) break //apanhando demais recarregando: volta a lutar
+					var/d = target ? get_dist(src,target) : 99
+					if(d <= 1 && !kiaionCD && Ki >= 40 * BaseDrain && prob(60))
+						npc_kiai() //abre espaco na marra antes de recuar
+					if(d < NPC_AI_RECHARGE_DIST && target)
+						//ainda perto do alvo: recua (sem carregar; is_drawing deixaria o passo mais lento)
+						if(ai_charge_fx) npc_charge_fx_stop()
+						if(totalTime >= OMEGA_RATE && !grabParalysis)
+							if(totalTime > MAXIMUM_TIME) totalTime = MAXIMUM_TIME
+							totalTime -= OMEGA_RATE
+							. = step_away(src,target)
+							if(!.)
+								step_rand(src)
+					else
+						//longe o bastante: para e carrega (aura + som + ganho de Ki por tick)
+						if(!ai_charge_fx) npc_charge_fx_start()
+						Ki = min(MaxKi, Ki + MaxKi / NPC_AI_RECHARGE_RATE)
+						stamina = min(maxstamina, stamina + maxstamina * NPC_AI_RECHARGE_STAM)
+						extracharge = min(extracharge + 1, 50) //embalo de carga: bonus de regen no KiRegen depois
+					sleep(chase_speed)
+				npc_charge_fx_stop()
+				ai_recharging = 0
+				if(src && target && AIRunning)
+					spawn(1) chaseState() //recarregou (ou desistiu): volta pro combate
+				else if(src && AIRunning)
+					lostTarget()
+
 			resetState()
 				set waitfor=0
 				if(home_loc && src.hasAI)
@@ -523,6 +685,11 @@ mob
 				ai_powered_up = 0
 				ai_powerup_tier = 0
 				ai_powerup_cd = 0
+				//Sistema 1: limpa o estado de recursos ao desengajar
+				ai_warned_ki = 0
+				ai_warned_stam = 0
+				if(ai_charge_fx) npc_charge_fx_stop()
+				ai_recharging = 0
 				for(var/a, a<= behavior_vals.len,a++)//reset behavior pools
 					behavior_vals_t[a] = 0
 					e_behavior_vals[a] = 0
@@ -606,6 +773,7 @@ mob
 					NPCStats()
 					KiRegen() //NPCs now regenerate Ki like players (gated internally by stamina)
 					NPCStaminaTick() //stamina now actually drains/regens instead of being pinned at 80%
+					npc_resource_warnings() //Sistema 1: avisos de "sem ki"/"cansado" no chat (limiar + histerese configuraveis)
 					BuffLoop() //active forms/buffs (SSJ/Kaioken/etc.) now actually cost the NPC Ki & stamina
 					if(combatTag && world.time >= combatTagExpire) clear_combat_tag()
 					if(Anger > 100) Anger = max(100,Anger - 1)

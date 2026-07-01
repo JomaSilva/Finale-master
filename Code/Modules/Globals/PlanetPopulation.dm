@@ -124,6 +124,11 @@ mob/npc/Citizen
 		ai_powered_up = 0
 		ai_powerup_tier = 0
 		ai_powerup_cd = 0
+		//Sistema 1: limpa o estado de recursos ao desengajar
+		ai_warned_ki = 0
+		ai_warned_stam = 0
+		if(ai_charge_fx) npc_charge_fx_stop()
+		ai_recharging = 0
 		for(var/a = 1, a <= behavior_vals.len, a++)
 			behavior_vals_t[a] = 0
 			e_behavior_vals[a] = 0

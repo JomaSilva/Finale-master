@@ -245,6 +245,7 @@
 #include "Code\Modules\Movement Improvement\movement handler.dm"
 #include "Code\Modules\Movement Improvement\Swim.dm"
 #include "Code\Modules\Movement Improvement\Throw.dm"
+#include "Code\Modules\NPCs\BossEvents.dm"
 #include "Code\Modules\NPCs\Bosses.dm"
 #include "Code\Modules\NPCs\companion_list.dm"
 #include "Code\Modules\NPCs\companions.dm"
