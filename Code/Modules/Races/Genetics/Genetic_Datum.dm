@@ -152,14 +152,14 @@ datum/genetics
 			var/list/running_list
 			for(var/i in racial_protos)
 				if(spec)
-					if(racial_protos[racial_protos[i]]>=spec)
+					if(racial_protos[i]>=spec) //was racial_protos[racial_protos[i]] -- same double-index bug as race_percent (i is a race-name KEY; racial_protos[i] is its percent)
 						running_list += 1
 				else running_list += i
 			if(spec == null) race_list = running_list
 			return running_list
 		race_percent(var/chk_race)
 			if(chk_race in racial_protos)
-				return racial_protos[racial_protos[chk_race]]
+				return racial_protos[chk_race] //was racial_protos[racial_protos[chk_race]] -- DOUBLE INDEX: racial_protos[chk_race] is the PERCENT (e.g. 100), so racial_protos[100] indexed the list POSITIONALLY -> "list index out of bounds" (~510 throws/session, killing whatever proc called it: statify/powerlevel/anger_will_transform, incl. the NPC AI's per-tick calls). racial_protos maps race-NAME -> percent, so ONE lookup is correct.
 		add_race()
 			if(args.len == 0)
 				return TRUE
@@ -227,8 +227,8 @@ datum/genetics
 			return TRUE
 
 		assign_life()
-			savant.DeclineMod = (1 / misc_stats["Lifespan"])
-			savant.DeclineAge = 60 * (misc_stats["Lifespan"]**2)
+			savant.DeclineMod = (1 / max(misc_stats["Lifespan"],1)) //guard /0: a collapsed/half-applied Lifespan (0 or null) threw Division-by-zero here (~176/session)
+			savant.DeclineAge = 60 * (max(misc_stats["Lifespan"],0)**2)
 			savant.DeclineAge=round(savant.DeclineAge,0.1)
 			if(misc_stats["Lifespan"] > 20)
 				savant.biologicallyimmortal = 1
@@ -396,6 +396,8 @@ datum/genetics
 					misc_stats[a] -= modifiers[a]
 			apply_old()
 		apply_old()
+			if(!old_stats) old_stats = list() //old_stats starts as an EMPTY list(), so `old_stats[1] =` threw "list index out of bounds" (~421/session) on the FIRST apply -> aborted apply_stats mid-chain -> stats left HALF-APPLIED (the root of the later null.expressedBP / null.Ewillpower / Division-by-zero cascade). Grow to 2 slots before assigning by index.
+			while(old_stats.len < 2) old_stats += null
 			old_stats[1] = m_stats
 			old_stats[2] = misc_stats
 		//reapply chain

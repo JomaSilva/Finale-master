@@ -1,6 +1,6 @@
 proc/Init_Genome()
 	if(!original_genome_list) original_genome_list = list() //Load_Settings can read it back as NULL when the savefile lacks the key; `null += helix` below would NOT build a list, leaving every proto unregistered (broke all racial/class stats)
-	var/list/working_List = list(typesof(/datum/genetics/proto) - /datum/genetics/proto) //take all the original racial prototypes
+	var/list/working_List = typesof(/datum/genetics/proto) - /datum/genetics/proto //take all the original racial prototypes. WAS list(typesof(...) - proto): wrapping a list in list() NESTS it, so working_List held ONE element (the inner list) -> `new nT` ran on a /list ("new() called with /list", ~138 throws) and NO prototypes registered at boot. typesof() already returns a list.
 	for(var/datum/genetics/I in original_genome_list) //remove existing ones
 		if(I.type in working_List)
 			working_List.Remove(I.type)

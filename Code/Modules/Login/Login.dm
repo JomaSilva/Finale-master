@@ -370,3 +370,4 @@ mob/verb/DBG_NPC_AI()
 	to_chat(src, "canmove=[N.canmove] move=[N.move] canfight=[N.canfight] hasTime=[N.hasTime] attacking=[N.attacking] totalTime=[N.totalTime] mobTime=[N.mobTime]")
 	to_chat(src, "stagger=[N.stagger] stunCount=[N.stunCount] paralyzed=[N.paralyzed] grabParalysis=[N.grabParalysis] Guiding=[N.Guiding] Frozen=[N.Frozen] blocking=[N.blocking] IsInFight=[N.IsInFight]")
 	to_chat(src, "HP=[N.HP] Ki=[round(N.Ki)]/[round(N.MaxKi)] stam=[round(N.stamina)]/[round(N.maxstamina)] BP=[N.BP] expBP=[N.expressedBP] next_attack=[N.next_attack] now=[world.time]")
+	N.ai_debug_dump("manual-DBG-verb") //also append to DEBUG.log so there's a disk record

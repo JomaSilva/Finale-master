@@ -93,6 +93,21 @@ mob/npc/Citizen
 	// STAYS hittable, and recovers in place -- so you can always re-engage (refresh_combat_tag re-provokes).
 	resetState()
 		set waitfor = 0
+		//DISPLACED-MID-FIGHT backstop (BEFORE any heal): if a foe who is STILL fighting is right here, this "reset" is
+		//spurious -- ZanzoClash/rush/throw just flung the NPC away. Re-engage at CURRENT hp; do NOT heal to 100% or idle.
+		for(var/mob/P in oview(aggro_dist,src))
+			if(P.client && !P.dead && !P.KO && (P.IsInFight || P.combatTag))
+				grabParalysis = 0
+				if(AIRunning) //the checkState ticker is still alive -> just re-point + re-enter the state machine (never spawn a 2nd checkState)
+					target = P
+					attackable = 1
+					aggro_loc = src.loc
+					spawn(1) chaseState()
+				else //ticker already stopped -> full re-engage
+					target = null
+					foundTarget(P)
+				return
+		if(IsInFight || combatTag) ai_debug_dump("citizen-reset-full") //DEBUG: a citizen that GENUINELY disengages+heals (no in-combat foe still in range)
 		target = null
 		aggro_loc = null
 		attackable = 1

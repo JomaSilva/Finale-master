@@ -61,6 +61,8 @@ mob
 			tmp/state_alive = 0      //bumped by every live state-proc iteration; the watchdog re-enters a state if this stops advancing (the state thread died)
 			tmp/last_state_alive = -1
 			tmp/state_stall = 0
+			tmp/ai_freeze_log_cd = 0 //rate-limit the freeze diagnostic dump to DEBUG.log
+			tmp/stuck_notime = 0    //consecutive ticks engaged with NO action-time (hasTime=0); a long run = FROZEN
 
 
 		//helper functions
@@ -87,7 +89,12 @@ mob
 					current_area.my_mob_list |= src
 				return
 			lostTarget()
-				var/rng = range(aggro_loc,aggro_dist)
+				//the CURRENT target is still valid and merely DISPLACED (ZanzoClash/rush/throw fling the NPC far from aggro_loc)?
+				//keep fighting it -- do NOT fall through to a spurious reset, which full-heals to 100% and drops the NPC to idle.
+				if(target && target.client && !target.KO && target.HP > 20 && get_dist(src,target) <= aggro_dist*2)
+					spawn(1) chaseState()
+					return
+				var/rng = range(src,aggro_dist) //search the NPC's CURRENT position, not the stale aggro_loc where it first engaged
 				var/tmp/mob/trg
 				var/mdist = aggro_dist-1
 				var/d
@@ -102,8 +109,7 @@ mob
 				//if we found anything, chase, if not, reset
 				if(trg && trg.client && src.hasAI)
 					src.target = trg
-					spawn(1)
-					chaseState()
+					spawn(1) chaseState()
 				else
 					resetState()
 
@@ -127,7 +133,7 @@ mob
 				spawn(testactspeed)
 					if(blocking)
 						stopblock()
-					canmove = 1 //ALWAYS restore movement after a swing/brace. The choreoattk branch above sets canmove=0 and NOTHING else in the NPC combat path ever restores it, so a single 15%% brace pinned the action clock (checkState: if(!canmove)totalTime=0) forever -> the NPC kept spinning in-state (watchdog saw no stall) but never attacked or turned to face you. THIS was the residual "stands facing nothing after a while" freeze.
+					canmove = 1 //ALWAYS restore movement after a swing/brace. The choreoattk branch above sets canmove=0 and NOTHING else in the NPC combat path ever restores it, so a single 15% brace pinned the action clock (checkState: if(!canmove)totalTime=0) forever -> the NPC kept spinning in-state (watchdog saw no stall) but never attacked or turned to face you. THIS was the residual "stands facing nothing after a while" freeze.
 
 			blast()
 				var/bcolor='12.dmi'
@@ -275,7 +281,7 @@ mob
 					if(!src.target.client)//repetition to ensure AI doesn't attack AI.
 						src.lostTarget()
 						return 0
-					if(get_dist(aggro_loc,src)>aggro_dist*2||(src.target.KO&&!src.isBoss)||(src.target.KO&&src.isBoss&&prob(20)))
+					if((get_dist(aggro_loc,src)>aggro_dist*2 && get_dist(src,target)>aggro_dist)||(src.target.KO&&!src.isBoss)||(src.target.KO&&src.isBoss&&prob(20))) //leash: give up ONLY if the NPC wandered far from home AND the target is far -- a ZanzoClash/throw that displaces the NPC but keeps the target adjacent must NOT trip this
 						src.lostTarget()
 						return 0
 					if((e_behavior_vals[1] > 35 || e_behavior_vals[2] >= 75) && monster)
@@ -679,6 +685,32 @@ mob
 					if(omegastun||launchParalysis) totalTime=0 //all-encompassing stun for style editing, etc.
 					if(totalTime) hasTime = 1
 					else hasTime = 0
+					//FREEZE DETECTOR + AUTO-RECOVER (debug): a clientless NPC engaged (target+AIRunning, not KO) whose action
+					//clock can't advance (hasTime=0) for ~30 straight ticks is FROZEN by a stuck soft-lock. Dump every flag
+					//to DEBUG.log (throttled) so the true culprit is visible, then clear the whole lock family to un-freeze.
+					if(target && AIRunning && !KO && !dead && !client)
+						if(!hasTime) stuck_notime++
+						else stuck_notime = 0
+						if(stuck_notime >= 30)
+							stuck_notime = 0
+							if(world.time >= ai_freeze_log_cd)
+								ai_freeze_log_cd = world.time + 30
+								ai_debug_dump("engaged-but-no-actionclock")
+							canmove = 1
+							stagger = 0
+							stunCount = 0
+							buildStun = 0
+							paralyzed = 0
+							gravParalysis = 0
+							KBParalysis = 0
+							omegastun = 0
+							launchParalysis = 0
+							Guiding = 0
+							Frozen = 0
+							if(!grabber) grabParalysis = 0
+							totalTime = OMEGA_RATE
+							hasTime = 1
+							spawn(1) chaseState()
 					//Fighting checks
 					if(hasTime) canfight = 1
 					else canfight = 0
@@ -723,3 +755,12 @@ mob
 		New()
 			. = ..()
 			if(notSpawned) src.home_loc = src.loc
+//DEBUG: append a full combat-AI state snapshot to DEBUG.log (readable from disk in the game directory).
+//Fired automatically by the freeze detector, and on demand by the DBG NPC AI verb.
+mob/npc/proc/ai_debug_dump(reason)
+	WriteToLog("debug","[time2text(world.realtime,"Day DD hh:mm:ss")] NPC-AI [src.name] ([src.type]) reason=[reason]")
+	WriteToLog("debug","  engage: AIRunning=[AIRunning] target=[target] hasAI=[hasAI] KO=[KO] dead=[dead] IsInFight=[IsInFight] combatTag=[combatTag] state_alive=[state_alive] stall=[state_stall] stuck=[stuck_notime]")
+	WriteToLog("debug","  clock:  canmove=[canmove] move=[move] canfight=[canfight] hasTime=[hasTime] attacking=[attacking] totalTime=[totalTime] mobTime=[mobTime] next_attack=[next_attack] now=[world.time]")
+	WriteToLog("debug","  locks:  stagger=[stagger] stunCount=[stunCount] buildStun=[buildStun] paralyzed=[paralyzed] grabParalysis=[grabParalysis] KB=[KB] KBParalysis=[KBParalysis] gravParalysis=[gravParalysis] Guiding=[Guiding] Frozen=[Frozen] omegastun=[omegastun] launchParalysis=[launchParalysis]")
+	WriteToLog("debug","  grab:   grabber=[grabber] grabbee=[grabbee] grabMode=[grabMode] objgrabbee=[objgrabbee] med=[med] charging=[charging] train=[train] blocking=[blocking] beaming=[beaming] blasting=[blasting] volleying=[volleying] sding=[sding]")
+	WriteToLog("debug","  stats:  HP=[HP] Ki=[round(Ki)]/[round(MaxKi)] stam=[round(stamina)]/[round(maxstamina)] BP=[BP] expBP=[expressedBP] dir=[dir]")
