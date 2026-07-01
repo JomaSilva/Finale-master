@@ -349,3 +349,24 @@ mob/verb/DBGState()
 	to_chat(src, "GRAV: mobTime=[mobTime] totalTime=[totalTime] Planetgrav=[Planetgrav] gravmult=[gravmult] GravMastered=[GravMastered]")
 	to_chat(src, "ANGER: Anger=[Anger] MaxAnger=[MaxAnger] baseAnger=[baseAnger] Ewillpower=[Ewillpower] angerMod=[angerMod] Emotion=[Emotion]")
 	to_chat(src, "POS: z=[z] x=[x] y=[y] Race=[Race] dead=[dead]")
+
+//Inspect the NEAREST NPC's combat-AI state -- stand next to the King, hit this repeatedly while fighting.
+//A healthy fighting NPC: AIRunning=1, target set, state_alive climbing each press, canmove=1, totalTime cycling.
+//A FROZEN NPC: state_alive stuck OR (state_alive climbing but canmove=0 / totalTime pinned at 0) -> can't act.
+mob/verb/DBG_NPC_AI()
+	set category = "Other"
+	set name = "DBG NPC AI"
+	var/mob/npc/N
+	var/nd = 999
+	for(var/mob/npc/M in view(12,src))
+		if(get_dist(src,M) < nd)
+			nd = get_dist(src,M)
+			N = M
+	if(!N)
+		to_chat(src, "No NPC in view.")
+		return
+	to_chat(src, "<b>NPC AI: [N.name]</b> (dist [nd])")
+	to_chat(src, "AIRunning=[N.AIRunning] target=[N.target] hasAI=[N.hasAI] KO=[N.KO] dead=[N.dead] state_alive=[N.state_alive] last=[N.last_state_alive] stall=[N.state_stall]")
+	to_chat(src, "canmove=[N.canmove] move=[N.move] canfight=[N.canfight] hasTime=[N.hasTime] attacking=[N.attacking] totalTime=[N.totalTime] mobTime=[N.mobTime]")
+	to_chat(src, "stagger=[N.stagger] stunCount=[N.stunCount] paralyzed=[N.paralyzed] grabParalysis=[N.grabParalysis] Guiding=[N.Guiding] Frozen=[N.Frozen] blocking=[N.blocking] IsInFight=[N.IsInFight]")
+	to_chat(src, "HP=[N.HP] Ki=[round(N.Ki)]/[round(N.MaxKi)] stam=[round(N.stamina)]/[round(N.maxstamina)] BP=[N.BP] expBP=[N.expressedBP] next_attack=[N.next_attack] now=[world.time]")

@@ -127,6 +127,7 @@ mob
 				spawn(testactspeed)
 					if(blocking)
 						stopblock()
+					canmove = 1 //ALWAYS restore movement after a swing/brace. The choreoattk branch above sets canmove=0 and NOTHING else in the NPC combat path ever restores it, so a single 15%% brace pinned the action clock (checkState: if(!canmove)totalTime=0) forever -> the NPC kept spinning in-state (watchdog saw no stall) but never attacked or turned to face you. THIS was the residual "stands facing nothing after a while" freeze.
 
 			blast()
 				var/bcolor='12.dmi'
@@ -618,6 +619,12 @@ mob
 						else
 							state_stall = 0
 						last_state_alive = state_alive
+					//SAFETY NET for the canmove freeze: canmove has NO restore path inside the NPC combat loop
+					//(only attack()'s choreo-brace ever sets it =0), so a clientless fighter that hits canmove=0
+					//would pin its action clock (if(!canmove)totalTime=0 below) forever. NPCs never channel beams
+					//or charge, so while engaged and not grabbing/grabbed/held it is always safe to force it back on.
+					if(!canmove && !client && target && AIRunning && !grabber && !grabbee && !beaming && !charging && !Guiding && !Frozen)
+						canmove = 1
 					mobTime += 0.4 
 					mobTime += max(log(5,Espeed),0.1) //max prevents negatives from DESTROYING US ALL
 					CHECK_TICK
