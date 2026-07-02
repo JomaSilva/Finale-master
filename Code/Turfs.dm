@@ -148,8 +148,10 @@ turf/Teleporters
 	fromeg
 		density=1
 		Enter(mob/M)
+			//saida do Lookout de volta pra Terra: usava usr.loc -- usr e nulo/errado em Enter() no 516,
+			//entao os turfs (141-143,1,12) nao teleportavam ninguem. Usa o proprio M.
 			if(istype(M,/mob))
-				usr.loc=locate(128,162,1)
+				M.loc=locate(128,162,1)
 				return 1
 			else return 1
 	tohbtc
@@ -157,21 +159,23 @@ turf/Teleporters
 		icon_state="Closed"
 		density=1
 		Enter(mob/M)
+			//SALA DO TEMPO: entrada controlada pelo TimeChamber.dm (autorizacao do Guardiao + cooldown 24h)
 			if(istype(M,/mob))
-				if(!usr.flight&&usr.permission==1)
-					usr.loc=locate(146,160,13)
-					return 1
-				else return
+				if(!M.flight)
+					M.htc_try_enter()
+				return 0 //nunca atravessa a porta em si: o htc_try_enter teleporta se puder entrar
+			return 0
 	fromhbtc
 		icon='Door6.dmi'
 		icon_state="Closed"
 		density=1
 		Enter(mob/M)
 			if(istype(M,/mob))
-				if(!usr.flight)
-					usr.loc=locate(125,420,12)
+				if(!M.flight)
+					M.loc=locate(125,420,12) //a sessao (htc_session) detecta a saida do z13 e fecha a conta (idade/cooldown)
 					return 1
-				else return 1
+				else return
+			else return 1
 	Special
 		Teleporter
 			density=0

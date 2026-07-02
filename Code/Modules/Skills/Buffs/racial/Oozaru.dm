@@ -123,13 +123,12 @@ obj/buff/Oozaru/Buff()
 	container.overlayList.Remove(container.overlayList)
 	container.RemoveHair()
 	container.overlaychanged=1
-	container.OozaruBuff=container.Omult
+	container.OozaruBuff=1 //Oozaru NAO aumenta mais o ki (OozaruBuff multiplicava kicapacity/powerupcap em 6x + enchia o tanque)
 	container.Tphysoff+=1.2
 	container.Tspeed-=1.5
 	container.Ttechnique-=1.5
-	container.giantFormbuff = 1.5 //Oozaru regular = 1.5x
+	container.giantFormbuff = 1.5 //Oozaru regular = APENAS o buff de 1.5x de BP
 	container.bigform=1
-	container.Ki += container.OozaruBuff * container.MaxKi
 	container.train=0
 	container.med=0
 	container.move=1
@@ -212,8 +211,7 @@ obj/buff/Oozaru/DeBuff()
 	container.overlayList.Remove(container.overlayList)
 	container.overlayList.Add(container.storedoverlays)
 	container.storedoverlays.Remove(container.storedoverlays)
-	container.Ki /= container.OozaruBuff
-	container.OozaruBuff = 1
+	container.OozaruBuff = 1 //sem ganho de ki na forma -> nada a dividir na volta
 	container.giantFormbuff = 1
 	container.ssjBuff = 1 //reset do multiplicador de forma ao sair do Oozaru (o Golden setava ssjBuff e ele nao era resetado)
 	container.bigform=0
@@ -222,6 +220,7 @@ obj/buff/Oozaru/DeBuff()
 	container.Ttechnique+=1.5
 	container.color = null
 	container.AddHair()
+	if(container.has_Tail()) container.get_Tail().Refresh_Overlay() //o Loop() remove a overlay do rabo durante a forma e ninguem a recriava -> saiyajin voltava SEM rabo ate relogar
 	container.overlaychanged=1
 	container.golden=0
 	container.canRevert = 0
@@ -234,8 +233,7 @@ obj/buff/Oozaru/SuperOozaru
 	slot=sFORM //which slot does this buff occupy
 	Buff()
 		..()
-		container.Ki += container.OozaruBuff * container.MaxKi
-		container.OozaruBuff=(container.Omult + 10)
+		//Golden tambem nao infla mais o ki (sem Ki+= / sem OozaruBuff): o poder vem SO do multiplicador de BP
 		container.ssjBuff=18 //Golden Oozaru = 18x
 		if(container.Class == "Legendary Primal Saiyan") container.ssjBuff=20 //Legendary Great Ape = 20x (Imagem 24)
 		container.giantFormbuff=1 //anula o giantFormbuff(1.5) herdado do Oozaru regular para o total ficar exatamente 18x

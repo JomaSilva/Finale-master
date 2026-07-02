@@ -28,6 +28,7 @@ proc/WorldClock()
 				//world<<"It is now month [listedMonth] of Age [round(Year)]"
 				Calculate_Day()
 				Years()
+				spawn Tourney_Month_Check() //Torneio de Artes Marciais: convite mensal na Terra (Tournament.dm)
 			else
 				Calculate_Day()
 				to_chat(world, "It is now [listedDay], [listedMonth] the [Days][listedDaysuffix]")
@@ -105,6 +106,7 @@ mob/Admin3/verb/Advance_Month()
 		Month=1
 	listedMonth = MonthNames[Month]
 	Years()
+	spawn Tourney_Month_Check() //mes avancado na marra tambem dispara o torneio
 	for(var/area/A in area_outside_list) A.AreaTime(1)
 proc/checkthetimeidiot()
 	return "It is now [listedDay], the [Days][listedDaysuffix] of [listedMonth], Age [round(Year)]"

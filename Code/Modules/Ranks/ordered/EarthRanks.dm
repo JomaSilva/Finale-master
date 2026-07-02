@@ -135,18 +135,24 @@ mob/var/permission=0
 	assignverb(/mob/Rank/verb/Grow_Senzu_Bean)
 
 
+//GUARDIAO DA TERRA: autoriza UMA entrada na Sala do Tempo (a torre/Lookout ja e livre pra todos).
+//A autorizacao (permission=1) e consumida na entrada; regras de tempo/cooldown em TimeChamber.dm.
 mob/Rank/verb/Permission(mob/M in view(6))
 	set category="Other"
-	switch(input("Give permission for [M] to enter the tower and/or HBTC?", "", text) in list ("Tower","Tower and HBTC","Neither",))
-		if("Tower")
-			to_chat(usr, "You give [M] permission to enter the tower")
-			M.permission=2
-		if("Tower and HBTC")
-			to_chat(usr, "You give [M] permission to use the HBTC")
+	set name="Autorizar Sala do Tempo"
+	if(!M || !M.client)
+		to_chat(usr, "So jogadores podem ser autorizados.")
+		return
+	var/escolha = input("Autorizar [M] a entrar na Sala do Tempo? (vale para 1 entrada; ha um limite de [HTC_MAX_REAL_MIN] minutos la dentro e 24h de espera entre visitas)", "Sala do Tempo") in list("Autorizar","Revogar","Cancelar")
+	switch(escolha)
+		if("Autorizar")
 			M.permission=1
-		if("Neither")
-			to_chat(usr, "You deny [M] permission to enter the tower or use the HBTC")
+			to_chat(usr, "Voce autoriza [M] a entrar na Sala do Tempo.")
+			to_chat(M, "<font color=yellow>[usr] autorizou voce a entrar na <b>Sala do Tempo</b> (a porta fica no Templo do Guardiao).")
+		if("Revogar")
 			M.permission=0
+			to_chat(usr, "Voce revoga a autorizacao de [M].")
+			to_chat(M, "<font color=yellow>[usr] revogou sua autorizacao de entrar na Sala do Tempo.")
 
 obj/Portal_Jar
 	icon='props.dmi'

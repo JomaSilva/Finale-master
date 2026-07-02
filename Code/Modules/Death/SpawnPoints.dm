@@ -170,7 +170,13 @@ mob/proc/Locate()
 	if(dead) //dead characters (e.g. logging in while dead) go to the death checkpoint, NOT their homeworld
 		loc=locate(187,104,6) //Outro Mundo: todo morto vai pro checkpoint do Enma (com ou sem alma)
 	else if(spawnPlanet)
-		GotoPlanet(spawnPlanet,1)
+		GotoPlanet(effective_spawn_planet(),1) //planeta natal destruido -> spawn na Terra (volta sozinho quando o planeta voltar)
 	else
 		spawnPlanet = pick("Earth","Namek","Vegeta")
 		Locate()
+
+//Planeta natal DESTRUIDO (ex.: Freeza explodiu Vegeta/Namek): os refugiados spawnam na TERRA.
+//NAO sobrescreve spawnPlanet -- se o planeta for restaurado (wish), o spawn volta pra la automaticamente.
+mob/proc/effective_spawn_planet()
+	if(spawnPlanet && bev_planet_destroyed(spawnPlanet)) return "Earth"
+	return spawnPlanet

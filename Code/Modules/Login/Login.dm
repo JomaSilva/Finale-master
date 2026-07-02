@@ -307,6 +307,7 @@ mob/proc
 			assignverb(/mob/keyable/verb/Namekian_Regeneration)
 			unassignverb(/mob/keyable/verb/Regenerate) //a antiga cura canalizada (passiva) saiu do kit Namekuseijin
 		dnl_login_check() //DNA Labs: re-arma verbs/loops (Absorb Ki, nucleo infinito, DNA Extractor, larva)
+		htc_login_check() //Sala do Tempo: relogou la dentro -> retoma a sessao (ou expulsa se o tempo acabou)
 		if(needs_manual_custom) //Handles logging into clones for the first time.
 			CustomizeFurther()
 			StatRace(Race)
@@ -334,7 +335,7 @@ mob/proc
 		if(has_Tail()) get_Tail().Refresh_Overlay() //relog: re-derive the tail color now that ssj + god ki are restored (so a transformed tail isn't left base/black)
 		if(Created && (isnull(loc) || z == 29 || z == 30 || (z in majin_interior_zs))) //limbo recovery: never leave a finished character in the lobby/creation void, a dead Majin pocket z, or at a null location
 			if(!spawnPlanet) spawnPlanet = "Earth"
-			GotoPlanet(spawnPlanet,1)
+			GotoPlanet(effective_spawn_planet(),1) //planeta natal destruido -> Terra (SpawnPoints.dm)
 			if(isnull(loc) || z == 29 || z == 30) //still stuck? hard fallback to ANY enabled spawnpoint
 				for(var/obj/SpawnPoint/SP in obj_list)
 					if(!SP.Disabled)

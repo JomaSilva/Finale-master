@@ -115,6 +115,7 @@ mob
 		//helper functions
 		proc
 			foundTarget(var/mob/c)
+				if(tourney_lock && c != tourney_opponent) return //lutador de TORNEIO: so encara o oponente designado (nunca espectador/plateia)
 				if(!src.target && !AIRunning && c.client && src.hasAI && !client) //!AIRunning: nunca empilha um 2o par de loops checkState em cima de um ticker ainda vivo
 					src.attackable=1
 					src.target = c
@@ -136,6 +137,17 @@ mob
 					current_area.my_mob_list |= src
 				return
 			lostTarget()
+				//LUTADOR DE TORNEIO: nunca procura outro alvo. Se o oponente designado ainda esta de pe, re-engaja;
+				//senao fica parado no lugar (o monitor da luta em Tournament.dm decide o vencedor e faz a limpeza).
+				if(tourney_lock)
+					if(tourney_opponent && !tourney_opponent.KO && !tourney_opponent.dead && tourney_opponent.loc && hasAI && get_dist(src,tourney_opponent) <= 60)
+						target = tourney_opponent
+						spawn(1) chaseState()
+					else
+						target = null
+						AIRunning = 0
+						IsInFight = 0
+					return
 				//the CURRENT target is still valid and merely DISPLACED (ZanzoClash/rush/throw fling the NPC far from aggro_loc)?
 				//keep fighting it -- do NOT fall through to a spurious reset, which full-heals to 100% and drops the NPC to idle.
 				if(target && target.client && !target.KO && target.HP > 20 && get_dist(src,target) <= aggro_dist*2)
@@ -401,7 +413,7 @@ mob
 				while(d>keep_dist && src.hasAI && target)
 					state_alive++
 					//if the Target is out of range or dead, bail out.
-					if(!src.target.client)//repetition to ensure AI doesn't attack AI.
+					if(!src.target.client && !(tourney_lock && src.target == tourney_opponent))//AI nao ataca AI -- EXCETO luta NPC vs NPC do torneio
 						src.lostTarget()
 						return 0
 					if((get_dist(aggro_loc,src)>aggro_dist*2 && get_dist(src,target)>aggro_dist)||(src.target.KO&&!src.isBoss)||(src.target.KO&&src.isBoss&&prob(20))) //leash: give up ONLY if the NPC wandered far from home AND the target is far -- a ZanzoClash/throw that displaces the NPC but keeps the target adjacent must NOT trip this

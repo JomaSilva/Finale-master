@@ -59,6 +59,25 @@ mob/var/tmp
 	statsUItab = "Stats"
 	last_stats_html = ""
 	statsUIrunning = 0
+	list/ui_scroll_pos = null //posicao de scroll salva POR PAINEL/ABA (fix: browse() recarrega a pagina e o scroll voltava pro topo a cada atualizacao)
+
+// script injetado no fim de cada pagina: restaura o scroll salvo e reporta (debounced, via
+// link byond:// -> Topic, que NAO navega a pagina) a nova posicao sempre que o usuario rola.
+// A posicao NAO entra na comparacao de mudanca (last_*_html), entao rolar nunca forca re-render.
+mob/proc/ui_scroll_js(key)
+	var/y = 0
+	if(ui_scroll_pos && ui_scroll_pos[key]) y = ui_scroll_pos[key]
+	return {"<script>
+var uiY=[y];
+function uiST(){var d=document.documentElement,b=document.body;return (d&&d.scrollTop)||(b&&b.scrollTop)||0;}
+window.scrollTo(0,uiY);
+setTimeout(function(){window.scrollTo(0,uiY);},1);
+var uiT=null;
+window.onscroll=function(){
+ if(uiT){clearTimeout(uiT);}
+ uiT=setTimeout(function(){window.location='byond://?src=\ref[src];uiscrollkey=[url_encode(key)];uiscroll='+uiST();},200);
+};
+</script>"}
 
 // ---- HTML helpers (reusable across panels) ---------------------------------
 proc/ui_sec(title)
@@ -520,6 +539,8 @@ mob/proc/RefreshStatsUI()
 	var/html = BuildStatsHTML()
 	if(html == last_stats_html) return //nothing changed -> skip the re-render (no flicker / no scroll reset)
 	last_stats_html = html
+	//injeta a restauracao de scroll DEPOIS da comparacao (rolar a pagina nunca dispara re-render)
+	html = replacetext(html, "</body>", "[ui_scroll_js("stats_[statsUItab]")]</body>")
 	src << browse(html, "window=[UI_BROWSER]")
 
 // ---- embedded HTML HUD (top-left hppane strip; HUD mode 4) ------------------
@@ -594,6 +615,7 @@ mob/proc/RenderTreeBrowser()
 	var/html = BuildTreeHTML()
 	if(html == last_tree_html) return
 	last_tree_html = html
+	html = replacetext(html, "</body>", "[ui_scroll_js("tree")]</body>") //preserva o scroll entre re-renders
 	src << browse(html, "window=SkillTreeWindow.treebrowser")
 
 // ---- SKILLS sub-window (the per-tree skills; SkillsListWindow.skillbrowser) -
@@ -637,10 +659,15 @@ mob/proc/RenderSkillBrowser()
 	var/html = BuildSkillHTML()
 	if(html == last_skill_html) return
 	last_skill_html = html
+	html = replacetext(html, "</body>", "[ui_scroll_js("skills")]</body>") //preserva o scroll entre re-renders
 	src << browse(html, "window=SkillsListWindow.skillbrowser")
 
 // ---- href routing: tab clicks + verb buttons -------------------------------
 mob/Topic(href, list/href_list)
+	if(href_list["uiscroll"]) //painel HTML reportando a posicao de scroll (ver ui_scroll_js)
+		if(!ui_scroll_pos) ui_scroll_pos = list()
+		ui_scroll_pos[href_list["uiscrollkey"]] = text2num(href_list["uiscroll"])
+		return
 	if(href_list["chatReady"]) //the HTML chat page finished loading -> replay the backlog, then go live
 		if(!chatUIready) FlushChat()
 		return

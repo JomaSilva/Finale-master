@@ -114,6 +114,7 @@ mob/proc/Attack_Gain(mult)
 	if(!mult)
 		mult=1
 	mult*=global_spar_gain
+	mult*=htc_gain_mult() //Sala do Tempo: 1 dia la = 1 ano de treino (x280; TimeChamber.dm)
 	if(tmp_activ_gains>0)
 		mult *= max(1,min(25,tmp_activ_gains/10))
 		tmp_activ_gains=max(0,tmp_activ_gains-25)
@@ -131,6 +132,8 @@ mob/proc/Attack_Gain(mult)
 		maxstamina+=0.01*weight
 
 mob/proc/Blast_Gain(mult,ignoreminuteshot)
+	if(!mult) mult=1 //o default so era aplicado DEPOIS de bgains usar mult (null zerava o ganho)
+	mult*=htc_gain_mult() //Sala do Tempo: ganho multiplicado (TimeChamber.dm)
 	var/bgains = BPTick*relBPmax*Ekiskill*Egains*mult //an hour to hit cap at a rate of 1 shot/tick //made way slower, but when blasts hit you get bp.
 	var/kgains = 0.055*BPrestriction*KiMod*baseKiMax/baseKi
 	var/amount = bgains

@@ -209,6 +209,8 @@
 #include "Code\Modules\Globals\World.dm"
 #include "Code\Modules\Globals\World_Lists.dm"
 #include "Code\Modules\Globals\WorldClock.dm"
+#include "Code\Modules\Globals\TimeChamber.dm"
+#include "Code\Modules\Globals\Tournament.dm"
 #include "Code\Modules\Globals\WorldTimer.dm"
 #include "Code\Modules\Godki\godkiattain.dm"
 #include "Code\Modules\Godki\GodRitual.dm"

@@ -25,7 +25,7 @@ mob/proc/Grav_Gain()
 		effgrav += (GravMastered - gravity) * gravAccustomWeight
 
 	if(effgrav > 0 && gravity >= 1 && (train || med || IsInFight || minuteshot)) //gravity trains BP ONLY while actively training (Train verb / meditating) or fighting -> gravity SCALES those gains; standing idle in ANY gravity gives no BP. Zenkai unaffected.
-		BP += capcheck(relBPmax*BPTick*TrainMod*Egains*GlobalGravGain*(effgrav/gravGainDiv))
+		BP += capcheck(relBPmax*BPTick*TrainMod*Egains*GlobalGravGain*(effgrav/gravGainDiv)*htc_gain_mult()) //Sala do Tempo: treino de gravidade tambem e multiplicado
 
 	//--- MASTERY ACCUMULATION: you only raise your acclimation ceiling by training ABOVE it. ---
 	if(gravity > GravMastered)
@@ -81,7 +81,7 @@ mob/proc/Grav()
 		if("Sealed") Planetgrav=17 //Sealed Zone
 		if("Hyperbolic Time Dimension")
 			switch(z)
-				if(13) Planetgrav=25 //HBTC
+				if(13) Planetgrav=10 //Sala do Tempo: 10x (era 25; spec do rework em TimeChamber.dm)
 				if(15) Planetgrav=125 //HBTC
 				if(16) Planetgrav=225 //HBTC
 				if(17) Planetgrav=325 //HBTC
