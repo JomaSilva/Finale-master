@@ -1,9 +1,18 @@
+// ============================================================================
+// CONFIG DO RELOGIO -- quanto tempo REAL dura 1 dia in-game.
+// O dia tem 23 ticks de hora (Hours 1 -> 24). Com 20 min: ~52s reais por hora.
+// O Yearspeed (verb de admin Year_Speed) continua ACELERANDO tudo por cima disto.
+// (Antes o tick era fixo em 10s/hora -> 1 dia durava so ~3min50s.)
+// ============================================================================
+#define DAY_REAL_MINUTES 20
+
 proc/WorldClock()
 	set background = 1
 	while(1)
 		if(Yearspeed==0||!Yearspeed)
 			Yearspeed=1
 		Hours = min((Hours+1),24)
+		sync_area_daylight() //o dia/noite VISUAL agora segue o relogio (Hours) -- antes era um ciclo proprio dessincronizado (Weather.dm)
 		if(Hours>=24)
 			Hours=1
 			Days+=1
@@ -22,7 +31,7 @@ proc/WorldClock()
 			else
 				Calculate_Day()
 				to_chat(world, "It is now [listedDay], [listedMonth] the [Days][listedDaysuffix]")
-		sleep(max(10,(100/max(Yearspeed,1))))
+		sleep(max(10,round((DAY_REAL_MINUTES * 600 / 23) / max(Yearspeed,1))))
 
 proc/Calculate_Day()
 	if(Days<=7)

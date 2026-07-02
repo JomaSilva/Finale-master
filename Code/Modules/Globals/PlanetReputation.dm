@@ -189,29 +189,32 @@ mob/npc/Citizen/proc/citizen_social_loop()
 	while(src && hasAI && !dead && loc) //loc null = removido do mundo (soft-del): encerra e solta a ref pro GC
 		sleep(rand(REP_TALK_MIN_DELAY, REP_TALK_MAX_DELAY))
 		if(!src || AIRunning || KO || dead || target) continue
+		// ANTI-LAG: planeta sem players = CONGELA (1 lookup + sleep longo, zero varredura de mapa)
+		if(!planet_has_players(pop_planet))
+			sleep(150)
+			continue
+		// ANTI-LAG: sem player POR PERTO o NPC nem fala nem escaneia (itera a player_list, nao o oview)
+		var/mob/near_p = player_within(src, REP_VENGE_RANGE)
+		if(!near_p) continue
 		// 1) VINGANCA: um player cacado pelo povo apareceu -> grito de guerra e ataque
 		var/found_prey = 0
-		for(var/mob/P in oview(REP_VENGE_RANGE, src))
-			if(P.client && !P.dead && !P.KO && planet_rep_get(pop_planet, P) <= REP_HOSTILE)
+		for(var/mob/P in player_list)
+			if(!P || !P.client || P.dead || P.KO || P.z != z) continue
+			if(get_dist(src, P) > REP_VENGE_RANGE) continue
+			if(planet_rep_get(pop_planet, P) <= REP_HOSTILE)
 				found_prey = 1
 				citizen_say(replacetext(pick(rep_venge_lines), "%n", P.name))
 				spawn(5) if(src && !target && !AIRunning && P && !P.dead) foundTarget(P)
 				break
 		if(found_prey) continue
-		// 2) CONVERSA: so puxa papo se tiver plateia (outro cidadao do planeta ou um player perto)
+		// 2) CONVERSA: so puxa papo com um PLAYER a distancia de ouvir (falar pro vazio era so custo)
 		if(!prob(REP_TALK_PROB)) continue
+		if(get_dist(src, near_p) > REP_TALK_RANGE && !player_within(src, REP_TALK_RANGE)) continue
 		var/mob/npc/Citizen/buddy = null
-		for(var/mob/npc/Citizen/C2 in oview(REP_TALK_RANGE, src))
+		for(var/mob/npc/Citizen/C2 in oview(REP_TALK_RANGE, src)) //oview so AQUI, ja garantido que ha player perto
 			if(C2 != src && C2.pop_planet == pop_planet && !C2.AIRunning && !C2.dead && !C2.KO && !C2.target)
 				buddy = C2
 				break
-		var/audience = buddy ? 1 : 0
-		if(!audience)
-			for(var/mob/P2 in oview(REP_TALK_RANGE, src))
-				if(P2.client)
-					audience = 1
-					break
-		if(!audience) continue
 		citizen_say(citizen_context_line())
 		if(buddy)
 			var/mob/npc/Citizen/B2 = buddy

@@ -129,13 +129,16 @@ obj/Bio_Absorb
 				to_chat(M, "[usr]([usr.displaykey]) absorbs you!")
 				to_chat(oview(usr), "[usr]([usr.displaykey]) absorbed [M]!")
 				if(ismajor)
-					M.buudead=0
+					if(!(usr.Race=="Bio-Android"||usr.Parent_Race=="Bio-Android"||usr.bio_lab_born))
+						M.buudead=0 //selado (vivo): limpa o buudead. BIO nao limpa: a vitima esta MORRENDO consumida (buudead=6 fura o death-regen dela)
 					usr.SpreadHeal(100,1,0)
 					usr.Ki = usr.MaxKi
 					usr.Ki+=M.Ki
 					usr.overcharge = 1
 					usr.emit_Sound('deathball_charge.wav')
 					if(TurnOffAscension&&!usr.AscensionAllowed) return
+					usr.bio_note_absorb(M) //bio-androide de LABORATORIO: evolui por CONTAGEM (1 androide OU 3 jogadores; DNALabs.dm)
+					if(usr.bio_lab_born) return //a evolucao dele e a cinematica propria do laboratorio, nao o limiar de BP abaixo
 					if(!usr.cell2)
 						if(M.Player&&M.BP>=15000000||usr.expressedBP>=usr.cell2at||canachieve)
 							usr.transBuff = usr.cell2mult
@@ -342,6 +345,17 @@ datum/Absorbs
 					container.removeOverlays(absorboverlays)
 					absorboverlays = container.HasOverlays(M,/obj/overlay/clothes)
 					container.duplicateOverlays(absorboverlays)
+				//BIO-ANDROIDE: absorver e CONSUMIR -- a vitima MORRE NA HORA, nada de selo/"Sealed"
+				//(dimensao interna e coisa de Majin). Como nada resta da vitima, o poder absorvido
+				//(AbsorbBP) e PERMANENTE: nao existe expel/regurgitar para absorcoes de bio-androide.
+				if(container.Race == "Bio-Android" || container.Parent_Race == "Bio-Android" || container.bio_lab_born)
+					container.AbsorbBP += LastMajorAbsorbBP
+					LastMajorAbsorbSig = null //nada foi "selado": nao ha o que regurgitar depois
+					to_chat(view(container), "<font color=#7fe07f><b>*[container] absorve [M] POR COMPLETO -- nada resta da vitima!*</b></font>")
+					to_chat(M, "<font color=red><b>Cada celula do seu corpo e consumida por [container]. Voce morreu.</b></font>")
+					M.buudead = 6 //consumido ate a ultima celula: nem death-regen salva
+					container.killer_stuff(M) //morte DE VERDADE: mensagem de kill, karma, reputacao planetaria, Enma
+					return ismajor
 				MajorAbsorbSigs+=M.signature
 				MajorAbsorbBP += LastMajorAbsorbBP
 				container.AbsorbBP += LastMajorAbsorbBP

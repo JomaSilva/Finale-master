@@ -157,6 +157,8 @@ mob/proc/RemoveHair()
 	return TRUE
 
 mob/proc/AddHair()
+	if(bio_lab_born || Race == "Bio-Android" || Parent_Race == "Bio-Android") //bio-androide e SEMPRE careca: nenhuma forma (nem SSJ) poe cabelo nele -- so aura e raios
+		return
 	if(!ssj&&!lssj)
 		updateOverlay(/obj/overlay/hairs/hair)
 	if(Class == "Legendary Primal Saiyan" && ssj) //Primal Legendary: LSSJ/LSSJ2/LSSJ3 = cabelo SSJ1/2/3 verde; C-Type (ssj1) normal

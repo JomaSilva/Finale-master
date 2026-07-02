@@ -161,10 +161,10 @@ mob/proc/Stats()
 			zenkaiStore = abs(zenkaiStore)
 		if(!has_zenkai()) zenkaiStore = 0 //non-Saiyan-DNA races have no Zenkai at all
 		if(!dead && !deathregening && has_zenkai())
-			if(ZenkaiMod<=1&&prob(1))
-				zenkaiStore *= (abs(0.99*ZenkaiMod))
-			if(zenkaicount && prob(65))
-				zenkaiStore += (abs(0.25*BPTick*zenkaicount*BP*max((log(ZenkaiMod)),1)))
+			//ZENKAI ANTIGO REMOVIDO: nao existe mais acumulo passivo de zenkaiStore por estar FERIDO
+			//(o antigo `zenkaicount -> zenkaiStore +=` vivia aqui) nem o decay aleatorio. O store agora
+			//so recebe do gain_zenkai() (o zenkai NOVO: derrota por inimigo mais forte, 10/15%, 1x/hora)
+			//e o release abaixo (HP>=80 rapido / gota-a-gota) continua sendo o pagamento dele.
 			if(zenkaiTimer > 0 && zenkaiStore > 0)
 				zenkaiTimer -= 1
 			if(zenkaiStore > 0 && zenkaiTimer <= 0 && HP >= 80 && !KO)

@@ -308,11 +308,11 @@ mob/proc/createcustomizableskill()
 			S = new /datum/skill/CustomAttack/Custom_Attack8
 			S.id = 8
 			CustomAttackWindow(S, 0)
-		if (9)
+		if (8) //era if(9)/if(10): off-by-one -- com 8 ataques criados nao dava pra criar o 9o nunca
 			S = new /datum/skill/CustomAttack/Custom_Attack9
 			S.id = 9
 			CustomAttackWindow(S, 0)
-		if (10)
+		if (9)
 			S = new /datum/skill/CustomAttack/Custom_Attack10
 			S.id = 10
 			CustomAttackWindow(S, 0)
@@ -398,6 +398,14 @@ mob/proc/forgetcustomizableskill()
 	for (var/datum/skill/CustomAttack/X in usr.customattacks)
 		if (X.id == giv_id)
 			S = X
+	if(!S) return
+	//tipos novos: Blast (projetil reto) e Guided (persegue o alvo selecionado); o resto do proc e o fluxo de BEAM
+	if(S.attacktype == 1)
+		CustomBlastFire(S)
+		return
+	if(S.attacktype == 2)
+		CustomGuidedFire(S)
+		return
 	var/kireq=S.ki_cost*usr.BaseDrain
 	if(beaming)
 		canmove = 1
@@ -464,6 +472,81 @@ mob/proc/forgetcustomizableskill()
 	else
 		to_chat(src, "You need at least [kireq] Ki!")
 		src.custom1train = 0
+
+// ---------------------------------------------------------------------------
+// TIPOS NOVOS DE ATAQUE CUSTOMIZADO (o beam continua no fluxo original acima)
+// ---------------------------------------------------------------------------
+//gates comuns de disparo + custo (retorna 0 se nao pode atirar)
+mob/proc/CustomShotOK(datum/skill/CustomAttack/S)
+	var/kireq = S.ki_cost * BaseDrain
+	if(Ki < kireq)
+		to_chat(src, "You need at least [kireq] Ki!")
+		return 0
+	if(KO || med || train || !canfight || charging || beaming) return 0
+	if(S.use_stamina && stamina < S.stamina_cost)
+		to_chat(src, "Voce esta cansado demais para usar [S.name]!")
+		return 0
+	Ki -= kireq
+	if(S.use_stamina) stamina = max(0, stamina - S.stamina_cost)
+	return 1
+
+//monta o projetil compartilhado (icone custom ou bola padrao colorida)
+mob/proc/CustomMakeBlast(datum/skill/CustomAttack/S)
+	var/obj/attack/blast/A = new/obj/attack/blast
+	if(S.attackicon)
+		A.icon = S.attackicon
+	else
+		A.icon = '12.dmi'
+		A.icon += rgb(blastR,blastG,blastB)
+	A.loc = locate(x,y,z)
+	A.density = 0
+	spawn(1) if(A) A.density = 1
+	A.basedamage = S.base_damage
+	A.BP = expressedBP
+	A.mods = Ekioff * Ekiskill
+	A.murderToggle = murderToggle
+	A.proprietor = src
+	A.dir = dir
+	return A
+
+//BLAST: projetil de ki que voa reto na direcao olhada (dano/velocidade/custo vindos da criacao)
+mob/proc/CustomBlastFire(datum/skill/CustomAttack/S)
+	if(!CustomShotOK(S)) return
+	if(S.doshout) voice(S.shout)
+	flick("Blast", src)
+	emit_Sound('fire_kiblast.wav')
+	var/obj/attack/blast/A = CustomMakeBlast(S)
+	var/lag = max(1, round(4 - S.speed)) //speed 5 -> passo a cada 1 tick (rapido); speed baixa -> mais lento
+	walk(A, dir, lag)
+	spawn A.Burnout()
+
+//GUIDED: persegue o ALVO SELECIONADO (Select Target); sem alvo, voa reto como um blast comum
+mob/proc/CustomGuidedFire(datum/skill/CustomAttack/S)
+	if(!CustomShotOK(S)) return
+	if(S.doshout) voice(S.shout)
+	flick("Blast", src)
+	emit_Sound('fire_kiblast.wav')
+	var/obj/attack/blast/A = CustomMakeBlast(S)
+	var/lag = max(1, round(4 - S.speed))
+	var/mob/T = target
+	if(T && !T.dead && T.z == z && T != src)
+		walk_towards(A, T, lag) //teleguiado: o proprio Bump do blast resolve o dano ao alcancar
+	else
+		to_chat(src, "Sem alvo selecionado: o ataque voa reto. (Use Select Target para teleguiar.)")
+		walk(A, dir, lag)
+	spawn A.Burnout()
+
+// escolhe um .dmi da pasta de tecnicas do jogo (Icons/Techniques) em vez de exigir upload
+proc/pick_technique_icon(mob/U)
+	var/list/opts = list()
+	for(var/f in flist("Icons/Techniques/"))
+		if(findtext(f, ".dmi")) opts += f
+	if(!opts.len)
+		to_chat(U, "Nenhum icone encontrado em Icons/Techniques.")
+		return null
+	var/choice = input(U, "Escolha um icone de tecnica do jogo.", "Icones de Tecnicas") as null|anything in opts
+	if(!choice) return null
+	return icon(file("Icons/Techniques/[choice]"))
 
 mob/proc/CustomChargeOverlay(var/icon/thisIcon, var/layermod) //copied from the mob handler, god willing it'll do the trick
 	var/obj/I=new/obj
@@ -760,9 +843,9 @@ obj/CreateAttackWindow/verb
 		customWindowOpen = 1
 		var/list/attacktype= list()
 		attacktype.Add("Beam")
-		//attacktype.Add("Blast")
-		//attacktype.Add("Guided")
-		//attacktype.Add("Melee")
+		attacktype.Add("Blast")  //projetil de ki (bola que voa reto) -- disparo implementado em CustomBlastFire
+		attacktype.Add("Guided") //ki teleguiado: persegue o alvo SELECIONADO -- disparo em CustomGuidedFire
+		//attacktype.Add("Melee") //sem implementacao de disparo ainda
 		attacktype.Add("Cancel")
 		var/Choice=input("Choose Your Attack Type")as null|anything in attacktype
 		if(Choice=="Cancel"|isnull(Choice))
@@ -1018,24 +1101,26 @@ obj/CreateAttackWindow/verb
 	ChargeIcon()
 		var/datum/skill/CustomAttack/S = CurrentEditedSkill
 		set hidden = 1
-		var/Choice=alert("Do you want to change your charge icon?","","Yes","No","Default")
+		var/Choice = input(usr, "Icone de carga:", "Charge Icon") as null|anything in list("Escolher do jogo (Techniques)","Enviar meu arquivo","Default","Cancelar")
 		switch(Choice)
-			if("Yes")
+			if("Escolher do jogo (Techniques)")
+				var/icon/I = pick_technique_icon(usr)
+				if(I) S.customattack_chargeicon = I
+			if("Enviar meu arquivo")
 				S.customattack_chargeicon = input(usr,"Select your icon.","",null) as null|icon
-			if("No")
-				return
 			if("Default")
 				S.customattack_chargeicon = null
 
 	AttackIcon()
 		var/datum/skill/CustomAttack/S = CurrentEditedSkill
 		set hidden = 1
-		var/Choice=alert("Do you want to change your attack icon?","","Yes","No","Default")
+		var/Choice = input(usr, "Icone do ataque:", "Attack Icon") as null|anything in list("Escolher do jogo (Techniques)","Enviar meu arquivo","Default","Cancelar")
 		switch(Choice)
-			if("Yes")
+			if("Escolher do jogo (Techniques)")
+				var/icon/I = pick_technique_icon(usr) //71 icones prontos: Kamehameha, Spirit Bomb, Supernova, Final Flash...
+				if(I) S.customattack_attackicon = I
+			if("Enviar meu arquivo")
 				S.customattack_attackicon = input(usr,"Select your icon.","",null) as null|icon
-			if("No")
-				return
 			if("Default")
 				S.customattack_attackicon = null
 

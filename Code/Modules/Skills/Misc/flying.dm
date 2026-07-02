@@ -26,6 +26,9 @@
 				to_chat(savant, "You feel like you could fly if you tried hard enough. It seems like it'll be hard to do, at first.")
 				levelup = 0
 				assignverb(/mob/keyable/verb/Fly)
+				if(savant.spacebreather) //raca que sobrevive no vacuo: ja desbloqueia o voo ESPACIAL junto com o Fly (sem precisar de nave)
+					assignverb(/mob/keyable/verb/Space_Flight)
+					to_chat(savant, "<font color=#77ccff>Seu corpo nao teme o vacuo: voce pode voar ate o ESPACO (verb Space Flight).</font>")
 			if(savant.flight == TRUE)
 				exp += 0.01
 				if(savant.flightability < 50) savant.flightability += 0.1
@@ -48,6 +51,7 @@
 	..()
 	if(level >= 1)
 		assignverb(/mob/keyable/verb/Fly)
+		if(savant && savant.spacebreather) assignverb(/mob/keyable/verb/Space_Flight) //raca de vacuo: voo espacial desde o nivel 1
 	if(level >= 2)
 		assignverb(/mob/keyable/verb/Superflight)
 	if(level >= 3)
@@ -67,10 +71,14 @@
 		if(1)
 			assignverb(/mob/keyable/verb/Fly)
 			savant.flightability = 25
+			if(savant.spacebreather) //raca que sobrevive no vacuo: voo espacial junto com o Fly
+				assignverb(/mob/keyable/verb/Space_Flight)
+				to_chat(savant, "<font color=#77ccff>Seu corpo nao teme o vacuo: voce pode voar ate o ESPACO (verb Space Flight).</font>")
 		if(2)
 			assignverb(/mob/keyable/verb/Fly)
 			assignverb(/mob/keyable/verb/Superflight)
 			savant.flightability = 75
+			if(savant.spacebreather) assignverb(/mob/keyable/verb/Space_Flight)
 
 mob/keyable/verb
 	Fly()

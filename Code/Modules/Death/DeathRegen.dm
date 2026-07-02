@@ -74,7 +74,7 @@ mob/proc/TestDeathRegen() //true if dead, false if not dead.
 	for(var/datum/Body/B in body)
 		if(B.lopped)
 			B.RegrowLimb()
-	if(ZenkaiMod) zenkaicount+=DeathRegen*5 //holy cow this is strong as shit
+	//zenkai antigo removido: death-regen nao bomba mais o zenkaicount ("holy cow this is strong as shit" -- era mesmo)
 	if(DeathRegen>=10||immortal)
 		icon_state=""
 		var/amount=4

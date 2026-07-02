@@ -131,26 +131,19 @@ mob/proc/AccuracyCalc(var/mob/M)
 			//	return 1 //countered
 			//else
 			return 0 //miss
-var/leechSelfCap = 0.01 //per-hit leech is capped to this fraction of YOUR OWN BP (not the victim's). Tunable.
+var/leechSelfCap = 0.01 //OBSOLETO: o roubo de BP por hit foi removido (ver Leech abaixo); mantido so pra saves antigos nao reclamarem
 mob/proc/Leech(var/mob/M)
+	//REWORK: SUGAR BP de um oponente mais forte foi REMOVIDO (nao fazia o menor sentido).
+	//O bonus por enfrentar alguem mais forte agora e o multiplicador de GANHOS fight_gain_mult()
+	//(combatgains.dm), aplicado nos Attack_Gain/Blast_Gain/Train_Gain dos proprios hits:
+	//1.2x mais forte = 1.2x de ganhos, teto 2x. O que sobrou aqui e APRENDIZADO, nao poder:
+	//maestria de gravidade e treino de God Ki observando alguem mais experiente.
 	if(client)
 		if(M.client)
-			if(M.BP>BP*1.2&&!M.BP_Unleechable&&BP<relBPmax) //gate: only leech while the foe is still >20% stronger (the gap "earns" it); once you close the gap it stops
-				var/lgain = capcheck(log(UPMod*SparMod)*(M.BP/7000)*(rand(1,10)/4))
-				if(isHV && BoostActive && BoostMult) //essentially, if H/V system active, and conditions are met, at least double gains.
-					if(isnull(BoostTarget))
-						if(HVAlign && BoostTargMultiple) if(HVAlign != M.HVAlign) lgain+=capcheck(BoostMult*(M.BP/550)*(rand(1,10)/3))
-						else lgain+=capcheck(BoostMult*(M.BP/550)*(rand(1,10)/3))
-					else if(BoostTarget == M.signature)
-						lgain+=capcheck(BoostMult*(M.BP/550)*(rand(1,10)/3))
-				BP += min(lgain, BP*leechSelfCap) //CAP: a single leech hit can never exceed leechSelfCap of your own BP, so it scales off you, not the (much stronger) victim
 			if(M.GravMastered>GravMastered&&!M.BP_Unleechable&&GravMastered<gravitycap)
 				GravMastered+=(M.GravMastered-GravMastered)*(1-(GravMastered/M.GravMastered))*0.05*GlobalGravGain
 			if(M.godki && godki && M.godki.tier >= godki.tier)
 				train_godki(M.godki.tier)
-		else
-			if(M.BP>BP*1.2&&!M.BP_Unleechable&&Leeching&&M.canbeleeched&&BP<relBPmax)
-				Train_Gain(8*dungeonGains)
 
 mob/proc/Damage(var/mob/M,var/dmg,type)
 	var/punchrandomsnd

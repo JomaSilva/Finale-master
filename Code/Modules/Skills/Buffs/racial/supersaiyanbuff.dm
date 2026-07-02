@@ -337,7 +337,10 @@ mob/proc/SSj()
 			sleep(1000*ssjdrain)
 			spawn if(ssjdrain>0.01) Quake()
 			emit_Sound('chargeaura.wav')
-			to_chat(view(src), "<font color=[ssjcolor]>*[src]'s hair stands on end and turns [ssjcolor]!*")
+			if(Race == "Bio-Android" || Parent_Race == "Bio-Android" || bio_lab_born) //bio-androide nao tem cabelo: descricao PROPRIA da transformacao
+				to_chat(view(src), "<font color=[ssjcolor]>*As placas da carapaca de [src] estalam e uma aura dourada EXPLODE ao seu redor -- o poder Saiyajin em seu DNA desperta!*")
+			else
+				to_chat(view(src), "<font color=[ssjcolor]>*[src]'s hair stands on end and turns [ssjcolor]!*")
 			ssj=1
 			createCrater(loc,5)
 			

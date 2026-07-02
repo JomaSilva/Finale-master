@@ -31,27 +31,13 @@ area
 	proc
 		AreaTime(isforced)
 			set waitfor = 0
-			// basic cycling
+			// O dia/noite NAO avanca mais aqui: o daylightcycle agora e SINCRONIZADO com o relogio
+			// global (Hours) pelo sync_area_daylight() chamado do WorldClock a cada hora in-game.
+			// (Antes este ciclo proprio andava a passos ALEATORIOS de 500-700s, totalmente solto do
+			// relogio -- os dias passavam no chat mas a luz nao acompanhava.) Aqui ficou so o CLIMA,
+			// o Hellstar e o espelhamento pra areas internas, no ritmo proprio de sempre.
 			daylightcycle = max(1,daylightcycle)
 			mooncycle = max(1,mooncycle)
-			daylightcycle+=1
-			if(daylightcycle==6)
-				mooncycle += 1
-			if(mooncycle >= 9 || !HasMoon) mooncycle = 1
-			//
-			//enable checks
-			if(HasDay && HasNight)
-				if(daylightcycle >= 11) daylightcycle = 1
-			else if(HasNight)
-				daylightcycle = max(6,daylightcycle)
-				if(daylightcycle >= 11) daylightcycle = 6
-			else if(HasDay)
-				if(daylightcycle >= 6) daylightcycle = 1
-			else
-				daylightcycle = 11
-			if(planet_death_stage < 4 && planet_death_stage)
-				daylightcycle = max(6,daylightcycle)
-				if(daylightcycle >= 11) daylightcycle = 6
 			//
 			//weather
 			prevweather = null //ensure weather gets updated
@@ -128,14 +114,63 @@ area
 						else icon_state = "Namek Rain"
 					if("Destruction")
 						icon_state ="Rising Rocks"
-			else if(!IsWeathering && prevweather != icon_state)
-				if(daylightcycle==11 && AlwaysDay) icon_state=""
-				else if(daylightcycle>=6) icon_state = "Dark"
-				else if(daylightcycle==5) icon_state = "Sunset"
-				else if(daylightcycle==1) icon_state = "Sunrise"
-				else icon_state = ""
-				prevweather = icon_state
+			else if(!IsWeathering)
+				//FIX da noite que nunca chegava: o guard antigo era `prevweather != icon_state`, mas o
+				//proprio branch setava prevweather = icon_state no final -- depois da PRIMEIRA aplicacao
+				//os dois ficavam iguais pra sempre e o "Dark"/"Sunset"/"Sunrise" nunca mais era aplicado.
+				//Agora compara o estado DESEJADO com o atual (auto-corrige a cada tick do Ticker).
+				var/want = ""
+				if(daylightcycle==11 && AlwaysDay) want = ""
+				else if(daylightcycle>=6) want = "Dark"
+				else if(daylightcycle==5) want = "Sunset"
+				else if(daylightcycle==1) want = "Sunrise"
+				if(icon_state != want)
+					icon_state = want
+					prevweather = want
 			spawn(rand(10,15)) Ticker()
+
+// ============================================================================
+// CICLO DE DIA/NOITE SINCRONIZADO COM O RELOGIO (chamado do WorldClock a cada hora)
+// Mapa das horas (1-24) no estagio de luz (o mesmo daylightcycle de sempre):
+//   05-06h -> 1 (amanhecer/Sunrise)   07-17h -> 2..4 (dia claro)
+//   18-19h -> 5 (entardecer/Sunset)   20-04h -> 6..10 (noite/Dark; lua avanca no anoitecer)
+// ============================================================================
+proc/hours_to_daylight(h)
+	switch(h)
+		if(5 to 6) return 1    //amanhecer
+		if(7 to 10) return 2   //manha
+		if(11 to 13) return 3  //meio-dia
+		if(14 to 17) return 4  //tarde
+		if(18 to 19) return 5  //entardecer
+		if(20 to 21) return 6  //anoitecer (a lua avanca aqui)
+		if(22 to 23) return 7  //noite
+		if(24) return 8        //meia-noite
+		if(1 to 2) return 9    //madrugada
+		if(3 to 4) return 10   //fim da madrugada
+	return 3
+
+proc/sync_area_daylight()
+	set waitfor = 0
+	set background = 1
+	var/base = hours_to_daylight(Hours)
+	for(var/area/A in area_outside_list)
+		CHECK_TICK
+		var/target = base
+		//mesmas regras de flags do antigo AreaTime (area com ciclo normal usa o target direto):
+		if(!A.HasDay && !A.HasNight)
+			target = 11             //nem dia nem noite: crepusculo eterno
+		else if(!A.HasDay)          //so noite: qualquer hora do dia vira noite
+			if(target < 6) target = 6
+		else if(!A.HasNight)        //so dia: entardecer/noite viram pleno dia
+			if(target >= 5) target = 3
+		if(A.planet_death_stage && A.planet_death_stage < 4) //planeta morrendo: noite permanente
+			if(target < 6) target = 6
+		//lua: avanca uma fase a cada ANOITECER (transicao dia -> noite)
+		if(target >= 6 && A.daylightcycle >= 1 && A.daylightcycle < 6)
+			A.mooncycle += 1
+			if(A.mooncycle >= 9 || !A.HasMoon) A.mooncycle = 1
+		A.mooncycle = max(1, A.mooncycle)
+		A.daylightcycle = target
 
 mob/var/previousTime
 mob/var/tmp/currentDaylight = 1

@@ -56,6 +56,21 @@ mob/proc/zenkai_message(gained, maxed)
 		return "<font color=#d4b25c>A Zenkai runs through your mending body. You feel meaningfully stronger than you were.</font>"
 	return "<font color=#c2a564>A faint Zenkai flickers through you, knitting your body back a touch stronger.</font>"
 
+// ============================================================================
+// GANHOS POR LUTAR COM ALGUEM MAIS FORTE (substitui o antigo "leech" de BP)
+// Lutar contra um oponente X vezes mais forte multiplica os GANHOS normais de
+// spar/luta por X (proporcional ao gap de poder EXPRESSO), com TETO de 2x:
+//   oponente 1.2x mais forte -> 1.2x de ganhos;  2x ou mais -> 2x (teto).
+// Oponente igual ou mais fraco = 1x (nunca reduz abaixo do normal).
+// ============================================================================
+var/fight_gain_cap = 2 //teto do multiplicador de ganhos por gap de poder
+
+mob/proc/fight_gain_mult(mob/M)
+	if(!M || M == src) return 1
+	var/mine = max(expressedBP, 1)
+	var/theirs = max(M.expressedBP, 1)
+	return min(max(theirs / mine, 1), fight_gain_cap)
+
 mob/proc/Add_Anger(mult)
 	if(!mult)
 		mult=1

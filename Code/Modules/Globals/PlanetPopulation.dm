@@ -22,6 +22,43 @@ var/list/citizen_list = list()  // all living population NPCs
 var/planet_pop_built = 0        // idempotent boot guard
 
 // ---------------------------------------------------------------------------
+// PLANET ACTIVITY (ANTI-LAG) -- contador global barato de players por planeta.
+// Os loops OCIOSOS dos NPCs consultam isto em vez de escanear o mapa: sem player
+// no planeta, o NPC "congela" (1 lookup + sleep longo, zero varredura de oview).
+// Bosses sao a excecao e continuam ativos. Atualizado a cada 2s iterando SO a
+// player_list (baratissimo), nunca o mapa.
+// ---------------------------------------------------------------------------
+var/list/planet_player_count = list() // "Earth" -> n de players vivos com client
+var/planet_activity_running = 0
+
+proc/planet_activity_loop()
+	set waitfor = 0
+	set background = 1
+	if(planet_activity_running) return
+	planet_activity_running = 1
+	while(1)
+		sleep(20)
+		var/list/counts = list()
+		for(var/mob/P in player_list)
+			if(!P || !P.client || P.dead) continue
+			var/area/A = P.GetArea()
+			var/pl = A ? A.Planet : P.Planet
+			if(!pl) continue
+			counts[pl] += 1
+		planet_player_count = counts
+
+proc/planet_has_players(planet)
+	if(!planet) return 1 //sem info de planeta: fail-open (nao congela por engano)
+	return (planet in planet_player_count) && planet_player_count[planet] >= 1
+
+//ha algum player com client num raio? (itera a player_list -- O(players) -- em vez de oview -- O(area da tela))
+proc/player_within(atom/A, dist)
+	for(var/mob/P in player_list)
+		if(P && P.client && !P.dead && P.z == A.z && get_dist(A, P) <= dist)
+			return P
+	return null
+
+// ---------------------------------------------------------------------------
 // The citizen mob
 // ---------------------------------------------------------------------------
 mob/npc/Citizen
@@ -88,6 +125,9 @@ mob/npc/Citizen
 		while(src && idle_wandering && loc) //loc null = removido do mundo (soft-del): encerra o loop e solta a ref pro GC
 			sleep(rand(45,95))
 			if(!src || AIRunning || KO || dead || target) continue
+			if(!planet_has_players(pop_planet)) //ANTI-LAG: planeta sem players = congela (nem anda)
+				sleep(150)
+				continue
 			if(prob(35)) step_rand(src)
 
 	// a trainable citizen never runs home or goes intangible (attackable=0) on disengage: it stops,
@@ -435,6 +475,7 @@ proc/Build_Planet_Population()
 	if(planet_pop_built) return
 	planet_pop_built = 1
 	while(worldloading) sleep(1)  // mob/npc/New() waits on worldloading too; don't race it
+	planet_activity_loop()        // liga o rastreador de players-por-planeta (anti-lag dos NPCs)
 	Populate_All_Planets()
 	Population_Maintenance_Loop()
 

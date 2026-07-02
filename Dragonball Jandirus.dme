@@ -510,6 +510,7 @@
 #include "Code\Modules\Tech\Consumables.dm"
 #include "Code\Modules\Tech\Crafting.dm"
 #include "Code\Modules\Tech\Cyborgs.dm"
+#include "Code\Modules\Tech\DNALabs.dm"
 #include "Code\Modules\Tech\Guns.dm"
 #include "Code\Modules\Tech\Injections.dm"
 #include "Code\Modules\Tech\MiscTier.dm"

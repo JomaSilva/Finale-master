@@ -280,19 +280,25 @@ obj/attack/blast
 							attack_list-=Z
 							Z.loc=null
 					if(M.attackable)
+						if(M.ki_absorb_stance && proprietor != M) //ANDROIDE DE ABSORCAO em postura: o ataque de ki (blast/beam/teleguiado) e SUGADO -- sem dano, vira Ki (beams: cada segmento que encosta e absorvido, entao ele recupera ki enquanto o atacante insistir)
+							M.dnl_absorb_ki_attack(src)
+							obj_list -= src
+							attack_list -= src
+							src.loc = null
+							return
 						if(istype(proprietor, /mob) && proprietor != M)
 							M.lastDamager = proprietor //credit the firer so ranged/blast defeats also grant the victim Zenkai (KO.dm + death_stuff read lastDamager)
 							M.refresh_combat_tag() //blast hit -> the victim is in combat (took a hit), 90s tag
 							proprietor.refresh_combat_tag() //and the firer (dealt a hit)
 						if(M.isNPC&&!M.KO)
 							if(proprietor)
-								proprietor.Blast_Gain(3,1)//blast gain was nerfed, but here if you're hitting someone, you get yo gains back.
+								proprietor.Blast_Gain(3 * proprietor.fight_gain_mult(M),1)//blast gain was nerfed, but here if you're hitting someone, you get yo gains back. (x ganho por gap de poder, teto 2x)
 							var/mob/npc/mN = M
 							if(mN.monster && !mN.AIRunning)
 								mN.foundTarget(proprietor)
 						else if(proprietor&&!M.KO)
 							M.kidefensecounter++
-							proprietor.Blast_Gain(5,1)
+							proprietor.Blast_Gain(5 * proprietor.fight_gain_mult(M),1)
 							proprietor.Leech(M)
 							if(WaveAttack)
 								proprietor.beamcounter+=3

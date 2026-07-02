@@ -160,6 +160,11 @@ mob/var/KiSpecialty=0
 mob/keyable/verb/Space_Flight()
 	set category = "Skills"
 	if(Ki>=600&&expressedBP>=2000&&flightability!=1)
+		//quem NAO sobrevive no vacuo (sem spacebreather/traje) pode ate subir (nivel 3 de Flight),
+		//mas vai comecar a sufocar la em cima -- avisa e pede confirmacao
+		if(!spacebreather && !spacesuit && !Space_Breath && !spacewalker)
+			switch(input(usr,"Voce NAO sobrevive no vacuo sem protecao -- vai comecar a sufocar la em cima. Subir mesmo assim?","Space Flight") in list("Nao","Sim"))
+				if("Nao") return
 		to_chat(usr, "You lift off from the ground. This'll take a second")
 		to_chat(view(usr), "[usr] lifts off from the ground, intent on going to space!")
 		icon_state = "Flight"
@@ -170,16 +175,24 @@ mob/keyable/verb/Space_Flight()
 			icon_state = ""
 		else
 			sleep(50)
-			if(!HP>=pastHP||KO)
+			if(HP < pastHP || KO) //era `!HP>=pastHP` (precedencia quebrada: o cancelamento por dano nunca disparava)
+				icon_state = ""
 				to_chat(view(usr), "[usr] was damaged, canceling spaceflight!")
 				return
-			for(var/obj/Planets/P in world)
+			var/found = 0
+			for(var/obj/Planets/P in planet_list)
 				if(P.planetType==usr.Planet)
+					found = 1
 					var/list/randTurfs = list()
 					for(var/turf/T in view(1,P))
 						randTurfs += T
-					var/turf/rT = pick(randTurfs)
-					src.loc = locate(rT.x,rT.y,rT.z)
+					if(randTurfs.len)
+						var/turf/rT = pick(randTurfs)
+						src.loc = locate(rT.x,rT.y,rT.z)
+						to_chat(usr, "<font color=#77ccff>Voce rompe a atmosfera e alcanca o espaco! (Voe ate um planeta e esbarre nele para descer.)</font>")
 					icon_state = ""
 					break
+			if(!found) //Lookout/HBTC/Outro Mundo etc.: nao ha "espaco" alcancavel daqui -- nao trava mais o icon_state
+				icon_state = ""
+				to_chat(usr, "Daqui nao ha como alcancar o espaco voando.")
 	else to_chat(usr, "You need 600 Ki, 2,000 BP, and the ability to fly to use this.")

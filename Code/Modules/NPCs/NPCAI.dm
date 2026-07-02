@@ -716,8 +716,14 @@ mob
 						while(src && !AIRunning && !target)
 							sleep(20)
 							if(!src || AIRunning || target) break
-							for(var/mob/M in oview(aggro_dist,src))
-								if(M.client && !M.KO && M.HP > 20)
+							//ANTI-LAG: NPC comum num planeta sem players CONGELA a varredura (sleep fundo);
+							//boss continua cacando normalmente (excecao pedida)
+							if(!isBoss && current_area && current_area.Planet && !planet_has_players(current_area.Planet))
+								sleep(180)
+								continue
+							//ANTI-LAG: itera a player_list (poucos elementos) em vez de oview(30) (milhares de turfs por NPC a cada 2s)
+							for(var/mob/M in player_list)
+								if(M && M.client && !M.KO && M.HP > 20 && M.z == z && get_dist(src, M) <= aggro_dist)
 									foundTarget(M)
 									break
 						reaggro_running = 0

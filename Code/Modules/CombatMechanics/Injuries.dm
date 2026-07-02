@@ -265,7 +265,7 @@ mob/proc/HealthSync()
 				healthtotal += round((S.health / max(S.maxhealth,1)) * 100, 0.01)
 			if(S.vital)
 				vitalcount += 1
-				if(S.health<=(0.3*S.maxhealth)&&!S.lopped) zenkaicount++
+				//zenkai antigo removido: membros feridos nao alimentam mais o zenkaicount/zenkaiStore
 			//the three CORE vitals (head/torso/abdomen) gate consciousness and life directly
 			if(S.type == /datum/Body/Head || S.type == /datum/Body/Torso || S.type == /datum/Body/Abdomen)
 				if(S.lopped || S.health <= 0) coreDead++
