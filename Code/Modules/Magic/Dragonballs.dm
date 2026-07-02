@@ -109,7 +109,7 @@ obj/DragonStatue
 			var/obj/DB/A = new()
 			A.BallNum = NeededBallCount
 			NeededBallCount-=1
-			A.loc = usr.loc
+			A.loc = (Creator && Creator.loc) ? Creator.loc : loc //sem usr: no boot (set eterno) usr e null e usr.loc dava runtime error
 			A.name = "[Creator] Dragonballs ([A.BallNum] - [BallID])"
 			A.HomeStatue = src
 			A.DragonIcon = DragonIcon
@@ -242,7 +242,7 @@ obj/DB
 			to_chat(usr, "Wish failed!")
 
 	proc/Scatter()
-		usr.emit_Sound('db_flying.wav')
+		if(usr) usr.emit_Sound('db_flying.wav') //no boot nao ha usr
 		for(var/obj/DragonObject/S in view()) del(S)
 		spawn
 			var/obj/B=new/obj/attack/blast
@@ -282,6 +282,7 @@ obj/DB
 			if(ActiveYear <= Year&&!CompletelyInert)
 				icon_state = "[BallNum]"
 				IsInactive = 0
+				WishCount = 0 //esferas recarregadas = pedidos recarregados (sem isto o 2o uso do MESMO set falhava: wishscount = Wishs - WishCount ficava 0 pra sempre)
 		if(CompletelyInert == 1)
 			if(IsInactive == 0)
 				IsInactive = 1
@@ -355,6 +356,78 @@ obj/DB
 	New()
 		..()
 		spawn(100) Tick()
+// ============================================================================
+// ESFERAS DO DRAGAO NATURAIS -- o set "eterno" de Namek.
+// Nunca existia um set no mundo (esferas so nasciam se um deus criasse uma
+// DragonStatue) -- por isso "elas nunca aconteciam". Este set nasce no boot em
+// Namek, a estatua nao pode ser destruida, e depois de USADAS as esferas
+// reativam em 1 MES in-game (OffTime 0.1: Year anda +0.1 por mes).
+// O pedido "Revive" (ja existente no WishTable) pergunta "Summon them to you?"
+// -- e o traz pro local do pedido.
+// ============================================================================
+#define ETERNAL_DB_PLANET "Namek"       // onde a estatua vive e as esferas se espalham
+#define ETERNAL_DB_WISHES 1             // pedidos por uso
+#define ETERNAL_DB_OFFTIME 0.1          // 0.1 de Year = 1 MES in-game entre usos
+#define ETERNAL_DB_WISHPOWER 2000000    // "forca" do dragao (BP expresso necessario p/ mata-lo e potencia dos pedidos)
+
+var/eternal_db_built = 0
+
+obj/DragonStatue/Eternal
+	name = "Ancient Dragon Statue"
+	desc = "Uma estatua ancestral dos Namekuseijins. As Esferas do Dragao deste mundo emanam dela."
+	Wishs = ETERNAL_DB_WISHES
+	WishPower = ETERNAL_DB_WISHPOWER
+	Ballplanet = ETERNAL_DB_PLANET
+	OffTime = ETERNAL_DB_OFFTIME
+	ActiveYear = 0
+	BallIcon = 'dragonball.dmi'
+	DragonState = "Porunga"
+	dragonname = "PORUNGA"
+	title = "THE DRAGON OF DREAMS"
+	Destroy_Statue() //a estatua ancestral NAO pode ser destruida (protege o unico set natural do mundo)
+		set category = null
+		set src in view(1)
+		to_chat(usr, "Uma protecao ancestral impede que a estatua seja destruida.")
+	Redo() //nem reconfigurada (nao tem Creator)
+		set category = null
+		set src in view(1)
+		to_chat(usr, "A estatua nao responde a voce.")
+	New()
+		..()
+		spawn(50) eternal_maintain()
+	//zelador: o set eterno nunca fica inerte e nunca perde esferas (recria se alguma sumir/for destruida)
+	proc/eternal_maintain()
+		set waitfor = 0
+		set background = 1
+		while(src)
+			sleep(600) //a cada ~1 min
+			CompletelyInert = 0 //ninguem "mata" o set eterno permanentemente
+			WishPower = ETERNAL_DB_WISHPOWER
+			var/count = 0
+			for(var/obj/DB/A in obj_list)
+				if(A.BallID == BallID) count++
+			if(count < 7)
+				RecreateBalls()
+			//teto de espera: nunca mais que 1 mes (a base soma penalidades maiores em alguns caminhos)
+			if(ActiveYear > Year + ETERNAL_DB_OFFTIME) ActiveYear = Year + ETERNAL_DB_OFFTIME
+			for(var/obj/DB/A in obj_list)
+				if(A.BallID == BallID)
+					A.OffTime = ETERNAL_DB_OFFTIME
+					A.CompletelyInert = 0
+					if(A.ActiveYear > Year + ETERNAL_DB_OFFTIME) A.ActiveYear = Year + ETERNAL_DB_OFFTIME
+
+proc/Build_Eternal_Dragonballs()
+	set waitfor = 0
+	if(eternal_db_built) return
+	eternal_db_built = 1
+	while(worldloading) sleep(1)
+	for(var/obj/DragonStatue/Eternal/S in obj_list) return //o ItemSave ja trouxe a estatua de volta do save
+	var/turf/T = planet_spawn_turf(ETERNAL_DB_PLANET)
+	if(!T) return
+	var/obj/DragonStatue/Eternal/S = new(T)
+	S.RecreateBalls()
+	to_chat(world, "<font color=#e0a030>Lendas correm o universo: as Esferas do Dragao repousam em algum lugar de Namek...</font>", "announce")
+
 mob/Admin3/verb/Set_Dragonballs_Active()
 	set category = "Admin"
 	var/choice = input(usr,"Input ball ID, found by editing and looking at 'BallID' in the corrosponding Dragon Statue.","",1) as num

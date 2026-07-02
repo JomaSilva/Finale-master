@@ -1,24 +1,15 @@
-//Essentially, ERP is icky and it should be used sparingly. The changes below are to stop assholes from turning the server into a universe full of impure cucks. I mean, emote is emote,
-//but this should at least make it so that the Breed() command is turned into something more humorous than anything else, and the OOC effects can be ignored/disabled anyways.
-var/BreedFunnies = 1
-mob/Admin3/verb/Disable_Breed_Spoofs()
-	set category="Admin"
-	switch(input(usr,"Do you want to toggle breed spoofs? It's currently set to [BreedFunnies]. 1 = On, 0 = Off. Yes = 1, No = 0. Will also affect whether or not breed will be broadcasted to OOC") in list ("No","Yes"))
-		if("Yes")
-			BreedFunnies = 1
-		if("No")
-			BreedFunnies = 0
-	to_chat(world, "Breed Funnies set to [BreedFunnies]")
-//can be disabled anyways for rp fags who want to have ERP based hierachies in their server. I hope Knuckles murders you in your sleep.
-var/RapeSet = 1
-mob/Admin3/verb/Disable_Rape()
-	set category="Admin"
-	switch(input(usr,"Do you want to toggle rape? It's currently set to [RapeSet]. 1 = On, 0 = Off. Yes = 1, No = 0.") in list ("No","Yes"))
-		if("Yes")
-			RapeSet = 1
-		if("No")
-			RapeSet = 0
-	to_chat(world, "Rape set to [RapeSet]")
+// ============================================================================
+// CASAMENTO & FILHOS -- versao consensual (reescrita completa).
+// O conteudo antigo deste arquivo (mecanica de "rape" + mensagens de odio) foi
+// REMOVIDO por completo. O que existe agora:
+//   1. Propose_Marriage: dois personagens que JA SAO AMIGOS (sistema de amizade)
+//      podem se casar (com consentimento).
+//   2. Have_Child: um casal CASADO de sexos opostos pode tentar ter um filho.
+//      A gravidez usa a MESMA base de sempre (Pregnant + womb/genoma): o bebe
+//      vira a opcao de hibrido/half-breed na criacao de personagem, como antes.
+//   3. Lay_Egg: inalterado (racas de ovo, ex.: Namekuseijin).
+// ============================================================================
+
 mob/var
 	isBorn = 0
 	CanMate = 1
@@ -26,48 +17,134 @@ mob/var
 	N_Breed = 1
 	E_Breed = 0
 	Mature_Age=16
+	// ---- casamento ----
+	married_to = ""      // signature do conjuge ("" = solteiro). Persiste no save.
+	married_name = ""    // nome do conjuge (para exibicao)
 
+mob/var
+	Egg=0
+	Husband=""
+	Father=""
+	Father_BP=0
+	Husband_Class=""
+	Father_Class=""
+
+// helper: os dois estao presentes, vivos e conscientes?
+proc/mate_pair_ok(mob/A, mob/B)
+	if(!A || !B || A == B) return 0
+	if(!A.client || !B.client) return 0
+	if(A.KO || A.dead || B.KO || B.dead) return 0
+	if(get_dist(A, B) > 1) return 0
+	return 1
+
+// ---------------------------------------------------------------------------
+// CASAMENTO
+// ---------------------------------------------------------------------------
+mob/verb/Propose_Marriage(var/mob/M in oview(1))
+	set category = "Other"
+	if(!mate_pair_ok(usr, M))
+		to_chat(usr, "Voces precisam estar lado a lado, vivos e conscientes.")
+		return
+	if(usr.married_to)
+		to_chat(usr, "Voce ja e casado(a) com [usr.married_name].")
+		return
+	if(M.married_to)
+		to_chat(usr, "[M] ja e casado(a).")
+		return
+	if(!usr.is_friend(M))
+		to_chat(usr, "Voces precisam ser AMIGOS antes de pensar em casamento. (Envie um pedido de amizade primeiro.)")
+		return
+	switch(input(M, "[usr] te pediu em casamento! Aceita?", "Casamento") in list("Sim","Nao"))
+		if("Sim")
+			usr.married_to = M.signature
+			usr.married_name = M.name
+			M.married_to = usr.signature
+			M.married_name = usr.name
+			usr.emit_Sound('powerup.wav')
+			to_chat(view(9), "<font color=#FFB6C1><b>[usr] e [M] se casaram!</b></font>")
+			chatcast(world, "<font color=#FFB6C1><b>[usr] e [M] se casaram!</b></font>", "announce")
+		if("Nao")
+			to_chat(usr, "[M] recusou o pedido.")
+			to_chat(M, "Voce recusou o pedido de [usr].")
+
+mob/verb/Divorce()
+	set category = "Other"
+	if(!usr.married_to)
+		to_chat(usr, "Voce nao e casado(a).")
+		return
+	switch(input(usr, "Divorciar-se de [usr.married_name]?", "Divorcio") in list("Nao","Sim"))
+		if("Sim")
+			var/exname = usr.married_name
+			// avisa/limpa o conjuge se estiver online
+			for(var/mob/P in player_list)
+				if(P.client && P.signature == usr.married_to)
+					P.married_to = ""
+					P.married_name = ""
+					to_chat(P, "<font color=#FFB6C1>[usr] se divorciou de voce.</font>")
+					break
+			usr.married_to = ""
+			usr.married_name = ""
+			to_chat(usr, "Voce se divorciou de [exname].")
+
+// ---------------------------------------------------------------------------
+// FILHO (somente casal casado de sexos opostos)
+// ---------------------------------------------------------------------------
+mob/verb/Have_Child(var/mob/M in oview(1))
+	set category = "Other"
+	try_have_child(M)
+
+// o antigo verb de "Mate" (obj) agora usa o MESMO fluxo consensual de casal casado
 obj/Mate1/verb/Breed()
 	set name = "Mate"
-	set category="Other"
-	if(!usr.CanMate)
-		to_chat(usr, "You can't mate, a injury is preventing it!")
-		return
-	var/mob/M=input("Who?") as null|mob in oview(1)
-	if(!M) return
-	if(M==usr) return
-	if(!M.CanMate || M.N_Breed==0)
-		to_chat(usr, "[M] cannot breed!")
-		return
-	switch(input(M,"[usr] wishes to breed with you, the female will produce a chid if anyone creates a Half-Breed(Hybrid/Second Generation) while she is on.", "", text) in list ("No", "Yes",))
-		if("Yes")
-			to_chat(view(9), "<font color=yellow>[usr] breeds with [M]!")
-			sleep(10)
-			usr.breed(M,0)
-		if("No")
-			to_chat(view(9), "<font color=yellow>[usr] is denied by [M]!")
-			if(!RapeSet)
-				return
-			switch(input(usr,"Do you wish to attempt to rape [M]?", "", text) in list ("No", "Yes",))
-				if("Yes")
-					if(usr.expressedBP>M.expressedBP)
-						to_chat(view(9), "<font color=yellow>[usr] rapes [M]!")
-						sleep(10)
-						usr.breed(M,1)
-					else
-						to_chat(view(9), "<font color=yellow>[usr] attempted to fuck [M] anyways, but [M] is too strong!!")
-						if(usr.pgender=="Female"&&M.pgender=="Female"&&BreedFunnies)
-							to_chat(world, "<font color=red><b>Dykes get their head on a spike! [usr] raped [M] at [usr.loc]!")
-							usr.Death()
-						else if(usr.pgender=="Male"&&usr.Race=="Namek"&&M.pgender=="Male"&&BreedFunnies)
-							to_chat(world, "<font color=red><b>[usr] tried to give [M] his daily dose at [usr.x],[usr.y],[usr.z]!")
-							usr.Death()
-						else if(usr.pgender=="Male"&&M.pgender=="Male"&&BreedFunnies)
-							to_chat(world, "<font color=red><b>Faggots and queers get the EXPLOSION! [usr] raped [M] at [usr.x],[usr.y],[usr.z]!")
-							usr.Body_Parts()
-				if("No")
-					return
+	set category = "Other"
+	var/mob/M = input("Com quem?") as null|mob in oview(1)
+	if(M) usr.try_have_child(M)
 
+mob/proc/try_have_child(var/mob/M)
+	if(!mate_pair_ok(src, M))
+		to_chat(src, "Voces precisam estar lado a lado, vivos e conscientes.")
+		return
+	if(!married_to || married_to != M.signature)
+		to_chat(src, "Ter um filho e coisa de CASAL: voces precisam estar casados. (Use Propose Marriage.)")
+		return
+	if(!CanMate || !M.CanMate)
+		to_chat(src, "Um ferimento esta impedindo isso agora.")
+		return
+	if(!N_Breed || !M.N_Breed)
+		to_chat(src, "A biologia de um de voces nao permite gerar um filho assim.")
+		return
+	if(Race == "Half-Breed" || M.Race == "Half-Breed")
+		to_chat(src, "Half-Breeds sao estereis.")
+		to_chat(M, "Half-Breeds sao estereis.")
+		return
+	var/g1 = lowertext("[pgender]")
+	var/g2 = lowertext("[M.pgender]")
+	if(!((g1 == "male" && g2 == "female") || (g1 == "female" && g2 == "male")))
+		to_chat(src, "Um casal precisa ser de sexos opostos para gerar um filho.")
+		return
+	if(Pregnant || M.Pregnant)
+		to_chat(src, "Ja ha um bebe a caminho!")
+		return
+	switch(input(M, "[src] quer ter um filho com voce. Aceita?", "Filho") in list("Sim","Nao"))
+		if("Nao")
+			to_chat(src, "[M] prefere esperar.")
+			return
+	// pai/mae pelo sexo
+	var/mob/dad = (g1 == "male") ? src : M
+	var/mob/mom = (g1 == "male") ? M : src
+	mom.Pregnant = 1
+	mom.Husband = "[dad]"
+	mom.Husband_Race = "[dad.Race]"
+	mom.Husband_Class = "[dad.Class]"
+	mom.Husband_BP = dad.BP / 4
+	if(mom.Husband_BP >= 10000) mom.Husband_BP = 10000
+	mom.womb = return_new_genome(dad.genome, mom.genome) // o genoma do bebe: a MESMA logica de hibridos de sempre
+	to_chat(view(9), "<font color=#FFB6C1><b>[mom] esta gravida! O bebe de [dad] e [mom] podera nascer como um novo personagem (hibrido) na criacao.</b></font>")
+	to_chat(mom, "<font color=#FFB6C1>Enquanto voce estiver online, um novo jogador (ou voce mesmo em outro slot) podera nascer como o filho do casal na criacao de personagem.</font>")
+
+// ---------------------------------------------------------------------------
+// OVO (racas E_Breed, ex.: Namekuseijin) -- inalterado
+// ---------------------------------------------------------------------------
 obj/Mate2/verb/Lay_Egg()
 	set name = "Lay an Egg"
 	set category="Other"
@@ -87,67 +164,3 @@ obj/Mate2/verb/Lay_Egg()
 	Z.womb.holder = Z
 	Z.SaveMob=1
 	Z.isNPC=1
-
-mob/var
-	Egg=0
-	Husband=""
-	Father=""
-	Father_BP=0
-	Husband_Class=""
-	Father_Class=""
-
-mob/proc/breed(var/mob/M,type)
-	if(usr.Race=="Half-Breed"||M.Race=="Half-Breed")
-		to_chat(usr, "Half-Breeds are sterile")
-		to_chat(M, "Half-Breeds are sterile")
-		return
-	if(M.pgender=="Female"&&usr.pgender=="Male")
-		M.Pregnant=1
-		M.Husband="[usr]"
-		M.Husband_Race="[usr.Race]"
-		M.Husband_BP=usr.BP/4
-		M.womb = return_new_genome(usr.genome,M.genome)
-		if(M.Husband_BP>=10000)
-			M.Husband_BP=10000
-		to_chat(view(9), "<font color=red><b>[usr] impregnated [M]!")
-		if(BreedFunnies)
-			switch(type)
-				if(1)
-					to_chat(world, "<font color=red><b>[usr] raped and impregnated [M] at [usr.x],[usr.y],[usr.z]!")
-				else
-					to_chat(world, "<font color=red><b>[usr] fucked [M] at [usr.x],[usr.y],[usr.z]!")
-	else if(usr.pgender=="Female"&&M.pgender=="Male")
-		usr.Pregnant=1
-		usr.Husband="[M]"
-		usr.Husband_Race="[M.Race]"
-		usr.Husband_Class="[M.Class]"
-		usr.Husband_BP=M.BP/4
-		usr.womb = return_new_genome(usr.genome,M.genome)
-		if(usr.Husband_BP>=10000)
-			usr.Husband_BP=10000
-		to_chat(view(9), "<font color=red><b>[M] impregnated [usr]!")
-		if(BreedFunnies)
-			switch(type)
-				if(1)
-					to_chat(world, "<font color=red><b>[usr] raped and impregnated [M] at [usr.x],[usr.y],[usr.z]!")
-				else
-					to_chat(world, "<font color=red><b>[usr] raped and was impregnated by [M] at [usr.x],[usr.y],[usr.z]!")
-	else if(usr.pgender=="Female"&&M.pgender=="Female"&&BreedFunnies)
-		switch(type)
-			if(1)
-				to_chat(world, "<font color=red><b>Dykes get their head on a spike! [usr] raped [M] at [usr.x],[usr.y],[usr.z]!")
-				usr.Death()
-				M.KO()
-			else
-				to_chat(view(9), "<font color=yellow>Mike 'Faggots go splat' Pence saves the day!!")
-				to_chat(world, "<font color=red><b>Faggots and queers get the EXPLOSION! [usr] fucked [M] at [usr.loc]!")
-				M.Body_Parts()
-				usr.Body_Parts()
-	else if(usr.pgender=="Male"&&usr.Race=="Namek"&&M.pgender=="Male"&&BreedFunnies)
-		to_chat(world, "<font color=red><b>[usr] gave [M] his daily dose at [usr.loc]!")
-		usr.KO()
-		M.KO()
-	else if(usr.pgender=="Male"&&M.pgender=="Male"&&BreedFunnies)
-		to_chat(world, "<font color=red><b>Faggots and queers get the EXPLOSION! [usr] raped [M] at [usr.x],[usr.y],[usr.z]!")
-		M.KO()
-		usr.Body_Parts()

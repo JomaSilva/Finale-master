@@ -249,11 +249,11 @@ mob/keyable/verb/Brutal_Clarity()
 		container.initbuff = 5
 		container.DrainMod*=container.initdrain
 		container.Ttechnique+=container.initbuff
-		container.buffsBuff= 2
+		container.buffsBuff *= 2 //MULTIPLICATIVO, nao atribuicao: com "=2"/"=1", desligar este buff zerava tambem o Extreme Burst (e vice-versa)
 	DeBuff()
 		container.DrainMod/=container.initdrain
 		container.Ttechnique-=container.initbuff
-		container.buffsBuff= 1
+		container.buffsBuff /= 2
 		..()
 
 /datum/skill/Tao_of_Art

@@ -164,6 +164,25 @@ obj/Bio_Absorb
 
 
 mob/proc/Absorb_Expel()
+	//FIX: o verb Expel so mexia no sistema ANTIGO (AbsorbDatum). A absorcao atual do Majin guarda
+	//tudo em majin_absorbed (bolsao/MajinSaga.dm) -- entao "expulsar" nunca fazia nada. Agora o
+	//sistema novo e tratado PRIMEIRO; o antigo (Bio-Android etc.) continua abaixo.
+	if(majin_absorbed && majin_absorbed.len)
+		switch(input(usr,"Expulsar quem do seu corpo?") in list("Todos","Um","Cancelar"))
+			if("Todos")
+				for(var/datum/MajinAbsorbed/rec in majin_absorbed.Copy())
+					majin_release(rec, 0)
+				to_chat(src, "<font color=#d050c0>Voce expulsa todos que estavam dentro de voce.</font>", "system")
+			if("Um")
+				var/list/pick_list = list()
+				for(var/datum/MajinAbsorbed/rec in majin_absorbed)
+					var/label = rec.who ? "[rec.who.name]" : "Absorvido ([rec.sig])"
+					pick_list[label] = rec
+				var/chosen = input(usr,"Expulsar quem?") as null|anything in pick_list
+				if(chosen)
+					majin_release(pick_list[chosen], 0)
+					to_chat(src, "<font color=#d050c0>Voce expulsa [chosen] do seu corpo.</font>", "system")
+		return
 	switch(input(usr,"Expel how many? People absorbed must be online in order for them to be returned properly without admin intervention!") in list("All","One","Cancel"))
 		if("All")
 			if(AbsorbDatum)

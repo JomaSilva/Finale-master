@@ -139,12 +139,12 @@ turf/Teleporters
 	toeg
 		density=1
 		Enter(mob/M)
-			if(istype(M,/mob)&&usr.permission>=1)
-				usr.loc=locate(142,2,12)
+			//Torre do Karin/Lookout LIBERADA para todos: a exigencia de "permission" do Guardiao foi
+			//removida (era a "forca estranha" que bloqueava o caminho). O HBTC continua com a trava propria.
+			if(istype(M,/mob))
+				M.loc=locate(142,2,12)
 				return 1
-			else
-				to_chat(usr, "A mysterious force prevents you from entering")
-				return 0
+			return 0
 	fromeg
 		density=1
 		Enter(mob/M)

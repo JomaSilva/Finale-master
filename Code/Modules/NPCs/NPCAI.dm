@@ -11,6 +11,7 @@
 #define NPC_AI_STAM_CRIT          0.12  // stamina criticamente baixa
 #define NPC_AI_WARN_KI            0.35  // limiar do AVISO de ki baixo no chat
 #define NPC_AI_WARN_STAM          0.35  // limiar do AVISO de cansaco no chat
+#define NPC_AI_WARN_HP            25    // limiar do AVISO de "muito ferido" no chat (HP <= isto)
 #define NPC_AI_WARN_CD            300   // cooldown entre avisos no chat (300 ticks = 30s)
 #define NPC_AI_WARN_HYST          0.15  // histerese: so avisa de novo depois de recuperar acima de (limiar + isto)
 #define NPC_AI_FINISH_HP          25    // alvo com HP <= isto -> modo FINALIZADOR (pressao total)
@@ -32,6 +33,7 @@ var/list/npc_ki_warn_lines = list("Droga, estou ficando sem ki...","Meu ki esta 
 var/list/npc_stam_warn_lines = list("huf huf... isso esta me cansando...","Ofegante... preciso recuperar o folego...","Minhas pernas estao pesadas...")
 var/list/npc_recharge_lines = list("Preciso recuperar minhas energias!","Voce nao vai me derrotar assim... HAAAA!","So um instante... HRAAA!")
 var/list/npc_finisher_lines = list("Hora de acabar com isso!","Voce esta acabado!","E o seu fim!")
+var/list/npc_hurt_warn_lines = list("Argh... estou muito ferido...","Nao sei quanto tempo mais aguento isso...","*cospe sangue* Isso... vai deixar marca...","Meu corpo esta no limite...!")
 
 mob/var
 	isBlaster // whether or not a specific mob's AI will blast shit.
@@ -104,6 +106,7 @@ mob
 			//---- Sistema 1: estado interno da gestao de recursos ----
 			tmp/ai_warned_ki = 0    //ja avisou "sem ki" (reseta por histerese quando recupera)
 			tmp/ai_warned_stam = 0  //ja avisou "cansado"
+			tmp/ai_warned_hp = 0    //ja avisou "muito ferido"
 			tmp/ai_warn_cd = 0      //cooldown proprio dos avisos de recurso (separado das falas de combate)
 			tmp/ai_recharging = 0   //esta dentro do rechargeState
 			tmp/ai_charge_fx = 0    //aura/som de carga de ki ativos
@@ -305,6 +308,11 @@ mob
 						ai_warned_stam = 1
 				else if(sr >= NPC_AI_WARN_STAM + NPC_AI_WARN_HYST)
 					ai_warned_stam = 0
+				if(HP <= NPC_AI_WARN_HP) //muito ferido: o NPC reclama no chat (com histerese pra nao spammar)
+					if(!ai_warned_hp && npc_warn_say(pick(npc_hurt_warn_lines)))
+						ai_warned_hp = 1
+				else if(HP >= NPC_AI_WARN_HP + 20)
+					ai_warned_hp = 0
 
 			npc_charge_fx_start() //visual/som de "carregando ki" -- mimetiza o C do player, 100% livre de usr
 				if(ai_charge_fx) return
@@ -688,6 +696,7 @@ mob
 				//Sistema 1: limpa o estado de recursos ao desengajar
 				ai_warned_ki = 0
 				ai_warned_stam = 0
+				ai_warned_hp = 0
 				if(ai_charge_fx) npc_charge_fx_stop()
 				ai_recharging = 0
 				for(var/a, a<= behavior_vals.len,a++)//reset behavior pools

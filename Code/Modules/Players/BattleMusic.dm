@@ -77,6 +77,7 @@ mob
 		battle_music_on = 0 //is this player's battle-music loop currently running
 		battle_music_suspend_until = 0 //world.time until which battle music is ducked for a transformation theme
 		battle_music_last = "" //last track played, so the random pick never repeats the same song back-to-back
+		transform_music_until = 0 //world.time ate quando um tema de TRANSFORMACAO esta tocando pra este ouvinte (hierarquia: transformacao > rage > combate)
 
 mob/proc/start_battle_music()
 	set waitfor = 0
@@ -137,13 +138,17 @@ mob/proc/emit_TransformMusic(snd, durationDs)
 			M << sound(null, channel = RAGE_MUSIC_CHANNEL) //a transformation always wins: cut any rage theme first so the two never overlap
 			M << sound(null, channel = TRANSFORM_MUSIC_CHANNEL) //corta o tema de transformacao anterior (de qualquer um) antes de tocar o novo -> o ULTIMO a comecar vence
 			M << sound(snd, channel = TRANSFORM_MUSIC_CHANNEL, volume = M.client.clientvolume)
-			if(durationDs) M.duck_battle_music(durationDs)
+			if(durationDs)
+				M.transform_music_until = max(M.transform_music_until, world.time + durationDs) //janela "tema de forma no ar": um rage que comece AGORA nao pode tocar por cima
+				M.duck_battle_music(durationDs)
 
 //Rage-cinematic theme: plays to everyone nearby (like emit_TransformMusic) but on RAGE_MUSIC_CHANNEL, so a
 //transformation theme can silence it. Ducks battle music for the track.
 mob/proc/emit_RageMusic(snd, durationDs)
 	for(var/mob/M in view(src))
 		if(M.client)
+			if(world.time < M.transform_music_until) continue //HIERARQUIA: transformacao > rage -- com um tema de forma tocando pra este ouvinte, o rage nem comeca (antes tocavam JUNTOS, um em cada canal)
+			M << sound(null, channel = RAGE_MUSIC_CHANNEL) //garante que dois rages nunca se sobreponham
 			M << sound(snd, channel = RAGE_MUSIC_CHANNEL, volume = M.client.clientvolume)
 			if(durationDs) M.duck_battle_music(durationDs)
 

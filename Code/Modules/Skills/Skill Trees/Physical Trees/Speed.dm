@@ -62,11 +62,11 @@ mob/keyable/verb/Extreme_Burst()
 		container.initbuff = 5
 		container.DrainMod*=container.initdrain
 		container.Tspeed+=container.initbuff
-		container.buffsBuff= 2
+		container.buffsBuff *= 2 //MULTIPLICATIVO, nao atribuicao: com "=2"/"=1", desligar este buff zerava tambem o Brutal Clarity (e vice-versa)
 	DeBuff()
 		container.DrainMod/=container.initdrain
 		container.Tspeed-=container.initbuff
-		container.buffsBuff= 1
+		container.buffsBuff /= 2
 		..()
 
 /datum/skill/Relentless_Strikes

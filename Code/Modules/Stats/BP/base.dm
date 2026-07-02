@@ -223,7 +223,10 @@ mob/proc
 			CooldownRunning = 0
 			return
 	netCap(var/stattocap)
+		//soft-cap do netBuff: linear ate 2x; acima disso cresce em log2 do excedente (3->3, 5->4, 9->5, 17->6),
+		//com teto duro em 10. A versao antiga usava log(global_net_cap, x) -- com a base persistida perto de 1
+		//(ajustavel por verb de admin), QUALQUER netBuff acima de 2 explodia direto pro teto de 10x: era o bug do
+		//Brutal Clarity/Extreme Burst com Ki acima de 100% virando 10x de BP.
 		if(stattocap>2)
-			var/value = log(max(1.01,global_net_cap),stattocap)
-			return min(value,10)
+			return min(2 + log(2, max(stattocap - 1, 1)), 10)
 		return stattocap

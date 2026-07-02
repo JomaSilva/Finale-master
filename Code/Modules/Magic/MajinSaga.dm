@@ -92,7 +92,25 @@ mob/proc/majin_absorb(mob/M)
 		if(is_corrupted_majin() && majin_saga_form == 2) majin_advance_form(3, "super majin")
 		return
 	if(!(M.KO) || M.dead) { to_chat(src, "They must be knocked out and alive."); return }
-	if(M.isNPC) { to_chat(src, "There is nothing worth taking from them."); return }
+	if(M.isNPC) //NPCs agora PODEM ser absorvidos: sao devorados por inteiro (sem bolsao/guardiao) e rendem os mesmos 10% de BP ate o Majin ser nocauteado
+		if(isnull(majin_absorbed)) majin_absorbed = list()
+		var/datum/MajinAbsorbed/nrec = new
+		nrec.sig = M.signature ? M.signature : "npc[rand(10000,99999)]"
+		nrec.who = null //devorado: nao ha o que devolver
+		nrec.bp_bonus = round(M.BP * 0.1)
+		majin_absorb_bp += nrec.bp_bonus
+		majin_absorbed += nrec
+		emit_Sound('absorb.wav')
+		SpreadHeal(100, 1, 0)
+		Ki = MaxKi
+		to_chat(view(src), "<font color=#d050c0>*[src] devora [M] por inteiro!*</font>", "combat")
+		//um Kai NPC tambem serve pro primeiro passo da saga do Corrupted Majin
+		if(is_corrupted_majin() && (M.Race == "Kai" || M.Parent_Race == "Kai") && !majin_kai_absorbed && majin_saga_form == 0)
+			majin_kai_absorbed = 1
+			majin_advance_form(1, null)
+		var/mob/eaten = M
+		spawn(2) if(eaten) eaten.mobDeath() //remove o NPC do mundo (cidadao devorado tambem conta contra a sua reputacao com o planeta dele)
+		return
 	if(isnull(majin_absorbed)) majin_absorbed = list()
 	// build/record the absorption
 	var/datum/MajinAbsorbed/rec = new
@@ -205,13 +223,32 @@ mob/npc/AbsorbGuardian //a fightable copy of the Majin guarding one prisoner; be
 	monster = 1
 	Player = 0
 	attackable = 1
+	isBlaster = 1
 	var
 		tmp/mob/guard_master = null //the Majin holding the prisoner
 		guard_sig = ""              //the prisoner's signature this clone guards
 		tmp/guard_done = 0
+		guard_seed_bp = 0           //BP fixo do guardiao (o NPCTicker base re-escalaria pelo AverageBP)
 	New()
 		..()
+		spawn(5) fix_body_owner()
 		spawn guard_watch()
+	//BP pinado: nao chama o NPCTicker base (que puxa o BP pro AverageBP do servidor)
+	NPCTicker()
+		set waitfor = 0
+		set background = 1
+		AIRunning = 1
+		if(guard_seed_bp) BP = guard_seed_bp
+	//o TestMobParts (spawnado pelo mob/New) cria os membros com savant=usr (o Majin!); re-aponta pra MIM,
+	//senao os golpes do prisioneiro interagiriam com o dono errado (gibs/willpower/lastDamager do Majin)
+	proc/fix_body_owner()
+		set waitfor = 0
+		var/settle = 0
+		while(src && settle < 12)
+			settle++
+			sleep(10)
+			for(var/datum/Body/S in body)
+				if(S.savant != src) S.savant = src
 	proc/guard_watch()
 		set waitfor = 0
 		while(src && !guard_done)
@@ -224,29 +261,40 @@ mob/npc/AbsorbGuardian //a fightable copy of the Majin guarding one prisoner; be
 				if(master) master.majin_release_by_sig(s)
 				return
 
+//Construtor AUTOSSUFICIENTE do guardiao (SEM makeCopy/genoma). O makeCopy rodava genome.post_init_savant()
+//na genetica -- um runtime error ali matava o proc DEPOIS do prisioneiro ja estar no bolsao, e o clone
+//NUNCA aparecia (o bug do "nao aparece um npc no interior"). Um espelho "burro" de stats nao tem genetica
+//pra falhar: o corpo vem do TestMobParts padrao (14 partes) e o BP e metade do poder expresso do Majin.
 mob/proc/majin_spawn_guardian(mob/M, iz, gx, gy)
-	var/mob/npc/AbsorbGuardian/guard = makeCopy(2, Race, Class, /mob/npc/AbsorbGuardian, TRUE) //a copy of ME (the absorbing Majin)
-	if(!istype(guard)) return null
+	var/mob/npc/AbsorbGuardian/guard = new(locate(gx, gy, iz))
+	if(!guard) return null
 	guard.name = "[name]'s image"
 	guard.guard_master = src
-	guard.guard_sig = M.signature
-	guard.nokill = 0       // it CAN be beaten
-	guard.temporary = 0
-	guard.needs_manual_custom = 0
+	guard.guard_sig = M ? M.signature : ""
 	guard.icon = icon
 	if(majin_color) guard.icon = icon + majin_color
-	//Give it its OWN body so beating it never damages ME: makeCopy does `A.Body=Body` (a SHARED list ref), and
-	//SpreadDamage iterates src.body, so without this the player's hits on the clone would land on the Majin's limbs.
-	guard.body = list()
-	for(var/bt in list(/datum/Body/Head,/datum/Body/Head/Brain,/datum/Body/Torso,/datum/Body/Abdomen,/datum/Body/Organs,/datum/Body/Reproductive_Organs,/datum/Body/Arm,/datum/Body/Arm/Hand,/datum/Body/Arm,/datum/Body/Arm/Hand,/datum/Body/Leg,/datum/Body/Leg/Foot,/datum/Body/Leg,/datum/Body/Leg/Foot))
-		var/datum/Body/nB = new bt
-		nB.savant = guard
-		guard.body += nB
+	guard.oicon = guard.icon
+	//espelho dos stats de combate do Majin, com metade do poder expresso
+	guard.guard_seed_bp = max(round(expressedBP / 2), 1)
+	guard.BP = guard.guard_seed_bp
+	guard.physoff = physoff
+	guard.physdef = physdef
+	guard.technique = technique
+	guard.kioff = kioff
+	guard.kidef = kidef
+	guard.kiskill = kiskill
+	guard.speed = speed
+	guard.statify()
+	guard.Ki = guard.MaxKi
+	guard.stamina = guard.maxstamina
+	guard.Anger = 100
+	guard.staminadeBuff = 100
+	guard.maxNutrition = 100
+	guard.currentNutrition = 100
+	guard.powerlevel()
 	guard.HP = 100
 	guard.KO = 0
-	guard.loc = locate(gx, gy, iz)
-	guard.target = M
-	spawn guard.foundTarget(M) //make it hostile to the prisoner
+	if(M) spawn(2) if(guard && M) guard.foundTarget(M) //make it hostile to the prisoner
 	return guard
 
 mob/proc/majin_escape_all()

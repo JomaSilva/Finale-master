@@ -416,12 +416,14 @@ datum/boss_events
 		if(M17)
 			npc_apply_hair(M17, "Long", BEV_A17_HAIR_R, BEV_A17_HAIR_G, BEV_A17_HAIR_B)
 			M17.Race = "Android" // cosmetico (o genoma ja foi construido); nao afeta os stats
+			npc_wear_simple(M17, /obj/items/clothes/LongSleeveShirt) //roupa casual (nada de Namek/armadura Saiyajin)
 			a17 = M17
 			a17_alive = 1
 		var/mob/npc/Enemy/EventBoss/M18 = init_event_boss(planet_spawn_turf(BEV_CELL_PLANET), "Human", "Normal", BEV_CELL_PLANET, BEV_ANDROID_BP, "female", BEV_A18_ICON, "Androide 18", "a18")
 		if(M18)
 			npc_apply_hair(M18, "Long", BEV_A18_HAIR_R, BEV_A18_HAIR_G, BEV_A18_HAIR_B) // loira via codigo
 			M18.Race = "Android"
+			npc_wear_simple(M18, /obj/items/clothes/ShortSleeveShirt) //roupa casual
 			a18 = M18
 			a18_alive = 1
 		bev_announce("Duas maquinas assassinas surgiram na Terra: os ANDROIDES 17 e 18 estao espalhando destruicao!")
@@ -765,12 +767,14 @@ datum/boss_events
 				if(M17)
 					npc_apply_hair(M17, "Long", BEV_A17_HAIR_R, BEV_A17_HAIR_G, BEV_A17_HAIR_B)
 					M17.Race = "Android"
+					npc_wear_simple(M17, /obj/items/clothes/LongSleeveShirt)
 					a17 = M17
 			if(a18_alive && !a18)
 				var/mob/npc/Enemy/EventBoss/M18 = init_event_boss(planet_spawn_turf(BEV_CELL_PLANET), "Human", "Normal", BEV_CELL_PLANET, BEV_ANDROID_BP, "female", BEV_A18_ICON, "Androide 18", "a18")
 				if(M18)
 					npc_apply_hair(M18, "Long", BEV_A18_HAIR_R, BEV_A18_HAIR_G, BEV_A18_HAIR_B)
 					M18.Race = "Android"
+					npc_wear_simple(M18, /obj/items/clothes/ShortSleeveShirt)
 					a18 = M18
 		if(s3_state == 2) spawn_cell(s3_cell_form, 1)
 		if(s3_state == 5) spawn_cell(4) // o timer de 1 min nao sobrevive ao reboot: ele simplesmente ja volta

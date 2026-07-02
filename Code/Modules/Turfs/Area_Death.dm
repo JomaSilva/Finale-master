@@ -89,6 +89,7 @@ area/proc/DestroyPlanet(var/mexpressedBP)
 		currentWeather = "Destruction"
 		sleep(20 + rand(10,90))
 		for(var/mob/M in my_player_list) //a problem with the previous method: why affect land that won't affect players? Just do effects around players.
+			if(M.dead || M.GetArea() != src) continue //my_player_list e "pegajosa": quem morreu (Outro Mundo) ou saiu do planeta NAO pode receber quake/explosao em M.x,M.y,M.z (chovia explosao no z6!)
 			if(M.client)
 				M.Quake()
 				var/turf/randturf = locate(M.x+rand(1,40),M.y+rand(1,40),M.z)
@@ -122,12 +123,17 @@ area/proc/DestroyPlanet(var/mexpressedBP)
 	sleep(3100)//five minutes lol
 	if(P.isBeingDestroyed)
 		for(var/mob/M in my_player_list)
+			if(!M || M.dead) continue //ja morreu na luta: esta no Outro Mundo -- a explosao NAO o alcanca la
+			if(M.GetArea() != src) continue //saiu do planeta antes do fim (a lista nao se limpa sozinha)
 			if(M.isNPC)
 				M.buudead = "force"
 				M.Death()
 			if(M.expressedBP<=mexpressedBP)
 				M.SpreadDamage(99)
 				to_chat(M, "You have been damaged by the planet destructing!")
+				if(M.KO && !M.dead) //um nocauteado nao sobrevive a um planeta explodindo: morre de verdade e vai pro Enma (antes ficava jogado no espaco, "em combate eterno", sem nunca morrer)
+					M.buudead = 0
+					spawn M.Death()
 		P.isBeingDestroyed = 0
 		PlanetDisableList += P.planetType
 		P.isDestroyed=1

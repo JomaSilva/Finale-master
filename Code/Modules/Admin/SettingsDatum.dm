@@ -60,8 +60,6 @@ proc/Save_Settings()
 	P["force_rarest_class"]<<force_rarest_class
 	P["globalKiDamage"]<<globalKiDamage
 	P["KOMult"]<<KOMult
-	P["BreedFunnies"]<< BreedFunnies
-	P["RapeSet"] << RapeSet
 	P["buildable"] << buildable
 	P["canplanetdestroy"]<<canplanetdestroy
 	P["gravitycap"]<<gravitycap
@@ -127,8 +125,6 @@ proc/Load_Settings()
 		P["TransformedBPBoost"]>>TransformedBPBoost
 		P["TurnOffAscension"]>>TurnOffAscension
 		P["KOMult"]>>KOMult
-		P["BreedFunnies"]>> BreedFunnies
-		P["RapeSet"] >> RapeSet
 		P["buildable"] >> buildable
 		P["canplanetdestroy"]>>canplanetdestroy
 		P["gravitycap"]>>gravitycap

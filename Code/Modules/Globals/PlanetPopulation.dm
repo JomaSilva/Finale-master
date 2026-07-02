@@ -128,6 +128,7 @@ mob/npc/Citizen
 		//Sistema 1: limpa o estado de recursos ao desengajar
 		ai_warned_ki = 0
 		ai_warned_stam = 0
+		ai_warned_hp = 0
 		if(ai_charge_fx) npc_charge_fx_stop()
 		ai_recharging = 0
 		for(var/a = 1, a <= behavior_vals.len, a++)
@@ -167,6 +168,29 @@ mob/npc/Citizen
 				chatcast(view(8), "[killer] has slain the King of Vegeta and claimed the throne!", "combat")
 			else
 				view(8) << output("<font color=red><b>The King of Vegeta has fallen!</b></font>","Chatpane.Chat")
+
+	// -----------------------------------------------------------------------
+	// O Grande Patriarca (Guru) de Namek: falar com ele (clique) desperta o
+	// potencial oculto UMA unica vez -- se o povo de Namek nao te ve mal.
+	// -----------------------------------------------------------------------
+	Guru
+		pop_role = "guru"
+		idle_wandering = 0 //o Patriarca nao sai vagando por ai
+		Click()
+			if(!usr || !usr.client || usr == src) return
+			if(dead || KO) return
+			if(get_dist(usr, src) > 2)
+				to_chat(usr, "Chegue mais perto para falar com o Grande Patriarca.")
+				return
+			if(planet_rep_get("Namek", usr) <= -10) //"pelo menos neutro": Malvisto pra baixo e rejeitado
+				to_chat(usr, "<font color=#77dd77><b>Guru</b>: \"Sinto o sofrimento do meu povo em suas maos... Saia da minha frente.\"</font>")
+				return
+			if(usr.unlockPotential == 1)
+				to_chat(usr, "<font color=#77dd77><b>Guru</b>: \"Seu potencial ja foi despertado, jovem guerreiro. O resto do caminho e seu.\"</font>")
+				return
+			to_chat(view(src), "<font color=#77dd77><b>Guru</b> poe a mao sobre a cabeca de [usr]...</font>")
+			usr.UnlockPotential(usr.UPMod)
+			to_chat(usr, "<font color=#77dd77><b>Guru</b>: \"Desperte... AGORA!\" Uma torrente de poder oculto explode de dentro de voce!</font>")
 
 // ---------------------------------------------------------------------------
 // Appearance helpers (clientless: operate on the mob, never usr)
@@ -376,11 +400,23 @@ proc/populate_earth()
 		make_human(planet_spawn_turf("Earth"))
 		sleep(1)
 
+proc/make_namek_guru(turf/T)
+	var/mob/npc/Citizen/Guru/M = init_citizen(T, /mob/npc/Citizen/Guru, "Namekian", "Dragon clan", "Namek", rand(9000,12000), "male")
+	if(!M) return
+	M.pop_role = "guru"
+	M.name = "Guru"
+	M.icon = 'NamekOld - Guru Style.dmi' //o corpo do Grande Patriarca
+	M.oicon = M.icon
+	npc_apply_hair(M, "Bald", 0, 0, 0)
+	return M
+
 proc/populate_namek()
 	var/have = count_citizens("Namek", "commoner")
 	for(var/i = have + 1 to POP_NAMEK_NAMEKS)
 		make_namekian(planet_spawn_turf("Namek"))
 		sleep(1)
+	if(count_citizens("Namek", "guru") < 1) //o Guru e unico, como o Rei/Principe de Vegeta
+		make_namek_guru(planet_spawn_turf("Namek"))
 
 proc/Populate_All_Planets()
 	populate_vegeta()
