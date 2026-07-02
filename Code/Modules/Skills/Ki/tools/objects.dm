@@ -238,7 +238,7 @@ obj/attack/blast
 					//BP=proprietor.expressedBP
 					mods=proprietor.beammods*(rangemod**(maxdistance-distance))
 					murderToggle=proprietor.murderToggle//so the damage and lethality can change as the user's stats change
-					walk(src,src.dir,beamspeed)//we want each beam object to decide if it should move, while the rest stay where they are
+					if(!in_beamclash) walk(src,src.dir,beamspeed)//we want each beam object to decide if it should move, while the rest stay where they are (numa DISPUTA a cabeca fica plantada; BeamClash.dm)
 				else
 					obj_list-=src
 					attack_list-=src
@@ -486,6 +486,10 @@ obj/attack/blast
 				else if(istype(M,/obj/attack))
 					if((M.dir!=dir&&M.proprietor!=proprietor)||deflected) //New line...: && keps you from destroying your own blasts
 						var/obj/attack/R=M//typecasting so the compiler knows the blast/beam has these variables
+						//BEAMCLASH: beam vs beam com os DOIS donos canalizando -> disputa interativa de ESPACO
+						//(BeamClash.dm); se nao der pra disputar, cai na resolucao automatica antiga abaixo
+						if(WaveAttack && R.WaveAttack && !in_beamclash && !R.in_beamclash && bcl_try_start(src, R))
+							return 1
 						var/sfirsttime=0
 						strugglestart
 						if(!R||!R.loc||!src||!src.loc)

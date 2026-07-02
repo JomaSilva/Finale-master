@@ -148,6 +148,7 @@
 #include "Code\Modules\cinematics\SSJCinematic.dm"
 #include "Code\Modules\cinematics\UltraSSJCinematic.dm"
 #include "Code\Modules\CombatMechanics\AttackFlavor.dm"
+#include "Code\Modules\CombatMechanics\BeamClash.dm"
 #include "Code\Modules\CombatMechanics\calcs.dm"
 #include "Code\Modules\CombatMechanics\CQC.dm"
 #include "Code\Modules\CombatMechanics\Damage Types.dm"

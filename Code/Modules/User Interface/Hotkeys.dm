@@ -116,6 +116,9 @@ client/verb/UseKey(key="" as text)
 	set instant = 1
 	if(src.mob&&key)
 		var/mob/M=src.mob
+		if(M.beamclash && lowertext(key) == "space") //BEAMCLASH: ESPACO durante a disputa = empurrao (BeamClash.dm)
+			M.bcl_press()
+			return
 		if(key in M.Keys) for(var/obj/hotkey/H in M.Hotkeys)
 			if(H.key==key)
 				H.ispressed = 1

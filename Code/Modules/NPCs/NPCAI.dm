@@ -355,6 +355,16 @@ mob
 
 			npc_combat_action(d) //resource- & personality-aware action picker (kiai / grab / blast / barrage / melee)
 				if(!target) return
+				if(beaming || charging) return //canalizando um beam (contra-ataque/BeamClash): nada de outras acoes ate resolver
+				//===== BEAMCLASH (IA): beam inimigo vindo na nossa direcao -> responde com o proprio beam =====
+				//(a colisao dos dois vira a disputa do BeamClash.dm; la o NPC "aperta" sozinho conforme a inteligencia)
+				if(isBlaster && !KO && world.time >= bcl_npc_beam_cd && Ki >= MaxKi * BCL_NPC_KI_MIN)
+					var/obj/attack/blast/inc = bcl_incoming_beam()
+					if(inc && prob(max(ai_intelligence, 35)))
+						bcl_npc_beam_cd = world.time + BCL_NPC_BEAM_CD
+						npc_combat_chat(pick("HAAAAAA!!","Tome ISTO!","Nao vai me vencer nisso!"))
+						npc_fire_beam(get_dir(src, inc))
+						return
 				var/ki_ratio = MaxKi > 0 ? (Ki / MaxKi) : 1
 				var/power_ratio = (expressedBP > 0 && target.expressedBP > 0) ? (target.expressedBP / expressedBP) : 1
 				var/rage = e_behavior_vals[2]
