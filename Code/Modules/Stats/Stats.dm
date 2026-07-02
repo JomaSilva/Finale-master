@@ -291,7 +291,7 @@ mob/proc/Stats()
 			CurrentAnger=Emotion
 			to_chat(view(usr), "<font color=#FF0000>[usr] appears [Emotion]")
 		//If the King is dead...
-		if(King_of_Vegeta==name) if(dead)
+		if(King_of_Vegeta==signature) if(dead) //SIGNATURE, nao name: a vacancia por morte nunca disparava (comparava com o NOME)
 			to_chat(usr, "You are no longer King of Vegeta, since you are dead.")
 			King_of_Vegeta=null
 		//Absorbtion decline...

@@ -203,6 +203,7 @@
 #include "Code\Modules\Globals\client.dm"
 #include "Code\Modules\Globals\Lists.dm"
 #include "Code\Modules\Globals\PlanetPopulation.dm"
+#include "Code\Modules\Globals\PlanetReputation.dm"
 #include "Code\Modules\Globals\readme.dm"
 #include "Code\Modules\Globals\VegetaCity.dm"
 #include "Code\Modules\Globals\World.dm"

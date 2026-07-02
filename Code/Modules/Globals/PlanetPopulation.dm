@@ -46,6 +46,7 @@ mob/npc/Citizen
 		..()
 		citizen_list |= src
 		spawn idle_wander_loop()
+		spawn citizen_social_loop() //Sistema 3: conversas com contexto + vinganca contra players cacados (PlanetReputation.dm)
 
 	Del()
 		citizen_list -= src
@@ -84,7 +85,7 @@ mob/npc/Citizen
 	proc/idle_wander_loop()
 		set waitfor = 0
 		set background = 1
-		while(src && idle_wandering)
+		while(src && idle_wandering && loc) //loc null = removido do mundo (soft-del): encerra o loop e solta a ref pro GC
 			sleep(rand(45,95))
 			if(!src || AIRunning || KO || dead || target) continue
 			if(prob(35)) step_rand(src)
@@ -158,7 +159,7 @@ mob/npc/Citizen
 						killer = P
 						break
 			if(killer && killer.client && !killer.dead && (killer.Race == "Saiyan" || killer.Parent_Race == "Saiyan"))
-				King_of_Vegeta = killer.key  // mirror the existing throne-grant in Murder.dm/killer_stuff
+				King_of_Vegeta = killer.signature  // SIGNATURE, nao key: Rank_Verb_Assign/Autorank/RankList comparam por signature (com key o rank nunca aplicava)
 				killer.Rank_Verb_Assign()
 				Save_Rank()  // persist the new monarch immediately
 				to_chat(killer, "<font color=yellow><b>By slaying the King of Vegeta, you have claimed the throne! You are the new King of Vegeta!</b></font>")

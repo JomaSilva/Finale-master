@@ -38,6 +38,12 @@
 				if(S.enabled==1)
 					if(allowedtier >= S.tier) to_chat(savant, "You can no longer acquire Skill [S.name].")
 					S.enabled = 0
+		else if(S.villainonly) //SEM prereqs o gate de vilao nunca rodava (so passava pelo skillUnlockOK acima): Planet Destroy ficava compravel por qualquer um
+			if(!savant.isVillain)
+				if(S.enabled) S.enabled = 0
+			else if(!S.enabled)
+				S.enabled = 1
+				if(allowedtier >= S.tier) to_chat(savant, "You can now acquire Skill [S.name]!")
 	for(var/datum/skill/S in savant.learned_skills)
 		if(S.prereqs.len > 0)
 			precheck = S.prereqs.len - S.prereqthreshold
@@ -91,8 +97,11 @@
 	didchange=1
 
 /datum/skill/tree/proc/fund(var/datum/skill/S)
-	var/datum/skill/nS = new S.type
 	if(!savant && ismob(usr)) savant = usr
+	if(S.villainonly && savant && !savant.isVillain) //trava DURA na compra: nao-vilao nao gasta milestone numa skill que nunca podera usar
+		to_chat(savant, "<font color=red>Apenas um Vilao designado pelo servidor pode aprender [S.name].</font>")
+		return
+	var/datum/skill/nS = new S.type
 	//world << "savant = [usr]|[savant]."
 	savant.learnSkill(nS, 0, 0)
 	savant.skillpoints -= S.skillcost

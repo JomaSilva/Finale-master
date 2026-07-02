@@ -4,6 +4,7 @@ mob/proc/statnamek()
 		genome = new/datum/genetics/Namekian(/datum/genetics/proto/Namekian)
 		if(Class=="None") Class=input(usr,"Choose your clan. Warrior clan are the strongest fighters. Demon clan are aggressive dark casters in King Piccolo's lineage. Dragon clan are the supportive healers and creators with unmatched regeneration.","Clan","") in list("Warrior clan","Demon clan","Dragon clan")
 		genome.this_class = Class
+		assignverb(/mob/keyable/verb/Namekian_Regeneration) //REWORK: a regen racial e uma skill ATIVA de graca (70% do Ki -> membro); a passiva acelerada foi removida no assign_regen
 		see_invisible=1
 		partplant=1
 		Metabolism = 2

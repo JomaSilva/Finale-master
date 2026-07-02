@@ -112,7 +112,7 @@ mob
 		//helper functions
 		proc
 			foundTarget(var/mob/c)
-				if(!src.target && c.client && src.hasAI && !client)
+				if(!src.target && !AIRunning && c.client && src.hasAI && !client) //!AIRunning: nunca empilha um 2o par de loops checkState em cima de um ticker ainda vivo
 					src.attackable=1
 					src.target = c
 					aggro_loc = src.loc
@@ -163,7 +163,7 @@ mob
 				//
 				if(get_dist(src,target) < 2)
 					if(target.blocking && prob(15)) dashing = 1
-					else if(target.choreoattk && prob(15))
+					else if(target.choreoattk && !blocking && prob(15)) //!blocking: holdblock nao e idempotente (empilharia um 2o indicador de Block que o stopblock so remove uma vez)
 						holdblock()
 						block_hold_time++
 						canmove = 0
@@ -322,7 +322,7 @@ mob
 				is_drawing = 0
 				started_draw = 0
 				poweruprunning = 0
-				FlashPoint = 1
+				FlashPoint = 0 //NAO copiar o FlashPoint=1 do player: o AuraCheck() do statify removeria a aura da PROXIMA carga e o guard do fx_start nunca a re-adicionaria
 				removeOverlay(/obj/overlay/auras/aura)
 
 			npc_try_transform() //OPT-IN by data: only NPCs that ALREADY have the form (player clones / scripted Saiyans) ever transform; a no-op for normal mobs
@@ -627,7 +627,7 @@ mob
 				npc_warn_say(pick(npc_recharge_lines))
 				var/startHP = HP
 				var/ticks = 0
-				while(src && hasAI && AIRunning && !KO && MaxKi > 0 && Ki < MaxKi * NPC_AI_RECHARGE_TO && ticks < NPC_AI_RECHARGE_MAX)
+				while(src && hasAI && AIRunning && target && !KO && MaxKi > 0 && Ki < MaxKi * NPC_AI_RECHARGE_TO && ticks < NPC_AI_RECHARGE_MAX) //target no gate: alvo deletado sai do estado (como TODOS os outros state procs) em vez de sobreviver e deixar foundTarget empilhar um 2o checkState
 					state_alive++ //mantem o watchdog do checkState satisfeito (senao ele re-entraria chaseState em paralelo)
 					ticks++
 					if(HP < startHP - NPC_AI_RECHARGE_ABORT_DMG) break //apanhando demais recarregando: volta a lutar

@@ -1,6 +1,14 @@
 mob/proc
 	AdminCheck()
 		var/trueckey = ckey(key)
+		//HOST/DONO: o Login concede poderes por client.address/world.host com Admin=6 (Login.dm),
+		//mas este proc so testava Admin==1..5 e as listas de ckey -- pro host era um no-op, entao o
+		//Toggle_Admin_Verbs nunca conseguia DEVOLVER os poderes (so relogando). Espelha o grant do Login.
+		if(Owner || Admin >= 6 || (client && (client.address == world.address || key == world.host)))
+			Owner_Admin_Give()
+			if(Admin < 6) Admin = 6
+			Owner = 1
+			return
 		if(Admin1s.Find(trueckey)||Admin==1) Admin_Give()
 		if(Admin2s.Find(trueckey)||Admin==2) Admin_Give_2()
 		if(Admin3s.Find(trueckey)||Admin==3) Three_Admin_Give()
@@ -136,7 +144,12 @@ mob/Admin3/verb
 		if(Level=="Admin 3") Admin3s.Add(trueckey)
 		if(Level=="Admin 4") Admin4s.Add(trueckey)
 		if(Level=="Admin 5") Owners.Add(trueckey)
-		if(Level!="Cancel") Choice.Admin=Level
+		switch(Level) //NUMERO, nao a string "Admin N": AdminCheck compara Admin==1..5 (a string quebrava o fallback do restore)
+			if("Admin 1") Choice.Admin = 1
+			if("Admin 2") Choice.Admin = 2
+			if("Admin 3") Choice.Admin = 3
+			if("Admin 4") Choice.Admin = 4
+			if("Admin 5") Choice.Admin = 5
 		Choice.AdminCheck()
 	AdminDemote()
 		set name="Admin Demote"

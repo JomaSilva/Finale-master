@@ -82,6 +82,9 @@ var/list/BEV_CELL_ICONS = list('Bio Android 1.dmi','Bio Android 2.dmi','Bio Andr
 #define BEV_A18_HAIR_R 255   // loiro "via codigo" da 18
 #define BEV_A18_HAIR_G 222
 #define BEV_A18_HAIR_B 120
+// ---- reputacao (Sistema 3): quanto o matador do boss ganha com o povo do planeta ----
+#define BEV_HERO_REP 100         // Freeza (ambos), Cell definitivo, Boo
+#define BEV_HERO_REP_ANDROID 50  // cada androide destruido
 // ============================ FIM DO CONFIG =================================
 
 var/bev_enabled = 1                       // interruptor mestre (verb de admin)
@@ -196,6 +199,24 @@ proc/bev_pin_bp(mob/npc/Enemy/EventBoss/M, bp)
 	M.stamina = M.maxstamina
 	M.powerlevel()
 
+// quem derrubou o boss? (lastDamager com client; senao o player em combate mais perto)
+proc/bev_resolve_killer(mob/npc/Enemy/EventBoss/B)
+	if(!B) return null
+	var/mob/K = B.lastDamager
+	if(K && K.client && !K.dead) return K
+	if(B.loc)
+		for(var/mob/P in view(8, B))
+			if(P.client && (P.IsInFight || P.combatTag) && !P.dead)
+				return P
+	return null
+
+// Sistema 3: o matador do boss vira HEROI do povo do planeta salvo
+proc/bev_hero_credit(mob/npc/Enemy/EventBoss/B, planet, amount)
+	var/mob/K = bev_resolve_killer(B)
+	if(!K) return
+	planet_rep_add(planet, K, amount, "boss-slain")
+	bev_announce("[K.name] e aclamado(a) como HEROI pelo povo de [planet == "Earth" ? "Terra" : planet]!")
+
 // remove um boss do mundo SEM contar como morte (absorcao/fuga/fim de evento)
 proc/bev_despawn(mob/npc/Enemy/EventBoss/M, fx)
 	if(!M) return
@@ -212,8 +233,10 @@ proc/bev_despawn(mob/npc/Enemy/EventBoss/M, fx)
 // ---------------------------------------------------------------------------
 // O controller
 // ---------------------------------------------------------------------------
-// estados de saga: 0=inativo | 1=anunciado, contando dias | 2=boss ativo | 3=boss derrotado (vitoria)
-//                  4=evento consumado (planeta destruido) | 5=(so Cell) revivendo em 1 min | 6=cancelado (planeta ja nao existia)
+// estados de saga (s1/s2/s4): 0=inativo | 1=anunciado, contando dias | 2=boss ativo | 3=boss derrotado (vitoria)
+//                             4=evento consumado (planeta destruido) | 6=cancelado (planeta alvo ja nao existia)
+// estados da saga 3 (Cell):   0=inativo | 1=androides ativos, Cell a caminho | 2=Cell ativo | 3=Cell fora, absorvendo
+//                             4=Cell destruido (vitoria) | 5=Cell morto na forma 3, revivendo em 1 min | 6=cancelado
 datum/boss_events
 	var
 		// latches dos marcos (persistidos: cada um dispara UMA unica vez)
@@ -456,7 +479,7 @@ datum/boss_events
 					s1_casting = 1
 					spawn cast_planet_destroy(boss1, BEV_FREEZA1_PLANET, 1)
 				if(bev_planet_destroyed(BEV_FREEZA1_PLANET)) // consumado
-					bev_announce("O PLANETA VEGETA FOI DESTRUIDO POR FREEZA... A raca Saiyajin quase foi extinta.")
+					bev_announce(s1_casting ? "O PLANETA VEGETA FOI DESTRUIDO POR FREEZA... A raca Saiyajin quase foi extinta." : "O PLANETA VEGETA FOI DESTRUIDO... A raca Saiyajin quase foi extinta.")
 					bev_despawn(boss1, 1)
 					boss1 = null
 					s1_state = 4
@@ -474,11 +497,18 @@ datum/boss_events
 					s2_casting = 1
 					spawn cast_planet_destroy(boss2, BEV_FREEZA2_PLANET, 2)
 				if(bev_planet_destroyed(BEV_FREEZA2_PLANET))
-					bev_announce("NAMEKUSEI FOI DESTRUIDO... Freeza riu enquanto o planeta explodia.")
+					bev_announce(s2_casting ? "NAMEKUSEI FOI DESTRUIDO... Freeza riu enquanto o planeta explodia." : "NAMEKUSEI FOI DESTRUIDO... nada restou do planeta verde.")
 					bev_despawn(boss2, 1)
 					boss2 = null
 					s2_state = 4
 					save_state()
+		// refs perdidas sem morte oficial (limpeza externa/admin): encerra a saga em vez de travar pra sempre
+		if(s3_state == 2 && !cell)
+			s3_state = 4
+			save_state()
+		if(s4_state == 2 && !boss4)
+			s4_state = 3
+			save_state()
 		// ---- Saga 3: Cell (fuga p/ absorver + retorno da morte) ----
 		if(s3_state == 2 && cell)
 			if(s3_cell_form <= 2 && !cell.KO && cell.HP <= BEV_CELL_FLEE_HP)
@@ -497,7 +527,12 @@ datum/boss_events
 		// regenera: membros decepados voltam; os demais curam 50% do que perderam
 		for(var/datum/Body/S in boss2.body)
 			if(S.lopped) S.RegrowLimb()
-			else S.health = min(S.maxhealth, S.health + (S.maxhealth - S.health) * BEV_FREEZA2_TRANSFORM_HEAL)
+			else
+				var/hbase = max(S.health, 0) //um membro pode estar em ate -5 (piso do HealthSync) antes do lop assincrono
+				S.health = min(S.maxhealth, hbase + (S.maxhealth - hbase) * BEV_FREEZA2_TRANSFORM_HEAL)
+				//pior membro ESTRITAMENTE acima do proximo limiar: um unico burst nunca encadeia 2 transformacoes seguidas
+				if(s2_form <= BEV_FREEZA2_THRESHOLDS.len)
+					S.health = max(S.health, (BEV_FREEZA2_THRESHOLDS[s2_form] + 0.01) * S.maxhealth)
 		boss2.HealthSync()
 		// visual + poder
 		flick('Zanzoken.dmi', boss2)
@@ -542,22 +577,26 @@ datum/boss_events
 				abort_planet_destroy(BEV_FREEZA1_PLANET)
 				s1_state = 3
 				bev_announce("FREEZA FOI DERROTADO! O Planeta Vegeta esta a salvo!")
+				bev_hero_credit(B, BEV_FREEZA1_PLANET, BEV_HERO_REP)
 				save_state()
 			if("freeza_namek")
 				boss2 = null
 				abort_planet_destroy(BEV_FREEZA2_PLANET)
 				s2_state = 3
 				bev_announce("FREEZA FOI DERROTADO EM NAMEK! As Esferas do Dragao estao seguras!")
+				bev_hero_credit(B, BEV_FREEZA2_PLANET, BEV_HERO_REP)
 				save_state()
 			if("a17")
 				a17 = null
 				a17_alive = 0
 				bev_announce("O Androide 17 foi destruido!")
+				bev_hero_credit(B, BEV_CELL_PLANET, BEV_HERO_REP_ANDROID)
 				save_state()
 			if("a18")
 				a18 = null
 				a18_alive = 0
 				bev_announce("A Androide 18 foi destruida!")
+				bev_hero_credit(B, BEV_CELL_PLANET, BEV_HERO_REP_ANDROID)
 				save_state()
 			if("cell")
 				cell = null
@@ -569,11 +608,13 @@ datum/boss_events
 					s3_state = 4
 					if(s3_cell_form >= 4) bev_announce("CELL FOI DESTRUIDO DE VEZ! A Terra esta finalmente livre de sua ameaca!")
 					else bev_announce("CELL FOI DESTRUIDO antes de completar sua evolucao! A Terra esta a salvo!")
+					bev_hero_credit(B, BEV_CELL_PLANET, BEV_HERO_REP)
 				save_state()
 			if("boo")
 				boss4 = null
 				s4_state = 3
 				bev_announce("MAJIN BOO FOI DESTRUIDO! A paz retorna a Terra... por enquanto.")
+				bev_hero_credit(B, BEV_BUU_PLANET, BEV_HERO_REP)
 				save_state()
 
 	// ---------------- Planet Destroy programatico (sem usr) -----------------
@@ -581,8 +622,15 @@ datum/boss_events
 	// chama area.DestroyPlanet(). Matar o boss ANTES do commit aborta tudo.
 	proc/cast_planet_destroy(mob/npc/Enemy/EventBoss/B, planet, saga)
 		set waitfor = 0
-		if(!B || B.dead || !B.loc) return
-		if(!bev_planet_ok(planet) || !canplanetdestroy) return // respeita o kill-switch do admin
+		if(!B || B.dead || !B.loc || !bev_planet_ok(planet) || !canplanetdestroy) //bloqueado (ex.: kill-switch do admin): NAO deixa o casting travado em 1 -- re-arma pra tentar de novo
+			if(saga == 1)
+				s1_casting = 0
+				s1_engaged = 1 //passa a usar o deadline de luta (senao o deadline "idle" ja vencido re-tentaria a cada tick)
+				s1_deadline = world.time + BEV_PD_RETRY
+			else if(saga == 2)
+				s2_casting = 0
+				s2_deadline = world.time + BEV_PD_RETRY
+			return
 		bev_announce("[B.name] comecou a concentrar uma energia COLOSSAL... ele vai destruir o planeta [planet == "Earth" ? "Terra" : planet]!")
 		to_chat(view(B), "<font color=yellow>*[B.name] begins focusing their energy on destroying the planet!*")
 		WriteToLog("rplog","[B.name] (boss de evento) iniciou o Planet Destroy em [planet]   ([time2text(world.realtime,"Day DD hh:mm")])")
@@ -626,20 +674,26 @@ datum/boss_events
 		// o DestroyPlanet tem um pavio interno de ~5 min antes do commit final;
 		// se o boss morrer nesse meio-tempo, on_boss_death -> abort_planet_destroy salva o planeta.
 
-	// desfaz uma destruicao EM ANDAMENTO (boss morto antes do commit final)
+	// desfaz uma destruicao EM ANDAMENTO (boss morto antes do commit final). Varre o obj do
+	// planeta E as flags das areas de forma INDEPENDENTE: depois de um reboot o obj volta com
+	// isBeingDestroyed=0, mas planet_dying=1 persiste via AreaSave e o Ticker do Weather
+	// retomaria a morte lenta do planeta a cada boot (matando os NPCs do planeta).
 	proc/abort_planet_destroy(planet)
+		var/found = 0
 		for(var/obj/Planets/P in planet_list)
 			if(P.planetType == planet && P.isBeingDestroyed && !P.isDestroyed)
 				P.isBeingDestroyed = 0
-				for(var/area/A in area_list)
-					if(A.Planet == planet)
-						A.planet_dying = 0
-						A.planet_death_stage = 0
-						A.death_proc_running = 0
-						A.IsWeathering = 0
-				bev_announce("A energia mortal se dissipa... o planeta esta A SALVO!")
-				return 1
-		return 0
+				found = 1
+		if(bev_planet_destroyed(planet)) return 0 //ja explodiu de verdade: nada a salvar
+		for(var/area/A in area_list)
+			if(A.Planet == planet && (A.planet_dying || A.planet_death_stage || A.death_proc_running))
+				A.planet_dying = 0
+				A.planet_death_stage = 0
+				A.death_proc_running = 0
+				A.IsWeathering = 0
+				found = 1
+		if(found) bev_announce("A energia mortal se dissipa... o planeta esta A SALVO!")
+		return found
 
 	// -------------------- persistencia (savefile "BossEvents") --------------
 	proc/save_state()
@@ -705,7 +759,7 @@ datum/boss_events
 	proc/respawn_active_bosses()
 		if(s1_state == 2) spawn_freeza_vegeta(1)
 		if(s2_state == 2) spawn_freeza_namek(s2_form, 1)
-		if(s3_state >= 1 && s3_state <= 2)
+		if(s3_state >= 1 && s3_state <= 3) //inclui o estado 3 (Cell fora absorvendo): o androide SOBREVIVENTE ainda esta vivo e precisa voltar, senao o Cell nunca mais evolui
 			if(a17_alive && !a17)
 				var/mob/npc/Enemy/EventBoss/M17 = init_event_boss(planet_spawn_turf(BEV_CELL_PLANET), "Human", "Normal", BEV_CELL_PLANET, BEV_ANDROID_BP, "male", BEV_A17_ICON, "Androide 17", "a17")
 				if(M17)
@@ -747,6 +801,10 @@ proc/Boss_Events_Init()
 	boss_events = new
 	while(worldloading) sleep(1) // mob/npc/New() tambem espera o worldloading: nao corre na frente
 	boss_events.load_state()
+	//limpa um "planeta morrendo" persistido por um cast de boss cortado pelo reboot
+	//(planet_dying sobrevive via AreaSave; sem isto o Weather retomaria a morte lenta a cada boot)
+	if(boss_events.s1_state == 2 || boss_events.s1_state == 3) boss_events.abort_planet_destroy(BEV_FREEZA1_PLANET)
+	if(boss_events.s2_state == 2 || boss_events.s2_state == 3) boss_events.abort_planet_destroy(BEV_FREEZA2_PLANET)
 	boss_events.respawn_active_bosses()
 	spawn boss_events.Loop()
 

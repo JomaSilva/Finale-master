@@ -303,6 +303,9 @@ mob/proc
 		CheckGodki()
 		if(IsAVampire||IsAWereWolf)
 			assignverb(/mob/keyable/verb/Bite)
+		if(Race=="Namekian"||Parent_Race=="Namekian") //REWORK NAMEKUSEIJIN: skill racial ativa p/ personagens novos E antigos
+			assignverb(/mob/keyable/verb/Namekian_Regeneration)
+			unassignverb(/mob/keyable/verb/Regenerate) //a antiga cura canalizada (passiva) saiu do kit Namekuseijin
 		if(needs_manual_custom) //Handles logging into clones for the first time.
 			CustomizeFurther()
 			StatRace(Race)

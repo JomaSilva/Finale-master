@@ -84,14 +84,15 @@ mob/proc/killer_stuff(var/mob/M)
 		M.death_stuff(max(expressedBP, BP)) //pass the killer's EFFECTIVE (form-inclusive) power so a transformed foe with lower base BP still grants the victim Zenkai
 		M.friend_harmed_by(usr, ENMITY_FRIEND_KILL) //a rival killing you embitters your nearby friends
 		if(src.Player) gain_kill_karma(M) //karma: matar inocente -> mau; matar vilao (karma<0) -> bom
-		if(!dead) if(King_of_Vegeta==M.key)
+		planet_rep_on_player_kill(src, M) //Sistema 3: matar um "inimigo do povo" rende a gratidao do(s) planeta(s) que o odiavam
+		if(!dead) if(King_of_Vegeta==M.signature) //SIGNATURE, nao key: todo o sistema de rank (Rank_Verb_Assign/Autorank/RankList) compara por signature
 			if(Race=="Saiyan")
 				to_chat(usr, "By killing the former King Vegeta, you have become the new King Vegeta!")
 				to_chat(M, "You have lost your throne and [usr] becomes the new King Vegeta.")
-				King_of_Vegeta=key
+				King_of_Vegeta=signature
 				Rank_Verb_Assign()
 			else for(var/mob/A) if(A.Race=="Saiyan"&&!A.dead) if(A.Prince|A.Princess)
-				King_of_Vegeta=A.key
+				King_of_Vegeta=A.signature
 				to_chat(A, "<font color=yellow>The King of Vegeta has been murdered, you have inherited the throne because you are the next in line of the Royal Family of Vegeta!")
 				A.Rank_Verb_Assign()
 				break

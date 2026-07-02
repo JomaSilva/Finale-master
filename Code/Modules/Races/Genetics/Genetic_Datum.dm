@@ -238,8 +238,18 @@ datum/genetics
 			savant.UPMod = misc_stats["Potential"]
 		assign_regen()
 			savant.canheallopped = 0
-			savant.fastRegen = (misc_stats["Regeneration"] >= 5) //true accelerated-regen passive (Namekian/Majin/Bio-Android/Frost) -> still heals mid-combat
-			if(misc_stats["Regeneration"] >= 5) //races with naturally accelerated regen (Namekian/Majin/Bio-Android/Frost Demon) keep their fast natural healing
+			//REWORK NAMEKUSEIJIN: sem regeneracao passiva acelerada -- Namekuseijin sofre dano e cura
+			//como um Saiyajin normal (nada de regen em combate, membro decepado NAO volta sozinho, sem
+			//death-regen). A regeneracao racial agora e a skill ATIVA Namekian_Regeneration
+			//(70% do Ki -> restaura um membro; ver Race Trees/namekian.dm).
+			if(savant.Race == "Namekian" || savant.Parent_Race == "Namekian")
+				savant.fastRegen = 0
+				savant.passiveRegen = (0.2 + (misc_stats["Regeneration"] / 50)) / 5 //mesma taxa das racas normais
+				savant.activeRegen = 1 + (misc_stats["Regeneration"] / 25)
+				savant.DeathRegen = 0
+				return
+			savant.fastRegen = (misc_stats["Regeneration"] >= 5) //true accelerated-regen passive (Majin/Bio-Android/Frost) -> still heals mid-combat
+			if(misc_stats["Regeneration"] >= 5) //races with naturally accelerated regen (Majin/Bio-Android/Frost Demon) keep their fast natural healing
 				savant.passiveRegen = 0.2 + (misc_stats["Regeneration"] / 50)
 			else //normal races (Human/Saiyan/etc.) heal ~5x slower
 				savant.passiveRegen = (0.2 + (misc_stats["Regeneration"] / 50)) / 5
@@ -533,7 +543,15 @@ datum/genetics
 			var/o_l = list()
 			o_l  =old_stats[2]
 			savant.canheallopped = 0
-			savant.fastRegen = (misc_stats["Regeneration"] >= 5) //true accelerated-regen passive (Namekian/Majin/Bio-Android/Frost) -> still heals mid-combat
+			//REWORK NAMEKUSEIJIN: identico ao assign_regen -- o relog (apply_old) nao pode re-conceder
+			//fastRegen/DeathRegen a um Namekuseijin (valores ABSOLUTOS aqui, sem a conta de diff)
+			if(savant.Race == "Namekian" || savant.Parent_Race == "Namekian")
+				savant.fastRegen = 0
+				savant.passiveRegen = (0.2 + (misc_stats["Regeneration"] / 50)) / 5
+				savant.activeRegen = 1 + (misc_stats["Regeneration"] / 25)
+				savant.DeathRegen = 0
+				return
+			savant.fastRegen = (misc_stats["Regeneration"] >= 5) //true accelerated-regen passive (Majin/Bio-Android/Frost) -> still heals mid-combat
 			savant.passiveRegen = (savant.passiveRegen - o_l["Regeneration"]) + (misc_stats["Regeneration"] / 50)
 			savant.activeRegen = (savant.activeRegen - o_l["Regeneration"]) + (1 + (misc_stats["Regeneration"] / 25))
 			savant.DeathRegen = (savant.DeathRegen - o_l["Regeneration"]) + round((misc_stats["Regeneration"] / 10))
