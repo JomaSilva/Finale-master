@@ -1,5 +1,6 @@
 //
 #define BPTick 0.000028
+#define DAY_REAL_MINUTES 20 //quantos minutos REAIS dura 1 dia in-game (relogio em WorldClock.dm; a Sala do Tempo em TimeChamber.dm depende disto -- mora AQUI pq o DreamMaker re-ordena os includes alfabeticamente e defines sao sensiveis a ordem)
 #define DOESEXIST if(isnull(src)) return
 #define CLIENTEXIST if(isnull(client)) return
 #define CHECK_TICK if(world.tick_usage > 75) lagstopsleep()

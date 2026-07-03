@@ -2,9 +2,9 @@
 // CONFIG DO RELOGIO -- quanto tempo REAL dura 1 dia in-game.
 // O dia tem 23 ticks de hora (Hours 1 -> 24). Com 20 min: ~52s reais por hora.
 // O Yearspeed (verb de admin Year_Speed) continua ACELERANDO tudo por cima disto.
-// (Antes o tick era fixo em 10s/hora -> 1 dia durava so ~3min50s.)
+// O define DAY_REAL_MINUTES mora em "Code\1A Defines.dm" (o DreamMaker re-ordena
+// os includes alfabeticamente e TimeChamber.dm precisa dele antes deste arquivo).
 // ============================================================================
-#define DAY_REAL_MINUTES 20
 
 proc/WorldClock()
 	set background = 1
