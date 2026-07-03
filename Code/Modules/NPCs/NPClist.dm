@@ -45,6 +45,9 @@ mob/npc
 	var/itemrarity=0//rarity of random drops, 0 for no drops
 
 	New()
+		set waitfor = 0 //CRITICO: sem isto, criar um NPC SEM loc (makeCopy/splitform/clones) TRAVAVA a corrente
+		//inteira do chamador no while abaixo -- o loc so seria setado DEPOIS do New() retornar (deadlock circular,
+		//sem erro nenhum). Com waitfor=0 o `new` devolve o mob na hora e o while termina em background.
 		..()
 		NPC_list += src
 		if(!npcspawnson) Del()

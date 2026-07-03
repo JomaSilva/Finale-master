@@ -9,6 +9,7 @@ mob/proc/Train_Gain(var/mult)
 	if(!mult) mult = 1
 	mult*=global_train_gain
 	mult*=htc_gain_mult() //Sala do Tempo: 1 dia la = 1 ano de treino (x280; TimeChamber.dm)
+	mult*=mind_gain_mult() //Dimensao Mental: ganhos a 1/4 (MindMeditate.dm)
 	if(BP<relBPmax)
 		if(BP<10)
 			if(KiUnlockPercent==1||prob(25))

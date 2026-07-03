@@ -65,12 +65,14 @@ obj/beamclash_orb
 // ---------------------------------------------------------------------------
 proc/bcl_try_start(obj/attack/blast/one, obj/attack/blast/two)
 	if(!one || !two || !one.loc || !two.loc) return 0
-	if(!one.WaveAttack || !two.WaveAttack) return 0
+	if(!one.WaveAttack && !one.is_genkidama) return 0 //beam OU Genkidama (a esfera forca a disputa mesmo sem ser beam)
+	if(!two.WaveAttack && !two.is_genkidama) return 0
 	var/mob/A = one.proprietor
 	var/mob/B = two.proprietor
 	if(!istype(A) || !istype(B) || A == B) return 0
 	if(A.beamclash || B.beamclash) return 0            // alguem ja esta noutra disputa
-	if(!A.beaming || !B.beaming) return 0              // os DOIS precisam estar canalizando
+	if(!A.beaming && !one.is_genkidama) return 0       // beam precisa estar sendo canalizado; a Genkidama e um projetil autonomo
+	if(!B.beaming && !two.is_genkidama) return 0
 	if(A.KO || B.KO || A.dead || B.dead) return 0
 	var/datum/beamclash/C = new
 	C.A = A
@@ -109,8 +111,8 @@ datum/beamclash
 		headB.in_beamclash = 1
 		walk(headA, 0)
 		walk(headB, 0)
-		headA.icon_state = "struggle"
-		headB.icon_state = "struggle"
+		if(!headA.is_genkidama) headA.icon_state = "struggle" //a esfera nao tem o estado "struggle" (ficaria invisivel)
+		if(!headB.is_genkidama) headB.icon_state = "struggle"
 		center = headB.loc //ponto de colisao (a cabeca que levou o Bump)
 		//orbe de choque com a cor dos dois blasts misturada
 		orb = new(center)
@@ -146,7 +148,8 @@ datum/beamclash
 		return (BCL_NPC_CPS * (0.5 + intel / 100)) * (BCL_TICK / 10) //apertos/seg -> apertos/tick
 
 	proc/side_ok(mob/M, obj/attack/blast/H)
-		if(!M || M.dead || M.KO || !M.beaming) return 0
+		if(!M || M.dead || M.KO) return 0
+		if(!H.is_genkidama && !M.beaming) return 0 //beam exige canalizacao; a Genkidama sustenta sozinha (dono so precisa estar de pe)
 		if(!H || !H.loc) return 0
 		if(M.Ki <= 1) return 0
 		return 1
@@ -267,17 +270,21 @@ datum/beamclash
 			L.turnlock = 0
 			L.stopbeaming()
 			if(L.client) to_chat(L, "<font color=red><b>Seu beam foi engolido pela disputa!</b>")
-		//a cabeca do perdedor some; a do vencedor volta a andar
+		//a cabeca do perdedor some (Genkidama perdedora DETONA no lugar); a do vencedor volta a andar
 		if(hL)
 			hL.in_beamclash = 0
-			obj_list -= hL
-			attack_list -= hL
-			hL.loc = null
+			if(hL.is_genkidama)
+				spawn hL:genki_detonate()
+			else
+				obj_list -= hL
+				attack_list -= hL
+				hL.loc = null
 		if(hW && hW.loc)
 			hW.in_beamclash = 0
-			hW.icon_state = "head"
-			if(W) hW.BP = W.expressedBP * max(hW.wavemultipl, 1)
-			walk(hW, hW.dir, hW.beamspeed)
+			if(!hW.is_genkidama) //Genkidama vencedora retoma sozinha (o loop genki_travel continua); beam volta a andar via walk
+				hW.icon_state = "head"
+				if(W) hW.BP = W.expressedBP * max(hW.wavemultipl, 1)
+				walk(hW, hW.dir, hW.beamspeed)
 		cleanup()
 
 	//empate no tempo maximo: os dois beams detonam no meio

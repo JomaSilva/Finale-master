@@ -593,9 +593,12 @@ mob/proc/recompute_saiyan_form_mults() //sincroniza ssjmult/ssj2mult/ssj3mult e 
 	ssj2drain = stepped_mastery_mult(ssj2mastery, list(0.040, 0.030, 0.020, 0))
 	ssj3drain = stepped_mastery_mult(ssj3mastery, list(0.075, 0))
 
+mob/proc/future_ssj_mult() //Future SSJ: cada 10% de maestria = +2x em degraus (0-9% = 2x ... 90%+ = 20x)
+	return min(2 + round(futuressjmastery / 10) * 2, 20)
+
 mob/proc/ssj_effective_mult() //multiplicador EFETIVO do SSJ com piso: nunca cai abaixo de (forma anterior + 2x), ate a forma atual superar naturalmente
 	if(FutureLineage && ssj == 1)
-		return min(2 + futureSSJStage * 2, 20)
+		return future_ssj_mult()
 	if(Class == "Legendary Primal Saiyan") //Primal Legendary usa o ladder proprio (Imagem 24)
 		return legprimal_form_mult()
 	var/m1 = canSSJ ? ssjmult : ssj1_mult() //canSSJ (bypass): usa o valor nerfado fixo (sem maestria); demais usam o degrau pela %

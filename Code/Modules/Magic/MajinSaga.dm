@@ -266,14 +266,22 @@ mob/npc/AbsorbGuardian //a fightable copy of the Majin guarding one prisoner; be
 //NUNCA aparecia (o bug do "nao aparece um npc no interior"). Um espelho "burro" de stats nao tem genetica
 //pra falhar: o corpo vem do TestMobParts padrao (14 partes) e o BP e metade do poder expresso do Majin.
 mob/proc/majin_spawn_guardian(mob/M, iz, gx, gy)
+	//spawn de EVENTO: ignora o toggle de spawns ambientes (mob/npc/New deleta com npcspawnson=0 --
+	//era por isso que o guardiao NUNCA aparecia dentro do Majin em servidores com spawns desligados)
+	var/oldspawns = npcspawnson
+	npcspawnson = 1
 	var/mob/npc/AbsorbGuardian/guard = new(locate(gx, gy, iz))
-	if(!guard) return null
+	npcspawnson = oldspawns
+	if(!guard || !guard.loc) return null
 	guard.name = "[name]'s image"
 	guard.guard_master = src
 	guard.guard_sig = M ? M.signature : ""
 	guard.icon = icon
 	if(majin_color) guard.icon = icon + majin_color
 	guard.oicon = guard.icon
+	//cabelo/rabo do Majin (se tiver): vivem em vis_contents, nao no icone -- assa o snapshot no guardiao
+	for(var/obj/overlay/hairs/HO in vis_contents)
+		guard.overlays += HO
 	//espelho dos stats de combate do Majin, com metade do poder expresso
 	guard.guard_seed_bp = max(round(expressedBP / 2), 1)
 	guard.BP = guard.guard_seed_bp

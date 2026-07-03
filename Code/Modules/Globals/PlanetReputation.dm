@@ -123,6 +123,7 @@ proc/planet_rep_on_citizen_killed(mob/npc/Citizen/C)
 	// massacrando cidadaos nao empurrar a culpa pro player que estava por perto
 	if(!K || !K.client || K.dead) return
 	planet_rep_add(C.pop_planet, K, (C.pop_role == "commoner") ? REP_KILL_CITIZEN : REP_KILL_ROYAL, "citizen-kill")
+	K.lose_npc_kill_karma() //karma: matar um NPC INOCENTE tambem escurece o coracao (SkyNPCs.dm)
 	// testemunhas gritam e, se o assassino ja e cacado, partem pra vinganca
 	var/spoke = 0
 	for(var/mob/npc/Citizen/W in oview(8, C))

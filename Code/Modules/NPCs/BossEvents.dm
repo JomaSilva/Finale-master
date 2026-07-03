@@ -215,6 +215,7 @@ proc/bev_hero_credit(mob/npc/Enemy/EventBoss/B, planet, amount)
 	var/mob/K = bev_resolve_killer(B)
 	if(!K) return
 	planet_rep_add(planet, K, amount, "boss-slain")
+	K.gain_boss_kill_karma() //karma: derrotar um boss e uma grande acao heroica (SkyNPCs.dm)
 	bev_announce("[K.name] e aclamado(a) como HEROI pelo povo de [planet == "Earth" ? "Terra" : planet]!")
 
 // remove um boss do mundo SEM contar como morte (absorcao/fuga/fim de evento)

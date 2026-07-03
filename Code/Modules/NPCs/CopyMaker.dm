@@ -1,5 +1,11 @@
 mob/proc/makeCopy(var/type,var/targetRace,var/targetClass,var/mobType,var/sentient)//sentient means: copy skills over, this copy is meant to be played.
+	//copias sao SEMPRE dirigidas por jogador/evento (splitform, clone da mente, saga Majin, Geti/Tier3):
+	//ignoram o toggle de spawns ambientes -- mob/npc/New() DELETA o mob na hora se npcspawnson=0 (e a
+	//flag persiste no save de settings!), o que matava o makeCopy com um runtime em AssignDupeVars(null)
+	var/oldspawns = npcspawnson
+	npcspawnson = 1
 	var/mob/z = new mobType
+	npcspawnson = oldspawns
 	AssignDupeVars(z)
 
 	if(targetRace||targetClass)

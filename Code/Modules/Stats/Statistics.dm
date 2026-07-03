@@ -305,6 +305,10 @@ mob/proc
 			if(hasssj2)
 				shown = 1
 				stat("True Max Power","Mastery [round(heran2mastery)]% - power x[round(stepped_mastery_mult(heran2mastery, list(ssj2mult, ssj2mult*1.2, ssj2mult*1.68, ssj2mult*2.016)))]")
+		else if(FutureLineage) //Future Lineage (Meio-Saiyajin): forma unica com maestria % propria (cada 10% = +2x, ate 20x)
+			if(hasssj)
+				shown = 1
+				stat("Future Super Saiyan","Mastery [round(futuressjmastery)]% - power x[future_ssj_mult()]")
 		else
 			if(hasssj)
 				shown = 1

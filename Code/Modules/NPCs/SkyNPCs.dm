@@ -90,6 +90,11 @@ proc/place_kaio_gate(px, py, pz)
 //    OU pagar Zeni ao Enma pra reviver (debuff de BP 25% por 1h).
 // =====================================================================
 var/const/ZENI_REVIVE_COST = 1000000 //"quantia alta" pra reviver via Enma (tunavel)
+var/const/KARMA_NPC_INNOCENT_LOSS = 5 //karma perdido ao matar um NPC INOCENTE (cidadao pacifico)
+var/const/KARMA_BOSS_GAIN = 30        //karma ganho ao derrotar um BOSS de evento (acao heroica)
+var/const/KAI_KAIOKEN_KARMA = 50      //karma minimo (metade do maximo +100) pro Sr. Kaioh ensinar o Kaio-ken
+var/const/KAI_KAIOKEN_BP = 8000       //BP base minimo pro Kaio-ken
+var/const/KAI_GENKI_KARMA = 100       //karma no MAXIMO positivo (100%) -> aprende a Genkidama
 
 mob/var
 	karma = 0                     //alinhamento moral (PERSISTENTE: sem tmp)
@@ -104,12 +109,22 @@ mob/proc/gain_kill_karma(var/mob/victim)
 	if(!victim || !victim.Player || victim == src) return
 	if(victim.pk_karma_taken) return //o karma desta morte ja foi contabilizado
 	victim.pk_karma_taken = 1
-	if(victim.karma < 0) //matou um vilao (karma negativo) -> ganha karma POSITIVO
+	if(victim.karma < 0 || victim.isVillain) //matou um VILAO (karma negativo OU vilao designado por admin) -> ganha karma POSITIVO
 		karma = min(karma + 20, 100)
 		to_chat(src, "<font color=#88ccff>You struck down a wicked soul. Your heart grows lighter. (Karma: [karma])</font>")
 	else //matou um inocente -> ganha karma NEGATIVO
 		karma = max(karma - 20, -100)
 		to_chat(src, "<font color=#cc4444>You took an innocent life. Darkness seeps into your heart. (Karma: [karma])</font>")
+
+//----- karma ao matar um NPC INOCENTE (cidadao pacifico; chamado no hook de morte do cidadao em PlanetReputation.dm) -----
+mob/proc/lose_npc_kill_karma()
+	karma = max(karma - KARMA_NPC_INNOCENT_LOSS, -100)
+	to_chat(src, "<font color=#cc4444>You cut down an innocent bystander. Darkness seeps into your heart. (Karma: [karma])</font>")
+
+//----- karma ao derrotar um BOSS de evento (chamado no bev_hero_credit em BossEvents.dm) -----
+mob/proc/gain_boss_kill_karma()
+	karma = min(karma + KARMA_BOSS_GAIN, 100)
+	to_chat(src, "<font color=#88ccff>Slaying that monster has purified your spirit! (Karma: [karma])</font>")
 
 //----- conversa com o Enma (chamado no Click do Enma; src = quem clicou) -----
 mob/proc/enma_interact()
@@ -162,10 +177,24 @@ mob/proc/enma_reincarnate()
 
 //----- treino com o Sr. Kaioh (src = quem clicou) -----
 mob/proc/kingkai_interact()
+	//---- ENSINAMENTOS por karma: Kaio-ken (karma >= 50 e BP >= 8000) e Genkidama (karma 100%) ----
+	if(karma >= KAI_KAIOKEN_KARMA && BP >= KAI_KAIOKEN_BP && !HasSkill(/datum/skill/kaioken))
+		learnSkill(new/datum/skill/kaioken, 1)
+		to_chat(src, "<font color=#ff6666><b>King Kai</b> adjusts his glasses: \"A pure heart AND real power... very well! I shall teach you my ultimate technique: the <b>KAIO-KEN</b>! Use it wisely - your own body pays the price!\"</font>")
+		return
+	if(karma >= KAI_GENKI_KARMA && !HasSkill(/datum/skill/ki/Genkidama))
+		learnSkill(new/datum/skill/ki/Genkidama, 0)
+		to_chat(src, "<font color=#66ccff><b>King Kai</b> smiles solemnly: \"Your heart shines without a single shadow... You are worthy of the <b>GENKIDAMA</b> - the Spirit Bomb! Raise your hands and borrow the energy of every living thing!\"</font>")
+		return
 	if(!dead)
 		to_chat(src, "<font color=#76ff7a><b>King Kai</b> laughs: \"You're still alive! You can't train on my planet until you've kicked the bucket. ...Wanna hear a joke while you're here?\"</font>")
 		return
 	to_chat(src, "<font color=#76ff7a><b>King Kai</b>: \"Welcome to my little planet! The gravity here is 10 times Earth's - train hard and you'll return to life stronger than ever. Mind you don't step on Bubbles!\"</font>")
+	//dica dos requisitos pros que ainda nao qualificam
+	if(!HasSkill(/datum/skill/kaioken))
+		to_chat(src, "<font color=#76ff7a><b>King Kai</b>: \"Keep that heart of yours CLEAN (karma [karma]/[KAI_KAIOKEN_KARMA]) and grow strong (BP [FullNum(round(BP))]/[FullNum(KAI_KAIOKEN_BP)]), and maybe I'll teach you a little something...\"</font>")
+	else if(!HasSkill(/datum/skill/ki/Genkidama))
+		to_chat(src, "<font color=#76ff7a><b>King Kai</b>: \"A FLAWLESS heart (karma [karma]/[KAI_GENKI_KARMA]) may yet learn my greatest secret...\"</font>")
 
 //----- checagem periodica (chamada no loop de Stats; src = player conectado) -----
 mob/proc/afterlife_alignment_check()

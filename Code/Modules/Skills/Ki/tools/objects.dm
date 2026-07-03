@@ -486,9 +486,9 @@ obj/attack/blast
 				else if(istype(M,/obj/attack))
 					if((M.dir!=dir&&M.proprietor!=proprietor)||deflected) //New line...: && keps you from destroying your own blasts
 						var/obj/attack/R=M//typecasting so the compiler knows the blast/beam has these variables
-						//BEAMCLASH: beam vs beam com os DOIS donos canalizando -> disputa interativa de ESPACO
+						//BEAMCLASH: beam vs beam (ou vs GENKIDAMA) -> disputa interativa de ESPACO
 						//(BeamClash.dm); se nao der pra disputar, cai na resolucao automatica antiga abaixo
-						if(WaveAttack && R.WaveAttack && !in_beamclash && !R.in_beamclash && bcl_try_start(src, R))
+						if((WaveAttack || is_genkidama) && (R.WaveAttack || R.is_genkidama) && !in_beamclash && !R.in_beamclash && bcl_try_start(src, R))
 							return 1
 						var/sfirsttime=0
 						strugglestart

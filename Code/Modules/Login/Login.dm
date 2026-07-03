@@ -308,6 +308,7 @@ mob/proc
 			unassignverb(/mob/keyable/verb/Regenerate) //a antiga cura canalizada (passiva) saiu do kit Namekuseijin
 		dnl_login_check() //DNA Labs: re-arma verbs/loops (Absorb Ki, nucleo infinito, DNA Extractor, larva)
 		htc_login_check() //Sala do Tempo: relogou la dentro -> retoma a sessao (ou expulsa se o tempo acabou)
+		mind_login_check() //Dimensao Mental: save feito em transe (queda) -> acorda no corpo com o snapshot restaurado
 		if(needs_manual_custom) //Handles logging into clones for the first time.
 			CustomizeFurther()
 			StatRace(Race)

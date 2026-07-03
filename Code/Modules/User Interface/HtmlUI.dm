@@ -345,13 +345,14 @@ mob/proc/ui_tab_sense()
 // ---- FORMS & MASTERY -------------------------------------------------------
 mob/proc/ui_tab_forms()
 	var/list/h = list()
-	if(Class == "Legendary" || ssj1mastery || ssj2mastery || ssj3mastery || ssj4mastery || ssj4fpmastery || KaiokenMastery > 1) //maestria de formas (0-100%); ao 50% a transformacao vira instantanea
+	if(Class == "Legendary" || (FutureLineage && hasssj) || ssj1mastery || ssj2mastery || ssj3mastery || ssj4mastery || ssj4fpmastery || KaiokenMastery > 1) //maestria de formas (0-100%); ao 50% a transformacao vira instantanea
 		h += ui_sec("FORM MASTERY")
 		if(Class == "Legendary")
 			h += ui_row("Wrathful", "[round(lssj1mastery)]%", "")
 			h += ui_row("Super Saiyan C-Type", "[round(lssj2mastery)]%", "")
 			h += ui_row("Super Saiyan Full Power", "[round(lssj3mastery)]%", "")
 		else
+			if(FutureLineage && hasssj) h += ui_row("Future Super Saiyan", "[round(futuressjmastery)]% <span class='mut'>(x[future_ssj_mult()], +2x a cada 10%)</span>", "")
 			if(ssj1mastery) h += ui_row("Super Saiyan", "[round(ssj1mastery)]%", "")
 			if(ssj2mastery) h += ui_row("Super Saiyan 2", "[round(ssj2mastery)]%", "")
 			if(ssj3mastery) h += ui_row("Super Saiyan 3", "[round(ssj3mastery)]%", "")

@@ -1,4 +1,14 @@
 //split up the supersaiyan related skills and regular saiyan skills.
+
+// ============================================================================
+// CONFIG -- FUTURE SUPER SAIYAN (linhagem Future do Meio-Saiyajin)
+// Maestria em % (0-100): cada 10% = +2x de poder (o equivalente a 1 "level"
+// do modelo antigo), indo de 2x ate 20x. Por ser uma forma MUITO poderosa,
+// a maestria e BEM LENTA: FUTURE_SSJ_MASTERY_HOURS horas transformado = 100%.
+// ============================================================================
+#define FUTURE_SSJ_MASTERY_HOURS 8 //horas REAIS em SSJ para 100% (cada degrau de 10% ~= 48 min de forma)
+#define FUTURE_SSJ_MASTERY_TICK (100 / (FUTURE_SSJ_MASTERY_HOURS * 3600 * 5)) //% por tick do effector (5 ticks/s)
+
 mob/var
 	SSJInspired = 0
 	DeathAngered = 0
@@ -22,14 +32,18 @@ mob/var
 	//If U6 Saiyans ever get added: their power up req would be 1.2x complete ascension beepee. (U6 Saiyans would be like DU saiyans- low SSJ mults, but high base BP.)
 	..()
 	if(savant)
-		if(savant.FutureLineage) //Future Lineage: progride em 10 estagios (cada +2x, ate 20x) enquanto em SSJ1
-			if(savant.ssj==1 && savant.futureSSJStage < 10)
-				savant.futureSSJExp += 1
-				if(savant.futureSSJExp >= 6480)
-					savant.futureSSJExp = 0
-					savant.futureSSJStage += 1
-					savant.ssjBuff = min(2 + savant.futureSSJStage * 2, 20)
-					to_chat(savant, "<font color=#66ccff>Your Future Super Saiyan grows stronger! Stage [savant.futureSSJStage]/10 reached (power x[min(2 + savant.futureSSJStage * 2, 20)])!</font>")
+		if(savant.FutureLineage) //Future Lineage: maestria % do Future SSJ (cada 10% = +2x, ate 20x) -- sobe devagar enquanto em SSJ1
+			if(!savant.futureSSJMigrated) //MIGRACAO 1x: converte o modelo antigo (estagio 0-10 + exp) para % (estagio*10 + fracao)
+				savant.futureSSJMigrated = 1
+				if(savant.futureSSJStage > 0 || savant.futureSSJExp > 0)
+					savant.futuressjmastery = min(savant.futureSSJStage * 10 + (savant.futureSSJExp / 6480) * 10, 100)
+					to_chat(savant, "<font color=#66ccff>Sua maestria do Future Super Saiyan foi convertida: [round(savant.futuressjmastery)]% (poder x[savant.future_ssj_mult()]).</font>")
+			if(savant.ssj==1 && savant.futuressjmastery < 100)
+				var/oldstep = round(savant.futuressjmastery / 10)
+				savant.futuressjmastery = min(savant.futuressjmastery + FUTURE_SSJ_MASTERY_TICK, 100)
+				if(round(savant.futuressjmastery / 10) > oldstep) //cruzou um degrau de 10%: +2x de poder
+					savant.ssjBuff = savant.future_ssj_mult() //atualiza o buff AO VIVO (ja esta transformado)
+					to_chat(savant, "<font color=#66ccff>Seu Future Super Saiyan fica mais forte! Maestria [round(savant.futuressjmastery / 10) * 10]% (poder x[savant.future_ssj_mult()])!</font>")
 		if(!savant.ssjmasteryMigrated && savant.Class != "Legendary") //rework %: migra (SSJ1 dominado) e remove as antigas skills de maestria de SSJ. So Saiyajin normal -- Legendary usa a arvore lssj (la forms/ssj/mssj mexem so no lssjmult orfao).
 			savant.ssjmasteryMigrated = 1
 			if(savant.ismssj) savant.ssj1mastery = 100

@@ -536,17 +536,35 @@ mob/proc/CustomGuidedFire(datum/skill/CustomAttack/S)
 		walk(A, dir, lag)
 	spawn A.Burnout()
 
-// escolhe um .dmi da pasta de tecnicas do jogo (Icons/Techniques) em vez de exigir upload
-proc/pick_technique_icon(mob/U)
-	var/list/opts = list()
-	for(var/f in flist("Icons/Techniques/"))
-		if(findtext(f, ".dmi")) opts += f
+// escolhe um .dmi das pastas de icones do jogo (aceita VARIAS pastas; o tipo do
+// ataque define quais: Blast -> Icons/Blasts; Beam -> Icons/Beams + Icons/Techniques;
+// Guided -> Icons/Techniques). Sem exigir upload.
+proc/pick_game_icon(mob/U, list/folders)
+	var/list/opts = list() //rotulo exibido -> caminho completo do arquivo
+	for(var/folder in folders)
+		var/prefix = copytext(folder, 7) //"Icons/Blasts" -> "Blasts"
+		for(var/f in flist("[folder]/"))
+			if(findtext(f, ".dmi"))
+				opts["[prefix]: [f]"] = "[folder]/[f]"
 	if(!opts.len)
-		to_chat(U, "Nenhum icone encontrado em Icons/Techniques.")
+		to_chat(U, "Nenhum icone .dmi encontrado nas pastas de icones.")
 		return null
-	var/choice = input(U, "Escolha um icone de tecnica do jogo.", "Icones de Tecnicas") as null|anything in opts
+	var/choice = input(U, "Escolha um icone do jogo.", "Icones do Jogo") as null|anything in opts
 	if(!choice) return null
-	return icon(file("Icons/Techniques/[choice]"))
+	return icon(file(opts[choice]))
+
+// pastas de icone conforme o TIPO do ataque custom (0=Beam, 1=Blast, 2=Guided)
+proc/custom_icon_folders(attacktype)
+	switch(attacktype)
+		if(0) return list("Icons/Beams", "Icons/Techniques") //beams: as 2 pastas
+		if(1) return list("Icons/Blasts")                    //blasts: SO a pasta Blasts
+	return list("Icons/Techniques")                          //guided (e default): so Techniques
+
+proc/custom_icon_menu_label(attacktype)
+	switch(attacktype)
+		if(0) return "Escolher do jogo (Beams + Techniques)"
+		if(1) return "Escolher do jogo (Blasts)"
+	return "Escolher do jogo (Techniques)"
 
 mob/proc/CustomChargeOverlay(var/icon/thisIcon, var/layermod) //copied from the mob handler, god willing it'll do the trick
 	var/obj/I=new/obj
@@ -1101,11 +1119,12 @@ obj/CreateAttackWindow/verb
 	ChargeIcon()
 		var/datum/skill/CustomAttack/S = CurrentEditedSkill
 		set hidden = 1
-		var/Choice = input(usr, "Icone de carga:", "Charge Icon") as null|anything in list("Escolher do jogo (Techniques)","Enviar meu arquivo","Default","Cancelar")
-		switch(Choice)
-			if("Escolher do jogo (Techniques)")
-				var/icon/I = pick_technique_icon(usr)
-				if(I) S.customattack_chargeicon = I
+		var/gamelabel = custom_icon_menu_label(S.attacktype) //pastas conforme o tipo (Beam/Blast/Guided)
+		var/Choice = input(usr, "Icone de carga:", "Charge Icon") as null|anything in list(gamelabel,"Enviar meu arquivo","Default","Cancelar")
+		if(Choice == gamelabel)
+			var/icon/I = pick_game_icon(usr, custom_icon_folders(S.attacktype))
+			if(I) S.customattack_chargeicon = I
+		else switch(Choice)
 			if("Enviar meu arquivo")
 				S.customattack_chargeicon = input(usr,"Select your icon.","",null) as null|icon
 			if("Default")
@@ -1114,11 +1133,12 @@ obj/CreateAttackWindow/verb
 	AttackIcon()
 		var/datum/skill/CustomAttack/S = CurrentEditedSkill
 		set hidden = 1
-		var/Choice = input(usr, "Icone do ataque:", "Attack Icon") as null|anything in list("Escolher do jogo (Techniques)","Enviar meu arquivo","Default","Cancelar")
-		switch(Choice)
-			if("Escolher do jogo (Techniques)")
-				var/icon/I = pick_technique_icon(usr) //71 icones prontos: Kamehameha, Spirit Bomb, Supernova, Final Flash...
-				if(I) S.customattack_attackicon = I
+		var/gamelabel = custom_icon_menu_label(S.attacktype) //Blast -> Icons/Blasts; Beam -> Beams+Techniques; Guided -> Techniques
+		var/Choice = input(usr, "Icone do ataque:", "Attack Icon") as null|anything in list(gamelabel,"Enviar meu arquivo","Default","Cancelar")
+		if(Choice == gamelabel)
+			var/icon/I = pick_game_icon(usr, custom_icon_folders(S.attacktype))
+			if(I) S.customattack_attackicon = I
+		else switch(Choice)
 			if("Enviar meu arquivo")
 				S.customattack_attackicon = input(usr,"Select your icon.","",null) as null|icon
 			if("Default")

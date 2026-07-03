@@ -17,6 +17,9 @@ mob/proc/Med_Gain(multi)
 
 mob/default/verb/Meditate()
 	set category="Skills"
+	if(mind_session) //DENTRO da propria mente: Meditate = ACORDAR (MindMeditate.dm)
+		mind_exit()
+		return
 	if(!blasting&&!flight&&!KO&&!swim&&!boat)
 		if(train)
 			Train()
@@ -36,9 +39,10 @@ mob/default/verb/Meditate()
 			else
 				studytech = 0
 				to_chat(usr, "You begin meditating.")
-				if(!train&&alert(usr,"Deep meditation? You'll be interrupted by noise but you'll get more gains. This will also consume a little stamina.","","Sure","No.")=="Sure")
-					deepmeditation = 1
-					train=0
+				//MEDITACAO PROFUNDA (rework): em vez do minigame antigo, o corpo fica meditando e
+				//o jogador entra na DIMENSAO MENTAL pra enfrentar a si mesmo (MindMeditate.dm)
+				if(!train&&alert(usr,"Meditacao profunda? Seu corpo continua em transe enquanto voce enfrenta a SI MESMO dentro da sua mente. (Meditate de novo = acordar; ferimentos de la NAO voltam)","","Sim","Nao")=="Sim")
+					spawn(2) mind_enter() //depois do med=1/pose abaixo assentarem (o corpo fica na pose de meditacao)
 			train=0
 			dir=SOUTH
 			//canfight=0
