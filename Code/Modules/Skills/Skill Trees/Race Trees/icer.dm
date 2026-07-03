@@ -113,7 +113,9 @@ verb/Icer_Form_Settings()
 					usr.icer_vars["Form 6 base"]=round(min(max(input(usr,"Put in a number 1 through 5, it'll use that icon as it's Golden Form base.","",1) as num,1),5))
 				if("Golden Form Aura stuff.")
 					switch(input(usr,"You can either change the Aura to default, or put in a custom icon.","","Cancel") in list("Cancel","Custom","Aura"))
-						if("Custom") usr.icer_vars["Form 6 Aura"] = input(usr,"","Form 6 Aura",usr.icer_vars["Form 6 Aura"]) as icon
+						if("Custom")
+							if(!usr.can_upload_icon()) return //upload de icone: so admin
+							usr.icer_vars["Form 6 Aura"] = input(usr,"","Form 6 Aura",usr.icer_vars["Form 6 Aura"]) as icon
 						if("Default") usr.icer_vars["Form 6 Aura"] = 'transformaura.dmi'
 	usr.icer_poll_icon()
 

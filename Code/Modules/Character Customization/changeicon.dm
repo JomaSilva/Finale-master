@@ -1,3 +1,14 @@
+//=============================================================================
+//SEGURANCA: ENVIAR arquivo de icone (upload custom do PC do jogador) e privilegio
+//de ADMIN. Jogador comum continua com TODAS as opcoes prontas do jogo (estilos de
+//cabelo do selecthair, icones das pastas Blasts/Beams/Techniques, defaults etc).
+//Todo ponto de "input(...) as icon" que afeta o visual do personagem passa por aqui.
+//=============================================================================
+mob/proc/can_upload_icon()
+	if(Admin || Owner) return 1
+	to_chat(src, "<font color=red>Apenas administradores podem ENVIAR icones customizados. Use as opcoes padrao do jogo.</font>")
+	return 0
+
 mob/var
 	originalicon
 	expandicon2
@@ -24,6 +35,7 @@ mob
 		var/Choice=alert("Change your form icons? This will revert you! Your current icon has been saved!","","Yes","No","Default")
 		switch(Choice)
 			if("Yes")
+				if(!usr.can_upload_icon()) return //upload de icone: so admin
 				Revert()
 				var/muscle
 				var/list/BodyExpandIconList=new/list
@@ -182,6 +194,7 @@ mob
 		var/TailChoice=alert("Do you want to change your tail to something custom? Only visible if you have a tail","","Yes","No","Default")
 		switch(TailChoice)
 			if("Yes")
+				if(!usr.can_upload_icon()) return //upload de icone: so admin
 				usr.tailicon = input(usr,"Select your tail.","",null) as null|icon
 				usr.updateOverlay(/obj/overlay/hairs/tails/saiyantail,tailicon)
 			if("No")
@@ -197,6 +210,7 @@ mob
 		var/Choice=alert("Do you want to change your blast to something custom?","","Yes","No")
 		switch(Choice)
 			if("Yes")
+				if(!usr.can_upload_icon()) return //upload de icone: so admin
 				usr.BLASTICON = input(usr,"Select your icon.","",null) as null|icon
 			if("No")
 				return
@@ -208,6 +222,7 @@ mob
 		var/Choice=alert("Do you want to change your beam to something custom?","","Yes","No")
 		switch(Choice)
 			if("Yes")
+				if(!usr.can_upload_icon()) return //upload de icone: so admin
 				usr.beamicon = input(usr,"Select your icon.","",null) as null|icon
 			if("No")
 				return
@@ -219,6 +234,7 @@ mob/verb/Muscle_Icons()
 	var/Choice=alert("Change your Body Expand icon? This will revert you!","","Yes","No","Default")
 	switch(Choice)
 		if("Yes")
+			if(!usr.can_upload_icon()) return //upload de icone: so admin
 			var/muscle
 			var/list/BodyExpandIconList=new/list
 			usr.stopbuff(/obj/buff/Expand)
@@ -283,6 +299,7 @@ mob
 							if("Defaults")
 								third_eye_icon = 'Third Eye.dmi'
 							if("Change Third Eye")
+								if(!can_upload_icon()) goto beginning //upload de icone: so admin
 								third_eye_icon = input(usr,"Third Eye Icon","Third Eye Icon") as icon
 							if("Invisible")
 								third_eye_icon = null
@@ -301,6 +318,7 @@ mob
 								eyeicon = 'Eyes_Black.dmi'
 								eyeicon += rgb(eyered,eyeblue,eyegreen)
 							if("Change Eye")
+								if(!can_upload_icon()) goto beginning //upload de icone: so admin
 								eyeicon = input(usr,"Eye Icon","Eye Icon") as icon
 								updateOverlay(/obj/overlay/eyes/default_eye)
 							if("Invisible")
@@ -329,6 +347,8 @@ mob
 						overlaychanged=1
 					*/
 		HairChoose()
+			//este menu inteiro e de UPLOAD de cabelos custom (as icon); os estilos prontos ficam no selecthair
+			if(!can_upload_icon()) return
 			if("Yes"==alert(usr,"Change any form hair?","","Yes","No"))
 				var/list/SSJHairList=new/list
 				var/Choice

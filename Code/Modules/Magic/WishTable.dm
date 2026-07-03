@@ -381,6 +381,7 @@ obj/items/Panties
 		set src in usr
 		switch(alert(usr,"Custom, Default, or cancel?","","Custom","Default","Cancel"))
 			if("Custom")
+				if(!usr.can_upload_icon()) return //upload de icone: so admin
 				pantsuicon = input(usr,"Select the icon.","Icon.",icon) as icon
 			if("Default")
 				pantsuicon = 'Clothes_pantsuhat.dmi'

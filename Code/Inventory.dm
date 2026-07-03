@@ -80,6 +80,7 @@ obj/items/Windmill_Shuriken
 			if("Default")
 				icon='Windmill Shuriken.dmi'
 			if("Custom")
+				if(!usr.can_upload_icon()) return //upload de icone: so admin
 				icon=input(usr,"Select your icon.","Icon selection") as icon
 obj/GK_Well
 	icon='props.dmi'

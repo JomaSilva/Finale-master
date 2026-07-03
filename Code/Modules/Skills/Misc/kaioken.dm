@@ -288,6 +288,7 @@ verb/Kaioken_Settings()
 				if("Default.")
 					usr.kaioaura = 'Aura, Kaioken, Big.dmi'
 				if("Custom.")
+					if(!usr.can_upload_icon()) goto choiceset //upload de icone: so admin
 					usr.kaioaura = input("Select the image.") as icon
 			goto choiceset
 		if("Cancel")

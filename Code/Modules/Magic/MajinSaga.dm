@@ -276,12 +276,13 @@ mob/proc/majin_spawn_guardian(mob/M, iz, gx, gy)
 	guard.name = "[name]'s image"
 	guard.guard_master = src
 	guard.guard_sig = M ? M.signature : ""
-	guard.icon = icon
-	if(majin_color) guard.icon = icon + majin_color
+	guard.icon = icon //o icone VIVO do Majin ja carrega a cor de pele escolhida (assada na criacao e re-aplicada a cada troca de forma) -- somar majin_color de novo aqui DOBRAVA a tinta (pele mais saturada que a original)
 	guard.oicon = guard.icon
-	//cabelo/rabo do Majin (se tiver): vivem em vis_contents, nao no icone -- assa o snapshot no guardiao
+	//cabelo/rabo/olhos do Majin (se tiver): vivem em vis_contents, nao no icone -- assa o snapshot no guardiao
 	for(var/obj/overlay/hairs/HO in vis_contents)
 		guard.overlays += HO
+	for(var/obj/overlay/eyes/EO in vis_contents)
+		guard.overlays += EO
 	//espelho dos stats de combate do Majin, com metade do poder expresso
 	guard.guard_seed_bp = max(round(expressedBP / 2), 1)
 	guard.BP = guard.guard_seed_bp

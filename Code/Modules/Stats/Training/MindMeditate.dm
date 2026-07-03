@@ -203,11 +203,13 @@ datum/mind_session
 		C.appearance = M.appearance //espelho perfeito (icone + overlays builtin/roupas + cor/transform)
 		C.icon_state = ""
 		C.oicon = M.icon
-		//CABELO/RABO: nao fazem parte do appearance -- sao objetos /obj/overlay em vis_contents
-		//(por isso o reflexo nascia CARECA). "Assa" o visual atual deles nos overlays do clone:
-		//snapshot estatico com a cor/tinta de forma do momento, sem compartilhar objetos vivos.
+		//CABELO/RABO/OLHOS: nao fazem parte do appearance -- sao objetos /obj/overlay em vis_contents
+		//(por isso o reflexo nascia CARECA e de olho padrao). "Assa" o visual atual deles nos overlays
+		//do clone: snapshot estatico com a cor do momento, sem compartilhar objetos vivos.
 		for(var/obj/overlay/hairs/HO in M.vis_contents)
 			C.overlays += HO
+		for(var/obj/overlay/eyes/EO in M.vis_contents) //olho com a COR escolhida (eyeicon ja vem tintado)
+			C.overlays += EO
 		//espelho dos stats de combate, com o MESMO poder expresso (forma atual inclusa)
 		C.mind_seed_bp = max(round(M.expressedBP), 1)
 		C.BP = C.mind_seed_bp

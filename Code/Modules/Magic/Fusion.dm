@@ -130,6 +130,7 @@ datum/Fusion
 			if("Name")
 				FuseName = input(Keeper,"What is your name, Fused Warrior?") as text
 			if("Add overlay")
+				if(!Keeper.can_upload_icon()) goto customizehome //upload de icone: so admin
 				var/icon/I = input(Keeper,"Add overlay. It'll be bottom-middle-centered.") as icon
 				if(isnull(I))
 				else
@@ -137,14 +138,19 @@ datum/Fusion
 					A.pixel_x = round(((32 - I.Width()) / 2),1)
 					FuseOverlays += A
 			if("Hair")
+				if(!Keeper.can_upload_icon()) goto customizehome
 				FuseHair = input(Keeper,"Add a hair. It won't be centered.") as icon
 			if("SSJ Hair")
+				if(!Keeper.can_upload_icon()) goto customizehome
 				FuseHairSSJ = input(Keeper,"Add a hair. It won't be centered.") as icon
 			if("USSJ Hair")
+				if(!Keeper.can_upload_icon()) goto customizehome
 				FuseHairUSSJ = input(Keeper,"Add a hair. It won't be centered.") as icon
 			if("SSJ2 Hair")
+				if(!Keeper.can_upload_icon()) goto customizehome
 				FuseHairSSJ2 = input(Keeper,"Add a hair. It won't be centered.") as icon
 			if("SSJ3 Hair")
+				if(!Keeper.can_upload_icon()) goto customizehome
 				FuseHairSSJ3 = input(Keeper,"Add a hair. It won't be centered.") as icon
 			if("Hair Color")
 				var/rgbsuccess
@@ -158,6 +164,7 @@ datum/Fusion
 				FuseHairColor+=oldrgb[3]
 				FuseHairColor+=oldrgb[2]
 			if("Icon")
+				if(!Keeper.can_upload_icon()) goto customizehome //upload de icone: so admin
 				FuseIcon = input(Keeper,"Choose a icon. It won't be centered.") as icon
 			if("Done")
 				goto theend

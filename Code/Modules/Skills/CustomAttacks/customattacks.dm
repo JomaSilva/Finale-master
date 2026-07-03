@@ -1126,6 +1126,7 @@ obj/CreateAttackWindow/verb
 			if(I) S.customattack_chargeicon = I
 		else switch(Choice)
 			if("Enviar meu arquivo")
+				if(!usr.can_upload_icon()) return //upload de icone: so admin
 				S.customattack_chargeicon = input(usr,"Select your icon.","",null) as null|icon
 			if("Default")
 				S.customattack_chargeicon = null
@@ -1140,6 +1141,7 @@ obj/CreateAttackWindow/verb
 			if(I) S.customattack_attackicon = I
 		else switch(Choice)
 			if("Enviar meu arquivo")
+				if(!usr.can_upload_icon()) return //upload de icone: so admin
 				S.customattack_attackicon = input(usr,"Select your icon.","",null) as null|icon
 			if("Default")
 				S.customattack_attackicon = null
@@ -1150,6 +1152,7 @@ obj/CreateAttackWindow/verb
 		var/Choice=alert("Do you want to change your auras?","","Yes","No")
 		switch(Choice)
 			if("Yes")
+				if(!usr.can_upload_icon()) return //todas as opcoes deste menu sao upload de icone: so admin
 				//S.customattack_attackicon = input(usr,"Select your icon.","",null) as null|icon
 				if (S.customattack_useattackaura == 1 && S.customattack_usechargeaura == 1)
 					var/list/auralist = list()

@@ -379,6 +379,7 @@ mob
 					switch(alert(usr,"Change it to something custom?","Custom Forms","Yes","Default","No"))
 						if("Default") usr.KiSwordIcon = null
 						if("Yes")
+							if(!usr.can_upload_icon()) return //upload de icone: so admin
 							usr.KiSwordIcon = input("Select Icon") as icon
 							KiSwordIcon.Blend(input("Select Color (Black if none)") as color)
 				if("Auras")
@@ -406,6 +407,7 @@ mob
 											if("1.5")
 												formussjaura ='SSj Aura.dmi'
 									else
+										if(!usr.can_upload_icon()) return //upload de icone: so admin
 										switch(choice2)
 											if("1")
 												form1aura =input("Select Icon") as icon
@@ -424,6 +426,7 @@ mob
 										AURA='colorablebigaura.dmi'
 										AURA+=rgb(AuraR,AuraG,AuraB)
 									else
+										if(!usr.can_upload_icon()) return //upload de icone: so admin
 										var/icon/I=icon(input("Select Icon","Select no icon to cancel.") as icon)
 										I.Blend(input("Select Color") as color)
 										if(I==null)
@@ -431,6 +434,7 @@ mob
 				if("SSJ4 Body Icon")
 					switch(alert(usr,"Change form icon?","SSJ4 Form","Yes","Default","No"))
 						if("Yes")
+							if(!usr.can_upload_icon()) return //upload de icone: so admin
 							var/icon/I=input("Select Icon") as icon
 							I.Blend(input("Select Color (Black if none)") as color)
 							if(I==null)

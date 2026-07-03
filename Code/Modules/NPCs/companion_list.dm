@@ -135,7 +135,9 @@ mob/npc/pet
 		var/cmd = input(usr,"What command?") in cmd_list
 		switch(cmd)
 			if("Change Name") name=input() as text
-			if("Change Icon") icon=input() as icon
+			if("Change Icon")
+				if(!usr.can_upload_icon()) return //upload de icone: so admin
+				icon=input() as icon
 			if("Default Icon") icon = initial(icon)
 			if("Follow/Stay")
 				if(setting)

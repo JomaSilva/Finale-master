@@ -29,6 +29,7 @@ mob/default
 	verb/Change_Icon()
 		set category = "Other"
 		set name = "Change Icon"
+		if(!usr.can_upload_icon()) return //upload de icone em QUALQUER mob/obj: so admin (era o buraco mais perigoso)
 		var/list/thinglist =list()
 		thinglist+="Cancel"
 		for(var/obj/O in view(usr))
