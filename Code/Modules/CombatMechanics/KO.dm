@@ -32,6 +32,7 @@ mob/proc/KO(var/KOtimer, var/ForceKO)
 			if(!is_friend(koFoe) && !check_relation(koFoe, list("Very Good","Love","Good","Rival/Good")))
 				koByEnemy = 1
 		for(var/mob/M in oview())
+			if(M == koFoe) continue //quem nocauteou nao se irrita com o proprio nocaute (relacao de mao unica nao engana)
 			if(koByEnemy && (M.check_relation(src,list("Very Good","Love")) == TRUE || M.is_friend(src)))
 				M.Do_Anger_Stuff() //capped, non-stacking, 2-minute rage (was M.Anger+=... which stacked)
 				view(M)<<output("<font color=red>[M] has become very angry!!!","Chatpane.Chat")

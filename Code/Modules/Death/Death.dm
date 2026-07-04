@@ -7,6 +7,9 @@ mob/proc/Death()
 	if(isdying) return
 	isdying = 1
 	if(absorbed_into) absorbed_into.majin_release_by_mob(src) //died inside a Majin -> break free
+	if(bio_ssj2_death_check()) //BIO-ANDROIDE: morrer com (forma perfeita + SSJ1 dominado + BP de SSJ2) DESPERTA o SSJ2 -- a morte e cancelada e ele se recompoe no lugar (DNALabs.dm)
+		isdying = 0
+		return
 	var/mob/deathKiller = (combatTag || IsInFight) ? lastDamager : null //capture the killer NOW, before StopFightingStatus clears combat state (no stale lastDamager raging on a later environmental death)
 	Revert()
 	if(last_attkd_sig && IsInFight)
@@ -68,6 +71,7 @@ mob/proc/Death()
 				var/mob/killer = deathKiller //combat-validated killer captured at Death() start (null unless killed in active combat)
 				var/killedByEnemy = killer && !is_friend(killer) && !check_relation(killer, list("Very Good","Love","Good","Rival/Good")) //no rage for friendly duels or environmental death
 				for(var/mob/M in view())
+					if(M == src || M == killer) continue //quem matou NAO se enfurece com o proprio crime (mesmo se a relacao for de mao unica)
 					var/deathanger=0
 					if(M.check_relation(src,list("Good","Very Good","Love","Rival/Good")) || M.is_friend(src)) deathanger=1
 					if(deathanger==1 && killedByEnemy)

@@ -80,6 +80,42 @@ mob/proc/build_majin_pocket()
 var/list/majin_interior_zs = list() // all live pocket z-levels (so a logout inside can be intercepted)
 
 // ---- the absorption (replaces the Majin's old Buu_Absorb behaviour) ----------
+// ---------------------------------------------------------------------------
+// "GUARDA-ROUPA" DA ABSORCAO: o Majin veste COPIAS-OVERLAY (so visual, sem
+// funcao) das roupas/equipamentos da ULTIMA vitima absorvida -- da pra saber
+// quem foi a ultima refeicao. Nova absorcao troca a roupa; nada e transferido
+// de verdade (os itens continuam com a vitima).
+// ---------------------------------------------------------------------------
+mob/var/tmp/list/majin_outfit_ids //IDs dos overlays-copia vestidos (limpos na proxima absorcao)
+
+mob/proc/majin_clear_outfit()
+	if(!islist(majin_outfit_ids)) return
+	for(var/oid in majin_outfit_ids)
+		removeOverlayID(/obj/overlay/clothes/clothes_handler, oid)
+	majin_outfit_ids = null
+
+mob/proc/majin_wear_victim_outfit(mob/M)
+	majin_clear_outfit() //a roupa da vitima ANTERIOR sai
+	if(!M) return
+	majin_outfit_ids = list()
+	var/n = 0
+	//sistema ANTIGO de roupas: quando vestidas ja sao overlays /obj/overlay/clothes no vis_contents da vitima
+	for(var/obj/overlay/clothes/C in M.vis_contents)
+		n++
+		var/oid = "majinfit[n]"
+		updateOverlaycID(/obj/overlay/clothes/clothes_handler, C.icon, null, null, null, oid)
+		overlayStats(/obj/overlay/clothes/clothes_handler, oid, C.plane, C.o_px, C.o_py)
+		majin_outfit_ids += oid
+	//sistema NOVO (/obj/items/Equipment): o item vestido vira overlay do proprio dono (overlayList)
+	for(var/obj/items/Equipment/E in M.contents)
+		if(!E.equipped || !E.displayed) continue
+		n++
+		var/oid = "majinfit[n]"
+		updateOverlaycID(/obj/overlay/clothes/clothes_handler, E.icon, null, null, null, oid)
+		overlayStats(/obj/overlay/clothes/clothes_handler, oid, E.plane, E.pixel_x, E.pixel_y)
+		majin_outfit_ids += oid
+	if(n) to_chat(view(src), "<font color=#d050c0>*O corpo de [src] se molda... e as roupas de [M] surgem na sua superficie!*</font>", "combat")
+
 mob/proc/majin_absorb(mob/M)
 	if(!M || M == src) return
 	if(majin_saga_busy) return
@@ -104,6 +140,7 @@ mob/proc/majin_absorb(mob/M)
 		SpreadHeal(100, 1, 0)
 		Ki = MaxKi
 		to_chat(view(src), "<font color=#d050c0>*[src] devora [M] por inteiro!*</font>", "combat")
+		majin_wear_victim_outfit(M) //veste a roupa do devorado (mostra a ultima refeicao) -- antes do mobDeath remover o NPC
 		//um Kai NPC tambem serve pro primeiro passo da saga do Corrupted Majin
 		if(is_corrupted_majin() && (M.Race == "Kai" || M.Parent_Race == "Kai") && !majin_kai_absorbed && majin_saga_form == 0)
 			majin_kai_absorbed = 1
@@ -124,9 +161,9 @@ mob/proc/majin_absorb(mob/M)
 			verbs += V
 			Keyableverbs += V
 			rec.added_verbs += V
-	// copy their clothes overlays
-	rec.clothes = HasOverlays(M, /obj/overlay/clothes)
-	duplicateOverlays(rec.clothes)
+	// veste as copias-overlay das roupas da vitima (o HasOverlays/duplicateOverlays antigo nao
+	// filtrava tipo nem cobria /obj/items/Equipment -- as roupas nunca apareciam no Majin)
+	majin_wear_victim_outfit(M)
 	majin_absorbed += rec
 	// a friend who watches you get absorbed reacts as if they watched you DIE -> extreme anger (done BEFORE the move, while M is still in the world so view(M) catches the onlookers)
 	for(var/mob/A in view(M))

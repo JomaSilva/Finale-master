@@ -94,7 +94,38 @@ mob/verb/Request_Friendship()
 	src.pendingFriendReq = usr.signature
 	src.pendingFriendName = usr.name
 	to_chat(usr, "<font color=#88cc88>You ask [src] to be your friend.</font>")
-	to_chat(src, "<font color=#88cc88><b>[usr] wants to be your friend!</b> Right-click them and choose 'Accept Friendship' (or 'Decline Friendship').</font>")
+	to_chat(src, "<font color=#88cc88><b>[usr] wants to be your friend!</b></font>")
+	spawn src.friend_request_prompt(usr.signature, usr.name) //NOTIFICACAO de verdade: popup Aceitar/Recusar no recebedor (nao se perde no chat)
+
+//popup do pedido de amizade no RECEBEDOR (src). O right-click Accept/Decline continua valendo
+//("Decidir depois" deixa o pedido pendente); se o pedido for resolvido/substituido enquanto o
+//alert esta aberto, a resposta atrasada vira no-op (compara a signature pendente).
+mob/proc/friend_request_prompt(asker_sig, asker_name)
+	set waitfor = 0
+	var/ans = alert(src, "[asker_name] quer ser seu amigo!", "Pedido de Amizade", "Aceitar", "Recusar", "Decidir depois")
+	if(pendingFriendReq != asker_sig) return //ja foi aceito/recusado/substituido por outro pedido
+	if(ans == "Aceitar") friend_request_resolve(asker_sig, asker_name, 1)
+	else if(ans == "Recusar") friend_request_resolve(asker_sig, asker_name, 0)
+
+//resolve o pedido pendente por SIGNATURE (o pedinte pode ter se afastado/relogado)
+mob/proc/friend_request_resolve(asker_sig, asker_name, accepted)
+	if(pendingFriendReq != asker_sig) return
+	pendingFriendReq = null
+	pendingFriendName = null
+	var/mob/asker = null
+	for(var/mob/P in player_list)
+		if(P.client && P.signature == asker_sig)
+			asker = P
+			break
+	if(accepted)
+		friendship["[asker_sig]"] = max(friendship["[asker_sig]"], FRIEND_REQ)
+		if(asker)
+			asker.friendship["[signature]"] = max(asker.friendship["[signature]"], FRIEND_REQ)
+			to_chat(asker, "<font color=#88cc88><b>[src] accepted your friendship!</b></font>")
+		to_chat(src, "<font color=#88cc88><b>You and [asker_name] are now friends!</b></font>")
+	else
+		if(asker) to_chat(asker, "[src] declined your friendship request.")
+		to_chat(src, "You decline [asker_name]'s offer of friendship.")
 
 mob/verb/Accept_Friendship()
 	set category = null

@@ -40,8 +40,23 @@ proc/mate_pair_ok(mob/A, mob/B)
 // ---------------------------------------------------------------------------
 // CASAMENTO
 // ---------------------------------------------------------------------------
-mob/verb/Propose_Marriage(var/mob/M in oview(1))
+mob/verb/Propose_Marriage()
 	set category = "Other"
+	//a OPCAO so aparece pra quem ja e AMIGO: a lista de escolha e filtrada por is_friend
+	//(a validacao por tras continua -- re-checa depois do input, que bloqueia)
+	var/list/cands = list()
+	for(var/mob/T in oview(1, usr))
+		if(T == usr || !T.client || T.isNPC || !T.signature) continue
+		if(!usr.is_friend(T)) continue
+		if(T.married_to) continue
+		cands += T
+	if(!cands.len)
+		to_chat(usr, "Nenhum AMIGO solteiro ao seu lado. Casamento e coisa de amigos: envie um pedido de amizade primeiro e fique a 1 tile.")
+		return
+	var/mob/M = null
+	if(cands.len == 1) M = cands[1]
+	else M = input(usr, "Pedir quem em casamento?", "Casamento") as null|anything in cands
+	if(!M) return
 	if(!mate_pair_ok(usr, M))
 		to_chat(usr, "Voces precisam estar lado a lado, vivos e conscientes.")
 		return
@@ -89,16 +104,30 @@ mob/verb/Divorce()
 // ---------------------------------------------------------------------------
 // FILHO (somente casal casado de sexos opostos)
 // ---------------------------------------------------------------------------
-mob/verb/Have_Child(var/mob/M in oview(1))
+//a OPCAO de ter filho so "aparece" pro CONJUGE (casado ja passou pelo funil de amizade)
+mob/proc/find_spouse_nearby()
+	if(!married_to) return null
+	for(var/mob/T in oview(1, src))
+		if(T.client && T.signature == married_to) return T
+	return null
+
+mob/verb/Have_Child()
 	set category = "Other"
-	try_have_child(M)
+	var/mob/spouse = usr.find_spouse_nearby()
+	if(!spouse)
+		to_chat(usr, usr.married_to ? "Seu conjuge ([usr.married_name]) precisa estar do seu lado." : "Ter um filho e coisa de CASAL: case-se primeiro (Propose Marriage -- e casamento e so entre AMIGOS).")
+		return
+	usr.try_have_child(spouse)
 
 // o antigo verb de "Mate" (obj) agora usa o MESMO fluxo consensual de casal casado
 obj/Mate1/verb/Breed()
 	set name = "Mate"
 	set category = "Other"
-	var/mob/M = input("Com quem?") as null|mob in oview(1)
-	if(M) usr.try_have_child(M)
+	var/mob/spouse = usr.find_spouse_nearby()
+	if(!spouse)
+		to_chat(usr, usr.married_to ? "Seu conjuge ([usr.married_name]) precisa estar do seu lado." : "Isto e coisa de CASAL casado (e casamento e so entre AMIGOS).")
+		return
+	usr.try_have_child(spouse)
 
 mob/proc/try_have_child(var/mob/M)
 	if(!mate_pair_ok(src, M))

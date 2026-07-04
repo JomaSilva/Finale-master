@@ -162,7 +162,7 @@ obj/buff/SuperSaiyan/Loop()
 				if(prob(15)) container.Ki+=0.002 * container.MaxKi //SSJ4 Limit Breaker: sem dreno de stamina
 		if(container.ssj >= 1 && container.ssj <= 3.5 && container.Ki <= container.MaxKi*0.02) //Ki esgotado: reverte qualquer SSJ1-3.5, INCLUSIVE masterizada (que tem dreno 0 e nao roda o bloco de dreno acima)
 			container.tooTiredRevert()
-		if(container.Class != "Legendary Primal Saiyan" && !container.FutureLineage && !container.canSSJ) //SSJ1/2/3 padrao: a maestria (%) cresce na forma; os degraus de multiplicador/dreno sobem pela %, igual ao SSJ4
+		if(container.Class != "Legendary Primal Saiyan" && !container.FutureLineage && (!container.canSSJ || container.bio_lab_born)) //SSJ1/2/3 padrao: a maestria (%) cresce na forma. O BIO de laboratorio (canSSJ=1) PRECISA ganhar maestria: dominar o SSJ1 (100%) e requisito do despertar do SSJ2 dele
 			switch(container.ssj)
 				if(1)
 					if(container.ssj1mastery < 100)
@@ -402,6 +402,10 @@ mob/proc/Ultra_SSj()
 mob/proc/SSj2()
 	if(!transing)
 		if(FutureLineage) return //Future Lineage: forma unica (SSJ1 em estagios), nao acessa SSJ2
+		if(bio_lab_born && !bio_ssj2_by_death) //BIO de laboratorio: o SSJ2 dele SO desperta morrendo com os 3 requisitos (DNALabs.dm) -- nenhuma via de raiva/arvore vale
+			hasssj2 = 0 //desfaz qualquer hasssj2 concedido por engano pelas vias saiyajin (era o pulo direto pro 8x)
+			to_chat(src, "<font color=#ffd24a>O Super Saiyajin 2 nao responde... seu nucleo bio exige um gatilho mais extremo que a raiva.</font>")
+			return
 		if(ssj>=3) return
 		if(cantSustainForm(ssj2drain)) return
 		transing=1
@@ -421,7 +425,7 @@ mob/proc/SSj2()
 		var/ssjcolor = "yellow"
 		if(godki?.usage) ssjcolor = "blue"
 		ultrassjenabled=0
-		if(ssj2drain>=0.036&&firsttime==1)
+		if(ssj2drain>=0.036&&firsttime==1&&!bio_lab_born) //bio: a cinematica do SSJ2 dele e a do despertar por morte (curta, em DNALabs.dm), nao a saiyajin
 			Super_Saiyan_Stats()
 			SSJ2Cinematic()
 			poweruprunning=0

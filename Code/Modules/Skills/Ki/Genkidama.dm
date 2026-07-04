@@ -20,6 +20,7 @@
 #define GK_SCALE         2     // escala visual da esfera arremessada
 #define GK_BOOM_RANGE    3     // raio (tiles) do dano da detonacao final
 #define GK_DRAG_BP_RESIST 2    // alvo com expressedBP > (BP da esfera x isto) e forte demais pra ser ARRASTADO (so leva o dano)
+#define GK_BALL_HEIGHT   128   // altura (pixels) da esfera de carga acima do personagem: mesmo x, +4 tiles de y (espaco pra crescer sem cobrir o sprite)
 #define GK_ICON          'Icons/Techniques/Ball - Spirit Bomb.dmi'
 
 obj/attack/var/is_genkidama = 0 //marca a esfera p/ o BeamClash (beam vs Genkidama = disputa)
@@ -99,10 +100,10 @@ mob/proc/genki_charge()
 		return
 	genki_throw()
 
-obj/genki_ball_fx //a esfera de carga sobre a cabeca
+obj/genki_ball_fx //a esfera de carga BEM ACIMA da cabeca (mesmo x, +4 tiles: nao cobre o sprite enquanto cresce)
 	icon = GK_ICON
 	icon_state = ""
-	pixel_y = 34
+	pixel_y = GK_BALL_HEIGHT
 	density = 0
 	mouse_opacity = 0
 	layer = MOB_LAYER + 4

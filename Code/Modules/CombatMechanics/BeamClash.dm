@@ -29,6 +29,8 @@
 #define BCL_NPC_BEAM_CD     220   // cooldown (ticks) entre contra-beams do NPC
 #define BCL_NPC_BEAM_TIME   120   // duracao maxima (ticks) do canal de beam do NPC
 #define BCL_NPC_KI_MIN      0.25  // fracao minima de Ki para o NPC tentar o contra-beam
+#define BCL_PUSH_STEP       2     // ticks entre cada tile do EMPURRAO pos-vitoria (2 = 0.2s por tile)
+#define BCL_PUSH_MAX        30    // tiles maximos do empurrao antes do beam vencedor retomar o voo normal
 
 // ---------------------------------------------------------------------------
 // vars
@@ -249,14 +251,15 @@ datum/beamclash
 			C.pixel_y = 0
 		shaken.Cut()
 
-	//W venceu, L perdeu: o beam do perdedor colapsa e o do vencedor RETOMA o avanco (vai acertar o perdedor)
+	//W venceu, L perdeu: o beam vencedor EMPURRA o do perdedor de volta, tile a tile,
+	//ate o ataque atingir o perdedor (estilo Budokai Tenkaichi / Sparking Zero)
 	proc/resolve(mob/W, mob/L, motivo)
 		if(!running) return
 		running = 0
 		var/obj/attack/blast/hW = (W == A) ? headA : headB
 		var/obj/attack/blast/hL = (W == A) ? headB : headA
 		for(var/mob/P in view(BCL_SHAKE_RANGE + 3, center))
-			if(P.client) to_chat(P, "<font color=#ffcc33><b>[W ? W.name : "?"] VENCE a disputa de beams</b> ([motivo]) -- o ataque avanca!!")
+			if(P.client) to_chat(P, "<font color=#ffcc33><b>[W ? W.name : "?"] VENCE a disputa de beams</b> ([motivo]) -- o ataque comeca a EMPURRAR o do rival de volta!!")
 		createShockwavemisc(center, 4)
 		createDustmisc(center, 2)
 		if(W) W.emit_Sound('scouterexplode.ogg')
@@ -269,8 +272,13 @@ datum/beamclash
 			L.beamturndelay = 0
 			L.turnlock = 0
 			L.stopbeaming()
-			if(L.client) to_chat(L, "<font color=red><b>Seu beam foi engolido pela disputa!</b>")
-		//a cabeca do perdedor some (Genkidama perdedora DETONA no lugar); a do vencedor volta a andar
+			if(L.client) to_chat(L, "<font color=red><b>Seu beam esta sendo EMPURRADO DE VOLTA!!</b>")
+		if(W && hW) hW.BP = W.expressedBP * max(hW.wavemultipl, 1) //a cabeca vencedora carrega o BP atual do dono no impacto
+		//vencedor BEAM -> fase de EMPURRAO cinematografico (o orbe/tremor seguem vivos ate o impacto)
+		if(hW && hW.loc && !hW.is_genkidama)
+			spawn push_phase(W, L, hW, hL)
+			return
+		//vencedor GENKIDAMA (retoma o proprio voo) ou cabeca ja sumiu: resolucao direta
 		if(hL)
 			hL.in_beamclash = 0
 			if(hL.is_genkidama)
@@ -280,11 +288,76 @@ datum/beamclash
 				attack_list -= hL
 				hL.loc = null
 		if(hW && hW.loc)
+			hW.in_beamclash = 0 //Genkidama vencedora: o loop genki_travel continua sozinho
+		cleanup()
+
+	//o EMPURRAO: a cabeca vencedora avanca tile a tile ENGOLINDO o beam do perdedor
+	//(a cabeca perdedora recua junto na frente dela) ate acertar o perdedor. O orbe de
+	//choque viaja no ponto de contato e a tela continua tremendo -- e o visual de quem
+	//esta perdendo que o user pediu (Budokai Tenkaichi / Sparking Zero).
+	proc/push_phase(mob/W, mob/L, obj/attack/blast/hW, obj/attack/blast/hL)
+		set waitfor = 0
+		set background = 1
+		//o rastro do beam perdedor congela e desarma (density 0 = nao da Bump): sera engolido tile a tile
+		if(L)
+			for(var/obj/attack/blast/S in attack_list)
+				if(S && S != hW && S != hL && S.loc && S.proprietor == L)
+					S.in_beamclash = 1
+					walk(S, 0)
+					S.density = 0
+		if(hL && hL.loc)
+			hL.in_beamclash = 1 //fica plantada (KHH/genki_travel nao re-andam) -- so recua pelo nosso passo
+			hL.density = 0
+			walk(hL, 0)
+		if(orb) orb.maptext = null //disputa decidida: a barra some, o orbe vira a frente do empurrao
+		hW.icon_state = "head"
+		hW.distance = max(hW.distance, BCL_PUSH_MAX + 5) //alcance renovado: o empurrao nao morre por distancia no meio
+		var/steps = 0
+		while(hW && hW.loc && steps < BCL_PUSH_MAX)
+			steps++
+			sleep(BCL_PUSH_STEP)
+			if(!hW || !hW.loc) break //acertou algo e explodiu no caminho
+			var/turf/next = get_step(hW, hW.dir)
+			if(!next || next.density) break //terreno fechou: encerra aqui
+			//ENGOLE os segmentos do beam perdedor que estiverem no caminho
+			for(var/obj/attack/blast/S in next)
+				if(S != hW && S != hL && S.proprietor == L && !S.is_genkidama)
+					obj_list -= S
+					attack_list -= S
+					S.loc = null
+			//a cabeca perdedora recua um tile a frente (o beam/Genkidama dele sendo empurrado)
+			if(hL && hL.loc)
+				var/turf/back = get_step(next, hW.dir)
+				if(back && !back.density) hL.loc = back
+			//o perdedor esta no proximo tile? o Move falha no corpo denso -> Bump -> dano/KB de beam
+			var/hitL = (L && L.loc && L.z == next.z && L.x == next.x && L.y == next.y)
+			hW.Move(next)
+			//orbe/tremor/fx acompanham o ponto de contato
+			center = (hW && hW.loc) ? hW.loc : next
+			if(orb)
+				orb.loc = center
+				var/matrix/mx = matrix()
+				var/tension = 1.4 + rand(0, 4) / 10
+				mx.Scale(tension, tension)
+				animate(orb, transform = mx, time = BCL_PUSH_STEP)
+			shake_tick()
+			if(steps % 3 == 0)
+				createShockwavemisc(center, 1)
+				if(prob(50)) createDustmisc(center, 1)
+			if(hitL) break //o ataque alcancou o perdedor
+		//a cabeca perdedora que sobrou: Genkidama detona ONDE PAROU (em cima do dono, se o empurrao completou); beam some
+		if(hL && hL.loc)
+			hL.in_beamclash = 0
+			if(hL.is_genkidama)
+				spawn hL:genki_detonate()
+			else
+				obj_list -= hL
+				attack_list -= hL
+				hL.loc = null
+		//o beam vencedor retoma o voo normal (se parou colado no perdedor, continua moendo ele via Bump)
+		if(hW && hW.loc)
 			hW.in_beamclash = 0
-			if(!hW.is_genkidama) //Genkidama vencedora retoma sozinha (o loop genki_travel continua); beam volta a andar via walk
-				hW.icon_state = "head"
-				if(W) hW.BP = W.expressedBP * max(hW.wavemultipl, 1)
-				walk(hW, hW.dir, hW.beamspeed)
+			walk(hW, hW.dir, hW.beamspeed)
 		cleanup()
 
 	//empate no tempo maximo: os dois beams detonam no meio

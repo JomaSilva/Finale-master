@@ -19,6 +19,11 @@ mob/proc/ClearPowerBuffs()
 	overlaychanged=1
 
 mob/proc/AuraCheck()
+	if(KaioPcnt > 1) //KAIOKEN ativo: a aura do Kaioken E a aura da forma (como SSJ troca a dele) -- o power-up NAO empilha a aura base por cima (ficavam 2 auras)
+		if(FlashPoint)
+			FlashPoint = 0
+			removeOverlay(/obj/overlay/auras/aura)
+		return //ao reverter o Kaioken, FlashPoint esta 0: a proxima AuraCheck re-adiciona a aura base normalmente se ainda estiver carregando
 	if(src.kiratio>1.1 && FlashPoint == 0)
 		FlashPoint = 1
 		updateOverlay(/obj/overlay/auras/aura)

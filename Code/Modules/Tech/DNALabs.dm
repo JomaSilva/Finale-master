@@ -40,8 +40,9 @@
 #define DNL_BIO_BP_SHARE 0.5           // BP inicial = esta fracao do doador mais forte
 //DNL_BIO_LARVA_RESTRICT (larva expressa 1/N do base) mora em "Code\1A Defines.dm": o teto duro do powerlevel (base.dm) tambem o usa e os includes sao re-ordenados alfabeticamente
 #define DNL_BIO_MAX_DNA 4              // maximo de DNAs por fornada
-#define DNL_BIO_EVO_PLAYERS 3          // absorver 3 JOGADORES evolui...
-#define DNL_BIO_EVO_ANDROIDS 1         // ...ou 1 ANDROIDE
+#define DNL_BIO_EVO_PLAYERS 10         // absorver 10 JOGADORES evolui...
+#define DNL_BIO_EVO_NPC_WEIGHT 0.5     // ...NPC vale METADE de um player (20 NPCs = 1 evolucao)
+#define DNL_BIO_EVO_ANDROIDS 1         // ...ou 1 ANDROIDE de verdade (o atalho classico do Cell)
 #define DNL_BIO_EVO2_MULT 2            // 1a evolucao: BP base x2
 #define DNL_BIO_EVO3_MULT 4            // forma perfeita: BP base x4
 #define DNL_LARVA_ICON 'CellLarva.dmi'
@@ -66,7 +67,9 @@ mob/var
 	bio_abs_androids = 0
 	bio_saiyan_dna = 0          // um dos DNAs era Saiyajin
 	bio_mature_realtime = 0     // world.realtime em que a larva amadurece
+	bio_ssj2_by_death = 0       // o SSJ2 do bio DESPERTOU pela morte (unica via legitima; persiste)
 	tmp/bio_evolving = 0
+	tmp/bio_ssj2_awakening = 0  // latch: recompondo o corpo na cinematica do despertar (segura mortes re-entrantes)
 
 // ---------------------------------------------------------------------------
 // CONSTRUCAO -- via ANDROID CREATION MAINFRAME (arvore de tech; Android_Creation.dm).
@@ -260,6 +263,7 @@ obj/items/DNA_Sample
 	var/dna_donor = ""
 	var/dna_sig = ""
 	var/dna_bp = 0
+	var/list/donor_verbs = list() // snapshot dos verbs de skill do doador na coleta (o bio nasce sabendo)
 
 //-------- DNA CONTAINER: a FERRAMENTA de coleta (craftavel na janela de tech) --------
 //O extrator nao e mais dado de graca ao construir o Lab 2: o jogador CRIA o container.
@@ -305,6 +309,7 @@ obj/items/DNA_Container
 		S.dna_donor = M.name
 		S.dna_sig = M.signature
 		S.dna_bp = M.BP
+		if(islist(M.Keyableverbs)) S.donor_verbs = M.Keyableverbs.Copy() //tecnicas do doador congeladas na amostra
 		S.name = "DNA: [M.Race] ([M.name])"
 		S.suffix = ""
 		S.loc = src //a amostra fica guardada DENTRO do container
@@ -335,6 +340,7 @@ obj/DNALab/Bio
 	var/creator_sig = ""
 	var/brew_strongest_bp = 0
 	var/brew_has_saiyan = 0
+	var/list/brew_verbs = list() // uniao (sem duplicatas) das tecnicas de TODOS os DNAs da fornada
 	var/list/tmp/menu_selected = list() //amostras marcadas no menu (refs; tmp)
 
 	New()
@@ -417,6 +423,7 @@ h1{font-size:20px;color:#59d0ff;letter-spacing:2px;margin:0 0 4px 0}
 			if(menu_selected.len < 1) return
 			brew_strongest_bp = 0
 			brew_has_saiyan = 0
+			brew_verbs = list()
 			for(var/obj/items/DNA_Sample/S in menu_selected)
 				if(!dnl_sample_owned(S, usr)) continue
 				var/donor_bp = S.dna_bp
@@ -426,6 +433,8 @@ h1{font-size:20px;color:#59d0ff;letter-spacing:2px;margin:0 0 4px 0}
 						break
 				brew_strongest_bp = max(brew_strongest_bp, donor_bp)
 				if(S.dna_race == "Saiyan" || S.dna_race == "Half-Saiyan") brew_has_saiyan = 1
+				for(var/V in S.donor_verbs)
+					if(!(V in brew_verbs)) brew_verbs += V //2+ doadores com o MESMO verb -> entra 1 vez so
 				del(S)
 			menu_selected = list()
 			creator_sig = usr.signature
@@ -466,8 +475,18 @@ proc/dnl_bio_hatch(mob/creator, obj/DNALab/Bio/L)
 	creator.bio_abs_androids = 0
 	creator.bio_saiyan_dna = has_saiyan
 	if(has_saiyan)
-		creator.canSSJ = 1 //DNA Saiyajin: Zenkai (has_zenkai le canSSJ) + elegivel a despertar o SSJ
-		to_chat(creator, "<font color=#ffd24a>Celulas SAIYAJIN pulsam no seu nucleo: Zenkai e o poder dos Super Saiyajins correm no seu DNA.</font>")
+		creator.canSSJ = 1 //DNA Saiyajin: Zenkai (has_zenkai le canSSJ) + SSJ
+		creator.hasssj = 1 //ja NASCE com o SSJ1 (NAO masterizado): sem despertar por raiva -- transforma assim que tiver o BP (ssjat)
+		to_chat(creator, "<font color=#ffd24a>Celulas SAIYAJIN pulsam no seu nucleo: o Zenkai e o proprio SUPER SAIYAJIN ja correm no seu DNA (maestria zero -- treine a forma).</font>")
+	//tecnicas dos DOADORES: o bio nasce sabendo os verbs de skill de todos de quem tem DNA (uniao sem duplicatas)
+	var/vgot = 0
+	if(L && islist(L.brew_verbs))
+		for(var/V in L.brew_verbs)
+			if(!(V in creator.verbs))
+				creator.verbs += V
+				vgot++
+			if(!(V in creator.Keyableverbs)) creator.Keyableverbs += V
+	if(vgot) to_chat(creator, "<font color=#66ddff>Memorias musculares fluem do DNA: voce nasce dominando <b>[vgot]</b> tecnicas dos seus doadores.</font>")
 	creator.icon = DNL_LARVA_ICON
 	creator.oicon = DNL_LARVA_ICON
 	creator.form2icon = DNL_BIO2_ICON
@@ -476,6 +495,7 @@ proc/dnl_bio_hatch(mob/creator, obj/DNALab/Bio/L)
 	creator.bio_mature_realtime = world.realtime + DAY_REAL_MINUTES * 600 //1 dia in-game
 	creator.statify()
 	creator.powerlevel()
+	creator.Ki = creator.MaxKi //VIRAR bio = Ki em exatamente 100% (o Ki absoluto do corpo antigo estourava a barra em ate 500%)
 	spawn creator.dnl_larva_watch()
 	to_chat(creator, "<font color=#66ddff><b>Voce abre os olhos pela primeira vez. Fraco. Uma LARVA. Em 1 dia sua carapaca se rompera... e o mundo conhecera o que voce realmente e.</b></font>")
 
@@ -491,6 +511,7 @@ mob/proc/dnl_larva_mature()
 	emit_Sound('powerup.wav')
 	statify()
 	powerlevel()
+	Ki = MaxKi //nova forma = Ki em 100% exatos
 	to_chat(view(src), "<font color=#66ddff><b>*A carapaca larval de [src] se rompe -- uma criatura de carapaca esverdeada emerge, inteira!*</b></font>")
 	to_chat(src, "<font color=#66ddff><b>Sua forma imperfeita esta completa: 100% do seu poder foi liberado.</b></font>")
 	bio_evolving = 0
@@ -513,6 +534,7 @@ mob/proc/bio_note_absorb(mob/M)
 	if(!bio_lab_born || bio_evolving || bio_stage < 2 || bio_stage >= 4) return
 	if(!M) return
 	if(M.android_class || M.Race == "Android" || M.Parent_Race == "Android") bio_abs_androids++
+	else if(M.isNPC) bio_abs_players += DNL_BIO_EVO_NPC_WEIGHT //NPC vale METADE de um player (20 NPCs = evolucao)
 	else bio_abs_players++
 	var/need_p = DNL_BIO_EVO_PLAYERS - bio_abs_players
 	if(bio_abs_androids >= DNL_BIO_EVO_ANDROIDS || bio_abs_players >= DNL_BIO_EVO_PLAYERS)
@@ -520,7 +542,7 @@ mob/proc/bio_note_absorb(mob/M)
 		bio_abs_players = 0
 		spawn BioLabEvolve()
 	else
-		to_chat(src, "<font color=#66ddff>Seu nucleo processa a nova biomassa... (faltam [max(need_p,0)] jogadores OU 1 androide para a evolucao)</font>")
+		to_chat(src, "<font color=#66ddff>Seu nucleo processa a nova biomassa... (faltam [max(need_p,0)] jogadores -- NPC vale [DNL_BIO_EVO_NPC_WEIGHT] -- OU 1 androide para a evolucao)</font>")
 
 //cinematica de evolucao: efeitos/ritmo do Demon Evolve + overlay bioto2/bioto3 + mensagens no chat
 mob/proc/BioLabEvolve()
@@ -606,11 +628,71 @@ mob/proc/BioLabEvolve()
 	bio_stage = target_stage
 	statify()
 	powerlevel()
+	Ki = MaxKi //nova forma = Ki em 100% exatos (a barra estourava junto com o salto de BP)
 	createShockwavemisc(loc, 2)
 	move = 1
 	poweruprunning = 0
 	bio_evolving = 0
 	emit_Sound('powerup.wav')
+
+// ---------------------------------------------------------------------------
+// SSJ2 DO BIO-ANDROIDE -- desperta MORRENDO, nao por raiva.
+// Requisitos NA HORA DA MORTE: BP suficiente pro SSJ2 + FORMA PERFEITA
+// (bio_stage 4) + SSJ1 100% dominado. A morte e CANCELADA (hook no topo do
+// Death() em Death.dm): ele se recompoe NO MESMO LUGAR e transforma com uma
+// cinematica propria, bem mais curta que a dos Saiyajins.
+// ---------------------------------------------------------------------------
+mob/proc/bio_ssj2_death_check() //retorna 1 = esta morte foi convertida no despertar (o Death() aborta)
+	if(!bio_lab_born || !bio_saiyan_dna || !canSSJ) return 0
+	if(bio_ssj2_awakening) return 1 //ja esta se recompondo: segura mortes re-entrantes durante a cinematica
+	if(bio_ssj2_by_death) return 0 //so acontece UMA vez
+	if(bio_stage < 4) return 0 //precisa da FORMA PERFEITA (bio 3)
+	if(ssj1mastery < 100) return 0 //precisa do SSJ1 completamente dominado
+	if(BP < ssj2at / max(ssjmult, 1)) return 0 //precisa do BP pro SSJ2 (mesma regua da via saiyajin)
+	if(mind_z && z == mind_z) return 0 //morte na dimensao mental nao e real
+	bio_ssj2_awakening = 1
+	bio_ssj2_by_death = 1
+	spawn bio_ssj2_awaken()
+	return 1
+
+mob/proc/bio_ssj2_awaken()
+	set waitfor = 0
+	//recompoe o corpo NO LUGAR da morte (o Death() ja foi abortado)
+	KO = 0
+	SpreadHeal(200, 1, 1)
+	for(var/datum/Body/B in body)
+		if(!B.lopped) B.health = B.maxhealth
+	Ki = MaxKi
+	if(maxstamina) stamina = maxstamina
+	canmove = 1
+	move = 1
+	canfight = 1
+	attacking = 0
+	blocking = 0
+	icon_state = ""
+	//cinematica CURTA (~8s) propria do bio
+	to_chat(view(8, src), "<font color=#7fe07f><b>*O corpo destrocado de [src]... esta se RECOMPONDO?! O nucleo bio-androide se recusa a morrer!*</b></font>", "combat")
+	emit_Sound('rockmoving.wav')
+	spawn Quake()
+	for(var/cyc = 1 to 4)
+		spawn for(var/turf/T in view(6, src))
+			if(get_dist(T, src) < 2) continue
+			if(prob(8)) createLightningmisc(T, rand(2,5))
+			else if(prob(5)) createDustmisc(T, 2)
+		if(cyc == 2)
+			to_chat(view(8, src), "<font color=#ffd24a>*Relampagos DOURADOS rasgam a carapaca de [src] -- a MORTE acendeu o que faltava no DNA Saiyajin!*</font>", "combat")
+			emit_Sound('chargeaura.wav')
+		if(HP < 50) SpreadHeal(100, 1, 1) //se apanhar no meio da recomposicao, o nucleo re-cura
+		spawn Quake()
+		sleep(20)
+	createShockwavemisc(loc, 4)
+	createCrater(loc, 3)
+	to_chat(src, "<font color=#ffd24a><b>Voce MORREU... e voltou. O SUPER SAIYAJIN 2 e seu.</b></font>", "system")
+	if(!hasssj2) ssj2at /= 2 //mesmo desconto de despertar da via saiyajin
+	hasssj2 = 1
+	SSj2() //aplica a forma de verdade (o guard interno passa: bio_ssj2_by_death=1; a cinematica saiyajin e pulada pra bio)
+	refresh_combat_tag()
+	bio_ssj2_awakening = 0
 
 // ---------------------------------------------------------------------------
 // Re-hooks de login (verbs/loops persistentes)
@@ -622,6 +704,12 @@ mob/proc/dnl_login_check()
 	if(Race == "Bio-Android" || Parent_Race == "Bio-Android") //RETROATIVO: bios de saves antigos entram na regra NoAscension
 		NoAscension = 1
 		BPBoost = 1 //mata o boost de Ascensao salvo (~317x); com NoAscension o Auto_Gain nao o re-cria
+	if(bio_lab_born && bio_saiyan_dna)
+		if(!hasssj) hasssj = 1 //RETROATIVO: bio com DNA Saiyajin ja "nasce" com o SSJ1 (sem despertar por raiva)
+		if(hasssj2 && !bio_ssj2_by_death) //RETROATIVO: SSJ2 pego pela via saiyajin (raiva pulava os estagios) e ILEGITIMO no bio
+			hasssj2 = 0
+			if(ssj >= 2) Revert()
+			to_chat(src, "<font color=#ffd24a>Seu nucleo re-sela o Super Saiyajin 2: no seu corpo ele so desperta atraves da MORTE (forma perfeita + SSJ1 dominado + poder suficiente).</font>")
 	if(bio_lab_born && bio_stage == 1)
 		//RETROATIVO: larvas nascidas ANTES do fix entram na regra atual ao logar --
 		//expressa 10% do base (BPrestriction novo) e ZERO Ascensao (BPBoost salvo/em

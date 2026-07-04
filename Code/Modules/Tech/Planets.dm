@@ -280,6 +280,10 @@ mob/Admin3/verb/Planet_Options()
 						to_chat(world, "[revivespecific] destroyed.")
 
 
+//custos do Planet Destroy (spec: 1000 de Ki FLAT + BP por gravidade do planeta)
+#define PDESTROY_KI_COST 1000      //Ki flat. A checagem antiga era 1000*BaseDrain: BaseDrain = sqrt(MaxKi/140)*mods ESCALAVA com o proprio Ki maximo (com 7k de MaxKi pedia ~9.7k de Ki -- IMPAGAVEL pra sempre, o bug do bio de 400B que nao explodia a Terra)
+#define PDESTROY_BP_PER_GRAV 10000 //BP expresso exigido por 1x de gravidade do planeta
+
 mob/keyable/verb/Planet_Destroy()
 	set name = "Planet Destroy"
 	set category="Skills"
@@ -288,7 +292,7 @@ mob/keyable/verb/Planet_Destroy()
 	if(!usr.isVillain)
 		to_chat(usr, "<font color=red>Only a Villain has the will to raze a planet.</font>")
 		return
-	if(usr.Ki>=1000*BaseDrain&&usr.expressedBP>=10000*usr.Planetgrav)
+	if(usr.Ki>=PDESTROY_KI_COST&&usr.expressedBP>=PDESTROY_BP_PER_GRAV*usr.Planetgrav)
 		var/obj/Planets/currentP
 		for(var/obj/Planets/P in planet_list)
 			if(P.planetType==usr.Planet)
@@ -300,7 +304,7 @@ mob/keyable/verb/Planet_Destroy()
 		if(!currentP)
 			to_chat(usr, "You can't use Planet Destroy here.")
 			return
-		usr.Ki-=1000*BaseDrain
+		usr.Ki-=PDESTROY_KI_COST
 		switch(input("Destroy this Planet?","",text) in list("No","Yes"))
 			if("Yes")
 				//var/zz=usr.z
@@ -332,7 +336,7 @@ mob/keyable/verb/Planet_Destroy()
 					var/area/currentarea=GetArea()
 					currentarea.DestroyPlanet(mexpressedBP)
 
-	else to_chat(usr, "You do not have enough energy. (You need 1000 Ki, and a expressed BP of 10k * The planet's gravity.)")
+	else to_chat(usr, "You do not have enough energy. (You need [PDESTROY_KI_COST] Ki and an expressed BP of [FullNum(PDESTROY_BP_PER_GRAV)] x the planet's gravity -- here that means [FullNum(round(PDESTROY_BP_PER_GRAV*usr.Planetgrav))] BP. You have [FullNum(round(usr.Ki))] Ki / [FullNum(round(usr.expressedBP))] BP.)")
 
 
 /datum/skill/Ki_Control/Planet_Destroy

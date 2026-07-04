@@ -155,6 +155,8 @@ mob/proc/SetKaioken()
 	slot=sAURA
 	Buff()
 		..()
+		container.FlashPoint = 0 //a aura base sai NA HORA (o AuraCheck tambem a segura fora enquanto o Kaioken durar)
+		container.removeOverlay(/obj/overlay/auras/aura)
 		container.updateOverlay(/obj/overlay/auras/kaioaura,container.kaioaura)
 		to_chat(view(container), "A bright red aura bursts all around [container].")
 		if(container.kaioamount<3)

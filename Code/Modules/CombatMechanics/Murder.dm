@@ -53,16 +53,11 @@ mob/verb/Finish()
 mob/var/zenkaiReady = 0 //world.realtime when Zenkai may next trigger (1 hour cooldown). PERSISTENT (not tmp) + realtime so a logout/login can't reset it and a world reboot can't wrongly block it.
 mob/proc/death_stuff(inputPl)
 	gain_zenkai(inputPl) //Zenkai from being KILLED by a stronger foe (inputPl = killer's EFFECTIVE power). KO defeats are handled in KO().
-	//Onlooker ANGRY
-	for(var/mob/A in view()) //A being the friend looking...
-		var/DyerIsGood=0
-		if(!isNPC)
-			if(A.check_relation(src,list("Good","Very Good")) == TRUE || A.is_friend(src)) DyerIsGood=1
-			if((DyerIsGood))
-				A.Do_Anger_Stuff(1) //friend actually DIED -> EXTREMELY enraged -> full cinematic + rage theme
-				view(A)<<output("<font color=red>You notice [A] has become EXTREMELY enraged!!!","Chatpane.Chat")
-				chatcast(view(A), "<font color=red>You notice [A] has become EXTREMELY enraged!!!", "combat")
-				WriteToLog("rplog","[A] has become EXTREMELY angry    ([time2text(world.realtime,"Day DD hh:mm")])")
+	//O loop "Onlooker ANGRY" que vivia AQUI foi REMOVIDO: ele nao tinha guard nenhum -- o proprio
+	//assassino (amigo da vitima) se enfurecia com o proprio crime, duelo amistoso enfurecia a plateia
+	//e morte por gravidade/ambiente (creditada pelo killer_stuff via last_attkd_sig) tambem disparava.
+	//A raiva por MORTE de amigo agora mora SO no Death() (Death.dm), que valida igual a raiva de KO:
+	//killer capturado em combate REAL (combatTag/IsInFight) + inimigo de verdade (nao-amigo) + M != killer.
 	emit_Sound('groundhit2.wav')
 	buudead=0
 	Death()
