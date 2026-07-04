@@ -18,8 +18,12 @@ mob/proc/update_my_contact()
 		A.c_class = Class
 		A.c_gender = pgender
 		A.c_age = round(Age)
+		A.last_snap = world.time
+		A.portrait_ver++
+		A.portrait_cache = null
 	else
 		var/obj/Contact/A=contact_list["[signature]"]
+		if(world.time < A.last_snap + 600) return //re-fotografa no maximo 1x/min (a proximidade chama isto direto)
 		A.name="[name] ([displaykey])"
 		A.overlays = overlays
 		for(var/bc in vis_contents)
@@ -30,6 +34,38 @@ mob/proc/update_my_contact()
 		A.c_class = Class
 		A.c_gender = pgender
 		A.c_age = round(Age)
+		A.last_snap = world.time
+		A.portrait_ver++ //a "foto" mudou: invalida o retrato e o cache de envio dos clients
+		A.portrait_cache = null
+
+//RETRATO "como visto da ultima vez": achata o snapshot do Contact (icone + overlays) num /icon
+//pra aba People (HTML). Cache invalidado quando o update_my_contact re-fotografa.
+proc/contact_portrait(obj/Contact/A)
+	if(!istype(A)) return null
+	if(A.portrait_cache) return A.portrait_cache
+	var/icon/P
+	if(A.icon) P = new(A.icon, "", SOUTH, 1)
+	else return null
+	for(var/o in A.overlays) //entradas de overlays sao appearances: le-se icon/icon_state via cast de image
+		var/image/im = o
+		if(!im || !im.icon) continue
+		var/icon/OI = new(im.icon, "[im.icon_state]", SOUTH, 1)
+		P.Blend(OI, ICON_OVERLAY)
+	P.Scale(64, 64)
+	A.portrait_cache = P
+	return P
+
+//envia o retrato pro client (1x por versao da foto; nome do arquivo = ct<signature>.png)
+client/var/list/ct_rsc_ver = null
+mob/proc/ui_people_rsc(obj/Contact/c)
+	if(!client || !istype(c)) return 0
+	var/icon/P = contact_portrait(c)
+	if(!P) return 0
+	if(!islist(client.ct_rsc_ver)) client.ct_rsc_ver = list()
+	if(client.ct_rsc_ver["[c.signature]"] != "[c.portrait_ver]")
+		client.ct_rsc_ver["[c.signature]"] = "[c.portrait_ver]"
+		src << browse_rsc(P, "ct[c.signature].png")
+	return 1
 
 mob/proc/check_relation(var/mob/M,list/L)
 	if(isnull(known_contact_list["[M.signature]"])) return FALSE
@@ -63,6 +99,9 @@ obj/Contact
 	var/c_class = "?"
 	var/c_gender = "?"
 	var/c_age = 0
+	var/portrait_ver = 0            //versao da "foto" (bump a cada re-fotografada; controla o re-envio pros clients)
+	var/tmp/icon/portrait_cache = null //retrato achatado (icone+overlays) da ULTIMA vez visto -- cache de servidor
+	var/tmp/last_snap = 0           //world.time da ultima re-fotografada (a proximidade re-chama; max 1x/min)
 	canGrab=0
 	IsntAItem = 1
 	New()

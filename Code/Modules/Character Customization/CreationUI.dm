@@ -148,6 +148,7 @@ mob/proc/html_race_pick()
 		if(!rIcon["[nR.racename]"])
 			rIcon["[nR.racename]"] = nR.icon
 			rDesc["[nR.racename]"] = "[nR.desc]"
+	rIcon["Saiyan"] = 'NewPaleMale.dmi' //card do Saiyajin usa o corpo-base padrao (o icone do /obj/race destoava)
 	var/list/pIcon = list()
 	for(var/ptype in list(/obj/Planets/Earth, /obj/Planets/Namek, /obj/Planets/Vegeta, /obj/Planets/Heaven, /obj/Planets/Hell))
 		var/obj/Planets/nP = new ptype(null, 1)

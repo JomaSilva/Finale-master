@@ -329,7 +329,7 @@ mob/proc/ui_tab_sense()
 			if(D.expressedBP <= 5) continue
 			if(D.z != z || get_dist(src, D) > 15) continue
 			shown |= D
-			var/nm = check_familiarity(D) ? html_encode(D.name) : "<span class='mut'>??? ([D.signature])</span>"
+			var/nm = (known_contact_list["[D.signature]"] || check_familiarity(D)) ? html_encode(D.name) : "<span class='mut'>??? ([D.signature])</span>" //quem voce CONHECE aparece pelo nome
 			h += ui_row(nm, "[round((D.expressedBP/max(expressedBP,1))*100,1)]% pwr <span class='mut'>&middot; [round(D.HP)]% hp</span>", "")
 	//gotsense2: planet-wide directional read
 	if(gotsense2)
@@ -337,7 +337,7 @@ mob/proc/ui_tab_sense()
 			if(D == src || (D in shown) || D.isconcealed || D.Race == "Android") continue
 			if(D.expressedBP <= 5 || D.z != z) continue
 			shown |= D
-			var/nm = check_familiarity(D) ? html_encode(D.name) : "<span class='mut'>??? ([D.signature])</span>"
+			var/nm = (known_contact_list["[D.signature]"] || check_familiarity(D)) ? html_encode(D.name) : "<span class='mut'>??? ([D.signature])</span>"
 			h += ui_row(nm, "[round((D.expressedBP/max(expressedBP,1))*100,1)]% pwr <span class='mut'>&middot; [get_dist(src,D)] tiles [sense_dir_word(get_dir(src,D))]</span>", "")
 	//gotsense3: galaxy-wide rough location of powerful beings
 	if(gotsense3)
@@ -345,7 +345,7 @@ mob/proc/ui_tab_sense()
 			if(D == src || (D in shown) || D.Race == "Android") continue
 			if(D.expressedBP <= 5000000) continue
 			shown |= D
-			var/nm = check_familiarity(D) ? html_encode(D.name) : "<span class='mut'>??? ([D.signature])</span>"
+			var/nm = (known_contact_list["[D.signature]"] || check_familiarity(D)) ? html_encode(D.name) : "<span class='mut'>??? ([D.signature])</span>"
 			h += ui_row(nm, "[round((D.BP/max(BP,1))*100,1)]% pwr <span class='mut'>&middot; (?,?,z[D.z])</span>", "")
 	if(!shown.len)
 		h += "<div class='mut' style='padding:8px'>You sense no notable presences.</div>"
@@ -488,8 +488,11 @@ mob/proc/ui_tab_people()
 		if(!istype(c)) continue
 		found++
 		var/fpts = friendship["[c.signature]"]
-		h += ui_row(html_encode(c.name), html_encode("[acquaintance_label(fpts)] ([round(fpts)])"), "")
-		h += "<div class='row'><span class='mut'>&nbsp;&nbsp;[html_encode("[c.c_race] / [c.c_class]")]</span></div>"
+		var/haspic = ui_people_rsc(c) //retrato "como visto da ultima vez" (Contacts.dm; enviado 1x por versao da foto)
+		h += "<div class='row' style='align-items:center'>"
+		if(haspic) h += "<img src='ct[c.signature].png' width='48' height='48' style='margin-right:9px;background:#0b0d11;border:1px solid #262b35;border-radius:6px'>"
+		h += "<span class='k'>[html_encode(c.name)]<br><span class='mut'>[html_encode("[c.c_race] / [c.c_class]")] &middot; como visto da ultima vez</span></span>"
+		h += "<span class='v'>[html_encode("[acquaintance_label(fpts)] ([round(fpts)])")]</span></div>"
 	if(!found) h += "<div class='row'><span class='mut'>You haven't met anyone memorable yet.</span></div>"
 	return jointext(h, "")
 

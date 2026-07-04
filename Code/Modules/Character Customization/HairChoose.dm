@@ -33,22 +33,26 @@ mob/proc/WindowRemoveVerbs()
 	src.contents -= /obj/hairwindowverbs
 	usr.contents -= /obj/hairwindowverbs
 //TELA HTML de cabelo (motor em CreationUI.dm): cada card mostra o SEU corpo com o estilo
-//JA NA SUA COR. A lista de estilos vem do hairBaseToChoice (fonte unica: icone-base -> nome
-//do menu; estilos novos entram la + no selecthair, como sempre) + Bald.
+//JA NA SUA COR. O catalogo vem de hair_style_catalog() -- LITERAIS COMPILADOS: file("nome.dmi")
+//em runtime procura o caminho literal no disco e os .dmi de cabelo moram em subpastas (so o
+//compilador os acha via FILE_DIR), entao montar preview por string quebrava em runtime.
 mob/proc/HairChoice()
-	var/list/hlabels = list("Bald")
-	var/list/hicons = list(null)
-	for(var/base in hairBaseToChoice)
-		var/hn = hairBaseToChoice[base]
-		if(hn in hlabels) continue
+	var/list/cat = hair_style_catalog()
+	var/list/hlabels = list()
+	var/list/hicons = list()
+	for(var/hn in cat)
 		hlabels += hn
+		var/hbase = cat[hn]
+		if(isnull(hbase)) //Bald
+			hicons += null
+			continue
 		var/icon/P
 		if(icon) P = new(icon, "", SOUTH, 1) //o corpo escolhido no passo anterior (ou o atual, no Change_Hair)
 		else P = new('NewPaleMale.dmi', "", SOUTH, 1)
 		var/hst = ""
-		var/list/hsts = icon_states(file(base))
+		var/list/hsts = icon_states(hbase)
 		if(islist(hsts) && hsts.len && !("" in hsts)) hst = "[hsts[1]]"
-		var/icon/HI = new(file(base), hst, SOUTH, 1)
+		var/icon/HI = new(hbase, hst, SOUTH, 1)
 		HI.Blend(rgb(hairred, hairgreen, hairblue), ICON_ADD) //a cor escolhida no passo do cabelo
 		P.Blend(HI, ICON_OVERLAY)
 		hicons += P
@@ -58,13 +62,8 @@ mob/proc/HairChoice()
 	hair = hpick
 	selecthair() //aplica o estilo (SetHair) e grava o hairtypeSaved
 
-mob/proc/HairChoice_legacy_unused() //janela nativa antiga (miscwindow/DummyHair): FORA DE USO, mantida so como referencia dos estilos
-	winshow(usr,"miscwindow", 1)
-	inAwindow = 1
+mob/proc/hair_style_catalog() //nome do estilo -> icone-base (a lista DummyHair antiga virou o CATALOGO: e a unica fonte com os literais .dmi reais)
 	dummyhairlist = list()
-	contents += new/obj/hairwindowverbs
-	hair = null
-	//var/W = "miscwindow"
 	var/obj/DummyHair/Bald = new/obj/DummyHair
 	Bald.hairtype = "Bald"
 	Bald.hairicon = null
@@ -309,15 +308,11 @@ mob/proc/HairChoice_legacy_unused() //janela nativa antiga (miscwindow/DummyHair
 	Bedhead.hairicon = 'Hair Bedhead.dmi'
 	dummyhairlist +=Bedhead
 	//
-	sleep(4)
-	var/dummyhairs = 0
+	var/list/cat = list()
 	for(var/obj/DummyHair/S in dummyhairlist)
-		S.hairicon += rgb(hairred,hairgreen,hairblue)
-		S.overlays -= S.overlays
-		S.overlays += S.hairicon
-		src<<output(S,"miscwindow.maingrid: [++dummyhairs]")
-	while(inAwindow)
-		sleep(5)
+		cat["[S.hairtype]"] = S.hairicon
+	dummyhairlist = list()
+	return cat
 mob/proc/selecthair()
 	//usr << "Debug: Done (If you see this message, everything is working fine! Report it if next time this doesn't show!)"
 	if(istext(hair)) hairtypeSaved = hair //remember the menu choice so the hairstyle can be re-applied on load (RefreshHair) when SSJ/SSJ2 hair icons change in code

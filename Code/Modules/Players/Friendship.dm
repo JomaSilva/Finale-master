@@ -39,6 +39,7 @@ mob/proc/accrue_friendship()
 			friendship["[M.signature]"] = min(cur + FRIEND_RATE, 200) //already friends: closeness keeps growing toward 'Bonded'
 		else
 			friendship["[M.signature]"] = min(cur + FRIEND_RATE, ACQUAINTANCE_CAP) //not friends yet: proximity caps at acquaintance until a friend request is accepted
+		spawn M.update_my_contact() //estar VENDO a pessoa re-fotografa a ficha dela (throttle interno de 1x/min): a aba People mostra "como visto da ultima vez"
 		if(isnull(known_contact_list["[M.signature]"]) && contact_list["[M.signature]"])
 			known_contact_list["[M.signature]"] = contact_list["[M.signature]"] //seeing someone often makes them a known person (with their last snapshot)
 
