@@ -1,7 +1,7 @@
 mob/var
 	BPBoost = 1 //BP boost that is ONLY to be used with ascension related things. Dynamic.
 
-	BPBoostCap = 200
+	BPBoostCap = 20 //teto da Ascensao (era 200): as racas SEM formas chegam a no maximo 20x. OBS: a var e POR-MOB e persiste no save -- por isso a formula do Auto_Gain/NPCAscension tambem crava min(...,20) (pega personagens antigos salvos com 200).
 	//Var that should be modified. On character creation this might be set to a formula that takes your BPmod and mults it by a hundred or something.
 
 	//Now, this variable below controls the RATE it inflates an individual's BP. Humans, for instance, will have a var of 0.5. I.E. their BPBoost will grow at half
@@ -72,6 +72,10 @@ mob/Admin3
 
 mob/proc/Auto_Gain()
 	set waitfor = 0
+	if(bio_lab_born && bio_stage == 1) //LARVA de bio-androide: a carapaca SUPRIME a Ascensao (senao o BPBoost de ate ~317x montava sobre a restricao e a larva nascia um monstro em vez de expressar so 10% do base)
+		BPBoost = 1
+		return
+	if(BPBoost > 20) BPBoost = 20 //teto 20x RETROATIVO: o Auto_Gain nunca REDUZIA o BPBoost (as branches so sobem) -- sem isto, players antigos com 127x-317x salvos ficariam acima do teto pra sempre
 	var/BPprog = 0
 	if(Race=="Frost Demon"||Parent_Race=="Frost Demon") BPprog = 15
 	if(BP>=1000000 || BPprog==15)
@@ -84,7 +88,7 @@ mob/proc/Auto_Gain()
 				var/BPascenprog = min((BPprog*ascensionmodopf),ascensionmod1) //caps at 5 million. 15 mult cap
 				if(BPprog>=74) BPascenprog *= ascensionmod2 //31.875 mult cap
 				if(BPprog>=150) BPascenprog *= (((BPprog - 150) / ascensionmod3) + ascensionmodtpf) //127.5 mult cap
-				nuBPBoost = min(max(1,BPascenprog),BPBoostCap)
+				nuBPBoost = min(max(1,BPascenprog),BPBoostCap,20) //teto 20x cravado: BPBoostCap persiste no save (chars antigos vieram com 200)
 				nuBPBoost *= (GlobalBPBoost * log(ascensionascmodlg,ascBPmod))
 				if(nuBPBoost>=(1.1*BPBoost))//smoothing code. goal is this: if you were to jump from a bpboost of like 2 to suddenly 5, it'll instead slowly increment by 0.01 every second, making the transition a bit smoother.
 					if(!BPincreasing)

@@ -111,7 +111,8 @@ mob/var
 	list/mind_snap_limbs = null
 mob/var/tmp
 	datum/mind_session/mind_session = null
-	obj/mind_dummy/mind_dummy_ref = null
+	mob/npc/mind_dummy/mind_dummy_ref = null
+	mob/npc/mind_dummy/pilot_dummy_ref = null //o "corpo no leme" enquanto pilota a nave (ShipVessel.dm)
 
 //ganho de BP dentro da mente = 1/4 (multiplicado nos *_Gain, igual ao htc_gain_mult)
 mob/proc/mind_gain_mult()
@@ -119,12 +120,51 @@ mob/proc/mind_gain_mult()
 	return 1
 
 // ---------------------------------------------------------------------------
-// o dummy que fica meditando no lugar do corpo
+// o CORPO que fica para tras (meditando / no leme da nave): um mob de verdade --
+// da pra SENTIR o ki dele (Sense le o expressedBP) e da pra BATER nele: qualquer
+// golpe QUEBRA o transe/controle e devolve o jogador ao corpo na hora.
 // ---------------------------------------------------------------------------
-obj/mind_dummy
+mob/npc/mind_dummy
+	hasAI = 0            //nao anda, nao luta: e um corpo em transe
+	AIAlwaysActive = 0
+	monster = 0
+	attackable = 1       //um corpo REAL: pode ser atacado (o golpe acorda o dono)
+	move = 0
 	density = 1
+	mindswappable = 0
+	HasSoul = 0
+	BP_Unleechable = 1
+	itemrarity = 0
 	Savable = 0
-	var/datum/mind_session/session = null
+	var
+		tmp/mob/owner = null
+		tmp/datum/mind_session/session = null
+		tmp/wake_mode = 1 //1 = meditacao profunda (mind_exit); 2 = piloto de nave (return_to_interior)
+		tmp/woke = 0
+	NPCTicker() //BP fica PINADO no que o dono tinha (o ticker base puxaria pro AverageBP)
+		set waitfor = 0
+		AIRunning = 0
+	refresh_combat_tag() //QUALQUER golpe (mesmo esquivado) dispara isto na vitima -> acorda o dono
+		..()
+		spawn wake_owner()
+	mobDeath() //algo obliterou o corpo antes do wake processar: acorda mesmo assim
+		spawn wake_owner()
+		..()
+	proc/wake_owner()
+		if(woke) return
+		woke = 1
+		var/mob/O = owner
+		if(!O) return
+		if(wake_mode == 2) //piloto: devolve o controle ao corpo na ponte
+			if(O.piloting_ship && O.piloted_ship)
+				to_chat(O, "<font color=#88ccff><b>Algo atinge seu corpo na ponte!</b> Voce retoma o controle imediatamente!")
+				to_chat(view(src), "<font color=#88ccff>[name] desperta no leme!")
+				O.piloted_ship.return_to_interior(O)
+			return
+		if(O.mind_session) //meditacao: quebra o transe
+			to_chat(O, "<font color=#b080ff><b>Algo atinge seu corpo la fora!</b> O transe se quebra e voce desperta!")
+			to_chat(view(src), "<font color=#b080ff>[name] desperta bruscamente da meditacao!")
+			O.mind_exit(1)
 
 // ---------------------------------------------------------------------------
 // a sessao (uma "mente" aberta; compartilhada se meditarem lado a lado)
@@ -275,6 +315,7 @@ mob/npc/MindClone
 	dropsCorpse = 0
 	itemrarity = 0
 	aggro_dist = 40
+	ai_no_powerup = 1    //BP PINADO DE VERDADE: sem npc_power_up (o surto chamava NPCAscension -> BPBoost ate 200x p/ BP>=1M -> clone "absurdamente" mais forte quando o dono transformava)
 	behavior_vals = list(90, 70, 0, 70) //destemido, agressivo, SEM misericordia (e a sua sombra...)
 	var/mind_seed_bp = 0
 	//BP PINADO no poder do meditador: NAO usa o NPCTicker base (que inflaria pro rand(AverageBP*0.5...))
@@ -317,7 +358,7 @@ mob/proc/mind_enter()
 		return
 	//meditando ao lado do CORPO de alguem ja em transe? entra na MESMA mente
 	var/datum/mind_session/S = null
-	for(var/obj/mind_dummy/D in oview(1, src))
+	for(var/mob/npc/mind_dummy/D in oview(1, src))
 		if(D.session && D.session.active)
 			S = D.session
 			break
@@ -334,12 +375,24 @@ mob/proc/mind_enter()
 	mind_premurder = murderToggle
 	murderToggle = 0
 	mind_active = 1
-	//o corpo continua "meditando": um dummy identico fica no lugar
-	var/obj/mind_dummy/D2 = new(loc)
+	//o corpo continua "meditando": um CORPO real (mob atacavel/sentivel) fica no lugar
+	var/oldspawns = npcspawnson //spawn dirigido por jogador: ignora o toggle de spawns ambientes
+	npcspawnson = 1
+	var/mob/npc/mind_dummy/D2 = new(loc)
+	npcspawnson = oldspawns
 	D2.appearance = appearance
+	for(var/obj/overlay/hairs/HO in vis_contents) //CABELO/RABO/OLHOS nao vem no appearance (vis_contents):
+		D2.overlays += HO                          //sem isto o corpo meditando ficava CARECA (ex.: SSJ sem cabelo)
+	for(var/obj/overlay/eyes/EO in vis_contents)
+		D2.overlays += EO
 	D2.icon_state = "Meditate"
+	D2.dir = SOUTH
 	D2.name = name
+	D2.owner = src
 	D2.session = S
+	D2.wake_mode = 1
+	D2.BP = max(round(expressedBP), 1) //o Sense le o ki do corpo em transe
+	D2.expressedBP = D2.BP
 	mind_dummy_ref = D2
 	//acorda o estado mecanico (dentro da mente ele LUTA) e mergulha
 	med = 0
@@ -362,7 +415,7 @@ mob/proc/mind_exit(forced = 0)
 	var/tx = mind_ret_x
 	var/ty = mind_ret_y
 	var/tz = mind_ret_z
-	var/obj/mind_dummy/D = mind_dummy_ref
+	var/mob/npc/mind_dummy/D = mind_dummy_ref
 	mind_dummy_ref = null
 	if(D)
 		tx = D.x

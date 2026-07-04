@@ -417,6 +417,8 @@ datum/boss_events
 		if(M17)
 			npc_apply_hair(M17, "Long", BEV_A17_HAIR_R, BEV_A17_HAIR_G, BEV_A17_HAIR_B)
 			M17.Race = "Android" // cosmetico (o genoma ja foi construido); nao afeta os stats
+			M17.inf_ki = 1   //nucleo de energia infinita: SO os androides 17/18 tem
+			M17.inf_stam = 1
 			npc_wear_simple(M17, /obj/items/clothes/LongSleeveShirt) //roupa casual (nada de Namek/armadura Saiyajin)
 			a17 = M17
 			a17_alive = 1
@@ -424,6 +426,8 @@ datum/boss_events
 		if(M18)
 			npc_apply_hair(M18, "Long", BEV_A18_HAIR_R, BEV_A18_HAIR_G, BEV_A18_HAIR_B) // loira via codigo
 			M18.Race = "Android"
+			M18.inf_ki = 1
+			M18.inf_stam = 1
 			npc_wear_simple(M18, /obj/items/clothes/ShortSleeveShirt) //roupa casual
 			a18 = M18
 			a18_alive = 1
@@ -459,6 +463,7 @@ datum/boss_events
 			return
 		var/mob/npc/Enemy/EventBoss/B = init_event_boss(planet_spawn_turf(BEV_BUU_PLANET), "Majin", "Corrupted Majin", BEV_BUU_PLANET, BEV_BUU_BP, "male", BEV_BUU_ICON, "Majin Boo", "boo")
 		if(!B) return
+		B.inf_stam = 1 //Kid Boo nunca cansa (stamina infinita; o Ki dele e NORMAL)
 		boss4 = B
 		s4_state = 2
 		if(resume) bev_announce("Majin Boo continua a espalhar o caos pela Terra!")
@@ -768,6 +773,8 @@ datum/boss_events
 				if(M17)
 					npc_apply_hair(M17, "Long", BEV_A17_HAIR_R, BEV_A17_HAIR_G, BEV_A17_HAIR_B)
 					M17.Race = "Android"
+					M17.inf_ki = 1
+					M17.inf_stam = 1
 					npc_wear_simple(M17, /obj/items/clothes/LongSleeveShirt)
 					a17 = M17
 			if(a18_alive && !a18)
@@ -775,10 +782,13 @@ datum/boss_events
 				if(M18)
 					npc_apply_hair(M18, "Long", BEV_A18_HAIR_R, BEV_A18_HAIR_G, BEV_A18_HAIR_B)
 					M18.Race = "Android"
+					M18.inf_ki = 1
+					M18.inf_stam = 1
 					npc_wear_simple(M18, /obj/items/clothes/ShortSleeveShirt)
 					a18 = M18
 		if(s3_state == 2) spawn_cell(s3_cell_form, 1)
 		if(s3_state == 5) spawn_cell(4) // o timer de 1 min nao sobrevive ao reboot: ele simplesmente ja volta
+		if(s4_state == 2) spawn_boo(1) //Boo ativo no reboot NUNCA voltava (faltava esta linha)
 
 	// zera TUDO (verb de admin): despawna bosses vivos e apaga o savefile
 	proc/reset_all()

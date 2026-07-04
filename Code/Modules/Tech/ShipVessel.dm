@@ -216,6 +216,10 @@ obj/PlayerShip
 		M.spacesuit = M.pilot_old_spacesuit
 		M.flight = M.pilot_old_flight //restore pre-pilot flight state
 		M.isflying = M.pilot_old_flight
+		if(M.pilot_dummy_ref) //remove o corpo do leme ANTES do return_to_interior devolver o mob pro mesmo tile
+			var/mob/npc/mind_dummy/HB = M.pilot_dummy_ref
+			M.pilot_dummy_ref = null
+			if(HB) del(HB)
 		if(M.client)
 			M.client.eye = M
 			M.client.perspective = MOB_PERSPECTIVE
@@ -322,6 +326,24 @@ obj/ShipControl
 		usr.client.eye = ship_ref
 		usr.loc = locate(ship_ref.x, ship_ref.y, ship_ref.z) //ride the ship
 		ship_ref.pilot_mob = usr
+		//um CORPO REAL fica no leme (atacavel/sentivel): bater nele devolve o controle ao piloto na hora
+		var/oldspawns = npcspawnson
+		npcspawnson = 1
+		var/mob/npc/mind_dummy/HB = new(usr.pilot_return_loc)
+		npcspawnson = oldspawns
+		if(HB)
+			HB.appearance = usr.appearance
+			HB.invisibility = 0 //o appearance copiou a invisibilidade 101 recem-setada no piloto: o corpo no leme e VISIVEL
+			for(var/obj/overlay/hairs/HO in usr.vis_contents) HB.overlays += HO //cabelo/rabo (vis_contents nao vem no appearance)
+			for(var/obj/overlay/eyes/EO in usr.vis_contents) HB.overlays += EO
+			HB.icon_state = ""
+			HB.dir = usr.dir
+			HB.name = usr.name
+			HB.owner = usr
+			HB.wake_mode = 2 //golpe no corpo = volta ao controle do corpo (return_to_interior)
+			HB.BP = max(round(usr.expressedBP), 1) //o Sense le o ki do corpo no leme
+			HB.expressedBP = HB.BP
+			usr.pilot_dummy_ref = HB
 		to_chat(usr, "<font color=#88ccff>You take the helm. Move to steer the ship; fly into a planet to land. Click the ship to return to the bridge.</font>")
 		spawn ship_ref.pilot_follow()
 

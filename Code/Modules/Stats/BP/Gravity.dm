@@ -29,7 +29,7 @@ mob/proc/Grav_Gain()
 
 	//--- MASTERY ACCUMULATION: you only raise your acclimation ceiling by training ABOVE it. ---
 	if(gravity > GravMastered)
-		GravMastered += 0.001 + BPTick*gravity*GravMod*GlobalGravGain*0.02
+		GravMastered += 0.001 + (BPTick*10)*gravity*GravMod*GlobalGravGain*0.02 //x10 compensa o nerf global do BPTick: maestria de gravidade NAO e ganho de BP e fica na taxa antiga
 		GravMastered = min(gravity,GravMastered,gravitycap)
 //Grav training (in the show and as weight training) is destructive: pushing far above your mastery still
 //hurts (see Grav_Handler tiers 2/3), but the PAYOFF now tracks the gravity you can actually withstand.

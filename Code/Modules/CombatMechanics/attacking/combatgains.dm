@@ -21,6 +21,7 @@ mob/proc/gain_zenkai(enemyBP) //enemyBP = the foe's EFFECTIVE power (expressedBP
 	var/myPower = max(expressedBP, BP) //compare EFFECTIVE power on BOTH sides: a transformed foe with a lower BASE BP still counts as "stronger". Using base BP here is why high-base builds (notably Primal Saiyan) got no Zenkai from a transformed opponent.
 	if(!enemyBP || enemyBP <= myPower) return //only a genuinely stronger (effective) enemy triggers Zenkai
 	if(dead) return
+	if(mind_z && z == mind_z) return //dentro da DIMENSAO MENTAL nada e real: ferimento mental nao gera Zenkai
 	if(!has_zenkai()) return //Saiyan DNA only
 	if(world.realtime < zenkaiReady) //the 1h cooldown is still ticking (realtime = wall-clock, survives logout/reboot)
 		if(client && world.realtime >= zenkaiWarn) //defeated by a stronger foe but Zenkai isn't recharged yet -> warn (rate-limited)

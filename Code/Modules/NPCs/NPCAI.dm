@@ -62,6 +62,8 @@ mob
 			ai_intelligence = NPC_AI_INT_DEFAULT //0-100: chance de usar cada decisao esperta (economia de ki, defesa, recarga)
 			ai_aggression = NPC_AI_AGGR_DEFAULT  //0-100: chance de entrar no modo finalizador com o alvo quase caido
 			ai_no_powerup = 0                    //1 = nunca usa o power-up de tiers (bosses de evento tem BP fixo)
+			inf_ki = 0                           //1 = nucleo de energia INFINITA (Ki sempre cheio; exclusivo dos Androides 17/18)
+			inf_stam = 0                         //1 = stamina infinita (Androides 17/18 e Kid Boo)
 			//
 			hasAI = 1
 			AIRunning=0
@@ -265,6 +267,10 @@ mob
 
 			NPCStaminaTick() //real stamina: drains under sustained combat, recovers between exchanges
 				if(!maxstamina) maxstamina = 100
+				if(inf_ki && MaxKi) Ki = MaxKi //nucleo de energia infinita (Androides 17/18): o tanque nunca baixa
+				if(inf_stam) //stamina infinita (Androides 17/18 e Kid Boo): nunca cansa
+					stamina = maxstamina
+					return
 				if(IsInFight)
 					stamina = max(0,stamina - maxstamina * 0.006 * max(staminadrainMod,0.1))
 				else

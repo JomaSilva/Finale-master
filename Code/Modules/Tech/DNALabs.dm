@@ -38,7 +38,7 @@
 #define DNL_LAB_HEALTH 8               // golpes para destruir um laboratorio
 #define DNL_BIO_BREW_MONTHS 0.1        // gestacao do bio-androide: 0.1 Year = 1 MES in-game
 #define DNL_BIO_BP_SHARE 0.5           // BP inicial = esta fracao do doador mais forte
-#define DNL_BIO_LARVA_RESTRICT 20      // larva: BPrestriction 20 => ~5% do BP expresso
+//DNL_BIO_LARVA_RESTRICT (larva expressa 1/N do base) mora em "Code\1A Defines.dm": o teto duro do powerlevel (base.dm) tambem o usa e os includes sao re-ordenados alfabeticamente
 #define DNL_BIO_MAX_DNA 4              // maximo de DNAs por fornada
 #define DNL_BIO_EVO_PLAYERS 3          // absorver 3 JOGADORES evolui...
 #define DNL_BIO_EVO_ANDROIDS 1         // ...ou 1 ANDROIDE
@@ -69,41 +69,47 @@ mob/var
 	tmp/bio_evolving = 0
 
 // ---------------------------------------------------------------------------
-// CONSTRUCAO
+// CONSTRUCAO -- via ANDROID CREATION MAINFRAME (arvore de tech; Android_Creation.dm).
+// O antigo verb Build_DNA_Lab ficava na aba "Tech", que a UI HTML nova NAO renderiza
+// (por isso os labs "nao apareciam") -- o mainframe agora e o caminho: compre na
+// arvore de tech, aparafuse (Bolt) e instale o laboratorio em cima dele.
+// (O verb mora AQUI e nao em Android_Creation.dm porque usa o define DNL_INT_REQ.)
 // ---------------------------------------------------------------------------
-mob/verb/Build_DNA_Lab()
-	set category = "Tech"
+obj/items/Android_Creation_Mainframe/verb/Instalar_Laboratorio()
+	set name = "Instalar Laboratorio"
+	set category = null
+	set src in oview(1)
+	if(!Bolted)
+		to_chat(usr, "Aparafuse o mainframe no chao primeiro (verb Bolt).")
+		return
 	if(!(usr.Race == "Human" || usr.Parent_Race == "Human"))
 		to_chat(usr, "So a engenhosidade HUMANA concebe maquinas assim.")
 		return
 	if(usr.techskill < DNL_INT_REQ)
-		to_chat(usr, "Voce precisa de pelo menos [DNL_INT_REQ] de inteligencia (Tech Skill) para projetar um laboratorio de DNA. (Atual: [round(usr.techskill)])")
+		to_chat(usr, "Voce precisa de pelo menos [DNL_INT_REQ] de inteligencia (Tech Skill) para instalar o laboratorio. (Atual: [round(usr.techskill)])")
 		return
-	var/choice = input(usr, "Construir qual laboratorio?", "DNA Lab") as null|anything in list("Lab 1 - Android Lab (transforma VOCE em androide)","Lab 2 - Bio-Android Lab (cria um bio-androide de DNAs)","Cancelar")
+	var/choice = input(usr, "Instalar qual laboratorio? (o mainframe e consumido na instalacao)", "DNA Lab") as null|anything in list("Lab 1 - Android Lab (transforma VOCE em androide)","Lab 2 - Bio-Android Lab (cria um bio-androide de DNAs)","Cancelar")
 	if(!choice || choice == "Cancelar") return
-	var/turf/T = get_step(usr, usr.dir)
-	if(!T || T.density)
-		to_chat(usr, "Nao ha espaco livre a sua frente.")
-		return
+	if(!Bolted || !isturf(loc)) return //re-checa: o input bloqueia e alguem pode ter desaparafusado/carregado o mainframe
+	var/turf/T = loc
 	if(findtext(choice, "Lab 1"))
 		var/obj/DNALab/Android/L = new(T)
 		L.owner_sig = usr.signature
 		L.owner_name = usr.name
-		to_chat(view(usr), "<font color=#66ddff>[usr] constroi um Android Lab!</font>")
+		to_chat(view(usr), "<font color=#66ddff>[usr] ergue um Android Lab sobre o mainframe!</font>")
 	else
 		var/obj/DNALab/Bio/L = new(T)
 		L.owner_sig = usr.signature
 		L.owner_name = usr.name
-		usr.has_dna_extractor = 1
-		usr.assignverb(/mob/keyable/verb/Extract_DNA)
-		to_chat(usr, "<font color=#66ddff>Voce recebeu o DNA EXTRACTOR: use-o em players nocauteados para coletar amostras de raca.</font>")
-		to_chat(view(usr), "<font color=#66ddff>[usr] constroi um Bio-Android Lab!</font>")
+		to_chat(usr, "<font color=#66ddff>Para coletar amostras, construa um <b>DNA CONTAINER</b> na janela de tech e use-o em players nocauteados.</font>")
+		to_chat(view(usr), "<font color=#66ddff>[usr] ergue um Bio-Android Lab sobre o mainframe!</font>")
+	del(src) //o mainframe vira o laboratorio
 
 // ---------------------------------------------------------------------------
 // O objeto laboratorio (base)
 // ---------------------------------------------------------------------------
 obj/DNALab
-	icon = 'Lab.dmi'
+	icon = '64x64tech.dmi' //'Lab.dmi' NAO tem os states lab1/lab2 (virava o quadriculado de icone quebrado)
 	density = 1
 	SaveItem = 1
 	IsntAItem = 1
@@ -145,7 +151,7 @@ obj/DNALab
 // ---------------------------------------------------------------------------
 obj/DNALab/Android
 	name = "Android Lab"
-	icon_state = "lab1"
+	icon_state = "android_pod" //o pod de conversao (mesmo visual do mainframe que o gerou)
 
 	Click()
 		if(!usr || !usr.client || get_dist(usr, src) > 1) return
@@ -255,30 +261,75 @@ obj/items/DNA_Sample
 	var/dna_sig = ""
 	var/dna_bp = 0
 
-mob/keyable/verb/Extract_DNA(var/mob/M in oview(1))
-	set name = "Extract DNA"
-	set category = "Tech"
-	if(!usr.has_dna_extractor) return
-	if(!M || !M.client)
-		to_chat(usr, "So players tem DNA estavel o bastante para o extrator.")
-		return
-	if(!M.KO)
-		to_chat(usr, "O alvo precisa estar NOCAUTEADO para a extracao.")
-		return
-	var/obj/items/DNA_Sample/S = new
-	S.dna_race = M.Race
-	S.dna_donor = M.name
-	S.dna_sig = M.signature
-	S.dna_bp = M.BP
-	S.name = "DNA: [M.Race] ([M.name])"
-	S.suffix = ""
-	usr.contents += S
-	to_chat(usr, "<font color=#66ddff>Amostra coletada: [M.Race] de [M.name].</font>")
-	to_chat(M, "<font color=red>[usr] extraiu uma amostra do seu DNA!</font>")
+//-------- DNA CONTAINER: a FERRAMENTA de coleta (craftavel na janela de tech) --------
+//O extrator nao e mais dado de graca ao construir o Lab 2: o jogador CRIA o container.
+//As amostras coletadas ficam guardadas DENTRO dele.
+obj/Creatables/DNA_Container
+	icon = 'props.dmi'
+	icon_state = "Closed"
+	cost = 50000
+	neededtech = 50
+	allowedRaces = list("Human") //so HUMANOS veem na janela de tech (mesma regra do mainframe)
+	desc = "Recipiente criogenico para amostras de DNA. Use-o em players NOCAUTEADOS para extrair e armazenar o DNA deles; leve as amostras ao Bio-Android Lab."
+	create_type = /obj/items/DNA_Container
+
+obj/items/DNA_Container
+	name = "DNA Container"
+	icon = 'props.dmi'
+	icon_state = "Closed"
+	desc = "Extrai e armazena amostras de DNA de alvos nocauteados."
+	verb/Extract_DNA()
+		set name = "Extract DNA"
+		set category = null
+		set src in usr //precisa estar CARREGANDO o container
+		//monta a lista de alvos NOS BRACOS DO VERB (o filtro "in oview(1)" no argumento de verb
+		//de ITEM avalia o centro de forma traicoeira -- player valido nao aparecia na lista)
+		var/list/targets = list()
+		for(var/mob/T in oview(1, usr))
+			if(!T.KO) continue //so nocauteados
+			if(!T.client && !T.isNPC) continue //corpo sem vida propria (projecoes/bonecos)
+			if(!T.Race || T.Race == "") continue //constructos sem raca definida
+			targets += T
+		if(!targets.len)
+			to_chat(usr, "Nenhum alvo valido ao alcance: o alvo precisa estar <b>NOCAUTEADO</b> a 1 tile de voce (player ou NPC com raca).")
+			return
+		var/mob/M = null
+		if(targets.len == 1) M = targets[1]
+		else M = input(usr, "Extrair o DNA de quem?", "DNA Container") as null|anything in targets
+		if(!M) return
+		if(!M.KO || get_dist(usr, M) > 1) //re-valida: o input bloqueia e o alvo pode ter acordado/saido
+			to_chat(usr, "O alvo escapou do alcance do extrator.")
+			return
+		var/obj/items/DNA_Sample/S = new
+		S.dna_race = M.Race
+		S.dna_donor = M.name
+		S.dna_sig = M.signature
+		S.dna_bp = M.BP
+		S.name = "DNA: [M.Race] ([M.name])"
+		S.suffix = ""
+		S.loc = src //a amostra fica guardada DENTRO do container
+		to_chat(usr, "<font color=#66ddff>Amostra coletada e armazenada no container: [M.Race] de [M.name].</font>")
+		to_chat(M, "<font color=red>[usr] extraiu uma amostra do seu DNA!</font>")
+	verb/Ver_Amostras()
+		set name = "Ver Amostras"
+		set category = null
+		set src in usr
+		var/n = 0
+		for(var/obj/items/DNA_Sample/S in src)
+			n++
+			to_chat(usr, "<font color=#66ddff>[n]. [S.name]</font>")
+		if(!n) to_chat(usr, "O container esta vazio.")
+
+//a amostra pertence ao jogador? (direto no inventario OU dentro de um container carregado)
+proc/dnl_sample_owned(obj/items/DNA_Sample/S, mob/U)
+	if(!S || !U) return 0
+	if(S.loc == U) return 1
+	if(istype(S.loc, /obj/items/DNA_Container) && S.loc:loc == U) return 1
+	return 0
 
 obj/DNALab/Bio
 	name = "Bio-Android Lab"
-	icon_state = "lab2"
+	icon_state = "advregen" //o tanque de incubacao avancado
 	var/brewing = 0
 	var/brew_ready_year = 0
 	var/creator_sig = ""
@@ -333,13 +384,18 @@ h1{font-size:20px;color:#59d0ff;letter-spacing:2px;margin:0 0 4px 0}
 		if(brewing)
 			html += "<div class='dna sel'><b>EXPERIMENTO EM GESTACAO...</b> A criatura estara pronta em breve. Proteja o laboratorio: destrui-lo cancela TUDO.</div>"
 		else
+			//amostras soltas no inventario E dentro de DNA Containers carregados
+			var/list/samples = list()
+			for(var/obj/items/DNA_Sample/S in U.contents) samples += S
+			for(var/obj/items/DNA_Container/C in U.contents)
+				for(var/obj/items/DNA_Sample/S in C) samples += S
 			var/found = 0
-			for(var/obj/items/DNA_Sample/S in U.contents)
+			for(var/obj/items/DNA_Sample/S in samples)
 				found++
 				var/is_sel = (S in menu_selected)
 				html += "<div class='dna[is_sel ? " sel" : ""]'><span class='race'>[S.dna_race]</span> — doador: [S.dna_donor] · <a href='byond://?src=\ref[src];pick=\ref[S]'>[is_sel ? "remover" : "usar este DNA"]</a></div>"
 			if(!found)
-				html += "<div class='dna'>Nenhuma amostra no inventario. Use o <b>Extract DNA</b> em players nocauteados.</div>"
+				html += "<div class='dna'>Nenhuma amostra. Construa um <b>DNA Container</b> na janela de tech e use o <b>Extract DNA</b> dele em players nocauteados.</div>"
 			html += "<div class='sub'>Selecionados: [menu_selected.len]/[DNL_BIO_MAX_DNA]</div>"
 			if(menu_selected.len >= 1)
 				html += "<a class='start' href='byond://?src=\ref[src];start=1'>INICIAR A CRIACAO</a>"
@@ -353,7 +409,7 @@ h1{font-size:20px;color:#59d0ff;letter-spacing:2px;margin:0 0 4px 0}
 		if(brewing) return
 		if(href_list["pick"])
 			var/obj/items/DNA_Sample/S = locate(href_list["pick"])
-			if(!S || S.loc != usr) return
+			if(!dnl_sample_owned(S, usr)) return //no inventario OU dentro de um DNA Container carregado
 			if(S in menu_selected) menu_selected -= S
 			else if(menu_selected.len < DNL_BIO_MAX_DNA) menu_selected += S
 			show_menu(usr)
@@ -362,7 +418,7 @@ h1{font-size:20px;color:#59d0ff;letter-spacing:2px;margin:0 0 4px 0}
 			brew_strongest_bp = 0
 			brew_has_saiyan = 0
 			for(var/obj/items/DNA_Sample/S in menu_selected)
-				if(S.loc != usr) continue
+				if(!dnl_sample_owned(S, usr)) continue
 				var/donor_bp = S.dna_bp
 				for(var/mob/P in player_list) //BP ATUAL do doador se estiver online (senao o da coleta)
 					if(P.signature == S.dna_sig)
@@ -423,22 +479,31 @@ proc/dnl_bio_hatch(mob/creator, obj/DNALab/Bio/L)
 	spawn creator.dnl_larva_watch()
 	to_chat(creator, "<font color=#66ddff><b>Voce abre os olhos pela primeira vez. Fraco. Uma LARVA. Em 1 dia sua carapaca se rompera... e o mundo conhecera o que voce realmente e.</b></font>")
 
-//larva -> Bio Android 1 apos 1 dia in-game (re-checado no login)
+//o AMADURECIMENTO em si (idempotente): chamado pelo watcher, pelo login E pelo fallback do powerlevel
+mob/proc/dnl_larva_mature()
+	if(!bio_lab_born || bio_stage != 1 || dead || bio_evolving) return
+	bio_evolving = 1 //latch: watcher + fallback podem disparar juntos
+	bio_stage = 2
+	BPrestriction = 1
+	icon = DNL_BIO1_ICON
+	oicon = DNL_BIO1_ICON
+	flick('flashtrans.dmi', src)
+	emit_Sound('powerup.wav')
+	statify()
+	powerlevel()
+	to_chat(view(src), "<font color=#66ddff><b>*A carapaca larval de [src] se rompe -- uma criatura de carapaca esverdeada emerge, inteira!*</b></font>")
+	to_chat(src, "<font color=#66ddff><b>Sua forma imperfeita esta completa: 100% do seu poder foi liberado.</b></font>")
+	bio_evolving = 0
+
+//larva -> Bio Android 1 apos 1 dia in-game. O watcher e a via NORMAL, mas ele morre com
+//uma morte/runtime e so re-armava no login -- por isso ha tambem o FALLBACK no powerlevel
+//(base.dm, bloco do teto da larva), que roda todo tick e nao tem como "morrer".
 mob/proc/dnl_larva_watch()
 	set waitfor = 0
 	while(src && bio_lab_born && bio_stage == 1 && !dead)
 		sleep(100)
 		if(world.realtime >= bio_mature_realtime)
-			bio_stage = 2
-			BPrestriction = 1
-			icon = DNL_BIO1_ICON
-			oicon = DNL_BIO1_ICON
-			flick('flashtrans.dmi', src)
-			emit_Sound('powerup.wav')
-			statify()
-			powerlevel()
-			to_chat(view(src), "<font color=#66ddff><b>*A carapaca larval de [src] se rompe -- uma criatura de carapaca esverdeada emerge, inteira!*</b></font>")
-			to_chat(src, "<font color=#66ddff><b>Sua forma imperfeita esta completa: 100% do seu poder foi liberado.</b></font>")
+			dnl_larva_mature()
 			break
 
 // ---------------------------------------------------------------------------
@@ -553,5 +618,17 @@ mob/proc/BioLabEvolve()
 mob/proc/dnl_login_check()
 	if(android_class == "absorb") assignverb(/mob/keyable/verb/Absorb_Ki)
 	if(android_class == "infinite") spawn dnl_start_infinite()
-	if(has_dna_extractor) assignverb(/mob/keyable/verb/Extract_DNA)
-	if(bio_lab_born && bio_stage == 1) spawn dnl_larva_watch()
+	//extrator: agora e o item DNA Container (o verb vive no item; nada a re-armar no login)
+	if(Race == "Bio-Android" || Parent_Race == "Bio-Android") //RETROATIVO: bios de saves antigos entram na regra NoAscension
+		NoAscension = 1
+		BPBoost = 1 //mata o boost de Ascensao salvo (~317x); com NoAscension o Auto_Gain nao o re-cria
+	if(bio_lab_born && bio_stage == 1)
+		//RETROATIVO: larvas nascidas ANTES do fix entram na regra atual ao logar --
+		//expressa 10% do base (BPrestriction novo) e ZERO Ascensao (BPBoost salvo/em
+		//transicao morre aqui; o gate no Auto_Gain mantem em 1 enquanto for larva)
+		BPrestriction = DNL_BIO_LARVA_RESTRICT
+		BPBoost = 1
+		if(!bio_mature_realtime) bio_mature_realtime = world.realtime + DAY_REAL_MINUTES * 600 //save antigo sem o timer: arma agora
+		statify()
+		powerlevel()
+		spawn dnl_larva_watch()

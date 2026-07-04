@@ -65,6 +65,7 @@ mob/npc/Enemy/TourneyFighter
 	isBlaster = 1           // habilidades basicas de ki (blast/barrage via npc_combat_action)
 	zanzoAI = 1             // usa aproximacao Zanzoken na luta
 	tourney_lock = 1
+	ai_no_powerup = 1       // BP na media dos inscritos DE VERDADE: sem surto (npc_power_up chamava NPCAscension -> BPBoost explosivo p/ chaves de 1M+)
 	behavior_vals = list(85, 65, 0, 65) // corajoso, agressivo, SEM misericordia, esperto
 	var/tourney_seed_bp = 0
 
@@ -593,13 +594,18 @@ datum/tournament/heaven
 			if("Androide 17")
 				M.icon = 'NewPaleMale.dmi'
 				npc_apply_hair(M, "Long", 10, 10, 10)
+				M.inf_ki = 1   //androides: nucleo de energia infinita (mesma regra dos bosses)
+				M.inf_stam = 1
 			if("Androide 18")
 				M.icon = 'NewPaleFemale.dmi'
 				npc_apply_hair(M, "Long", 255, 222, 120) //loira via codigo
+				M.inf_ki = 1
+				M.inf_stam = 1
 			if("Cell")
 				M.icon = 'Bio Android 3.dmi' //forma perfeita
 			if("Majin Boo")
 				M.icon = 'MajinForm5.dmi'
+				M.inf_stam = 1 //Kid Boo nunca cansa (Ki normal)
 		M.oicon = M.icon
 		var/bp = max(round(avgbp * rand(TRN_NPC_BP_MIN, TRN_NPC_BP_MAX) / 100), TRN_NPC_BP_FLOOR)
 		M.tourney_seed_bp = bp

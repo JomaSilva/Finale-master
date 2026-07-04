@@ -135,6 +135,13 @@ mob/proc/powerlevel()
 			if(godki_give_mult && SaiyanLineage != "Primal Saiyan") tempBP *= godki_give_mult //Primal nao recebe o boost de BP do God Ki (o God Ki dele so ativa o SSJ4 Limit Breaker)
 		expressedBP = (round(max((tempBP),1) * nnetBuff * angerBuff) + expressedAdd) * powerMod
 		if(zeni_revive_debuff_until && world.realtime < zeni_revive_debuff_until) expressedBP = round(expressedBP * 0.25) //debuff do revive por Zeni: BP em 25% por 1h
+		if(bio_lab_born && bio_stage == 1) //LARVA de bio-androide
+			//FALLBACK de amadurecimento: o watcher (dnl_larva_watch) morre numa morte/runtime e so
+			//re-armava no login -- o powerlevel roda TODO tick, entao a carapaca sempre rompe na hora
+			if(bio_mature_realtime && world.realtime >= bio_mature_realtime && !bio_evolving)
+				spawn dnl_larva_mature()
+			else if(expressedBP > BP / DNL_BIO_LARVA_RESTRICT) //TETO DURO de 10% do base
+				expressedBP = round(max(BP / DNL_BIO_LARVA_RESTRICT, 1)) //raiva/Ki>100%/buffs/formas NAO furam a carapaca (o BPrestriction sozinho era so um divisor -- multiplicadores empilhavam por cima)
 	if(KO) expressedBP = round(max(BP * 0.1,1)) //a knocked-out fighter is COMPLETELY EXPOSED: effective power collapses to 10% of base BP (attackers hit harder + always land)
 
 	relBPmax = BP * (1 + UPMod) * relcaprate //PERSONAL ceiling from own BP+Potential (no server AverageBP). relcaprate = global growth-speed knob.

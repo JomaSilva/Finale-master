@@ -1,4 +1,5 @@
 mob/proc/statbio()
+	NoAscension = 1 //Bio-Android e raca de FORMAS (Bio 1->2->3 = x2/x4, + SSJ com DNA Saiyajin): a Ascensao multiplicativa NAO se soma (mesma regra do Saiyajin) -- sem isto ele era o unico com formas E Ascensao (~317x) ao mesmo tempo
 	if(!genome)
 		genome = new/datum/genetics/BioAndroid(/datum/genetics/proto/BioAndroid)
 		if(!Class) //type is RANDOM (like the Saiyan class), not chosen: ~20% Majin-type, else Cell-type

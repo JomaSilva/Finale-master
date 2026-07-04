@@ -142,8 +142,40 @@ mob/proc/majin_absorb(mob/M)
 	var/py = rand(8, psz - 8)
 	M.absorbed_into = src
 	M.loc = locate(px, py, iz)
-	M.KO = 0 // alive and conscious inside the pocket, free to act and to die here
+	//o prisioneiro chega VIVO, ACORDADO e DESTRAVADO: ele foi absorvido NOCAUTEADO (e muitas vezes
+	//agarrado / em knockback) -- o "KO = 0" cru de antes deixava TODOS os travamentos do KO/agarrao
+	//pendurados, e o prisioneiro ficava parado sem conseguir lutar (o bug dos "99% das vezes")
+	if(M.grabber && ismob(M.grabber)) //solta o agarrao pendente (o Majin costuma agarrar pra absorver)
+		var/mob/G = M.grabber
+		G.grabbee = null
+		G.attacking = 0
+		G.canfight = 1
+	M.grabber = null
+	M.grabberSTR = null
+	M.grabbee = null
+	M.KO = 0
+	M.grabParalysis = 0
+	M.gravParalysis = 0
+	M.KB = 0
+	M.KBParalysis = 0
+	M.omegastun = 0
+	M.paralyzed = 0
+	M.stagger = 0
+	M.Frozen = 0
+	M.turnlock = 0
+	M.Guiding = 0
+	M.canmove = 1
+	M.move = 1
+	M.canfight = 1
+	M.attacking = 0
+	M.blocking = 0
 	M.icon_state = ""
+	//e chega INTEIRO pro duelo contra o guardiao (era absorvido a 5% de HP -- luta impossivel)
+	M.SpreadHeal(150, 1, 1)
+	for(var/datum/Body/BL in M.body)
+		if(!BL.lopped) BL.health = BL.maxhealth
+	if(M.MaxKi) M.Ki = M.MaxKi
+	if(M.maxstamina) M.stamina = M.maxstamina
 	// spawn a fightable clone of ME beside them: beat it and you ESCAPE; lose and you stay absorbed. One clone per prisoner.
 	rec.guardian = majin_spawn_guardian(M, iz, min(px + 3, psz - 2), py)
 	emit_Sound('absorb.wav')
@@ -224,6 +256,7 @@ mob/npc/AbsorbGuardian //a fightable copy of the Majin guarding one prisoner; be
 	Player = 0
 	attackable = 1
 	isBlaster = 1
+	ai_no_powerup = 1 //BP pinado: sem npc_power_up (o surto chamava NPCAscension -> BPBoost ate 200x se o prisioneiro transformasse -> guardiao absurdo)
 	var
 		tmp/mob/guard_master = null //the Majin holding the prisoner
 		guard_sig = ""              //the prisoner's signature this clone guards
@@ -257,8 +290,11 @@ mob/npc/AbsorbGuardian //a fightable copy of the Majin guarding one prisoner; be
 				guard_done = 1
 				var/mob/master = guard_master
 				var/s = guard_sig
-				del(src) //removes the clone (and nulls rec.guardian so majin_release won't double-del)
+				//A LIBERTACAO vem ANTES do del: del(src) MATA este proc na hora (proc roda em src),
+				//entao a linha da release nunca executava -- o clone sumia e o prisioneiro ficava preso.
+				//majin_release roda em SRC=MASTER, sobrevive a delecao do guardiao e ja deleta rec.guardian (nos).
 				if(master) master.majin_release_by_sig(s)
+				if(src) del(src) //fallback: se a release nao nos deletou (master nulo / rec nao achado), limpa o clone
 				return
 
 //Construtor AUTOSSUFICIENTE do guardiao (SEM makeCopy/genoma). O makeCopy rodava genome.post_init_savant()

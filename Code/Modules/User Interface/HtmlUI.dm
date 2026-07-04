@@ -135,6 +135,14 @@ mob/proc/BuildStatsHTML()
 	var/list/tabs = list("Stats","Items","Equip","Body","Forms","Ki","People","World","Skills","Other","Learning")
 	if(Admin) tabs += "Admin"
 	if(html_skill_tabs && html_skill_tabs.len) tabs += html_skill_tabs //skill-added panels (Sense, etc.)
+	//SCOUTER: com ele ligado a aba Sense VIRA "Scan" (leitura exata de BP, como o painel antigo StatScouter)
+	if(scouteron)
+		var/si = tabs.Find("Sense")
+		if(si) tabs[si] = "Scan"
+		else tabs += "Scan"
+		if(statsUItab == "Sense") statsUItab = "Scan" //estava no Sense quando ligou o scouter
+	else if(statsUItab == "Scan") //tirou o scouter com a aba Scan aberta
+		statsUItab = (html_skill_tabs && ("Sense" in html_skill_tabs)) ? "Sense" : "Stats"
 	var/list/h = list()
 	h += "<div class='tabs'>"
 	for(var/t in tabs)
@@ -148,6 +156,7 @@ mob/proc/BuildStatsHTML()
 		if("Ki")       h += ui_tab_ki()
 		if("People")   h += ui_tab_people()
 		if("World")    h += ui_tab_world()
+		if("Scan")     h += ui_tab_scan()
 		if("Skills")   h += ui_tab_verbs("Skills")
 		if("Other")    h += ui_tab_verbs("Other")
 		if("Learning") h += ui_tab_verbs("Learning")
@@ -340,6 +349,28 @@ mob/proc/ui_tab_sense()
 			h += ui_row(nm, "[round((D.BP/max(BP,1))*100,1)]% pwr <span class='mut'>&middot; (?,?,z[D.z])</span>", "")
 	if(!shown.len)
 		h += "<div class='mut' style='padding:8px'>You sense no notable presences.</div>"
+	return jointext(h, "")
+
+// ---- SCAN (scouter ligado: substitui a aba Sense; leitura EXATA de BP) ------
+//porta o painel antigo StatScouter: mobs da area com BP relevante, poder exato,
+//distancia/direcao e coordenadas. NPCs comuns nao aparecem (so bosses e o corpo
+//em transe da meditacao, que e um "corpo real" sentivel).
+mob/proc/ui_tab_scan()
+	var/list/h = list()
+	h += ui_sec("SCOUTER SCAN")
+	if(!scouteron)
+		h += "<div class='mut' style='padding:8px'>O scouter esta desligado.</div>"
+		return jointext(h, "")
+	var/found = 0
+	if(current_area)
+		for(var/mob/E in current_area.contents)
+			if(E == src) continue //o proprio BP ja aparece na aba Stats
+			if(E.isNPC && !E.isBoss && !istype(E, /mob/npc/Enemy/Bosses) && !istype(E, /mob/npc/mind_dummy)) continue
+			if(E.expressedBP <= 5) continue
+			found++
+			h += ui_row(html_encode(E.name), "[FullNum(round(E.expressedBP,1))] <span class='mut'>&middot; [get_dist(src,E)] tiles [sense_dir_word(get_dir(src,E))] &middot; ([E.x],[E.y])</span>", "")
+	if(!found)
+		h += "<div class='mut' style='padding:8px'>Nenhuma leitura de poder relevante na area.</div>"
 	return jointext(h, "")
 
 // ---- FORMS & MASTERY -------------------------------------------------------

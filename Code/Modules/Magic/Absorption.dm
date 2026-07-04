@@ -108,6 +108,9 @@ obj/Buu_Absorb
 obj/Bio_Absorb
 	verb/Absorb(mob/M in oview(1))
 		set category="Skills"
+		if(usr.bio_lab_born && usr.bio_stage == 1) //LARVA: os orgaos de absorcao so se formam ao amadurecer (Bio Android 1)
+			to_chat(usr, "<font color=#66ddff>Sua carapaca larval ainda nao desenvolveu os orgaos de absorcao. Espere-a se romper.</font>")
+			return
 		usr.GainAbsorb(2)
 		usr.AbsorbDeterminesBP = 1
 		if(!usr.absorbing&&M.absorbable&&!usr.KO&&usr.Planet!="Sealed")

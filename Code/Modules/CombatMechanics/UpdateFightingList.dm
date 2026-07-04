@@ -9,6 +9,8 @@ var/combat_tag_duration = 900 //how long the combat tag lasts after the last hit
 mob/proc/refresh_combat_tag() //(re)start the 90s display/music combat tag on ANY hit dealt or received. Deliberately does NOT set IsInFight, so the long tag never drags combat-speed / Ki-regen / stun / skill-gain mechanics along with it.
 	combatTag = 1
 	combatTagExpire = world.time + combat_tag_duration
+	if(piloting_ship && piloted_ship) //atacado enquanto PILOTA a nave (o corpo invisivel viaja com ela): devolve o controle ao corpo na ponte
+		spawn piloted_ship.return_to_interior(src)
 mob/proc/clear_combat_tag() //end the display/music combat tag now (on 90s expiry, or KO/death/logout)
 	combatTag = 0
 	stop_battle_music()

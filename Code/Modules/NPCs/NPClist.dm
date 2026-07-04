@@ -85,7 +85,7 @@ mob/npc
 				var/BPascenprog = min((BPprog*ascensionmodopf),ascensionmod1) //caps at 5 million. 15 mult cap
 				if(BPprog>=74) BPascenprog *= ascensionmod2 //31.875 mult cap
 				if(BPprog>=150) BPascenprog *= (((BPprog - 150) / ascensionmod3) + ascensionmodtpf) //127.5 mult cap
-				nuBPBoost = min(max(1,BPascenprog),BPBoostCap)
+				nuBPBoost = min(max(1,BPascenprog),BPBoostCap,20) //mesmo teto 20x da Ascensao dos players
 				nuBPBoost *= (GlobalBPBoost * log(ascensionascmodlg,ascBPmod))
 				BPBoost = nuBPBoost
 	Enemy
