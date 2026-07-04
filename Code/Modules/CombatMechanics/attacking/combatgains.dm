@@ -14,9 +14,13 @@ mob/proc/has_zenkai()
 	return FALSE
 
 //Zenkai grant for being DEFEATED (knocked out OR killed) by a STRONGER foe. Shared by the KO proc (KO.dm) and
-//death_stuff (Murder.dm) so both routes obey the same reward: 10% of the foe's BP, capped at 2x your own (base) BP,
-//once per hour, Saiyan-DNA only. If your body is extremely injured at that moment (large part Broken or ripped off),
-//the brush with death squeezes out more: 15% of the foe's BP and a higher 3x-base-BP ceiling.
+//death_stuff (Murder.dm) so both routes obey the same reward, paid IN FULL at the moment of defeat (no bank):
+//10% of the foe's BP straight into base BP, once per hour, Saiyan-DNA only. CEILING is on the FINAL base BP:
+//one Zenkai can at most DOUBLE your current base (gain capped at +1x base). If your body is extremely injured
+//at that moment (large part Broken or ripped off), the brush with death squeezes out more: 15% of the foe's BP
+//and the final base may at most TRIPLE (gain capped at +2x base).
+//OBS: no caminho de MORTE isto roda via killer_stuff -> death_stuff ANTES de dead=1 (Death.dm), entao o guard
+//if(dead) nao bloqueia -- ele so impede Zenkai de luta no Outro Mundo (ja morto, ex: torneio do ceu).
 mob/proc/gain_zenkai(enemyBP) //enemyBP = the foe's EFFECTIVE power (expressedBP, form-inclusive) -- NOT base BP
 	var/myPower = max(expressedBP, BP) //compare EFFECTIVE power on BOTH sides: a transformed foe with a lower BASE BP still counts as "stronger". Using base BP here is why high-base builds (notably Primal Saiyan) got no Zenkai from a transformed opponent.
 	if(!enemyBP || enemyBP <= myPower) return //only a genuinely stronger (effective) enemy triggers Zenkai
@@ -32,16 +36,17 @@ mob/proc/gain_zenkai(enemyBP) //enemyBP = the foe's EFFECTIVE power (expressedBP
 			to_chat(src, "<font color=#b07a38>Your body reaches for a Zenkai, but it hasn't recovered from the last one and refuses to surge again so soon ([cdtxt]).</font>", "combat")
 		return
 	var/pcnt = 0.1 //10% of the foe's BP...
-	var/capmult = 2 //...capped so one Zenkai never banks more than 2x your own base BP
+	var/capmult = 2 //...teto no BP FINAL: um Zenkai normal pode no maximo DOBRAR o seu BP base atual
 	if(extremely_injured())
 		pcnt = 0.15 //battered to the brink -> 15% of the foe's BP...
-		capmult = 3 //...and a higher 3x base-BP ceiling
+		capmult = 3 //...extremamente ferido (45%+ do corpo Broken/arrancado): o BP final pode no maximo TRIPLICAR
 	var/raw = pcnt*enemyBP //10%/15% of the foe's BP
-	var/cap = BP*capmult //ceiling: 2x/3x your own base BP -- the MOST a single Zenkai can bank
-	zenkaiStore += min(raw, cap) //bank the RAW amount; the relBPmax-respecting cap is applied later (Stats.dm). Do NOT wrap in capcheck.
+	var/cap = BP*(capmult-1) //teto do GANHO = (multiplo final - 1) x base: dobrar -> ganho max +1x base; triplicar -> +2x base. Ex: base 5k vs inimigo 150k -> normal +5k (vira 10k), extremely injured +10k (vira 15k)
+	var/gained = min(raw, cap)
+	if(client) to_chat(src, zenkai_message(gained, raw >= cap), "combat") //mensagem ANTES do BP mudar (os tiers usam gained/BP com o base antigo); escala com o tamanho do surto, sem numeros
+	BP += gained //SEM BANCO (2026-07-04): o Zenkai cai INTEIRO na hora da derrota, direto no BP base -- sem capcheck (e recompensa, nao treino). O zenkaiStore antigo "comia" o ganho (clamp no BPCap legado=1000 + gotejamento via capcheck que evaporava a diferenca); em Stats.dm sobrou so um flush de migracao pra saves que ainda tem banco guardado.
 	zenkaiReady = world.realtime + 36000 //1-hour realtime cooldown
 	zenkaiWarn = world.realtime + 600 //don't nag about cooldown for ~1 min after a grant (a KO then the killing blow in one sequence)
-	if(client) to_chat(src, zenkai_message(min(raw, cap), raw >= cap), "combat") //notice scales with gained/baseBP; max-tier when the ceiling binds; no numbers
 
 //Player-facing Zenkai notice, scaled to how big the surge was RELATIVE to current base BP (gained/BP),
 //never a number. `maxed` = the 2x/3x base-BP ceiling was hit, i.e. the largest Zenkai possible.

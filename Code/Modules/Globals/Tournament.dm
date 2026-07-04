@@ -21,6 +21,7 @@
 #define TRN_MATCH_MAX 2400      // duracao maxima da luta (2400 = 4 min) -> decide por % de HP
 #define TRN_COUNTDOWN 5         // contagem regressiva (segundos) antes de cada luta
 #define TRN_BREAK_TICKS 100     // pausa entre lutas (100 = 10s)
+#define TRN_HOLD_ENFORCE 10     // cadencia (ticks) da RE-TRAVA dos participantes em espera (Un_KO/fim de skill restauram move/canfight por fora e furariam a trava)
 #define TRN_PRIZE_1 1000000     // premio do campeao
 #define TRN_PRIZE_2 500000      // premio do vice
 #define TRN_PRIZE_3 250000      // premio de CADA semifinalista derrotado (3o lugar)
@@ -50,6 +51,8 @@ mob/npc/var
 	tmp/mob/tourney_opponent = null  // oponente designado da luta atual
 mob/var/tmp
 	trn_watching = 0                 // esta assistindo pela camera de um lutador
+mob/var
+	tourney_held = 0                 // TRAVADO na area de espera do torneio (nao anda, nao bate, nao apanha). PERSISTIDO de proposito: um autosave/crash no meio da trava salva move=0/canfight=0/attackable=0 junto -- o tourney_login_check ve esta flag no login e destrava
 
 // ---------------------------------------------------------------------------
 // O NPC lutador (mesma receita do EventBoss, mas nocauteia em vez de matar)
@@ -191,6 +194,7 @@ datum/tournament
 		list/entrants = list()      // players inscritos
 		list/npcs = list()          // NPCs criados (limpos no final)
 		list/watchers = list()      // espectadores com camera ligada
+		list/held = list()          // participantes TRAVADOS na area de espera (todos da chave menos os 2 lutando)
 		mob/fighter_a = null        // luta atual
 		mob/fighter_b = null
 		mob/finalist_1 = null       // os dois da FINAL (p/ premiar o vice depois)
@@ -278,6 +282,56 @@ datum/tournament
 		for(var/mob/M in (entrants + watchers))
 			if(M && M.client) to_chat(M, "<font color=#e0a030>[msg]")
 
+	//---- TRAVA DE ESPERA ------------------------------------------------------
+	// Participante que NAO esta lutando fica IMOVEL (move=0 zera o mobTime no
+	// movement handler), SEM ATACAR (canfight=0 fecha soco/skill/blast -- todos
+	// os gates de ataque checam canfight) e INTOCAVEL (attackable=0: melee e
+	// blast checam o attackable do alvo). Ele so observa da beirada ou usa o
+	// verb Assistir Torneio. Resolve a INVASAO de luta por outro inscrito.
+	proc/apply_hold(mob/M)
+		if(!M || M == fighter_a || M == fighter_b) return
+		var/fresh = !M.tourney_held //so avisa na 1a vez (re-travas silenciosas)
+		M.tourney_held = 1
+		if(!(M in held)) held += M
+		M.attacking = 0
+		M.move = 0
+		M.canfight = 0
+		M.attackable = 0
+		walk(M, 0)
+		if(fresh && M.client) to_chat(M, "<font color=#e0a030>Voce esta na AREA DE ESPERA do torneio: imovel e intocavel ate a sua vez. Assista daqui ou use o verb <b>Assistir Torneio</b> (aba Other).")
+
+	proc/release_hold(mob/M)
+		if(!M) return
+		held -= M
+		if(!M.tourney_held) return
+		M.tourney_held = 0
+		M.move = 1
+		M.canfight = 1
+		M.attackable = 1
+
+	proc/release_all_holds()
+		for(var/mob/M in held.Copy()) release_hold(M)
+		held.Cut()
+
+	proc/eliminate(mob/M) //saiu da chave: PLAYER fica livre (vira publico comum); NPC convidado fica travado (nao vira saco de pancada ate o cleanup)
+		if(!M) return
+		if(istype(M, /mob/npc))
+			apply_hold(M)
+			return
+		release_hold(M)
+		if(M.client) to_chat(M, "<font color=#e0a030>Voce foi eliminado do torneio e esta livre. Acompanhe o resto das lutas pelo verb <b>Assistir Torneio</b> (aba Other).")
+
+	proc/hold_watch() //loop de RE-TRAVA: Un_KO() e fins de skill setam move/canfight=1 por fora da nossa conta
+		set waitfor = 0
+		set background = 1
+		while(state == "running")
+			for(var/mob/M in held)
+				if(!M || M == fighter_a || M == fighter_b) continue
+				M.move = 0
+				M.canfight = 0
+				M.attackable = 0
+			sleep(TRN_HOLD_ENFORCE)
+
 	proc/invite(mob/M)
 		set waitfor = 0
 		if(!M || !M.client) return
@@ -332,6 +386,8 @@ datum/tournament
 		tell("Chaveamento das OITAVAS: [lineup]")
 		for(var/mob/M in bracket)
 			rest_place(M)
+			apply_hold(M) //TODOS comecam travados na espera; o run_match solta so os 2 da vez
+		hold_watch()
 		sleep(50)
 		//---- 4) rodadas ----
 		var/list/rn = list("OITAVAS DE FINAL","QUARTAS DE FINAL","SEMIFINAL","FINAL")
@@ -385,15 +441,21 @@ datum/tournament
 		//W.O.: lutador sumiu/morreu/deslogou antes da luta
 		var/aok = fighter_ok(A)
 		var/bok = fighter_ok(B)
-		if(!aok && !bok) return A //dupla ausencia: avanca o primeiro por sorteio da chave
+		if(!aok && !bok)
+			eliminate(B) //dupla ausencia: avanca o primeiro por sorteio da chave
+			return A
 		if(!aok)
 			tell("[round_name] - Luta [mnum]: [B ? B.name : "?"] vence por W.O.!")
+			eliminate(A)
 			return B
 		if(!bok)
 			tell("[round_name] - Luta [mnum]: [A ? A.name : "?"] vence por W.O.!")
+			eliminate(B)
 			return A
 		fighter_a = A
 		fighter_b = B
+		release_hold(A) //os 2 da vez saem da trava de espera pra lutar
+		release_hold(B)
 		//prepara: cura total + posiciona frente a frente
 		trn_heal(A)
 		trn_heal(B)
@@ -464,6 +526,9 @@ datum/tournament
 			rest_place(B)
 		fighter_a = null
 		fighter_b = null
+		//TRAVA DE ESPERA: o vencedor volta travado ate a proxima luta; o eliminado sai da chave
+		apply_hold(winner)
+		eliminate(loser)
 		return winner
 
 	proc/fighter_ok(mob/M)
@@ -487,7 +552,8 @@ datum/tournament
 				W.trn_watching = 1
 
 	proc/cleanup()
-		state = "done"
+		state = "done" //(tambem encerra o loop hold_watch)
+		release_all_holds() //solta TODO mundo da trava de espera (campeao e NPCs eliminados inclusos)
 		//desliga as cameras dos espectadores
 		for(var/mob/W in watchers)
 			if(W && W.client)
@@ -635,6 +701,26 @@ proc/Tourney_Month_Check()
 	if(!tournament_heaven) //torneio do OUTRO MUNDO (mortos)
 		tournament_heaven = new /datum/tournament/heaven()
 		tournament_heaven.trn_run()
+
+// solta a trava de espera FORA do fluxo normal do torneio:
+// - no LOGOUT, ANTES do save (senao o personagem salva com move=0/canfight=0/attackable=0 e volta preso)
+proc/tourney_logout_release(mob/M)
+	if(!M || !M.tourney_held) return
+	if(tournament) tournament.held -= M
+	if(tournament_heaven) tournament_heaven.held -= M
+	M.tourney_held = 0
+	M.move = 1
+	M.canfight = 1
+	M.attackable = 1
+
+// - no LOGIN: o save foi feito TRAVADO na area de espera (autosave/crash no meio do torneio)? destrava
+mob/proc/tourney_login_check()
+	if(!tourney_held) return
+	tourney_held = 0
+	move = 1
+	canfight = 1
+	attackable = 1
+	to_chat(src, "<font color=#e0a030>Voce estava na area de espera de um torneio; a trava foi removida.")
 
 // assistir a luta atual pela camera de um dos lutadores (aba Other) -- cobre os DOIS torneios
 mob/verb/Assistir_Torneio()

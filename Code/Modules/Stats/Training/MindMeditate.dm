@@ -464,6 +464,7 @@ mob/proc/mind_monitor()
 //logout: restaura o corpo ANTES do save (senao o save congela o personagem dentro da mente)
 mob/Logout()
 	if(mind_session) mind_exit(1)
+	tourney_logout_release(src) //torneio: solta a trava da area de espera ANTES do save (Tournament.dm)
 	..()
 
 //login: o save foi feito DENTRO da mente (crash/queda)? acorda no corpo com o snapshot restaurado

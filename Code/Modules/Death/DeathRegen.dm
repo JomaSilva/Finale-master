@@ -16,8 +16,7 @@ mob/proc/TestDeathRegen() //true if dead, false if not dead.
 				A = S
 				overlayList-='Halo.dmi'
 				overlaychanged=1
-				if(zenkaiStore)
-					zenkaiStore /= 5
+				//o /5 legado do zenkaiStore saiu daqui (e dos outros revives): morrer pra um inimigo mais forte E o gatilho do Zenkai novo (ja capado no gain_zenkai, 1x/hora) -- o banco sobrevive INTEIRO a qualquer volta
 				to_chat(src, "<font color=red>Your memories have been saved and implanted into a new body. Your old body was terminated or reached expiration.")
 				ReviveMe()
 				WriteToLog("rplog","[src] was rebuilt. ([time2text(world.realtime,"Day DD hh:mm")])")
@@ -30,8 +29,7 @@ mob/proc/TestDeathRegen() //true if dead, false if not dead.
 			S.didRandRes = 1
 			overlayList-='Halo.dmi'
 			overlaychanged=1
-			if(zenkaiStore)
-				zenkaiStore /= 5
+			//zenkaiStore: /5 legado removido (ver comentario no revive de Android acima)
 			to_chat(src, "<font color=red>[CC]: Your memories have been saved and implanted into a new body. Your old body was terminated or reached expiration.")
 			ReviveMe()
 			S.controller = signature
@@ -59,8 +57,7 @@ mob/proc/TestDeathRegen() //true if dead, false if not dead.
 			return TRUE
 	SpreadHeal(100,1,0)
 	deathregening=1
-	if(zenkaiStore)
-		zenkaiStore /= 5
+	//zenkaiStore: /5 legado removido -- o Zenkai novo sobrevive inteiro ao death regen
 	stamina = maxstamina
 	var/xx=x
 	deathregenx = xx

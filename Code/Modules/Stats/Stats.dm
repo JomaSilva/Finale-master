@@ -135,10 +135,15 @@ mob/proc/Stats()
 		if(expandlevel==0)
 			expandBuff=1
 		if(absorbadd > 0 && BP < relBPmax)
-			BP+=capcheck(abs((0.0001*absorbadd)))
-			absorbadd-=(0.0001*absorbadd)
+			//digestao da absorcao -- mesma praga do pagamento antigo do Zenkai: capcheck() cortava a gota
+			//(stamina baixa/teto de treino) mas o store drenava o valor CHEIO (a diferenca evaporava), e o
+			//min(absorbadd,BPCap) clampava TUDO no cap legado de servidor (default 1000). Agora o store so
+			//paga o que realmente virou BP e o clamp legado saiu; o ritmo da gota (0.01%/tick) e o mesmo.
+			var/absorbdrip = 0.0001*absorbadd
+			var/absorbgot = capcheck(abs(absorbdrip))
+			BP += absorbgot
+			absorbadd -= min(absorbdrip, absorbgot) //capcheck pode devolver MAIS que a gota (BPBuffer pega carona) -- o store paga no maximo a gota
 			absorbadd = max(absorbadd,0)
-			absorbadd = min(absorbadd,BPCap)
 		if(src.loc==null||src.x>=501||src.y>=501||src.z==29||src.z==30)
 			if(src.loggedin)src.Locate()
 		current_area = GetArea()
@@ -160,25 +165,17 @@ mob/proc/Stats()
 		if(zenkaiStore < 0)
 			zenkaiStore = abs(zenkaiStore)
 		if(!has_zenkai()) zenkaiStore = 0 //non-Saiyan-DNA races have no Zenkai at all
-		if(!dead && !deathregening && has_zenkai())
-			//ZENKAI ANTIGO REMOVIDO: nao existe mais acumulo passivo de zenkaiStore por estar FERIDO
-			//(o antigo `zenkaicount -> zenkaiStore +=` vivia aqui) nem o decay aleatorio. O store agora
-			//so recebe do gain_zenkai() (o zenkai NOVO: derrota por inimigo mais forte, 10/15%, 1x/hora)
-			//e o release abaixo (HP>=80 rapido / gota-a-gota) continua sendo o pagamento dele.
-			if(zenkaiTimer > 0 && zenkaiStore > 0)
-				zenkaiTimer -= 1
-			if(zenkaiStore > 0 && zenkaiTimer <= 0 && HP >= 80 && !KO)
-				BP+=capcheck(abs((0.0005*zenkaiStore)))
-				zenkaiStore-=(0.0005*zenkaiStore) //WOW THIS WAS A HARD THING TO DO, A VEVEVERY HARD
-				zenkaiStore = max(zenkaiStore,0)
-			else if(zenkaiStore > 0 && zenkaiTimer <= 0)
-				BP+=capcheck(abs((0.000025*zenkaiStore)))
-				zenkaiStore-=(0.000025*zenkaiStore) //WOW THIS WAS A HARD THING TO DO, A VEVEVERY HARD
-				zenkaiStore = max(zenkaiStore,0)
-			if(zenkaiStore == 0)
-				zenkaiTimer = 200
-			else if(zenkaiStore)
-				zenkaiStore = min(zenkaiStore,BPCap)
+		if(zenkaiStore > 0 && !dead && !deathregening && has_zenkai())
+			//MIGRACAO -- o BANCO de Zenkai foi DESLIGADO (2026-07-04): gain_zenkai() agora paga NA HORA da
+			//derrota, direto no BP base (10/15% do BP efetivo do inimigo, teto 2x/3x o proprio base atual).
+			//O banco antigo "comia" o ganho: min(store,BPCap) clampava tudo no cap LEGADO de servidor
+			//(default 1000!) e o gotejamento via capcheck() evaporava a diferenca (o store drenava o valor
+			//cheio enquanto o BP recebia uma fracao). Este bloco so DESCARREGA, de uma vez, o que sobrou
+			//bancado em saves antigos; nada alimenta mais o zenkaiStore.
+			var/surge = round(max(zenkaiStore,1))
+			zenkaiStore = 0
+			BP += surge
+			if(client) to_chat(src, "<font color=#e6bd55>The banked Zenkai finally settles: the power wrested from that defeat is now truly yours.</font>", "combat")
 		if(angercooldown)
 			angercooldown -= 1
 			angercooldown = max(angercooldown,0)
