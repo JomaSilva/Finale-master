@@ -311,6 +311,7 @@ mob/proc
 		htc_login_check() //Sala do Tempo: relogou la dentro -> retoma a sessao (ou expulsa se o tempo acabou)
 		mind_login_check() //Dimensao Mental: save feito em transe (queda) -> acorda no corpo com o snapshot restaurado
 		tourney_login_check() //Torneio: save feito TRAVADO na area de espera (autosave/crash) -> destrava
+		outfit_login_check() //Guarda-roupa: re-veste as pecas cosmeticas (overlays morrem no logout)
 		if(needs_manual_custom) //Handles logging into clones for the first time.
 			CustomizeFurther()
 			StatRace(Race)

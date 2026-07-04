@@ -376,12 +376,13 @@ mob/proc/ui_tab_scan()
 // ---- FORMS & MASTERY -------------------------------------------------------
 mob/proc/ui_tab_forms()
 	var/list/h = list()
-	if(Class == "Legendary" || (FutureLineage && hasssj) || ssj1mastery || ssj2mastery || ssj3mastery || ssj4mastery || ssj4fpmastery || KaiokenMastery > 1) //maestria de formas (0-100%); ao 50% a transformacao vira instantanea
+	if((Class == "Legendary" && (lssj1mastery || lssj2mastery || lssj3mastery)) || (FutureLineage && hasssj) || ssj1mastery || ssj2mastery || ssj3mastery || ssj4mastery || ssj4fpmastery || KaiokenMastery > 1) //maestria de formas (0-100%); ao 50% a transformacao vira instantanea
 		h += ui_sec("FORM MASTERY")
 		if(Class == "Legendary")
-			h += ui_row("Wrathful", "[round(lssj1mastery)]%", "")
-			h += ui_row("Super Saiyan C-Type", "[round(lssj2mastery)]%", "")
-			h += ui_row("Super Saiyan Full Power", "[round(lssj3mastery)]%", "")
+			//so lista a forma que o jogador JA USOU (maestria > 0): o Legendary via a lista inteira zerada sem nunca ter transformado (a maestria comeca a subir no 1o uso da forma)
+			if(lssj1mastery) h += ui_row("Wrathful", "[round(lssj1mastery)]%", "")
+			if(lssj2mastery) h += ui_row("Super Saiyan C-Type", "[round(lssj2mastery)]%", "")
+			if(lssj3mastery) h += ui_row("Super Saiyan Full Power", "[round(lssj3mastery)]%", "")
 		else
 			if(FutureLineage && hasssj) h += ui_row("Future Super Saiyan", "[round(futuressjmastery)]% <span class='mut'>(x[future_ssj_mult()], +2x a cada 10%)</span>", "")
 			if(ssj1mastery) h += ui_row("Super Saiyan", "[round(ssj1mastery)]%", "")
@@ -576,34 +577,88 @@ mob/proc/RefreshStatsUI()
 	src << browse(html, "window=[UI_BROWSER]")
 
 // ---- embedded HTML HUD (top-left hppane strip; HUD mode 4) ------------------
-proc/hud_bar(label, value, pct, lcolor, c1, c2)
-	pct = min(max(pct, 0), 100)
-	return "<div class='hr'><span class='hl' style='color:[lcolor]'>[label]</span><div class='hb'><div class='hf' style='width:[pct]%;background:linear-gradient(to right,[c1],[c2])'></div></div><span class='hv'>[value]</span></div>"
+// Pagina FIXA carregada 1x + updates via JS setBar() (mesmo padrao do chat): sem re-browse
+// a cada tick -> sem flicker, e a transicao de largura ANIMA de verdade. Visual: barras
+// pilula com relevo (gradiente vertical 3 tons), brilho no topo, ticks de 10%, sombra
+// interna, HP critica piscando, Ki >100% "superaquecido" e a barra de NUTRICAO no fim.
+var/HUD_PAGE = {"
+<html><head><meta http-equiv='X-UA-Compatible' content='IE=edge'>
+<style>
+ *{box-sizing:border-box} html,body{margin:0;padding:0;background:#0f1115}
+ body{font-family:'Segoe UI',Tahoma,sans-serif;font-size:11px;color:#c8cdd6;overflow:hidden}
+ .hud{padding:6px 9px}
+ .hr{display:flex;align-items:center;gap:8px;margin:4px 0}
+ .hl{width:27px;font-weight:800;font-size:10px;letter-spacing:1px;text-align:center;padding:2px 0;border-radius:4px;background:rgba(255,255,255,0.05)}
+ .hb{flex:1;height:13px;background:#14161b;border-radius:999px;overflow:hidden;border:1px solid #262b35;box-shadow:inset 0 2px 4px rgba(0,0,0,0.65)}
+ .hf{height:100%;border-radius:999px;position:relative;transition:width 0.35s ease;min-width:0}
+ .sh{position:absolute;left:2px;top:1px;right:2px;height:45%;border-radius:999px;background:linear-gradient(to bottom,rgba(255,255,255,0.40),rgba(255,255,255,0.04));font-size:0}
+ .tk{position:absolute;left:0;top:0;width:100%;height:100%;background:repeating-linear-gradient(to right,transparent 0,transparent 30px,rgba(0,0,0,0.25) 30px,rgba(0,0,0,0.25) 31px);font-size:0}
+ .hv{min-width:96px;text-align:right;font-weight:bold;font-size:11px;color:#f2f4f8;white-space:nowrap;text-shadow:0 1px 2px rgba(0,0,0,0.85)}
+ .mut{color:#8b919c;font-weight:normal;font-size:10px}
+ @keyframes crit{0%{opacity:1}50%{opacity:0.4}100%{opacity:1}}
+ .crit{animation:crit 0.9s infinite}
+ .over .sh{background:linear-gradient(to bottom,rgba(255,255,255,0.8),rgba(255,255,255,0.18))}
+</style>
+<script>
+function setBar(id,pct,txt,cls){
+ var f=document.getElementById('f-'+id);
+ if(f){ var w=pct*1; if(w>100){w=100;} if(w<0){w=0;} f.style.width=w+'%'; f.className='hf'+(cls?' '+cls:''); }
+ var v=document.getElementById('v-'+id);
+ if(v){ v.innerHTML=txt; }
+}
+</script>
+</head><body><div class='hud'>
+__BARS__
+</div></body></html>
+"}
 
-mob/proc/BuildHudHTML()
-	var/hp = round(HP)
-	var/kipct = round((Ki / max(MaxKi,1)) * 100)
-	var/stpct = round(staminapercent * 100)
-	var/bppct = round(netBuff * 100)
-	var/bptxt = scouteron ? "[FullNum(round(expressedBP))]" : "???"
-	var/list/h = list()
-	h += hud_bar("HP", "[hp]%", hp, "#ff6b6b", "#ff5b5b", "#a51d1d")
-	h += hud_bar("KI", "[FullNum(round(Ki))] <span class='mut'>[kipct]%</span>", kipct, "#6fb6ff", "#4f9bff", "#1d5aa5")
-	h += hud_bar("ST", "[stpct]%", stpct, "#f0dd55", "#e8d44d", "#9c8112")
-	h += hud_bar("BP", "[bptxt] <span class='mut'>[bppct]%</span>", min(bppct, 100), "#c58bff", "#b06bff", "#6a2fa5")
-	return "<html><head>[UI_CSS]</head><body><div class='hud'>[jointext(h, "")]</div></body></html>"
+//casca de uma barra (o preenchimento nasce em 0% e o setBar anima ate o valor real)
+proc/hud_bar_shell(id, label, lcolor, c1, c2, c3)
+	return "<div class='hr'><span class='hl' style='color:[lcolor];text-shadow:0 0 7px [lcolor]'>[label]</span><div class='hb'><div class='hf' id='f-[id]' style='width:0%;background:linear-gradient(to bottom,[c1],[c2] 55%,[c3])'><i class='sh'></i><i class='tk'></i></div></div><span class='hv' id='v-[id]'></span></div>"
+
+//envia um update de barra so quando algo mudou (cache por-barra)
+mob/proc/hud_push(id, pct, txt, cls, list/cache)
+	var/sig = "[pct]|[txt]|[cls]"
+	if(cache[id] == sig) return
+	cache[id] = sig
+	src << output(list2params(list(id, pct, txt, cls)), "hppane.hudbrowser:setBar")
 
 mob/proc/HudHtmlLoop()
 	set waitfor = 0
 	set background = 1
-	var/last = ""
+	var/hudPageUp = 0
+	var/resend = 0
+	var/list/cache = list()
 	while(src && client)
 		sleep(4) //~0.4s
-		if(!client || client.HPWindowToggle != 4) continue //only render the HTML HUD in mode 4
-		var/html = BuildHudHTML()
-		if(html == last) continue //re-render only on change
-		last = html
-		src << browse(html, "window=hppane.hudbrowser")
+		if(!client || client.HPWindowToggle != 4) //only render the HTML HUD in mode 4
+			hudPageUp = 0 //saiu do modo 4: quando voltar, recarrega a pagina
+			continue
+		if(!hudPageUp)
+			var/bars = ""
+			bars += hud_bar_shell("hp", "HP", "#ff6b6b", "#ff9d9d", "#e84545", "#7d1616")
+			bars += hud_bar_shell("ki", "KI", "#6fb6ff", "#9dc9ff", "#3f8dff", "#143f80")
+			bars += hud_bar_shell("st", "ST", "#f0dd55", "#ffe98f", "#e8c93d", "#7d650f")
+			bars += hud_bar_shell("bp", "BP", "#c58bff", "#d9b3ff", "#9a4fff", "#45177d")
+			bars += hud_bar_shell("nu", "NU", "#8fdd7a", "#b8f0a0", "#58c04a", "#1f5c1a")
+			src << browse(replacetext(HUD_PAGE, "__BARS__", bars), "window=hppane.hudbrowser")
+			hudPageUp = 1
+			cache.Cut()
+			sleep(5) //a pagina carregar antes do primeiro setBar
+		if(++resend >= 25) //re-empurra tudo a cada ~10s (seguro contra o 1o setBar perdido no load da pagina)
+			resend = 0
+			cache.Cut()
+		var/hp = round(HP)
+		var/kipct = round((Ki / max(MaxKi,1)) * 100)
+		var/stpct = round(staminapercent * 100)
+		var/bppct = round(netBuff * 100)
+		var/nupct = round((currentNutrition / max(maxNutrition,1)) * 100)
+		var/bptxt = scouteron ? "[FullNum(round(expressedBP))]" : "???"
+		hud_push("hp", hp, "[hp]%", (hp <= 25 ? "crit" : ""), cache)
+		hud_push("ki", kipct, "[FullNum(round(Ki))] <span class='mut'>[kipct]%</span>", (kipct > 100 ? "over" : ""), cache)
+		hud_push("st", stpct, "[stpct]%", (stpct <= 20 ? "crit" : ""), cache)
+		hud_push("bp", min(bppct, 100), "[bptxt] <span class='mut'>[bppct]%</span>", "", cache)
+		hud_push("nu", nupct, "[nupct]%", (nupct <= 20 ? "crit" : ""), cache)
 
 // ---- SKILL TREES window (embedded in SkillTreeWindow.treebrowser) -----------
 mob/var/tmp/last_tree_html = ""
@@ -712,6 +767,19 @@ mob/Topic(href, list/href_list)
 			if("looc") sayType(msg,6)
 			if("emote") sayType(msg,5)
 			else sayType(msg,3)
+		return
+	if(href_list["uichoose"]) //seletor generico da criacao (CreationUI.dm): clique num card
+		var/ci = text2num(href_list["uichoose"])
+		if(islist(ui_choose_opts) && ci >= 1 && ci <= ui_choose_opts.len) ui_choose_result = ui_choose_opts[ci]
+		return
+	if(href_list["wardrobepick"]) //guarda-roupa cosmetico (Wardrobe.dm): vestir/tirar peca
+		wardrobe_pick(text2num(href_list["wardrobepick"]))
+		return
+	if(href_list["wardrobeclear"])
+		wardrobe_clearall()
+		return
+	if(href_list["wardrobeclose"])
+		src << browse(null, "window=wardrobe")
 		return
 	if(href_list["statsTab"])
 		statsUItab = href_list["statsTab"]

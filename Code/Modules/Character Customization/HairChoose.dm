@@ -32,7 +32,33 @@ mob/var/tmp
 mob/proc/WindowRemoveVerbs()
 	src.contents -= /obj/hairwindowverbs
 	usr.contents -= /obj/hairwindowverbs
+//TELA HTML de cabelo (motor em CreationUI.dm): cada card mostra o SEU corpo com o estilo
+//JA NA SUA COR. A lista de estilos vem do hairBaseToChoice (fonte unica: icone-base -> nome
+//do menu; estilos novos entram la + no selecthair, como sempre) + Bald.
 mob/proc/HairChoice()
+	var/list/hlabels = list("Bald")
+	var/list/hicons = list(null)
+	for(var/base in hairBaseToChoice)
+		var/hn = hairBaseToChoice[base]
+		if(hn in hlabels) continue
+		hlabels += hn
+		var/icon/P
+		if(icon) P = new(icon, "", SOUTH, 1) //o corpo escolhido no passo anterior (ou o atual, no Change_Hair)
+		else P = new('NewPaleMale.dmi', "", SOUTH, 1)
+		var/hst = ""
+		var/list/hsts = icon_states(file(base))
+		if(islist(hsts) && hsts.len && !("" in hsts)) hst = "[hsts[1]]"
+		var/icon/HI = new(file(base), hst, SOUTH, 1)
+		HI.Blend(rgb(hairred, hairgreen, hairblue), ICON_ADD) //a cor escolhida no passo do cabelo
+		P.Blend(HI, ICON_OVERLAY)
+		hicons += P
+		if(hlabels.len % 12 == 0) sleep(1) //~45 composicoes de icone: respira pra nao engasgar o tick
+	var/hpick = ui_choose("CABELO", "Estilos com a SUA cor, sobre o SEU corpo.", hlabels, hicons, null)
+	if(isnull(hpick)) hpick = "Bald" //client caiu no meio do menu
+	hair = hpick
+	selecthair() //aplica o estilo (SetHair) e grava o hairtypeSaved
+
+mob/proc/HairChoice_legacy_unused() //janela nativa antiga (miscwindow/DummyHair): FORA DE USO, mantida so como referencia dos estilos
 	winshow(usr,"miscwindow", 1)
 	inAwindow = 1
 	dummyhairlist = list()

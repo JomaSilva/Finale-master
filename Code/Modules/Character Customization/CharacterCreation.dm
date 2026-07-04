@@ -16,10 +16,7 @@ mob
 			else return
 			if(client) client.show_map=0 //black void during creation; map restored after Locate() sends them to their planet
 			loc=locate(rand(5,20),rand(3,19),30)
-			inAwindow=1
-			initialize_planet_window()
-			while(inAwindow)
-				sleep(5)
+			html_race_pick() //tela HTML de planeta+raca (CreationUI.dm; substitui a janela nativa race_pick_act)
 			Gender()
 			Skin()
 			Hair()
@@ -119,13 +116,16 @@ mob
 			if(Race=="Kanassa-Jin"|Race=="Makyo"|Race=="Namekian"|Race=="Yardrat"|Race=="Saibamen")
 				gender = MALE
 			else
-				var/Choice=alert(src,"Choose gender","","Male","Female")
+				var/Choice = ui_choose("GENERO", "Escolha o sexo do personagem.", list("Male","Female"), list('NewPaleMale.dmi','NewPaleFemale.dmi'), null)
 				switch(Choice)
 					if("Female")
 						pgender="Female"
 						gender = FEMALE
 						genome?.gender = "Female"
 					if("Male")
+						pgender="Male"
+						gender = MALE
+					else //client caiu no meio: mantem o fluxo vivo
 						pgender="Male"
 						gender = MALE
 		Age()
@@ -191,36 +191,30 @@ mob/var
 	eye
 	BodyType
 mob/proc/BodyType()
-	var/Choice=alert(src,"What type of body do you want?","","Medium","Small","Large")
+	//cards com os trade-offs escritos (a confirmacao dupla antiga saiu: o card JA explica)
+	var/Choice = ui_choose("TIPO DE CORPO", "Mudanca PERMANENTE de atributos -- leia com atencao.", \
+		list("Medium","Small","Large"), null, list(\
+		"Corpo padrao: nenhum ajuste de atributos.",\
+		"Agil: acerta/esquiva/corre/recupera mais facil, MAS corte severo em forca e resistencia.",\
+		"Gigante: resistencia e forca enormes, MAS mais lento, recupera devagar e e mais facil de acertar."))
 	switch(Choice)
-		if("Medium")
-			Choice=alert(src,"Choosing Medium will leave your stats as they are, most males are this, although it is not uncommon for females as well, do you want this?","","Yes","No")
-			switch(Choice)
-				if("No") BodyType()
-				if("Yes") BodyType="Medium"
 		if("Small")
-			Choice=alert(src,"Small will make you able to land hits easier, dodge easier, attack faster, run faster, heal faster, and recover energy faster, but you will take a -severe- cut in strength and endurance, this setting is modeled as a female archetype, do you want this?","","Yes","No")
-			switch(Choice)
-				if("No") BodyType()
-				if("Yes")
-					speedMod*=1.4
-					kioffMod*=1.3
-					physoffMod*=0.9
-					physdefMod*=0.7
-					kidefMod*=0.8
-					kiregenMod+=0.6
-					BodyType="Small"
+			speedMod*=1.4
+			kioffMod*=1.3
+			physoffMod*=0.9
+			physdefMod*=0.7
+			kidefMod*=0.8
+			kiregenMod+=0.6
+			BodyType="Small"
 		if("Large")
-			Choice=alert(src,"Large is like being a giant, far beyond any normal person in size. You will receive an insanely huge boost in Endurance, and a still insane but less boost to Strength, but you will attack slower, heal slower, recover energy slower, be easier to hit, and easier to dodge, do you want this?","","Yes","No")
-			switch(Choice)
-				if("No") BodyType()
-				if("Yes")
-					speedMod*=0.7
-					kioffMod*=1.1
-					physoffMod*=1.1
-					physdefMod*=1.3
-					kidefMod-=0.2
-					BodyType="Large"
+			speedMod*=0.7
+			kioffMod*=1.1
+			physoffMod*=1.1
+			physdefMod*=1.3
+			kidefMod-=0.2
+			BodyType="Large"
+		else //Medium (ou client caiu): corpo padrao
+			BodyType="Medium"
 mob/proc/NewCharacterStuff()
 	verbs+=typesof(/mob/default/verb)
 	Keyableverbs+=typesof(/mob/default/verb)
@@ -239,6 +233,7 @@ mob/proc/NewCharacterStuff()
 	CheckIncarnate()
 	race_genome_post_init()
 	spawn(10) class_hint() //tell the new player, indirectly, what class/power tier they were born into (their BP is hidden without a scouter)
+	spawn(15) outfit_creation_prompt() //quer nascer vestido? (guarda-roupa cosmetico; Wardrobe.dm)
 
 mob/proc/CustomizeFurther()
 	if(Race == "Frost Demon" || (Parent_Race == "Frost Demon"))

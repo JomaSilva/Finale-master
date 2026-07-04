@@ -6,18 +6,24 @@ mob
 				r_race = Parent_Race
 			if(r_race=="Frost Demon"||r_race=="Bio-Android") return
 			if(r_race=="Namekian")
+				//cards com o tom de verde JA aplicado no preview
+				var/icon/nLight = new('Namek Young.dmi', "", SOUTH, 1)
+				nLight.Blend(rgb(30,30,30), ICON_ADD)
+				var/icon/nDark = new('Namek Young.dmi', "", SOUTH, 1)
+				nDark.Blend(rgb(30,30,30), ICON_SUBTRACT)
+				var/npick = ui_choose("COR DE PELE", "O tom do seu Namekuseijin.", list("Light Green","Green","Dark Green","Albino"), list(nLight, 'Namek Young.dmi', nDark, 'Albino Namek.dmi'), null)
 				var/nicon='Namek Young.dmi'
-				switch(input("Choose your skin color","",text) in list("Light Green", "Green", "Dark Green", "Albino"))
+				switch(npick)
 					if("Light Green")
 						nicon+=rgb(30,30,30)
 						icon=nicon
-					if("Green") icon=nicon
 					if("Dark Green")
 						nicon-=rgb(30,30,30)
 						icon=nicon
 					if("Albino")
 						nicon='Albino Namek.dmi'
 						icon=nicon
+					else icon=nicon //Green (ou queda de client)
 				return
 			var/list/skin_list = list()
 			//see Genetic_Icons.dm
@@ -53,19 +59,20 @@ mob
 						skin_list += 'NewBlackFemale.dmi'
 			else
 				skin_list += genome.returnIcons()
-			var/list/tmp_obj_list = list()
+			//tela HTML: um card com preview pra cada corpo disponivel (CreationUI.dm)
+			var/list/blabels = list()
+			var/list/bicons = list()
 			for(var/a in skin_list)
-				var/obj/Dummy_Race_Icon/oba = new
-				oba.icon = a
-				tmp_obj_list += oba
-			inAwindow = 1
-			winshow(src,"race_pick",1)
-			contents += new/obj/racewindowverbs
-			var/dummyobjs
-			for(var/obj/obja in tmp_obj_list)
-				src<<output(obja,"race_pick.grid1: [++dummyobjs]")
-			while(inAwindow)
-				sleep(5)
+				var/bn = "[a]"
+				if(lowertext(copytext(bn, max(length(bn) - 3, 1))) == ".dmi") bn = copytext(bn, 1, length(bn) - 3)
+				//nomes duplicados quebrariam o Find() -> numera
+				if(bn in blabels) bn = "[bn] ([blabels.len + 1])"
+				blabels += bn
+				bicons += a
+			var/bpick = ui_choose("CORPO", "Escolha a base do seu personagem.", blabels, bicons, null)
+			var/bidx = bpick ? blabels.Find(bpick) : 0
+			if(bidx) icon = skin_list[bidx]
+			else if(skin_list.len) icon = skin_list[1] //client caiu no meio: usa a primeira base
 			if(Class=="Genie"||Class=="Ogre"||Race=="Majin")
 				alert("Now choose your body colour — it tints the body you just selected.")
 				var/rgbsuccess
