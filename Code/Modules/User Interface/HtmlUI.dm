@@ -701,7 +701,7 @@ mob/Topic(href, list/href_list)
 		ui_scroll_pos[href_list["uiscrollkey"]] = text2num(href_list["uiscroll"])
 		return
 	if(href_list["chatReady"]) //the HTML chat page finished loading -> replay the backlog, then go live
-		if(!chatUIready) FlushChat()
+		if(client && !client.chatUIready) FlushChat()
 		return
 	if(href_list["saySend"]) //a message typed into the HTML chat input bar -> route to the chosen say channel
 		var/msg = href_list["msg"]

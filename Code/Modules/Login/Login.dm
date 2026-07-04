@@ -35,6 +35,7 @@ client
 			else
 				IP_Address["[computer_id]"] += 1//When they login, they're going to have a character logged in anyway if they're not trying to multikey
 		..()
+		spawn(10) if(mob) mob.OpenChatUI() //CHAT HTML ativo desde a CONEXAO (lobby/criacao de personagem): as mensagens da criacao aparecem na hora; o backlog vive no CLIENT e o reload do onceStats repete tudo quando o personagem entra no mundo
 	Del()
 		if(address && IP_Address.Find("[computer_id]"))
 			IP_Address["[computer_id]"]--//Subtract the People so they can log out and login with a different key or the same key
