@@ -1,7 +1,15 @@
 mob/proc/statkai()
 	RaceDescription="Kais are what would be the ultimate beings of the universe, if they were not as lazy as they were. They have a very high battle power modifier, and a very good starting power, as well as great stats and the ability to regenerate from attacks that would normally kill people. They can reverse death and teleport, yes teleport, from planet to planet and even between the Afterlife and the Living Realm. They are very fickle in nature, and can be good and benevolent one minute, and evil and coniving the next. Some Kais align themselves with Demons due to their attraction to power, and some are the pinnacle of Good ideals, much like the true Kai."
+	if(Class == "None") //classe ALEATORIA no nascimento (mesma estrutura do Majin): Golden Apple raro / Normal comum
+		if(rand(1,100) <= 15) Class = "Golden Apple" //nascidos FORTISSIMOS, destinados a Supremos Kaioshins
+		else Class = "Normal" //destino de Kaio comum (como o Sr. Kaio)
+		//sem anuncio direto da classe: a dica VAGA vem do class_hint() no spawn (quem conhece o lore pega na hora)
 	if(!genome)
 		genome = new/datum/genetics/Kai(/datum/genetics/proto/Kai)
+		if(Class != "None")
+			genome.this_class = Class //classe explicita (rolada acima/bred/admin) vence
+		else
+			genome.this_class = "Normal"
 
 /datum/genetics/proto/Kai
 	name = "Kai" //Name of race.
@@ -36,6 +44,12 @@ mob/proc/statkai()
 		"Anger" = 1.2, //anger stat, this * 100 = final anger.
 		"Zenkai" = 0.5, //zenkai, the hax stat.
 		"Space Breath" = 1,//misc stat misc stat, either 0 or 1. limited to only 0 or 1. only does things at 0 and 1. 0 means they die in space.
-		"Starting BP" = 600,//starting BP
+		"Starting BP" = 900,//starting BP -- Normal Kai: MESMO BP inicial da classe base do Majin
 		"Tech Modifier" = 1)//how naturally good you are at technology
 		//gravity mastered is a product of your home planet's gravity. nothing more, nothing less.
+	Class_Spread = list("Golden Apple" = 15,"Normal" = 85) //Golden Apple rolada PRIMEIRO (rara); Normal por ultimo absorve o fallback do decide_Class
+	class_stats = list(
+		"Golden Apple" = list(
+			"Starting BP" = 500000 //mesmo BP inicial do Corrupted Majin: nasce um monstro, destinado a Supremo Kaioshin
+		)
+	)

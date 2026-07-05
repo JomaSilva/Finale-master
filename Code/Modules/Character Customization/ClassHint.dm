@@ -23,6 +23,8 @@ mob/proc/class_hint()
 		if("Normal")
 			if(Race == "Saiyan" || Parent_Race == "Saiyan")
 				msg = "You are a middling warrior of your people, neither weak nor remarkable, with everything still to prove."
+			else if(Race == "Kai" || Parent_Race == "Kai")
+				msg = "You were born of the common fruit of the sacred tree. A quiet life of watching over the cosmos, like the old Kai of the North, seems to await you." //Kai comum (destino de Sr. Kaio)
 			else
 				msg = "You are an ordinary person of your kind. You start with little, but your will knows no ceiling."
 		//--- Human ---
@@ -39,6 +41,9 @@ mob/proc/class_hint()
 			msg = "You carry the lineage of a grim future: raw physical might bound to a single, focused form."
 		if("Awakened Evolution")
 			msg = "An immense hidden potential sleeps within you, waiting for the moment it is unlocked."
+		//--- Kai ---
+		if("Golden Apple")
+			msg = "You were born of the GOLDEN fruit of the sacred tree. The heavens themselves seem to bend around your cradle -- a seat far above the common Kais may one day be yours."
 		//--- Majin ---
 		if("Majin")
 			msg = "Your elastic flesh mends whatever is torn from it. You are endurance made manifest."

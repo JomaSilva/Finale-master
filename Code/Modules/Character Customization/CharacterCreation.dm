@@ -65,6 +65,9 @@ mob
 				client.mob = new /mob/lobby
 				del(src)
 				return
+			if(client) //CONFIRMOU: personagem pronto -- so agora a musica do menu se despede
+				client.TitleMusicOn = 0
+				client.Music_Fade()
 			if(Race != "Frost Demon" && !ChangieType) usr.form1icon = icon
 			usr.originalicon = icon
 			Locate()

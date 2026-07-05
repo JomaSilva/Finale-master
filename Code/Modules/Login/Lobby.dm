@@ -148,7 +148,9 @@ mob
 		winshow(src,"Login_Pane",0)
 		winshow(src,"characterpane",0)
 		client.TitleMusicOn=0
-		client.Music_Fade()
+		if(!client.iscreating && Created && Race != "None") //personagem PRONTO carregado: menu se despede agora
+			client.Music_Fade()
+		//indo pra CRIACAO: a musica do menu SEGUE tocando ate o CONFIRMAR final (o fade acontece no New_Character)
 		CHECK()
 		client.show_verb_panel=1
 		to_chat(src, "[src] entered the game.")

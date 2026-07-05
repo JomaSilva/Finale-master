@@ -34,6 +34,9 @@ mob
 				else
 					skin_list += 'Majin.dmi'
 					skin_list += 'Majin1.dmi'
+			else if(Race == "Kai") //corpos proprios do Kaioshin, um por sexo
+				if(pgender == "Female") skin_list += 'Alien 10.dmi'
+				else skin_list += 'Konatsu.dmi'
 			else if(Race == "Demon")
 				skin_list += 'Base_Skully.dmi'
 				skin_list += 'Demon - Form 1.dmi'
@@ -73,7 +76,7 @@ mob
 			var/bidx = bpick ? blabels.Find(bpick) : 0
 			if(bidx) icon = skin_list[bidx]
 			else if(skin_list.len) icon = skin_list[1] //client caiu no meio: usa a primeira base
-			if(Class=="Genie"||Class=="Ogre"||Race=="Majin")
+			if(Class=="Genie"||Class=="Ogre"||Race=="Majin"||Race=="Kai") //Kaioshin escolhe a cor de pele igual um Majin
 				alert("Now choose your body colour — it tints the body you just selected.")
 				var/rgbsuccess
 				rgbsuccess=input("Choose a color.","Color",0) as color

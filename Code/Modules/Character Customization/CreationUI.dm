@@ -97,10 +97,11 @@ mob/proc/creation_gender_icon(g)
 	if(Parent_Race && genome) r = Parent_Race
 	switch(r)
 		if("Majin") return (g == "Female") ? 'Female Majin.dmi' : 'Majin.dmi'
+		if("Kai") return (g == "Female") ? 'Alien 10.dmi' : 'Konatsu.dmi' //corpos proprios do Kaioshin
 		if("Frost Demon") return 'Changling - Form 1.dmi' //sem dimorfismo visual
 		if("Demon") return 'Demon - Form 1.dmi'
 		if("Bio-Android") return 'Bio Android 1.dmi'
-		if("Saiyan", "Human", "Half-Saiyan", "Heran", "Demigod", "Kai", "Tsujin", "Android", "Legendary Saiyan")
+		if("Saiyan", "Human", "Half-Saiyan", "Heran", "Demigod", "Tsujin", "Android", "Legendary Saiyan")
 			return (g == "Female") ? 'NewPaleFemale.dmi' : 'NewPaleMale.dmi'
 	if(genome) //raca com corpos proprios via genoma: primeiro corpo disponivel
 		var/list/gi = genome.returnIcons()
@@ -118,7 +119,10 @@ mob/var/tmp
 	ctform_done = 0
 	ctsum_result = null
 
-mob/proc/ctform_render(err)
+//pnm/pagetxt/pbs: valores DIGITADOS preservados quando a validacao falha (so o campo errado "reseta")
+mob/proc/ctform_render(err, pnm, pagetxt, pbs)
+	if(ctform_done) return //etapa ja concluida: nenhum render fantasma (fila/corrida) reabre a janela
+	var/agemax = (DeclineAge > 1) ? round(DeclineAge) : 130 //teto de idade = inicio do declinio da RACA
 	var/list/h = list()
 	h += {"<html><head><meta http-equiv='X-UA-Compatible' content='IE=edge'><style>
  *{box-sizing:border-box} body{margin:0;background:#0f1115;color:#c8cdd6;font-family:'Segoe UI',Tahoma,sans-serif;font-size:12px;padding:14px}
@@ -141,12 +145,15 @@ function sendForm(){
 }
 </script></head><body>"}
 	h += "<h1>QUEM E VOCE?</h1><div class='sub'>Preencha a identidade do personagem. Tudo pode ser lido depois pelo verb Backstory.</div>"
-	h += "<label>NOME (ate 29 letras)</label><input id='nm' maxlength='29' value='[html_encode(name && name != "player" ? name : "")]'>"
+	var/shownm = isnull(pnm) ? (name && name != "player" ? name : "") : pnm
+	var/showage = isnull(pagetxt) || pagetxt == "" ? "[Age > 0 ? Age : 18]" : pagetxt
+	var/showbs = isnull(pbs) ? backstory : pbs
+	h += "<label>NOME (ate 29 letras)</label><input id='nm' maxlength='29' value='[html_encode(shownm)]'>"
 	if(!cansetage)
-		h += "<label>IDADE (1 a 130)</label><input id='age' maxlength='3' value='[Age > 0 ? Age : 18]'>"
+		h += "<label>IDADE (1 a [agemax] -- limite da sua raca)</label><input id='age' maxlength='3' value='[html_encode(showage)]'>"
 	else
 		h += "<label>IDADE</label><div class='sub'>Definida pela sua raca.</div><input id='age' type='hidden' value='0'>"
-	h += "<label>HISTORIA / BACKSTORY (obrigatoria; ate [CTFORM_BS_MAX] caracteres)</label><textarea id='bs' maxlength='[CTFORM_BS_MAX]'>[html_encode(backstory)]</textarea>"
+	h += "<label>HISTORIA / BACKSTORY (minimo 10 caracteres, ate [CTFORM_BS_MAX])</label><textarea id='bs' maxlength='[CTFORM_BS_MAX]'>[html_encode(showbs)]</textarea>"
 	if(err) h += "<div class='err'>[err]</div>"
 	h += "<div class='foot'><a class='go' onclick='sendForm()'>CONTINUAR &raquo;</a></div>"
 	h += "</body></html>"
@@ -163,17 +170,26 @@ mob/proc/creation_text_form()
 		if(t >= UIC_REOPEN)
 			t = 0
 			if(!winexists(src, "ctform")) ctform_render() //SO se a janela foi FECHADA (re-render com ela aberta APAGAVA o que o jogador estava digitando)
+	src << browse(null, "window=ctform") //fecha ao concluir -- esta linha sumiu numa edicao e era a "janela fantasma" pos-criacao
+	spawn(20) if(src && client) src << browse(null, "window=ctform") //e fecha DE NOVO ~2s depois (mata qualquer render atrasado da fila)
 
-//valida e aplica o formulario (chamado do mob/Topic em HtmlUI.dm); re-renderiza com erro se invalido
+//valida e aplica o formulario (chamado do mob/Topic em HtmlUI.dm). Falhou? re-renderiza com o ERRO
+//e com TUDO que foi digitado preservado -- so o campo invalido volta ao padrao (ninguem re-escreve a ficha)
 mob/proc/ctform_submit(nm, agetxt, bs)
 	if(ctform_done) return
 	nm = copytext("[nm]", 1, 30)
+	var/agemax = (DeclineAge > 1) ? round(DeclineAge) : 130
 	//regras do Name() antigo: nao-vazio, sem espaco-solitario, sem espaco duplo
 	if(!length(nm) || (findtext(nm, " ") && length(nm) == 1) || findtext(nm, "  "))
-		ctform_render("Nome invalido: nao pode ser vazio nem ter espacos duplos.")
+		ctform_render("Nome invalido: nao pode ser vazio nem ter espacos duplos.", "", agetxt, bs)
 		return
+	if(!cansetage)
+		var/agenum = text2num("[agetxt]")
+		if(isnull(agenum) || agenum < 1 || agenum > agemax)
+			ctform_render("Idade invalida: use um numero entre 1 e [agemax] (limite da sua raca).", nm, "", bs)
+			return
 	if(!bs || length(bs) < 10)
-		ctform_render("Escreva pelo menos uma frase de historia (10+ caracteres).")
+		ctform_render("Historia curta demais: escreva pelo menos uma frase (minimo 10 caracteres).", nm, agetxt, "")
 		return
 	var/tempfirst = uppertext(copytext(nm, 1, 2))
 	name = "[tempfirst][copytext(nm, 2, 30)]" //primeira letra sempre maiuscula (regra do Name() antigo)
@@ -185,8 +201,7 @@ mob/proc/ctform_submit(nm, agetxt, bs)
 		signature=addtext(pt1,insert1,pt2,insert2)
 	backstory = copytext("[bs]", 1, CTFORM_BS_MAX + 1)
 	if(!cansetage)
-		var/setage = text2num("[agetxt]")
-		if(!setage || setage < 1 || setage > 130) setage = 18
+		var/setage = text2num("[agetxt]") //ja validada acima (1..limite da raca)
 		Age = setage
 		Body = setage
 		SAge = setage
@@ -318,6 +333,7 @@ mob/proc/html_race_pick()
 			rIcon["[nR.racename]"] = nR.icon
 			rDesc["[nR.racename]"] = "[nR.desc]"
 	rIcon["Saiyan"] = 'NewPaleMale.dmi' //card do Saiyajin usa o corpo-base padrao (o icone do /obj/race destoava)
+	rIcon["Kai"] = 'Konatsu.dmi' //card do Kaioshin usa o corpo-base proprio (o icone do /obj/race estava errado)
 	var/list/pIcon = list()
 	for(var/ptype in list(/obj/Planets/Earth, /obj/Planets/Namek, /obj/Planets/Vegeta, /obj/Planets/Heaven, /obj/Planets/Hell))
 		var/obj/Planets/nP = new ptype(null, 1)
