@@ -2,6 +2,12 @@ mob/var/zenkaiStore = 0
 mob/var/zenkaiTimer = 0
 mob/var/tmp/zenkaiWarn = 0 //world.realtime gate for the 'Zenkai on cooldown' notice (rate-limit + post-grant suppression)
 var/zenkaiInjuryFraction = 0.45 //share of body parts that must be Broken/lopped to count as "extremely injured" (bumps a defeat's Zenkai to 15% of the foe's BP and a 3x-base-BP ceiling)
+var/zenkaiCapSSJ3Mid = 0.25 //APOSENTADORIA do Zenkai: para de funcionar quando o BP base alcanca ~o BP pessoal de liberar o SSJ3. Se o requisito pessoal (ssj3LearnReq) ainda nao foi rolado, teto = ssj3at x isto (0.25 = o ponto MEDIO da formula do CheckSSj3Learn: ssj3at/10 x rand 2.0-3.0). Vale pra TODAS as racas/classes com Zenkai
+
+//o teto de BP alem do qual o Zenkai nao surge mais (~"BP pessoal necessario pro SSJ3")
+mob/proc/zenkai_bp_ceiling()
+	if(ssj3LearnReq > 0) return ssj3LearnReq //requisito pessoal ja rolado (CheckSSj3Learn): usa ele exato
+	return ssj3at * zenkaiCapSSJ3Mid //fallback pra quem nunca rola o requisito (racas fora do CheckSSj3Learn)
 // Zenkai is a passive EXCLUSIVE to Saiyan DNA (Saiyan, Half-Saiyan, Primal/Legendary lineages, Saiyan-blooded)
 // plus Cell-type Bio-Androids who carry Saiyan cells. Every other race has NO Zenkai whatsoever.
 mob/proc/has_zenkai()
@@ -27,6 +33,11 @@ mob/proc/gain_zenkai(enemyBP) //enemyBP = the foe's EFFECTIVE power (expressedBP
 	if(dead) return
 	if(mind_z && z == mind_z) return //dentro da DIMENSAO MENTAL nada e real: ferimento mental nao gera Zenkai
 	if(!has_zenkai()) return //Saiyan DNA only
+	if(BP >= zenkai_bp_ceiling()) //APOSENTADO: alcancou ~o BP pessoal do SSJ3 -- o corpo nao arranca mais forca das derrotas (todas as racas/classes com Zenkai)
+		if(client && world.realtime >= zenkaiWarn)
+			zenkaiWarn = world.realtime + 600
+			to_chat(src, "<font color=#b07a38>Your body no longer surges back from defeat -- it has grown past what a Zenkai can teach it.</font>", "combat")
+		return
 	if(world.realtime < zenkaiReady) //the 1h cooldown is still ticking (realtime = wall-clock, survives logout/reboot)
 		if(client && world.realtime >= zenkaiWarn) //defeated by a stronger foe but Zenkai isn't recharged yet -> warn (rate-limited)
 			zenkaiWarn = world.realtime + 300
