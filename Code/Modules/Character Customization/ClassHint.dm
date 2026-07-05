@@ -3,7 +3,16 @@
 //class they were born into (e.g. a Legendary Saiyan vs a Low-Class one) without seeing the starting number.
 //Called once from NewCharacterStuff() after the class is finalized.
 mob/proc/class_hint()
+	set waitfor = 0
+	//espera a criacao TERMINAR (Created=1 no confirmar final): o hint disparava ~1s apos os stats
+	//da raca, no MEIO das telas de criacao -- ninguem via (era o "sumico" da dica de classe do Majin).
+	//Agora ele chega no chat HTML logo que o personagem pisa no mundo.
+	var/safety = 0
+	while(client && !Created && safety < 6000)
+		sleep(10)
+		safety += 10
 	if(!client) return
+	sleep(15) //respiro pos-spawn: chega DEPOIS das mensagens de entrada
 	var/c = Class
 	if(genome && genome.this_class) c = genome.this_class
 	var/msg = null
@@ -87,4 +96,4 @@ mob/proc/class_hint()
 			msg = "You are a perfect lifeform in the making. You absorb, regenerate, and evolve without limit."
 		else
 			msg = "You search within and take the measure of your own power, the nature you were born with."
-	to_chat(src, "<font color=#cda434><i>[msg]</i></font>")
+	to_chat(src, "<font color=#cda434><i>[msg]</i></font>", "system") //categoria explicita: cai certinho nas abas System/All do chat HTML
