@@ -136,7 +136,6 @@
 #include "Code\Modules\Character Customization\Mutations.dm"
 #include "Code\Modules\Character Customization\OverlayMobHandlers.dm"
 #include "Code\Modules\Character Customization\Overlays.dm"
-#include "Code\Modules\Character Customization\planet-race-pick.dm"
 #include "Code\Modules\Character Customization\Races\BioCustom.dm"
 #include "Code\Modules\Character Customization\Races\IcerCustom.dm"
 #include "Code\Modules\Character Customization\Races\SaiyanObjects.dm"

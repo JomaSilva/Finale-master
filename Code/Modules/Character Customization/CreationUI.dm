@@ -85,10 +85,27 @@ function uflt(){
 		t += 2
 		if(t >= UIC_REOPEN)
 			t = 0
-			src << browse(page, "window=uichoose;size=660x560")
+			if(!winexists(src, "uichoose")) src << browse(page, "window=uichoose;size=660x560") //SO reabre se o jogador FECHOU a janela (re-browse com ela aberta recarregava e zerava filtro/scroll)
 	src << browse(null, "window=uichoose")
 	ui_choose_opts = null
 	return ui_choose_result
+
+//icone de corpo REPRESENTATIVO da raca pro card de genero (Majin mostra corpo Majin etc.;
+//so cai no humano palido quando a raca realmente usa os corpos humanos)
+mob/proc/creation_gender_icon(g)
+	var/r = Race
+	if(Parent_Race && genome) r = Parent_Race
+	switch(r)
+		if("Majin") return (g == "Female") ? 'Female Majin.dmi' : 'Majin.dmi'
+		if("Frost Demon") return 'Changling - Form 1.dmi' //sem dimorfismo visual
+		if("Demon") return 'Demon - Form 1.dmi'
+		if("Bio-Android") return 'Bio Android 1.dmi'
+		if("Saiyan", "Human", "Half-Saiyan", "Heran", "Demigod", "Kai", "Tsujin", "Android", "Legendary Saiyan")
+			return (g == "Female") ? 'NewPaleFemale.dmi' : 'NewPaleMale.dmi'
+	if(genome) //raca com corpos proprios via genoma: primeiro corpo disponivel
+		var/list/gi = genome.returnIcons()
+		if(islist(gi) && gi.len) return gi[1]
+	return (g == "Female") ? 'NewPaleFemale.dmi' : 'NewPaleMale.dmi'
 
 // ============================================================================
 // FORMULARIO DE TEXTO DA CRIACAO (nome + idade + historia) numa janela HTML +
@@ -143,10 +160,9 @@ mob/proc/creation_text_form()
 	while(client && !ctform_done)
 		sleep(2)
 		t += 2
-		if(t >= UIC_REOPEN) //fechou a janela sem enviar? reabre
+		if(t >= UIC_REOPEN)
 			t = 0
-			ctform_render()
-	src << browse(null, "window=ctform")
+			if(!winexists(src, "ctform")) ctform_render() //SO se a janela foi FECHADA (re-render com ela aberta APAGAVA o que o jogador estava digitando)
 
 //valida e aplica o formulario (chamado do mob/Topic em HtmlUI.dm); re-renderiza com erro se invalido
 mob/proc/ctform_submit(nm, agetxt, bs)
@@ -161,6 +177,12 @@ mob/proc/ctform_submit(nm, agetxt, bs)
 		return
 	var/tempfirst = uppertext(copytext(nm, 1, 2))
 	name = "[tempfirst][copytext(nm, 2, 30)]" //primeira letra sempre maiuscula (regra do Name() antigo)
+	if(!signature) //o Name() antigo (deletado) tambem gerava a SIGNATURE -- a identidade permanente do personagem
+		var/pt1=num2text(rand(1,999),3)
+		var/insert1=num2text(rand(50,99),2)
+		var/pt2=num2text(rand(1,999),3)
+		var/insert2=num2text(rand(20,30),2)
+		signature=addtext(pt1,insert1,pt2,insert2)
 	backstory = copytext("[bs]", 1, CTFORM_BS_MAX + 1)
 	if(!cansetage)
 		var/setage = text2num("[agetxt]")
@@ -233,7 +255,7 @@ mob/proc/creation_summary()
 		t += 2
 		if(t >= UIC_REOPEN)
 			t = 0
-			src << browse(page, "window=ctsum;size=560x520")
+			if(!winexists(src, "ctsum")) src << browse(page, "window=ctsum;size=560x520") //SO reabre se fechou
 	src << browse(null, "window=ctsum")
 	return (ctsum_result == 1)
 

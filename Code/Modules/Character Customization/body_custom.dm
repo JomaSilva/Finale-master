@@ -100,30 +100,7 @@ mob
 				if("Male") icon='White Male.dmi'
 				if("Female") icon='Whitefemale.dmi'
 			oicon=icon
-
-			racedone_remove()
-
-
-obj/Dummy_Race_Icon
-	name = "<- Icon"
-	IsntAItem=1
-	Click()
-		usr.icon = icon
-		usr.oicon = icon
-
-obj/racewindowverbs
-	IsntAItem=1
-	verb/racedone()
-		set category = null
-		set hidden = 1
-		winshow(usr,"race_pick", 0)
-		usr.inAwindow=0
-		usr.racedone_remove()//causes a infinite cross reference loop otherwise
-		del(src)
-mob/proc/racedone_remove()
-	verbs -= typesof(/obj/racewindowverbs/verb)
-	contents -= /obj/racewindowverbs
-	inAwindow=0
+//(a janela nativa race_pick de skin -- Dummy_Race_Icon/racewindowverbs/racedone_remove -- foi DELETADA: a escolha virou ui_choose)
 
 mob/proc/formchoose(rtype)
 	var/list/skin_list = list()

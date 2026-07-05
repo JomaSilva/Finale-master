@@ -12,8 +12,7 @@ obj/race
 		nM.genome = new/datum/genetics()
 		nM.StatRace(racename)
 		desc = nM.RaceDescription
-	Click()
-		usr.update_race_desc(racename,desc)
+	//Click() antigo (update_race_desc da janela nativa) DELETADO: /obj/race hoje e so catalogo do html_race_pick
 	Saiyan
 		overlays = list('Tail.dmi')
 		name = "Saiyan"

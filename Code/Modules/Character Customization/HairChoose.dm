@@ -1,37 +1,12 @@
+//obj/DummyHair hoje e SO o portador dos literais .dmi do catalogo (hair_style_catalog);
+//a janela nativa miscwindow (checkoverlays/Click/hairwindowverbs/WindowRemoveVerbs) foi DELETADA
 obj/DummyHair
 	var
 		hairtype
 		icon/hairicon
 	icon = 'BaseWhiteMale.dmi'
-	proc/checkoverlays()
-		if(!name||name=="DummyHair")
-			overlays -= hairicon
-			overlays += hairicon
-			name = hairtype
-			spawn(1) checkoverlays()
-obj/DummyHair/New()
-	..()
-	checkoverlays()
-
-obj/DummyHair/Click()
-	usr.hair = hairtype
-	//usr << "Debug: Clicked (If you see this message, everything is working fine! Report it if next time this doesn't show!)"
-obj/hairwindowverbs
-	verb/DoneButton()
-		set category = null
-		set hidden = 1
-		usr.selecthair()
-		winshow(usr,"miscwindow", 0)
-		usr.inAwindow = 0
-		usr.WindowRemoveVerbs()//causes a infinite cross reference loop otherwise
-		del(src)
-		usr.dummyhairlist = list(null)
-		//usr << "Debug: Clicked (If you see this message, everything is working fine! Report it if next time this doesn't show!)"
 mob/var/tmp
 	list/dummyhairlist = list()
-mob/proc/WindowRemoveVerbs()
-	src.contents -= /obj/hairwindowverbs
-	usr.contents -= /obj/hairwindowverbs
 //TELA HTML de cabelo (motor em CreationUI.dm): cada card mostra o SEU corpo com o estilo
 //JA NA SUA COR. O catalogo vem de hair_style_catalog() -- LITERAIS COMPILADOS: file("nome.dmi")
 //em runtime procura o caminho literal no disco e os .dmi de cabelo moram em subpastas (so o

@@ -190,7 +190,6 @@ mob/Admin3/verb/Give(mob/M in world)
 			list1-=/obj/clothingwindowverbs
 			list1-=/obj/DummyHair
 			list1-=typesof(/obj/screen)
-			list1-=/obj/hairwindowverbs
 			list1-=/obj/aurawindowverbs
 			//list1-=/obj/fight_temp_obj
 			list1-=/obj/stylewindow

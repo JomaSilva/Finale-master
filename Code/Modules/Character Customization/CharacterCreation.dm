@@ -86,34 +86,16 @@ mob
 			spawn(10)
 				Ki=100
 				HP=100
-		Name()
-			var/pt1=num2text(rand(1,999),3)
-			var/insert1=num2text(rand(50,99),2)
-			var/pt2=num2text(rand(1,999),3)
-			var/insert2=num2text(rand(20,30),2)
-			signature=addtext(pt1,insert1,pt2,insert2)
-			name=input("What do you want your name to be? (30 letter limit.)")
-			name=copytext(name,1,30)
-			var/tempfirst = uppertext(copytext(name,1,2))
-			name="[tempfirst][copytext(name,2,30)]" //ensures that the first letter will always be capitalized.
-			if(!name || (findtext(name," ") && length(name) == 1) || findtext(name,"  "))
-				to_chat(src, "Invalid name.")
-				Name()
-
-		Backstory()
-			var/bs = input(src, "Write your character's backstory — who they are and where they come from. This is required to continue.", "Character Backstory", backstory) as message|null
-			if(bs) bs = copytext(bs, 1, 2001) //2000 char cap
-			if(!bs || length(bs) < 10)
-				to_chat(src, "<font color=red>You must write a backstory (at least a sentence) to continue.</font>")
-				Backstory()
-				return
-			backstory = bs
-			to_chat(src, "<font color=#88cc88>Backstory saved. You can review it anytime via the Backstory verb.</font>")
+		//Name()/Backstory()/Age() antigos DELETADOS: viraram o formulario HTML creation_text_form()
+		//(CreationUI.dm), que tambem gera a signature e valida com as mesmas regras
 		Gender()
-			if(Race=="Kanassa-Jin"|Race=="Makyo"|Race=="Namekian"|Race=="Yardrat"|Race=="Saibamen")
+			if(Race=="Kanassa-Jin"|Race=="Makyo"|Race=="Namekian"|Race=="Yardrat"|Race=="Saibamen"||Parent_Race=="Namekian")
+				//raca SEM sexo (Namek etc.): a etapa e PULADA por completo -- considerado Male p/ o jogo
 				gender = MALE
+				pgender = "Male" //o skip antigo so setava gender e o pgender vazio vazava pro Skin()/resto do fluxo
+				genome?.gender = "Male"
 			else
-				var/Choice = ui_choose("GENERO", "Escolha o sexo do personagem.", list("Male","Female"), list('NewPaleMale.dmi','NewPaleFemale.dmi'), null)
+				var/Choice = ui_choose("GENERO", "Escolha o sexo do personagem.", list("Male","Female"), list(creation_gender_icon("Male"), creation_gender_icon("Female")), null) //icones da PROPRIA raca (Majin mostra corpo Majin etc.)
 				switch(Choice)
 					if("Female")
 						pgender="Female"
@@ -125,13 +107,6 @@ mob
 					else //client caiu no meio: mantem o fluxo vivo
 						pgender="Male"
 						gender = MALE
-		Age()
-			if(!cansetage)
-				var/setage=input("How old is your character?",1) as num
-				if(setage<1|setage>130)setage=1
-				Age=setage
-				Body=setage
-				SAge=setage
 		Eyes()
 			alert(usr,"Select your eye color.")
 			var/newrgb
