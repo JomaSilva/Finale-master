@@ -553,7 +553,9 @@ mob/proc/BioLabEvolve()
 	move = 0
 	dir = SOUTH
 	emit_Sound('rockmoving.wav')
-	emit_TransformMusic('Dragon Ball Z Dokkan Battle - PHY LR Super Janemba OST (Extended).mp3', 6567)
+	//tema PROPRIO por forma: Semi-Perfect Cell (bio 2) / Perfect Cell (bio 3) -- file()+caminho completo, os nomes tem apostrofo/parenteses (nao vivem num 'literal')
+	if(target_stage == 3) emit_TransformMusic(file("Sounds/Music/bio forms/Semi-Perfect Cell Theme(Shunsuke Kikuchi).mp3"), 470) //~47s
+	else emit_TransformMusic(file("Sounds/Music/bio forms/Perfect Cell's Theme (From  Dragon Ball Z ).mp3"), 1920) //~3min12
 	to_chat(view(src), "<font color=#7fe07f>*O corpo de [src] INCHA e borbulha -- a biomassa absorvida esta reescrevendo sua forma!*</font>", "combat")
 	to_chat(src, "<font color=#7fe07f><b>SIM... SIM! O poder deles agora e SEU. Sua evolucao comeca!</b></font>", "system")
 	//overlay de metamorfose (bioto2/bioto3) durante TODA a cinematica

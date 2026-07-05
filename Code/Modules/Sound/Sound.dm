@@ -17,6 +17,30 @@ client
 		playing=0
 	proc
 		Title_Music() if(playing==0)
+			//MENU OST (2026-07-05): toca UMA faixa aleatoria da pasta "Sounds/Music/Menu ost" em LOOP
+			//ate o jogador entrar no jogo (Music_Fade corta). flist le o DISCO do host em runtime e
+			//sound() em runtime exige file()+caminho completo (mesma regra da musica de batalha).
+			if(!TitleMusicOn) return
+			var/list/tracks = list()
+			for(var/f in flist("Sounds/Music/Menu ost/"))
+				if(copytext(f, length(f)) == "/") continue //subpasta: ignora
+				var/ext = lowertext(copytext(f, max(length(f) - 3, 1)))
+				if(ext == ".mp3" || ext == ".ogg" || ext == ".wav" || ext == ".mid")
+					tracks += "Sounds/Music/Menu ost/[f]"
+			if(!tracks.len) return
+			var/tpath = pick(tracks)
+			musicdatumvar = sound(file(tpath), volume=clientvolume, channel=1, wait=0, repeat=1)
+			src << musicdatumvar
+			playing = 1
+			var/nm = tpath //nome amigavel no chat: so o arquivo, sem pasta nem extensao
+			var/slash = 0
+			for(var/i = length(nm), i >= 1, i--)
+				if(copytext(nm, i, i + 1) == "/") { slash = i; break }
+			if(slash) nm = copytext(nm, slash + 1)
+			nm = copytext(nm, 1, max(length(nm) - 3, 1))
+			if(mob) to_chat(mob, "Playing: [nm]")
+
+		Title_Music_legacy_unused() if(playing==0) //playlist antiga hardcoded (16 faixas + goto): FORA DE USO, mantida como referencia
 			var/played=0
 			TitleMusic
 			if(TitleMusicOn)
@@ -84,7 +108,7 @@ client
 						else goto recalculaterand
 					if(6)
 						if(played!=6)
-							musicdatumvar = sound('01. Super Survivor.ogg',volume=clientvolume,wait=1)
+							musicdatumvar = null //'01. Super Survivor.ogg' existia SO no .rsc (sem arquivo no disco) -- neutralizado no codigo morto
 							to_chat(usr, "Playing: Dragon Ball Z: Super Survivor")
 							usr<<musicdatumvar
 							played=6

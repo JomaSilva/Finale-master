@@ -91,6 +91,153 @@ function uflt(){
 	return ui_choose_result
 
 // ============================================================================
+// FORMULARIO DE TEXTO DA CRIACAO (nome + idade + historia) numa janela HTML +
+// RESUMO FINAL com a foto do personagem montado e o botao CONFIRMAR (canto
+// inferior direito). O botao Recomecar (inferior esquerdo) volta pro lobby.
+// ============================================================================
+#define CTFORM_BS_MAX 500 //teto de caracteres da historia no formulario (o envio viaja numa URL byond:// -- o limite de URL do IE e ~2083 chars e acentos codificam 3x)
+
+mob/var/tmp
+	ctform_done = 0
+	ctsum_result = null
+
+mob/proc/ctform_render(err)
+	var/list/h = list()
+	h += {"<html><head><meta http-equiv='X-UA-Compatible' content='IE=edge'><style>
+ *{box-sizing:border-box} body{margin:0;background:#0f1115;color:#c8cdd6;font-family:'Segoe UI',Tahoma,sans-serif;font-size:12px;padding:14px}
+ h1{font-size:17px;color:#e8b64c;letter-spacing:2px;margin:0 0 2px 0}
+ .sub{color:#8b919c;font-size:11px;margin-bottom:12px}
+ label{display:block;color:#9fb2c4;font-weight:bold;font-size:11px;margin:10px 0 4px 0;letter-spacing:1px}
+ input,textarea{width:100%;background:#0b0d11;color:#e6e9ef;border:1px solid #2b303a;border-radius:6px;padding:7px 9px;font-size:12px;outline:none;font-family:inherit}
+ input:focus,textarea:focus{border-color:#e8b64c}
+ textarea{height:150px;resize:none}
+ .err{color:#ff8a8a;font-size:11px;margin-top:8px}
+ .foot{margin-top:14px;text-align:right}
+ .go{display:inline-block;padding:9px 26px;background:#0f4f2f;color:#8effb8;border:1px solid #2f8f5f;border-radius:7px;text-decoration:none;font-weight:bold;cursor:pointer}
+ .go:hover{background:#166b41}
+</style>
+<script>
+function navByond(u){ try{ var a=document.createElement('a'); a.href=u; document.body.appendChild(a); if(a.click){ a.click(); document.body.removeChild(a); return; } }catch(e){} try{ window.location=u; }catch(e2){} }
+function sendForm(){
+ var n=document.getElementById('nm').value, a=document.getElementById('age').value, b=document.getElementById('bs').value;
+ navByond('byond://?src=__REF__;ctform=1;nm='+encodeURIComponent(n)+';age='+encodeURIComponent(a)+';bs='+encodeURIComponent(b));
+}
+</script></head><body>"}
+	h += "<h1>QUEM E VOCE?</h1><div class='sub'>Preencha a identidade do personagem. Tudo pode ser lido depois pelo verb Backstory.</div>"
+	h += "<label>NOME (ate 29 letras)</label><input id='nm' maxlength='29' value='[html_encode(name && name != "player" ? name : "")]'>"
+	if(!cansetage)
+		h += "<label>IDADE (1 a 130)</label><input id='age' maxlength='3' value='[Age > 0 ? Age : 18]'>"
+	else
+		h += "<label>IDADE</label><div class='sub'>Definida pela sua raca.</div><input id='age' type='hidden' value='0'>"
+	h += "<label>HISTORIA / BACKSTORY (obrigatoria; ate [CTFORM_BS_MAX] caracteres)</label><textarea id='bs' maxlength='[CTFORM_BS_MAX]'>[html_encode(backstory)]</textarea>"
+	if(err) h += "<div class='err'>[err]</div>"
+	h += "<div class='foot'><a class='go' onclick='sendForm()'>CONTINUAR &raquo;</a></div>"
+	h += "</body></html>"
+	var/page = replacetext(jointext(h, ""), "__REF__", "\ref[src]")
+	src << browse(page, "window=ctform;size=520x480")
+
+mob/proc/creation_text_form()
+	ctform_done = 0
+	ctform_render()
+	var/t = 0
+	while(client && !ctform_done)
+		sleep(2)
+		t += 2
+		if(t >= UIC_REOPEN) //fechou a janela sem enviar? reabre
+			t = 0
+			ctform_render()
+	src << browse(null, "window=ctform")
+
+//valida e aplica o formulario (chamado do mob/Topic em HtmlUI.dm); re-renderiza com erro se invalido
+mob/proc/ctform_submit(nm, agetxt, bs)
+	if(ctform_done) return
+	nm = copytext("[nm]", 1, 30)
+	//regras do Name() antigo: nao-vazio, sem espaco-solitario, sem espaco duplo
+	if(!length(nm) || (findtext(nm, " ") && length(nm) == 1) || findtext(nm, "  "))
+		ctform_render("Nome invalido: nao pode ser vazio nem ter espacos duplos.")
+		return
+	if(!bs || length(bs) < 10)
+		ctform_render("Escreva pelo menos uma frase de historia (10+ caracteres).")
+		return
+	var/tempfirst = uppertext(copytext(nm, 1, 2))
+	name = "[tempfirst][copytext(nm, 2, 30)]" //primeira letra sempre maiuscula (regra do Name() antigo)
+	backstory = copytext("[bs]", 1, CTFORM_BS_MAX + 1)
+	if(!cansetage)
+		var/setage = text2num("[agetxt]")
+		if(!setage || setage < 1 || setage > 130) setage = 18
+		Age = setage
+		Body = setage
+		SAge = setage
+	ctform_done = 1
+
+//foto do personagem MONTADO (corpo + overlays + cabelo/olhos do vis_contents)
+mob/proc/creation_photo()
+	var/icon/P
+	if(icon) P = new(icon, "", SOUTH, 1)
+	else P = new('NewPaleMale.dmi', "", SOUTH, 1)
+	for(var/o in overlays)
+		var/image/im = o
+		if(!im || !im.icon) continue
+		var/icon/OI = new(im.icon, "[im.icon_state]", SOUTH, 1)
+		P.Blend(OI, ICON_OVERLAY)
+	for(var/obj/overlay/O in vis_contents)
+		if(!O.icon) continue
+		var/icon/OV = new(O.icon, "[O.icon_state]", SOUTH, 1)
+		P.Blend(OV, ICON_OVERLAY)
+	P.Scale(96, 96)
+	return P
+
+//RESUMO FINAL: tudo que foi escolhido + a foto; retorna 1 = confirmou, 0 = recomecar
+mob/proc/creation_summary()
+	ctsum_result = null
+	src << browse_rsc(creation_photo(), "ctsum.png")
+	var/lineage = ""
+	if(SaiyanLineage && SaiyanLineage != "") lineage = SaiyanLineage
+	else if(FutureLineage) lineage = "Future"
+	var/list/h = list()
+	h += {"<html><head><meta http-equiv='X-UA-Compatible' content='IE=edge'><style>
+ *{box-sizing:border-box} html,body{margin:0;padding:0;height:100%}
+ body{background:#0f1115;color:#c8cdd6;font-family:'Segoe UI',Tahoma,sans-serif;font-size:12px}
+ #wrap{display:flex;flex-direction:column;height:100%;padding:14px}
+ h1{font-size:17px;color:#e8b64c;letter-spacing:2px;margin:0 0 10px 0}
+ .top{display:flex;gap:14px}
+ .foto{width:120px;text-align:center;flex-shrink:0}
+ .foto img{width:96px;height:96px;background:#0b0d11;border:1px solid #e8b64c;border-radius:10px;padding:6px;box-shadow:0 0 12px rgba(232,182,76,0.25)}
+ .info{flex:1}
+ .row{display:flex;justify-content:space-between;padding:5px 8px;border-bottom:1px solid #1b1f27}
+ .k{color:#8b919c;font-weight:bold;font-size:11px;letter-spacing:1px}
+ .v{color:#f2f4f8;font-weight:bold}
+ .bs{flex:1;overflow-y:auto;background:#0b0d11;border:1px solid #2b303a;border-radius:7px;padding:9px;margin-top:10px;color:#c8cdd6;line-height:1.45;min-height:70px}
+ .foot{display:flex;justify-content:space-between;align-items:center;margin-top:12px}
+ .re{display:inline-block;padding:8px 18px;background:#1b1e25;color:#ff8a8a;border:1px solid #5a2b2b;border-radius:7px;text-decoration:none;font-weight:bold}
+ .ok{display:inline-block;padding:11px 34px;background:#0f4f2f;color:#8effb8;border:1px solid #2f8f5f;border-radius:8px;text-decoration:none;font-weight:bold;font-size:14px;letter-spacing:1px;box-shadow:0 0 10px rgba(47,143,95,0.35)}
+ .ok:hover{background:#166b41}
+</style></head><body><div id='wrap'>"}
+	h += "<h1>SEU PERSONAGEM</h1>"
+	h += "<div class='top'><div class='foto'><img src='ctsum.png'></div><div class='info'>"
+	h += "<div class='row'><span class='k'>NOME</span><span class='v'>[html_encode(name)]</span></div>"
+	h += "<div class='row'><span class='k'>RACA</span><span class='v'>[html_encode(Race)][Parent_Race && Parent_Race != Race ? " <span style='color:#8b919c'>([html_encode(Parent_Race)])</span>" : ""]</span></div>"
+	if(lineage) h += "<div class='row'><span class='k'>LINHAGEM</span><span class='v'>[html_encode(lineage)]</span></div>"
+	h += "<div class='row'><span class='k'>GENERO</span><span class='v'>[html_encode("[pgender ? pgender : "?"]")]</span></div>"
+	h += "<div class='row'><span class='k'>IDADE</span><span class='v'>[round(Age)]</span></div>"
+	h += "<div class='row'><span class='k'>PLANETA</span><span class='v'>[html_encode("[spawnPlanet ? spawnPlanet : Planet]")]</span></div>"
+	h += "</div></div>"
+	h += "<div class='bs'>[html_encode(backstory)]</div>"
+	h += "<div class='foot'><a class='re' href='byond://?src=\ref[src];ctconfirm=0'>&laquo; Recomecar do zero</a><a class='ok' href='byond://?src=\ref[src];ctconfirm=1'>CONFIRMAR &#10004;</a></div>"
+	h += "</div></body></html>"
+	var/page = jointext(h, "")
+	src << browse(page, "window=ctsum;size=560x520")
+	var/t = 0
+	while(client && isnull(ctsum_result))
+		sleep(2)
+		t += 2
+		if(t >= UIC_REOPEN)
+			t = 0
+			src << browse(page, "window=ctsum;size=560x520")
+	src << browse(null, "window=ctsum")
+	return (ctsum_result == 1)
+
+// ============================================================================
 // TELA DE PLANETA + RACA (substitui a janela nativa race_pick_act)
 // ============================================================================
 //racas disponiveis por planeta (mesma tabela do initialize_race_window antigo)

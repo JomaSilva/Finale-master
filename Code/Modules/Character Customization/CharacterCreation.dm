@@ -21,8 +21,7 @@ mob
 			Skin()
 			Hair()
 			Eyes()
-			Age()
-			BodyType()
+			BodyType() //a IDADE agora entra no formulario HTML de texto (creation_text_form, junto de nome/historia)
 			AuraR=rand(0,255)
 			AuraG=rand(0,255)
 			AuraB=rand(0,255)
@@ -60,14 +59,12 @@ mob
 			CustomizeFurther()
 			if(GravMastered>25)
 				GravMastered=25
-			Name()
-			Backstory()
-			switch(alert(usr,"Satisfied?","","Yes","No"))
-				if("No")
-					client.mob = new /mob/lobby
-					del(src)
-					return
-			usr.AddHair()
+			creation_text_form() //janela HTML: nome + idade + historia num formulario so (CreationUI.dm)
+			usr.AddHair() //o cabelo entra ANTES da foto do resumo
+			if(!creation_summary()) //RESUMO FINAL (foto do personagem montado + Confirmar no canto inferior direito)
+				client.mob = new /mob/lobby
+				del(src)
+				return
 			if(Race != "Frost Demon" && !ChangieType) usr.form1icon = icon
 			usr.originalicon = icon
 			Locate()

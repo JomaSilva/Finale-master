@@ -771,6 +771,12 @@ mob/Topic(href, list/href_list)
 			if("emote") sayType(msg,5)
 			else sayType(msg,3)
 		return
+	if(href_list["ctform"]) //formulario de nome/idade/historia da criacao (CreationUI.dm)
+		ctform_submit(href_list["nm"], href_list["age"], href_list["bs"])
+		return
+	if(href_list["ctconfirm"]) //resumo final: 1 = CONFIRMAR, 0 = recomecar
+		ctsum_result = text2num(href_list["ctconfirm"])
+		return
 	if(href_list["uichoose"]) //seletor generico da criacao (CreationUI.dm): clique num card
 		var/ci = text2num(href_list["uichoose"])
 		if(islist(ui_choose_opts) && ci >= 1 && ci <= ui_choose_opts.len) ui_choose_result = ui_choose_opts[ci]
