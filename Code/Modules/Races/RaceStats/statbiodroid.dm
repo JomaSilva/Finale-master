@@ -10,6 +10,7 @@ mob/proc/statbio()
 				Class = "None"
 				to_chat(src, "<font color=#cda434><b>Your Bio-Android core formed as Cell-type.</b></font>")
 		genome.this_class = Class
+		if(Class && Class != "None") genome.old_class = Class //ancora classe explicita (admin force/bred); "None" segue pro roll UNICO do decide_Class
 	RaceDescription={"Bio Androids are a rather odd race, as they are a combination of several races.
 They can have the ability to regenerate, so long as they have a single cell remaining that wasn't obliterated.
 These beings can also have the ability to absorb living people or dead, but do not take on their appearance.

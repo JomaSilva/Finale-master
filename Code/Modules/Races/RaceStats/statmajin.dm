@@ -3,16 +3,14 @@ mob/proc/statmajin()
 They also have incredible death regeneration, rendering them near-immortal. Their control of Ki comes natural to them.\n
 Another rather important fact is that these beings can absorb people and take on part of their power and appearance.\n
 Often they absorb clothing, which is really just the mimicry they subconsciously use by shaping their body into the form of their victims."}
-	if(Class == "None") //class is RANDOM at birth (like the Saiyan class), not chosen
-		if(rand(1,100) <= 15) Class = "Corrupted Majin" //Class_Spread: Corrupted 15 / Majin 85
-		else Class = "Majin"
-		//sem anuncio direto da classe (vazava o tier): o class_hint() do spawn ja da a dica indireta
+	//SEM roll de classe aqui: personagem novo (Class=="None") e sorteado UMA unica vez pelo
+	//decide_Class() do genoma (Class_Spread do proto: Corrupted 5 / Majin 95). So classe
+	//EXPLICITA (admin force/bred/fabrica de NPC) passa por cima -- ancorada pra nao re-rolar.
 	if(!genome)
 		genome = new/datum/genetics/Majin(/datum/genetics/proto/Majin)
-		if(Class != "None")
-			genome.this_class = Class //explicit class (prompt/bred/admin) wins
-		else
-			genome.this_class = "Majin"
+		if(Class && Class != "None")
+			genome.this_class = Class
+			genome.old_class = Class //ancora: decide_Class() respeita old_class e nao re-rola o spread por cima
 		undelayed=1
 
 /datum/genetics/proto/Majin
@@ -51,7 +49,7 @@ Often they absorb clothing, which is really just the mimicry they subconsciously
 		"Starting BP" = 900,//starting BP
 		"Tech Modifier" = 1)//how naturally good you are at technology
 		//gravity mastered is a product of your home planet's gravity. nothing more, nothing less.
-	Class_Spread = list("Corrupted Majin" = 15,"Majin" = 85) //Corrupted Majin rolled FIRST (rarer); Majin is LAST so it absorbs decide_Class's force-last fallback (bred Majins)
+	Class_Spread = list("Corrupted Majin" = 5,"Majin" = 95) //UNICO roll de classe (decide_Class): Corrupted 5% rolado primeiro; Majin por ultimo absorve o fallback force-last (bred Majins)
 	//format is list("class_name" = weight) //CLASS NAME HERE MUST BE THE SAME AS CLASS NAME BELOW (wont work otherwise.)
 	class_stats = list(
 		"Corrupted Majin" = list(

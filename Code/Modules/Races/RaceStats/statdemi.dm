@@ -2,7 +2,7 @@ mob/proc/statdemi()
 	Race="Demigod"
 	if(Class=="None") //class is RANDOM at birth (like the Saiyan class), not chosen
 		Class = pick("Ogre","Demigod","Genie")
-		to_chat(src, "<font color=#cda434><b>You were born a [Class].</b></font>")
+		//sem anuncio direto (vazava o tier): a dica indireta vem do class_hint() pos-spawn
 	switch(Class)
 		if("Demigod")
 			givepowerchance=1
@@ -18,6 +18,7 @@ mob/proc/statdemi()
 			if(!genome)
 				genome = new/datum/genetics/Demigod(/datum/genetics/proto/Demigod)
 				genome.this_class = "Demigod"
+				genome.old_class = "Demigod" //ancora: o pick() daqui e definitivo (decide_Class nao re-rola)
 		if("Ogre")
 			givepowerchance=1
 			WaveIcon='Beam3.dmi'
@@ -33,6 +34,7 @@ mob/proc/statdemi()
 			if(!genome)
 				genome = new/datum/genetics/Demigod(/datum/genetics/proto/Demigod)
 				genome.this_class = "Ogre"
+				genome.old_class = "Ogre" //ancora
 		if("Genie")
 			givepowerchance=2
 			ChargeState="9"
@@ -47,6 +49,7 @@ mob/proc/statdemi()
 			if(!genome)
 				genome = new/datum/genetics/Demigod(/datum/genetics/proto/Demigod)
 				genome.this_class = "Genie"
+				genome.old_class = "Genie" //ancora
 	RaceDescription="Demigods are either a very very strong varient of some race, or living beings that live in the otherworld to assist the Gods. Genies, Ogres, and Human Demigods all can throw their weight under one specific banner- as a mighty Demigod. Demigods don't have any transformations, but they boast the HIGHEST BP mod in the game. Their stats are lower than Humans, and they don't get any other advantages. Demigod is by far the most straight forward race to play."
 	Makkankoicon='Makkankosappo4.dmi'
 

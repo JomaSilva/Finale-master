@@ -67,3 +67,4 @@ mob/proc/stathalf()
 		genome.racial_protos["[/datum/genetics/proto/Human]"] = 50
 		genome.racial_protos["[/datum/genetics/proto/Saiyan]"] = 50
 		genome.this_class = Class //resolve Half-Saiyan class_stats (defined on the Saiyan proto, read by build_stats per ancestor)
+		if(Class && Class != "None") genome.old_class = Class //ancora classe explicita (admin force/bred); "None" segue pro roll UNICO do decide_Class

@@ -9,6 +9,7 @@ mob/proc/statheran()
 			Choice = pick(options)
 			to_chat(src, "<font color=#cda434><b>You were born a [Choice]-class Heran.</b></font>")
 		genome.this_class = Choice //was = Class, which stays "None" for a new Heran -> they never got their chosen class (wrong stats + the class hint fell through). Use the selection.
+		if(Choice && Choice != "None") genome.old_class = Choice //ancora classe explicita (admin force/bred); "None" segue pro roll UNICO do decide_Class
 
 
 /datum/genetics/proto/Heran

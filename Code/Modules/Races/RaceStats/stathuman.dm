@@ -13,6 +13,7 @@ mob/proc/stathuman()
 	if(!genome)
 		genome = new/datum/genetics/Human(/datum/genetics/proto/Human)
 		genome.this_class = Class
+		if(Class && Class != "None") genome.old_class = Class //ancora classe explicita (admin force/bred); "None" segue pro roll UNICO do decide_Class
 		//genome.racial_protos["[/datum/genetics/proto/Human]"] = 100
 		
 

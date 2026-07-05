@@ -7,6 +7,7 @@ mob/proc/statfrost()
 			to_chat(src, "<font color=#cda434><b>You were born a [Class].</b></font>")
 		genome = new/datum/genetics/Icer(/datum/genetics/proto/Icer)
 		genome.this_class = Class
+		if(Class && Class != "None") genome.old_class = Class //ancora classe explicita (admin force/bred); "None" segue pro roll UNICO do decide_Class
 
 /datum/genetics/proto/Icer
 	name = "Frost Demon" //Name of race.

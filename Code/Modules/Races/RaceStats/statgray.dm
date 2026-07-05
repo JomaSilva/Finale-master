@@ -19,6 +19,7 @@ mob/proc/statgray()
 	if(!genome)
 		genome = new/datum/genetics/Gray(/datum/genetics/proto/Gray)
 		genome.this_class = Class
+		if(Class && Class != "None") genome.old_class = Class //ancora classe explicita (admin force/bred); "None" segue pro roll UNICO do decide_Class
 
 /datum/genetics/proto/Gray
 	name = "Gray" //Name of race.

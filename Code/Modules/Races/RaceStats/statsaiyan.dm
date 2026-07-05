@@ -20,6 +20,7 @@ mob/proc/statsaiyan()
 		genome = new/datum/genetics/Saiyan(/datum/genetics/proto/Saiyan)
 		if(Class != "None")
 			genome.this_class = Class //explicit class (bred/egg/admin) wins
+			genome.old_class = Class //ancora: decide_Class() nao re-rola por cima da classe explicita
 		else
 			if(SaiyanLineage == "Primal Saiyan") //Primal: caminho do Oozaru/SSJ4; raro Legendary Primal, senao Normal Primal
 				if(rand(1,1000) <= 20) Class = "Legendary Primal Saiyan"
@@ -32,6 +33,7 @@ mob/proc/statsaiyan()
 				else if(roll <= 500) Class = "Low-Class"
 				else Class = "Normal"
 			genome.this_class = Class
+			genome.old_class = Class //ancora: o roll de LINHAGEM daqui e definitivo (o Class_Spread nao sabe de linhagens) -- decide_Class() nao re-rola por cima
 
 /datum/genetics/proto/Saiyan
 	name = "Saiyan" //Name of race.
