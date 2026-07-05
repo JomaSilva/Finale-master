@@ -1,5 +1,5 @@
 //
-#define BPTick 0.0000028 //TAXA GLOBAL de ganho de BP. 2026-07-04: dividida por 10 (era 0.000028) -- o servidor estava ganhando BP rapido demais. TODOS os ganhos (soco/blast/treino/meditacao/gravidade/andar/etc) escalam por este define.
+#define BPTick 0.0000014 //TAXA GLOBAL de ganho de BP. 2026-07-04: dividida por 20 (era 0.000028) -- o servidor estava ganhando BP rapido demais. TODOS os ganhos (soco/blast/treino/meditacao/gravidade/andar/etc) escalam por este define.
 #define DNL_BIO_LARVA_RESTRICT 100 //LARVA de bio-androide expressa no maximo 1/isto do BP base (100 = 1%, estilo zeni-revive-debuff x0.01). Mora AQUI pois base.dm (teto duro no powerlevel) e DNALabs.dm usam -- e o DreamMaker re-ordena includes.
 #define DAY_REAL_MINUTES 20 //quantos minutos REAIS dura 1 dia in-game (relogio em WorldClock.dm; a Sala do Tempo em TimeChamber.dm depende disto -- mora AQUI pq o DreamMaker re-ordena os includes alfabeticamente e defines sao sensiveis a ordem)
 #define DOESEXIST if(isnull(src)) return
