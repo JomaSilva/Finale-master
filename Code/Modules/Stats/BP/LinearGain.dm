@@ -49,3 +49,16 @@ mob/proc/bp_milestone_check_ascension()
 	if(BPBoost >= 20) bp_milestone_reach("asc20")
 	else if(BPBoost >= 10) bp_milestone_reach("asc10")
 	else if(BPBoost >= 5) bp_milestone_reach("asc5")
+
+//RETROATIVO (login): o hook errado do "godki" (na criacao do datum-conteiner) deu x5 pra personagens
+//recem-criados -- se o marco existe mas o God Ki NUNCA despertou de verdade (tier < 1), remove e
+//recalcula o multiplicador a partir dos marcos legitimos restantes
+mob/proc/bp_milestone_login_fix()
+	if(!islist(bp_milestones_done)) return
+	if(("godki" in bp_milestones_done) && (!godki || godki.tier < 1))
+		bp_milestones_done -= "godki"
+		var/m = 1
+		for(var/tag in bp_milestones_done)
+			if(BP_MILESTONES[tag] > m) m = BP_MILESTONES[tag]
+		bp_milestone_mult = m
+		to_chat(src, "<font color=#ffd24a>Um marco de poder ilegitimo foi re-selado (ganho atual: x[m]).</font>")

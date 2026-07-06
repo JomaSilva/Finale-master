@@ -35,6 +35,7 @@ mob/proc
 	get_godki()
 		if(godki.tier == 0 && godki.energy == 100)
 			godki.tier = 1
+			bp_milestone_reach("godki") //MARCO: DESPERTAR real do God Ki (tier 0 -> 1). O hook antigo ficava no new/datum/godki, que e so o CONTEINER criado pra todo mundo no login
 			godki.b_efficiency = godki_mod
 			godki_give_mult = godki_boost
 			if(SaiyanLineage == "Primal Saiyan") godki_give_mult = 0 //Primal: God Ki so ativa o SSJ4 Limit Breaker, sem boost de BP base
