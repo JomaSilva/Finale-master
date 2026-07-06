@@ -176,6 +176,7 @@ mob
 
 			attack()
 				sleep(2)
+				if(!target) return //o alvo morreu/sumiu durante o sleep ("Cannot read null.stagger/null.blocking")
 				IsInFight = 1
 				//
 				if(get_dist(src,target) < 2)
@@ -584,7 +585,7 @@ mob
 					return
 				var/d
 				var/zanzoamount = 3
-				while(src.target.HP>0 && !src.target.KO && src.hasAI)
+				while(src.target && src.target.HP>0 && !src.target.KO && src.hasAI) //target pode virar null entre iteracoes ("Cannot read null.HP")
 					state_alive++
 					d = get_dist(src,target)
 					if(zanzoamount >= 1)

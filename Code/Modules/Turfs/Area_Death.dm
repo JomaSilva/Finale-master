@@ -6,15 +6,19 @@ area/var
 	planet_dying = 0
 	planet_death_stage = 0
 area/proc/Planet_Death(var/expressedBP)
-	var/obj/Planets/Planet
+	set background = 1 //estagios longos com goto: sem background o watchdog matava como "Infinite loop suspected"
+	//BUG CORRIGIDO: o local se chamava "Planet" e SOMBREAVA a var string da area -- as comparacoes
+	//abaixo comparavam com o proprio local (null), nunca casavam, e la embaixo dava null.isBeingDestroyed
+	var/obj/Planets/planetObj
 	for(var/obj/Planets/Pl in planet_list)
-		if(Pl.planetType==Planet)
-			Planet = Pl
+		if(Pl.planetType==Planet) //Planet = a var STRING da area (ex. "Vegeta")
+			planetObj = Pl
+			break
 	planet_dying=1
 	for(var/area/A in area_list)
-		if(A.Planet == Planet && !A.planet_dying)
+		if(A.Planet == Planet && !A.planet_dying) //irmas do MESMO planeta
 			A.planet_dying = 1
-			if(!A.death_proc_running) spawn Planet_Death(AverageBP)
+			if(!A.death_proc_running) spawn A.Planet_Death(AverageBP)
 	destroy
 	if(planet_death_stage<=3)
 		beginning
@@ -39,8 +43,8 @@ area/proc/Planet_Death(var/expressedBP)
 				planet_death_stage++
 		if(planet_death_stage==4) goto destroy
 		else goto beginning
-	else if(!Planet.isBeingDestroyed)
-		Planet.isBeingDestroyed = 1
+	else if(planetObj && !planetObj.isBeingDestroyed)
+		planetObj.isBeingDestroyed = 1
 		DestroyPlanet(expressedBP)
 
 area/proc/limit_life()

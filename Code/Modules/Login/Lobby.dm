@@ -4,6 +4,7 @@ world
 client
 	proc
 		SavePlayer(Path)
+			if(!Path) return FALSE //caminho nulo/invalido: nao gravar (era o "cannot open savefile buffer . for write")
 			if(!istype(mob, /mob/lobby))
 				var savefile/save = new (Path)
 				//overlay / vis contents marrying
@@ -174,7 +175,7 @@ mob
 		..()
 	New_Character()
 		..()
-		client.show_verb_panel=0
+		if(client) client.show_verb_panel=0 //sem guard, desconectar durante a criacao MATAVA o proc aqui: NewCharacter_Vars/Stuff e o Save() nunca rodavam (personagem-limbo sem save)
 		NewCharacter_Vars()
 		NewCharacterStuff()
 		OnLogin()
@@ -250,11 +251,13 @@ mob
 					artifactlist += A
 					A.loc = src.loc
 			if(Savable&&!istype(src, /mob/lobby))
+				var/opath = GetSavePath(save_path)
+				if(!opath) return //sem caminho valido = sem save (evita o "savefile buffer ." corrompido)
 				xco = x
 				yco = y
 				zco = z
 				storedname = name
-				var savefile/save = new (GetSavePath(save_path))
+				var savefile/save = new (opath)
 				save << src //was 'save << usr'; usr is null on an engine-triggered logout (BYOND 516), which wrote a blank mob and clobbered the real save
 				save["name"] << name
 				save["icon"] << icon
@@ -268,6 +271,7 @@ mob
 			if(spath)
 			else spath = 1
 			var/folder = ckey ? ckey(ckey) : ckey(displaykey) //normalize the folder so the path is identical whether ckey is set (login) or cleared (logout); stops saving to one folder and loading from another
+			if(!folder || folder == "") return null //SEM identidade (ckey E displaykey vazios num logout de engine): gravar aqui criava savefile invalido ("cannot open savefile buffer . for write") -- melhor nao salvar
 			return "Save/[folder]/save[spath].dbcsav"
 		GetSaveBckup(var/spath as num)
 // If you want multiple save slots, return a variable here instead

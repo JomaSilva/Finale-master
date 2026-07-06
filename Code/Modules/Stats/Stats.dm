@@ -411,6 +411,7 @@ mob/proc/Stats()
 					var/list/randTurfs = list()
 					for(var/turf/T in view(1,P))
 						randTurfs += T
+					if(!randTurfs.len) break //planeta sem turfs visiveis: pick() vazio matava o loop de Stats do mob
 					var/turf/rT = pick(randTurfs)
 					src.loc = locate(rT.x,rT.y,rT.z)
 		//Anger Decline

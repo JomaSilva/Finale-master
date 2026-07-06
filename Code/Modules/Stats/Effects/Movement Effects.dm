@@ -79,6 +79,7 @@ effect
 					M.SpreadDamage(duration,0)
 					target.SpreadDamage(duration,0)
 					duration=0
+			if(!target) return //o alvo do knockback foi deletado no meio do voo ("Cannot read null.isStepping", 5x no log)
 			if(!target.isStepping)
 				if(step(target,dir,16))
 					step(target,dir,16)

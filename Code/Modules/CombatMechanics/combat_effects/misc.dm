@@ -1,6 +1,6 @@
 /obj/attack/proc
 	explode()
-		spawn spawnExplosion(loc,null,BP,max(1,round(log(8,BP)/2)))
+		spawn spawnExplosion(loc,null,BP,max(1,round(log(8,max(BP,1))/2))) //max(BP,1): blast com BP 0 dava "log(8,0) is not computable"
 		if(mega)
 			createCrater(loc,3)
 		stoopme=1

@@ -259,7 +259,7 @@ mob/proc/hitProc(var/mob/M,dmg,var/iscrit,var/customFlavor,var/forcehit,type)
 		if(0)//dodge
 			if(M.blocking)
 				M.GenerateAttackFlavorText("Dodge",src,"blocks")
-				Damage(M,dmg/(3 * ((M.block * M.blockmod) - (penetration/2)) * max(1,round( log(1.3,Etechnique) ))),type)
+				Damage(M,dmg/(3 * max((M.block * M.blockmod) - (penetration/2), 0.1) * max(1,round( log(1.3,Etechnique) ))),type) //max 0.1: block*blockmod - pen/2 podia dar 0 -> Division by zero (48x no log)
 			else
 				M.GenerateAttackFlavorText("Dodge",src)
 			if(M.riposteon&&prob(M.tactics))

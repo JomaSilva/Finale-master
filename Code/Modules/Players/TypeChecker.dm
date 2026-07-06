@@ -7,7 +7,7 @@ mob/var/tmp/updatetype=0
 
 mob/proc/CheckTyping() if(src) if(client)//this was a huge resource suck
 	while(client)
-		var/checkvar = winget(usr,"Default.Commandbar","focus")
+		var/checkvar = winget(src,"Default.Commandbar","focus") //era usr: null/sem-client em chamadas de engine dava "bad client"
 		if(winget(src,"Default.Commandbar","text") == "") checkvar = null
 		if(checkvar=="true" || typewindow)
 			src.typing = 1

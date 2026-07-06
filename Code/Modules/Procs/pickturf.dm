@@ -27,6 +27,7 @@ proc/tele_rand_turf_in_view(mob/u,range)
 	for(var/turf/T in view(range,u))
 		if(!T.density)
 			turflist+=T
+	if(!length(turflist)) return FALSE //nenhum turf valido (ex.: preso entre paredes): pick() de lista vazia estourava
 	return pickedTurf = pick(turflist)
 
 proc/tele_rand_turf_at_range(mob/u,range)
@@ -36,4 +37,5 @@ proc/tele_rand_turf_at_range(mob/u,range)
 	for(var/turf/T in view(range,u))
 		if(!T.density && get_dist(u,T)>=range)
 			turflist+=T
+	if(!length(turflist)) return FALSE //sem turf na distancia pedida: pick() vazio estourava (12x no log)
 	return pickedTurf = pick(turflist)

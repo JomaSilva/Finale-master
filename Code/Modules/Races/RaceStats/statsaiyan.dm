@@ -14,8 +14,8 @@ mob/proc/statsaiyan()
 		RaceDescription="Legendary Saiyans are a mutated variety of the latter, and are known for their tendencies to have uncontrollable anger, and they transform MUCH earlier than the normal Saiyans. The downfall to this is that all Legendary Saiyans, at some point in time, will either go insane from the transformation, or sometime before that. Regardless of that problem, they are -always- out of control and insane during the transformation, though it can be controlled during the Restrained transformation."
 	GravMastered=10 //Saiyans are native to Vegeta (10x gravity); start acclimated so they aren't crushed/frozen on their own homeworld.
 	if(SaiyanLineage == "") //escolha a linhagem antes da classe (Primal abre o SSJ4; Saiyan normal para no SSJ3)
-		SaiyanLineage = input(src,"Escolha sua linhagem Saiyajin. (Primal = caminho do Oozaru/SSJ4)","Linhagem") in list("Saiyan","Primal Saiyan")
-		if(!SaiyanLineage) SaiyanLineage = "Saiyan"
+		if(client) SaiyanLineage = input(src,"Escolha sua linhagem Saiyajin. (Primal = caminho do Oozaru/SSJ4)","Linhagem") in list("Saiyan","Primal Saiyan")
+		if(!SaiyanLineage) SaiyanLineage = "Saiyan" //dummies SEM client (catalogo de racas / NPCs): input() dava "bad client" (241x no log) -- default direto
 	if(!genome)
 		genome = new/datum/genetics/Saiyan(/datum/genetics/proto/Saiyan)
 		if(Class != "None")

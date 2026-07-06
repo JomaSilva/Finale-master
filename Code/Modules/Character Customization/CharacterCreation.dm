@@ -62,7 +62,7 @@ mob
 			creation_text_form() //janela HTML: nome + idade + historia num formulario so (CreationUI.dm)
 			usr.AddHair() //o cabelo entra ANTES da foto do resumo
 			if(!creation_summary()) //RESUMO FINAL (foto do personagem montado + Confirmar no canto inferior direito)
-				client.mob = new /mob/lobby
+				if(client) client.mob = new /mob/lobby //guard: desconectar com o resumo aberto deixava client null -> runtime matava o proc e o mob virava limbo
 				del(src)
 				return
 			if(client) //CONFIRMOU: personagem pronto -- so agora a musica do menu se despede

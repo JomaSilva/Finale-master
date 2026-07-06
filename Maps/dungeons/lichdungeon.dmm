@@ -24,7 +24,7 @@
 "x" = (/obj/items/Omniwatch,/turf/CastleFloor/Pyramid,/area/dungeon_area)
 "y" = (/obj/items/Anti_Virus/Anti_Virus_Daybreaker,/turf/CastleFloor/Pyramid,/area/dungeon_area)
 "z" = (/obj/items/food/Apple_Of_Eden,/turf/CastleFloor/Pyramid,/area/dungeon_area)
-"A" = (/obj/items/Infinity_Stone_Holder,/turf/CastleFloor/Pyramid,/area/dungeon_area)
+"A" = (/turf/CastleFloor/Pyramid,/area/dungeon_area)
 "B" = (/mob/npc/Enemy/Bosses/Alarato_Lich,/turf/CastleFloor/Pyramid,/area/dungeon_area)
 "C" = (/obj/Artifacts/Blood_Chalice,/turf/CastleFloor/Pyramid,/area/dungeon_area)
 "D" = (/obj/dungeon_exit{isClearingExit = 1},/turf/CastleFloor/Pyramid,/area/dungeon_area)

@@ -92,7 +92,7 @@ mob/proc/MeleeAttack(addeddamage,iscrit,vampdamage,customFlavor,Type)//default b
 							flick("machdes",B)
 							B.icon_state = "Destroyed"
 				return TRUE
-	if(T && !med&&!train&&move&&(usr.Ki>=10)) //damage handling while target is KO'd
+	if(T && !med&&!train&&move&&(Ki>=10)) //damage handling while target is KO'd -- Ki do src (usr e null quando um NPC soca: "Cannot read null.Ki")
 		if(T.Resistance&&T.density)
 			if(!attacking)
 				Fight()

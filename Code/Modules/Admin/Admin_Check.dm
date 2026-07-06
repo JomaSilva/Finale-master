@@ -78,15 +78,16 @@ proc/SaveAdmins()
 	fdel("cfg/admin.txt")
 	file("cfg/admin.txt")<<json_encode(list("Admin1"=Admin1s,"Admin2"=Admin2s,"Admin3"=Admin3s,"Admin4"=Admin4s,"Owners"=Owners))
 proc/LoadCfgAdmins()
+	//REESCRITO: o loop interno antigo nunca inicializava `ii` (list[null] = "list index out of bounds"
+	//em todo boot) e ainda incrementava `i` em vez de `ii` -- iteracao por chave resolve tudo
 	if(check_admin_exists())
 		var/list/admin_decode=json_decode(file2text(file("cfg/admin.txt")))
 		if(islist(admin_decode))
-			for(var/i=1, i<=admin_decode?.len,i++)
-				if(admin_decode?.len == null) return FALSE //file isn't correctly set.
-				for(var/ii, ii<=admin_decode[admin_decode[i]]?.len,i++)
-					if(admin_decode[admin_decode[i]]?.len == null) return FALSE //file isn't correctly set.
-					var/cky = admin_decode[admin_decode[i]][ii]//this returns a ckey, admin_decode[admin_decode[i]] should be one of the above Admins lists.
-					switch(admin_decode[i])
+			for(var/grp in admin_decode) //"Admin1".."Owners"
+				var/list/keys = admin_decode[grp]
+				if(!islist(keys)) continue
+				for(var/cky in keys)
+					switch(grp)
 						if("Admin1") Admin1s |= cky
 						if("Admin2") Admin2s |= cky
 						if("Admin3") Admin3s |= cky

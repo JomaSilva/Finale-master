@@ -49,15 +49,18 @@ mob/npc
 		//inteira do chamador no while abaixo -- o loc so seria setado DEPOIS do New() retornar (deadlock circular,
 		//sem erro nenhum). Com waitfor=0 o `new` devolve o mob na hora e o while termina em background.
 		..()
+		if(isnull(NPC_list)) NPC_list = list() //boot: NPCs do .dmm nascem ANTES das listas globais/da area existirem ("cannot append to list")
 		NPC_list += src
 		if(!npcspawnson) Del()
 		while(worldloading || isnull(loc))
 			sleep(10)
 		current_area = GetArea()
 		if(current_area)
+			if(isnull(current_area.my_npc_list)) current_area.my_npc_list = list()
+			if(isnull(current_area.my_mob_list)) current_area.my_mob_list = list()
 			current_area.my_npc_list |= list(src)
 			current_area.my_mob_list |= list(src)
-		src.contents+=mobDrops
+		if(islist(mobDrops)) src.contents+=mobDrops
 		if(itemrarity)
 			var/obj/items/Equipment/item = pick(ItemList(,itemrarity))
 			item.loc = src.loc

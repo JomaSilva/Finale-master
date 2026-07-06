@@ -60,8 +60,11 @@ mob
 						skin_list += 'NewPaleFemale.dmi'
 						skin_list += 'NewTanFemale.dmi'
 						skin_list += 'NewBlackFemale.dmi'
-			else
+			else if(genome)
 				skin_list += genome.returnIcons()
+			if(!skin_list.len) //sem genoma/sem corpos (era o "Cannot execute null.returnIcons()"): fallback nos corpos base
+				skin_list += 'NewPaleMale.dmi'
+				skin_list += 'NewPaleFemale.dmi'
 			//tela HTML: um card com preview pra cada corpo disponivel (CreationUI.dm)
 			var/list/blabels = list()
 			var/list/bicons = list()

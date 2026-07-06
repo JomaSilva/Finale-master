@@ -169,7 +169,7 @@ mob/proc/PickStyle()
 			to_chat(view(), "<font color=yellow size=3>HE HAS NO GRACE</font>")
 			to_chat(view(), "<font color=yellow size=3>THIS KONG HAS</font>")
 			to_chat(view(), "<font color=yellow size=3>A FUNNY FACE</font>")
-		to_chat(view(), "[usr] [currentStyle.stanceOFFtext]!")
+		if(currentStyle) to_chat(view(), "[usr] [currentStyle.stanceOFFtext]!") //escolher "No style" JA sem estilo dava null.stanceOFFtext
 		currentStyle = null
 	else
 		currentStyle = choice

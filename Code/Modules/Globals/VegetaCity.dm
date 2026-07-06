@@ -99,6 +99,19 @@ proc/Build_Vegeta_Structures()
 	// two laboratories on the west side
 	veg_stamp(lab, 60, 333, oz, labfl, vinside)
 	veg_stamp(lab, 60, 318, oz, labfl, vinside)
+
+	// ---- REGENERATOR turbinado no MEIO do primeiro laboratorio (todos os upgrades) ----
+	var/turf/regt = locate(66, 338, oz) //centro do lab do stamp (60,333 / 13x10) -- linha interna toda livre
+	if(regt && !(locate(/obj/items/Regenerator) in range(7, regt))) //idempotente: o MapSave persiste o objeto entre boots
+		var/obj/items/Regenerator/R = new(regt)
+		R.Bolted = 1
+		R.usable = 1
+		R.efficiency = 10   //Recovery Speed no talo (cura 15 HP + 10 Ki por pulso)
+		R.Durability = 10   //aguenta ate 100x de gravidade sem ser esmagado
+		R.MaxEnergy = 10    //bateria 10x
+		R.Energy = 10       //carregada
+		R.NanoCore = 10     //Nano Regeneration: recarrega a bateria e se conserta sozinho
+		R.injuryheal = 1    //cura ferimentos de membros, regenera membro decepado e remove mutacoes
 	// six houses (3 columns x 2 rows) on the east side
 	for(var/hx in list(78, 92, 106))
 		veg_stamp(house, hx, 338, oz, carpet, vinside)

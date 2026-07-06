@@ -147,7 +147,7 @@ mob/proc/duplicateOverlays(var/list/L,obj/overlay/X,var/overridetemp)
 		return
 	if(isnull(X))
 		for(var/obj/overlay/A in L)
-			var/obj/overlay/nA = new A
+			var/obj/overlay/nA = new A.type //era `new A` (INSTANCIA, nao typepath) -> "new() called with an object..." (5x no log)
 			nA.container = src
 			nA.icon = A.icon
 			nA.icon_state = A.icon_state
@@ -156,7 +156,7 @@ mob/proc/duplicateOverlays(var/list/L,obj/overlay/X,var/overridetemp)
 				nA.EffectEnd()
 	else
 		for(X in L)
-			var/obj/overlay/nA = new X
+			var/obj/overlay/nA = new X.type //idem: instancia -> typepath
 			nA.container = src
 			nA.icon = X.icon
 			nA.icon_state = X.icon_state

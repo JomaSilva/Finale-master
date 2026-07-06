@@ -19,7 +19,7 @@ mob/proc/ZanzoClash(var/mob/M)
 	view(src) << output("<font color=#aaeeff>[src] and [M] vanish into a storm of afterimages!</font>","Chatpane.Chat")
 	chatcast(view(src), "<font color=#aaeeff>[src] and [M] vanish into a storm of afterimages!</font>", "combat")
 	for(var/i = 1 to blinks)
-		if(KO || M.KO || !move || !M.move || dead || M.dead) break
+		if(!M || KO || M.KO || !move || !M.move || dead || M.dead) break //!M primeiro: o rival podia ser deletado no meio do clash ("Cannot read null.KO")
 		if(Ki < MaxKi*0.015 || M.Ki < M.MaxKi*0.015) break //out of Ki -> the clash ends
 		Ki = max(Ki - MaxKi*0.015, 0)
 		M.Ki = max(M.Ki - M.MaxKi*0.015, 0)
@@ -88,13 +88,14 @@ mob/proc/zanzo_settle(var/mob/M, var/range)
 	M.dir = get_dir(M, src)
 
 mob/proc/doAttack(mob/M,addeddamage,iscrit,vampdamage,customFlavor,isBarrage,Type,kboverride,multd)
+	if(!M) return //alvo sumiu no meio da corrente de ataque (era o "Cannot read null.Ki/null.expressedBP")
 	var/dmg=1
 	if(!Type) Type = 1
 	dmg = attackCalcs(M,addeddamage,vampdamage,isBarrage,Type) * BPModulus(expressedBP,M.expressedBP)
 	if(umulti && prob(50) && !multd)
 		doAttack(M,addeddamage,iscrit,vampdamage,customFlavor,isBarrage,Type,kboverride,TRUE)
 	if(!isBarrage) combo_count++
-	if(M.attackable&&!inregen&&!ctrlParalysis&&!med&&!train&&!KO&&move&&(usr.Ki>=(weight*weight*1.5*BaseDrain)))
+	if(M.attackable&&!inregen&&!ctrlParalysis&&!med&&!train&&!KO&&move&&(Ki>=(weight*weight*1.5*BaseDrain))) //Ki do ATACANTE (src): usr e null/0 quando um NPC ataca -- "Cannot read null.Ki"
 		var/testactspeed = Eactspeed
 		testactspeed /= 3 * globalmeleeattackspeed * hitspeedMod
 		testactspeed *= Type
@@ -125,10 +126,11 @@ mob/proc/doAttack(mob/M,addeddamage,iscrit,vampdamage,customFlavor,isBarrage,Typ
 		return TRUE
 
 mob/proc/AttackMultiple(var/mob/M,var/addeddamage,var/iscrit,var/vampdamage,var/customFlavor,var/isBarrage)
+	if(!M) return //alvo sumiu (mesma praga do doAttack)
 	var/dmg=1
 	dmg = attackCalcs(M,addeddamage,iscrit,vampdamage,0,1) * BPModulus(expressedBP,M.expressedBP)
 	if(isBarrage) dmg /= isBarrage
-	if(M.attackable&&!inregen&&!ctrlParalysis&&!med&&!train&&!KO&&move&&(usr.Ki>=(weight*weight*1.5*BaseDrain)))
+	if(M.attackable&&!inregen&&!ctrlParalysis&&!med&&!train&&!KO&&move&&(Ki>=(weight*weight*1.5*BaseDrain))) //Ki do src (usr null em NPC)
 		commonAttackProcs(M,1,1)
 		hitProc(M,dmg,iscrit,customFlavor,1)
 		var/testactspeed = Eactspeed

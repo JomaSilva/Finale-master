@@ -244,6 +244,7 @@ obj/items
 		verb/Set_Type(obj/O as obj in view(2))
 			set category = null
 			set src in view(1)
+			if(!O) return //alvo sumiu/cancelado antes do verb rodar ("Cannot read null.type")
 			to_chat(view(usr), "[usr] set the [src]'s radar type to [O]")
 			radarType = O.type
 mob/var/HasEnergyDrain=0
@@ -369,6 +370,7 @@ obj/items
 			Scan(mob/M in view(usr))
 				set category=null
 				set src in usr
+				if(!M) return //alvo sumiu entre abrir a lista e escolher ("Cannot read null.BP", 5x no log)
 				var/accuracy
 				if(M.BP<1000) accuracy=10
 				else if(M.BP<10000) accuracy=100

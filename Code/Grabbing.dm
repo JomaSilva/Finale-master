@@ -115,7 +115,7 @@ mob/verb
 			usr.InvenSet()
 		else
 			return
-		if(A.type == null)
+		if(!A || A.type == null) //o item pode ter sido pego/deletado enquanto o input estava aberto ("Cannot read null.type", 7x no log)
 			return
 		if(istype(A,/obj))
 			if(A.Bolted)

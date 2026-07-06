@@ -297,15 +297,25 @@ datum/boss_events
 			catch(var/exception/e)
 				WriteToLog("debug","BossEvents: erro no loop: [e] ([e.file]:[e.line])")
 
+	// a saga anterior TERMINOU? (vilao derrotado, vilao venceu, ou cancelada por planeta destruido)
+	proc/saga1_over()
+		return (s1_state >= 3) //3 = Freeza derrotado / 4 = destruiu Vegeta (venceu) / 6 = cancelada
+	proc/saga2_over()
+		return (s2_state >= 3) //idem para o Freeza de Namek
+	proc/saga3_over()
+		return (s3_state == 4 || s3_state == 6) //4 = Cell destruido DE VEZ / 6 = cancelada (2/3/5 = Cell ainda em jogo)
+
 	// ------------------------- marcos de BP (base) --------------------------
+	// CADEIA SEQUENCIAL: cada saga so pode COMECAR depois que a anterior TERMINOU
+	// (o vilao morreu ou venceu) -- o marco de BP continua valendo, mas espera a vez.
 	proc/check_triggers()
 		if(m1_fired && m2_fired && m3_fired && m4_fired) return
 		for(var/mob/M in player_list)
 			if(!M || !M.client || M.dead || istype(M, /mob/lobby)) continue
 			if(!m1_fired && M.BP >= BEV_M1_TRIGGER_BP && bev_is_saiyan(M)) fire_m1(M)
-			if(!m2_fired && M.BP >= BEV_M2_TRIGGER_BP) fire_m2(M)
-			if(!m3_fired && M.BP >= BEV_M3_TRIGGER_BP) fire_m3(M)
-			if(!m4_fired && M.BP >= BEV_M4_TRIGGER_BP) fire_m4(M)
+			if(!m2_fired && saga1_over() && M.BP >= BEV_M2_TRIGGER_BP) fire_m2(M)
+			if(!m3_fired && saga2_over() && M.BP >= BEV_M3_TRIGGER_BP) fire_m3(M)
+			if(!m4_fired && saga3_over() && M.BP >= BEV_M4_TRIGGER_BP) fire_m4(M)
 
 	proc/fire_m1(mob/M)
 		m1_fired = 1

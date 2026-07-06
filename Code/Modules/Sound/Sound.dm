@@ -65,10 +65,11 @@ mob
 			while(client) if(loggedin)
 				sleep(2)
 				if(!client) return
-				var/sound/powerupsound=sound('aurapowered.wav',volume=round(usr.client.clientvolume/6,1),repeat=1,channel=50,wait=0)
-				var/sound/beamsound=sound('beamhead.wav',volume=round(usr.client.clientvolume/10,1),repeat=1,channel=51,wait=0)
-				var/sound/flysound=sound('aurapowered.wav',volume=round(usr.client.clientvolume/10,1),repeat=1,channel=52,wait=0)
-				for(var/mob/M in view(usr))
+				//era tudo usr: em contexto de engine/login usr e null ("bad client" + null.poweruprunning)
+				var/sound/powerupsound=sound('aurapowered.wav',volume=round(client.clientvolume/6,1),repeat=1,channel=50,wait=0)
+				var/sound/beamsound=sound('beamhead.wav',volume=round(client.clientvolume/10,1),repeat=1,channel=51,wait=0)
+				var/sound/flysound=sound('aurapowered.wav',volume=round(client.clientvolume/10,1),repeat=1,channel=52,wait=0)
+				for(var/mob/M in view(src))
 					if(M.poweruprunning)
 						powerupsoundgo=1
 					if(M.beamisrunning)
@@ -79,40 +80,41 @@ mob
 				if(powerupsoundgo)
 					if(!powerupsoundon)
 						powerupsound.status |= SOUND_UPDATE
-						usr << powerupsound
+						src << powerupsound
 						powerupsoundon=1
 				else if(powerupsoundon)
 					powerupsound.status = SOUND_PAUSED
-					usr << powerupsound
+					src << powerupsound
 					powerupsoundon=0
 				//
 				if(beamsoundgo)
 					if(!beamsoundon)
 						beamsound.status |= SOUND_UPDATE
-						usr << beamsound
+						src << beamsound
 						beamsoundon=1
 				else if(beamsoundon)
 					beamsound.status = SOUND_PAUSED
-					usr << beamsound
+					src << beamsound
 					beamsoundon=0
 				//
 				if(flysoundgo)
 					if(!flysoundon)
 						flysound.status |= SOUND_UPDATE
-						usr << flysound
+						src << flysound
 						flysoundon=1
 				else if(flysoundon)
 					flysound.status = SOUND_PAUSED
-					usr << flysound
+					src << flysound
 					flysoundon=0
 				//
 				if(powerupsoundgo||beamsoundgo||flysoundgo) //optimizes by using only one for() statement.
 					var/nobodyisdoingit=0
 					var/nobodyisdoingit2=0
 					var/nobodyisdoingit3=0
-					for(var/mob/M in view(usr))
+					for(var/mob/M in view(src))
 						CHECK_TICK
 						sleep(1)
+						if(!M) continue //M pode ser deletado durante o sleep ("Cannot read null.poweruprunning")
 						if(M.poweruprunning)
 							nobodyisdoingit=1
 						if(M.beamisrunning)
