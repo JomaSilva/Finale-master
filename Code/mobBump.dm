@@ -5,8 +5,7 @@ obj/ShootingStar
 	New()
 		..()
 		spawn ShootingStar()
-obj/DBVTitle
-	icon='DBV.dmi'
+//obj/DBVTitle: definicao duplicada REMOVIDA -- a unica mora em World.dm (icone novo Images/dbv_lobby.png)
 obj/proc/ShootingStar()
 	spawn(300) if(src) del(src)
 	var/image/I=image(icon='Shooting Star.dmi',icon_state="tail")

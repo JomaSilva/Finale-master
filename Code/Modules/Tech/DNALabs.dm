@@ -512,6 +512,7 @@ mob/proc/dnl_larva_mature()
 	statify()
 	powerlevel()
 	Ki = MaxKi //nova forma = Ki em 100% exatos
+	bp_milestone_reach("bio1") //MARCO: carapaca rompida (forma imperfeita)
 	to_chat(view(src), "<font color=#66ddff><b>*A carapaca larval de [src] se rompe -- uma criatura de carapaca esverdeada emerge, inteira!*</b></font>")
 	to_chat(src, "<font color=#66ddff><b>Sua forma imperfeita esta completa: 100% do seu poder foi liberado.</b></font>")
 	bio_evolving = 0
@@ -631,6 +632,7 @@ mob/proc/BioLabEvolve()
 	statify()
 	powerlevel()
 	Ki = MaxKi //nova forma = Ki em 100% exatos (a barra estourava junto com o salto de BP)
+	bp_milestone_reach(target_stage == 3 ? "bio2" : "bio3") //MARCO: semi-perfeito / FORMA PERFEITA
 	createShockwavemisc(loc, 2)
 	move = 1
 	poweruprunning = 0
@@ -692,6 +694,7 @@ mob/proc/bio_ssj2_awaken()
 	to_chat(src, "<font color=#ffd24a><b>Voce MORREU... e voltou. O SUPER SAIYAJIN 2 e seu.</b></font>", "system")
 	if(!hasssj2) ssj2at /= 2 //mesmo desconto de despertar da via saiyajin
 	hasssj2 = 1
+	bp_milestone_reach("bio_ssj2") //MARCO: SSJ2 despertado pela morte
 	SSj2() //aplica a forma de verdade (o guard interno passa: bio_ssj2_by_death=1; a cinematica saiyajin e pulada pra bio)
 	refresh_combat_tag()
 	bio_ssj2_awakening = 0

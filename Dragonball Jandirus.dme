@@ -482,6 +482,7 @@
 #include "Code\Modules\Stats\BP\ascensioncontrols.dm"
 #include "Code\Modules\Stats\BP\base.dm"
 #include "Code\Modules\Stats\BP\Gravity.dm"
+#include "Code\Modules\Stats\BP\LinearGain.dm"
 #include "Code\Modules\Stats\BP\Power Control.dm"
 #include "Code\Modules\Stats\BP\Revert.dm"
 #include "Code\Modules\Stats\BP\softcap.dm"

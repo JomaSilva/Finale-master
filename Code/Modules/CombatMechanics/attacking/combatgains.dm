@@ -141,7 +141,7 @@ mob/proc/Attack_Gain(mult)
 		if(BP<10)
 			if(KiUnlockPercent==1||prob(50))
 				if(prob(1)&&prob(50)) BP += 1
-		BP+=capcheck(BPTick*relBPmax*Etechnique*SparMod*Egains*weight*mult) // 1/2 = 20 mins to reach a given cap at 1x and 1 hit/tick
+		BP+=capcheck(BPTick*bp_gain_base()*Etechnique*SparMod*Egains*weight*mult) // 1/2 = 20 mins to reach a given cap at 1x and 1 hit/tick
 		if(hiddenpotential>=BP)
 			BP += capcheck(hiddenpotential*BPTick*(1/6))
 		else
@@ -153,7 +153,7 @@ mob/proc/Blast_Gain(mult,ignoreminuteshot)
 	if(!mult) mult=1 //o default so era aplicado DEPOIS de bgains usar mult (null zerava o ganho)
 	mult*=htc_gain_mult() //Sala do Tempo: ganho multiplicado (TimeChamber.dm)
 	mult*=mind_gain_mult() //Dimensao Mental: ganhos a 1/4 (MindMeditate.dm)
-	var/bgains = BPTick*relBPmax*Ekiskill*Egains*mult //an hour to hit cap at a rate of 1 shot/tick //made way slower, but when blasts hit you get bp.
+	var/bgains = BPTick*bp_gain_base()*Ekiskill*Egains*mult //an hour to hit cap at a rate of 1 shot/tick //made way slower, but when blasts hit you get bp.
 	var/kgains = 0.055*BPrestriction*KiMod*baseKiMax/baseKi
 	var/amount = bgains
 	var/kamount = kgains

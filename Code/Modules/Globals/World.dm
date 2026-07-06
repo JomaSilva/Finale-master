@@ -28,14 +28,11 @@ mob/Admin3/verb/World_FPS()
 	set category = "Admin"
 	world.fps = input(usr,"Set the world FPS. Default is 12.","",world.fps) as num
 
-obj/DBVTitle
-	icon='DBV.dmi'
+obj/DBVTitle //titulo do LOBBY (mapa z30): dbv_lobby.png = Images/dbv.png reescalado pra 480x275 (o original e 1658x949, estouraria a tela)
+	icon = 'Images/dbv_lobby.png'
+	pixel_x = -115 //centraliza sobre a pegada do titulo antigo (250x200): desloca metade da diferenca
+	pixel_y = -37
 	Savable=0
-	New()
-		var/asdf = rand(0,1)
-		if(asdf)
-			icon = 'dbvalternate.dmi'
-		..()
 
 proc/SaveWorld()
 	to_chat(world, "<font color=red><b><font size=3>Saving and Processing all Files")

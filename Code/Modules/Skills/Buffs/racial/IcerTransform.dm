@@ -62,6 +62,7 @@ mob/proc/icer_poll_icon()
 	slot=sFORM
 	Buff()
 		..()
+		container.bp_milestone_reach("frost_golden") //MARCO: Golden Form do Frost Demon
 		container.updateOverlay(/obj/overlay/icergod)
 		container.storedicon = container.icon
 		if(container.icer_vars[container.icer_vars[1]] == TRUE)

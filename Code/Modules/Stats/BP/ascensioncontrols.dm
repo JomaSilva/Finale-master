@@ -76,6 +76,7 @@ mob/proc/Auto_Gain()
 		BPBoost = 1
 		return
 	if(BPBoost > 20) BPBoost = 20 //teto 20x RETROATIVO: o Auto_Gain nunca REDUZIA o BPBoost (as branches so sobem) -- sem isto, players antigos com 127x-317x salvos ficariam acima do teto pra sempre
+	bp_milestone_check_ascension() //MARCOS das racas sem forma: BPBoost 5/10/20 sobem o ganho linear (LinearGain.dm)
 	var/BPprog = 0
 	if(Race=="Frost Demon"||Parent_Race=="Frost Demon") BPprog = 15
 	if(BP>=1000000 || BPprog==15)

@@ -62,7 +62,7 @@
 					savant.genome.sub_to_stat("Potential",1)
 				if(savant.med && prob(10))
 					if(savant.BP<savant.relBPmax)
-						savant.BP+=savant.capcheck(savant.relBPmax*BPTick*(1/35))
+						savant.BP+=savant.capcheck(savant.bp_gain_base()*BPTick*(1/35))
 
 /datum/skill/gray/brainpower
 	name="Brain Power"
@@ -83,4 +83,4 @@
 	..()
 	if(savant.med && prob(15))
 		if(savant.BP<savant.relBPmax)
-			savant.BP+=savant.capcheck(savant.relBPmax*BPTick*max(log(4,savant.techskill*10),1)*(1/75))
+			savant.BP+=savant.capcheck(savant.bp_gain_base()*BPTick*max(log(4,savant.techskill*10),1)*(1/75))

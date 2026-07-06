@@ -5,7 +5,7 @@ mob/proc/Med_Gain(multi)
 			if(KiUnlockPercent==1||prob(12))
 				if(prob(11)) BP += 1
 		var/mult=global_med_gain*multi
-		var/amount = capcheck(relBPmax*BPTick*mult*Egains*MedMod*(1/24)) //1/24 = 24 hours to reach a given cap at 1x
+		var/amount = capcheck(bp_gain_base()*BPTick*mult*Egains*MedMod*(1/24)) //1/24 = 24 hours to reach a given cap at 1x
 		if(train_med_to_hp)
 			hiddenpotential+= amount/4
 		else BP+= amount

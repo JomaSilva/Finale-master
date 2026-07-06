@@ -192,6 +192,7 @@ mob/proc/Restrained_SSj()
 			if(!hasssj) genome.add_to_stat("Battle Power",2)
 			hasssj=1
 			lssj=1
+			bp_milestone_reach("lssj1") //MARCO: Wrathful
 			if(!isBuffed(/obj/buff/LSSJ)) startbuff(/obj/buff/LSSJ,'SSJIcon.dmi')
 			lssj_instant_fx() //animacao curta (cratera + ondas de choque) estilo SSJ1 masterizado; a aura/overlay verde do LSSJ vem do form-apply
 			to_chat(view(6), "<font color=#76ff7a>*[src] snaps instantly into the Wrathful state.*")
@@ -205,6 +206,7 @@ mob/proc/Restrained_SSj()
 			if(!hasssj) genome.add_to_stat("Battle Power",2)
 			hasssj=1
 			lssj=1
+			bp_milestone_reach("lssj1") //MARCO: Wrathful
 			if(!isBuffed(/obj/buff/LSSJ)) startbuff(/obj/buff/LSSJ,'SSJIcon.dmi')
 			to_chat(view(6), "<font color=#76ff7a>*[src] erupts into the Wrathful state for the first time!*")
 			transing=0
@@ -293,6 +295,7 @@ mob/proc/Unrestrained_SSj()
 		transing=1
 		if(lssj2mastery >= 50) //dominou 50% do C-Type -> transformacao instantanea
 			lssj=2
+			bp_milestone_reach("lssj2") //MARCO: Unrestrained/C-Type
 			if(!hasssj2) unrestssjat/=2
 			hasssj2=1
 			if(!isBuffed(/obj/buff/LSSJ)) startbuff(/obj/buff/LSSJ,'SSJIcon.dmi')
@@ -306,6 +309,7 @@ mob/proc/Unrestrained_SSj()
 			attackable=0
 			lssj_grand_cinematic()
 			lssj=2
+			bp_milestone_reach("lssj2") //MARCO: Unrestrained/C-Type
 			if(!hasssj2) unrestssjat/=2
 			hasssj2=1
 			if(!isBuffed(/obj/buff/LSSJ)) startbuff(/obj/buff/LSSJ,'SSJIcon.dmi')
@@ -364,6 +368,7 @@ mob/proc/Unrestrained_SSj()
 			spawn for(var/turf/T in view(src)) spawn(rand(1,50)) if(prob(1)) createCrater(T,3)
 		sleep(0)
 		lssj=2
+		bp_milestone_reach("lssj2") //MARCO: C-Type
 		if(!hasssj2)
 			unrestssjat/=2
 		hasssj2=1
@@ -386,6 +391,7 @@ mob/proc/LSSj()
 		if(lssj3mastery >= 50) //dominou 50% do Full Power -> transformacao instantanea
 			fullpower_music_played=1 //Full Power ja desbloqueado (robustez p/ o gate do auto-climb)
 			lssj=3
+			bp_milestone_reach("lssj3") //MARCO: LSSJ Full Power
 			if(!isBuffed(/obj/buff/LSSJ)) startbuff(/obj/buff/LSSJ,'SSJIcon.dmi')
 			lssj_instant_fx() //animacao curta (cratera + ondas de choque) estilo SSJ1 masterizado; a aura/overlay verde do LSSJ vem do form-apply
 			to_chat(view(6), "<font color=#76ff7a>*[src] snaps instantly into the Super Saiyan Full Power form.*")
@@ -397,6 +403,7 @@ mob/proc/LSSj()
 			attackable=0
 			lssj_grand_cinematic()
 			lssj=3
+			bp_milestone_reach("lssj3") //MARCO: LSSJ Full Power
 			if(!isBuffed(/obj/buff/LSSJ)) startbuff(/obj/buff/LSSJ,'SSJIcon.dmi')
 			to_chat(view(6), "<font color=#76ff7a>*[src] erupts into the Super Saiyan Full Power for the first time!*")
 			transing=0
@@ -419,6 +426,7 @@ mob/proc/LSSj()
 		//---
 		sleep(0)
 		lssj=3
+		bp_milestone_reach("lssj3") //MARCO: LSSJ Full Power
 		if(!isBuffed(/obj/buff/LSSJ)) startbuff(/obj/buff/LSSJ,'SSJIcon.dmi')
 		to_chat(view(6), "<font color=#76ff7a>*[src]'s hair blazes a deeper, jagged green as the power keeps surging!*")
 		to_chat(view(8), "<font size=[TextSize]><[SayColor]>[src]: HRRAAAAAAAAGH!!!")

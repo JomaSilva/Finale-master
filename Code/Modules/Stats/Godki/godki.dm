@@ -149,6 +149,7 @@ mob/proc
 	CheckGodki()
 		if(isnull(godki))
 			godki = new/datum/godki
+			bp_milestone_reach("godki") //MARCO universal: despertar do God Ki
 			godki.b_efficiency = godki_mod
 			unassignverb(/mob/keyable/verb/God_Ki)
 			unassignverb(/mob/keyable/verb/God_Ki_Focus)
@@ -188,6 +189,7 @@ mob/keyable/verb
 				to_chat(usr, "You shut off your God Ki energy, it no longer replacing Ki.")
 		else
 			godki = new/datum/godki
+			bp_milestone_reach("godki") //MARCO universal: despertar do God Ki
 			unassignverb(/mob/keyable/verb/God_Ki)
 			CheckGodki()
 	God_Ki_Focus()
@@ -196,6 +198,7 @@ mob/keyable/verb
 			godki.focus = input(usr,"What will you focus on in God Ki? Fortitude, Power, or Body?") in list("Fortitude","Power","Body")
 		else
 			godki = new/datum/godki
+			bp_milestone_reach("godki") //MARCO universal: despertar do God Ki
 			unassignverb(/mob/keyable/verb/God_Ki_Focus)
 			CheckGodki()
 

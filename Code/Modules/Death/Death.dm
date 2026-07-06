@@ -96,7 +96,7 @@ mob/proc/Death()
 				SpreadHeal(100,1,1)
 			else if(!dead) //The actual death happens here, if not stopped by above circumstances.
 				canAL = 1 //Instant Transmission dudes.
-				if(BP<relBPmax) BP+=capcheck(relBPmax*BPTick*600*(1.01-(BP/TopBP))) //3600 = 10 of these to reach a given cap at 1x
+				if(BP<relBPmax) BP+=capcheck(bp_gain_base()*BPTick*600*(1.01-(BP/TopBP))) //3600 = 10 of these to reach a given cap at 1x
 				dead=1
 				move = 1
 				deathcounter++

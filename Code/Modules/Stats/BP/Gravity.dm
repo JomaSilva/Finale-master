@@ -25,7 +25,7 @@ mob/proc/Grav_Gain()
 		effgrav += (GravMastered - gravity) * gravAccustomWeight
 
 	if(effgrav > 0 && gravity >= 1 && (train || med || IsInFight || minuteshot)) //gravity trains BP ONLY while actively training (Train verb / meditating) or fighting -> gravity SCALES those gains; standing idle in ANY gravity gives no BP. Zenkai unaffected.
-		BP += capcheck(relBPmax*BPTick*TrainMod*Egains*GlobalGravGain*(effgrav/gravGainDiv)*htc_gain_mult()*mind_gain_mult()) //Sala do Tempo x280 / Dimensao Mental x0.25
+		BP += capcheck(bp_gain_base()*BPTick*TrainMod*Egains*GlobalGravGain*(effgrav/gravGainDiv)*htc_gain_mult()*mind_gain_mult()) //Sala do Tempo x280 / Dimensao Mental x0.25
 
 	//--- MASTERY ACCUMULATION: you only raise your acclimation ceiling by training ABOVE it. ---
 	if(gravity > GravMastered)

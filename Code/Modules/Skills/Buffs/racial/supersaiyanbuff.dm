@@ -342,6 +342,8 @@ mob/proc/SSj()
 			else
 				to_chat(view(src), "<font color=[ssjcolor]>*[src]'s hair stands on end and turns [ssjcolor]!*")
 			ssj=1
+			bp_milestone_reach("ssj") //MARCO: primeiro Super Saiyajin
+			if(godki && godki.usage) bp_milestone_reach("blue") //MARCO: Super Saiyajin BLUE (SSJ em God Ki)
 			createCrater(loc,5)
 			
 			spawn startbuff(/obj/buff/SuperSaiyan,'SSJIcon.dmi')
@@ -393,6 +395,8 @@ mob/proc/Ultra_SSj()
 		emit_Sound('aura.wav')
 		to_chat(view(src), "<font color=[ssjcolor]>*[src]'s Super Saiyan power becomes a more spikey [ussjcolor]!*")
 		ssj=1.5
+		bp_milestone_reach("ussj") //MARCO: Ultra SSJ
+		if(godki && godki.usage) bp_milestone_reach("blue") //MARCO: Blue Evolution (USSJ em God Ki)
 		createCrater(loc,3)
 		if(!isBuffed(/obj/buff/SuperSaiyan))
 			startbuff(/obj/buff/SuperSaiyan,'SSJIcon.dmi')
@@ -443,6 +447,8 @@ mob/proc/SSj2()
 			emit_Sound('chargeaura.wav')
 			spawn if(ssj2drain>0.01) Quake()
 			ssj=2
+			bp_milestone_reach("ssj2") //MARCO: SSJ2
+			if(godki && godki.usage) bp_milestone_reach("blue") //MARCO: Blue (SSJ2 em God Ki)
 			createCrater(loc,5)
 			if(!isBuffed(/obj/buff/SuperSaiyan))
 				startbuff(/obj/buff/SuperSaiyan,'SSJIcon.dmi')
@@ -504,6 +510,7 @@ mob/proc/SSj3()
 		if(!isBuffed(/obj/buff/SuperSaiyan))
 			startbuff(/obj/buff/SuperSaiyan,'SSJIcon.dmi')
 		ssj=3
+		bp_milestone_reach("ssj3") //MARCO: SSJ3
 		to_chat(view(6), "<font color=[ssjcolor]>*[src]'s aura spikes upward as their hair grows longer!*")
 		emit_Sound('chargeaura.wav')
 		if(ssj3firsttime)
@@ -535,6 +542,7 @@ mob/proc/LSSj3_Primal() //Primal Legendary: Legendary Super Saiyan 3 (ssj=3.5, a
 	createShockwavemisc(loc,2)
 	createCrater(loc,5)
 	ssj=3.5
+	bp_milestone_reach("ssj3") //MARCO: LSSJ3 Primal (equivale ao SSJ3)
 	emit_Sound('chargeaura.wav')
 	to_chat(view(6), "<font color=#2ef548>*[src]'s green aura erupts as they ascend to Legendary Super Saiyan 3!*")
 	transing=0
@@ -674,6 +682,7 @@ mob/proc/SSj4()
 			move=1
 		sleep(10)
 		ssj=4
+		bp_milestone_reach("ssj4") //MARCO: SSJ4
 		hasssj4=1
 		testunlocks() //reavalia desbloqueios (o Limit Breaker agora depende de masterizar 100% o Full Power)
 		if(!isBuffed(/obj/buff/SuperSaiyan))
@@ -701,6 +710,7 @@ mob/proc/SSj4FP() //Super Saiyan 4 Full Power (estagio acima do SSJ4; liberado a
 	createShockwavemisc(loc,2)
 	createCrater(loc,5)
 	ssj=5
+	bp_milestone_reach("ssj4fp") //MARCO: SSJ4 Full Power
 	ssjBuff=ssj_effective_mult()
 	emit_Sound('chargeaura.wav')
 	to_chat(view(6), "<font color=#ffcc33>*A surge of golden power explodes around [src] as they reach Full Power!*")

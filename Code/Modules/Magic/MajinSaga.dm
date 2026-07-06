@@ -406,6 +406,8 @@ mob/proc/majin_advance_form(newform, animstate)
 	majin_saga_busy = 1
 	MajinSagaCinematic(newform, animstate)
 	majin_saga_form = newform
+	if(newform == 2) bp_milestone_reach("majin2") //MARCO: Majin Forma 2
+	else if(newform >= 3) bp_milestone_reach("majin3") //MARCO: Majin Forma 3
 	majin_apply_form_icon(newform)
 	if(genome) genome.add_to_stat("Battle Power", 1) // each stage is a real step up in power
 	majin_saga_busy = 0

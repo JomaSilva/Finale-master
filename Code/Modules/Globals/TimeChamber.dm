@@ -28,7 +28,8 @@ mob/var/tmp
 	htc_warned_left = 0       // ultimo aviso de tempo restante ja dado (10/5/1)
 
 // multiplicador de ganho de BP dentro da sala: dias que 1 ano de jogo tem.
-// Aplicado em Attack_Gain / Train_Gain / Blast_Gain / Grav_Gain.
+// Aplicado em Attack_Gain / Train_Gain / Blast_Gain / Grav_Gain. (Com o ganho LINEAR
+// de LinearGain.dm isto e literalmente "280x a taxa" -- sem bola de neve composta.)
 mob/proc/htc_gain_mult()
 	if(z == HTC_Z) return HTC_DAYS_PER_MONTH * HTC_MONTHS_PER_YEAR
 	return 1

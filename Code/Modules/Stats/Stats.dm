@@ -154,7 +154,7 @@ mob/proc/Stats()
 		if(!Gaintimer||minuteshot)
 			if(Buffertimer<=3000)
 				Buffertimer++
-				BPBuffer+=relBPmax*BPTick*Egains*(1/35)
+				BPBuffer+=bp_gain_base()*BPTick*Egains*(1/35)
 				if(BPBuffer>relBPmax)
 					BPBuffer=relBPmax
 		else

@@ -14,7 +14,7 @@ mob/proc/Train_Gain(var/mult)
 		if(BP<10)
 			if(KiUnlockPercent==1||prob(25))
 				if(prob(10)) BP += 1
-		var/amount = relBPmax*BPTick*TrainMod*Egains*weight*(1/9)*mult
+		var/amount = bp_gain_base()*BPTick*TrainMod*Egains*weight*(1/9)*mult
 		if(missedtrain) tmp_activ_gains++
 		else if(tmp_activ_gains>0)
 			amount *= min(25,tmp_activ_gains/10)

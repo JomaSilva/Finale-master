@@ -19,6 +19,7 @@ mob/proc/UnlockPotential(rUPMod)
 		rUPMod = max(UPMod,rUPMod)
 		emit_Sound('chargeaura.wav')
 		unlockPotential=1
+		bp_milestone_reach("potential") //MARCO universal: Unlock Potential do Guru
 		var/boost=((BPMod)*UPMod*StatRank*(1/5))
 		var/awaken_mult = 1
 		if(Class == "Awakened Evolution") awaken_mult = 1.8 //Half-Saiyan Awakened Evolution: payoff muito maior ao liberar o potencial

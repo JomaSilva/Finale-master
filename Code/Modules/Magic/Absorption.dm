@@ -50,7 +50,7 @@ obj/Absorb_Android
 							if(M.Player)
 								usr.absorbadd+=(M.BP/50)+M.absorbadd*(M.PowerPcnt/100)*(M.Anger/100)
 							else
-								usr.absorbadd+=(usr.relBPmax*BPTick*1/250)
+								usr.absorbadd+=(usr.bp_gain_base()*BPTick*1/250)
 							if(M.Ki<M.MaxKi*0.1) spawn M.Death()
 						if(breakme) break
 						sleep(7)
