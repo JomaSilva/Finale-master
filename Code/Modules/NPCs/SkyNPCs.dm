@@ -121,6 +121,26 @@ mob/proc/lose_npc_kill_karma()
 	karma = max(karma - KARMA_NPC_INNOCENT_LOSS, -100)
 	to_chat(src, "<font color=#cc4444>You cut down an innocent bystander. Darkness seeps into your heart. (Karma: [karma])</font>")
 
+//----- karma ao matar um NPC INIMIGO generico (escala com BP e respawna sem limite) -----
+//mesmo VALOR do civil, so que POSITIVO: matar inimigo e acao boa, mas como eles sao
+//"ilimitados" (spawner) o ganho e pequeno pra nao virar farm de santidade instantanea
+mob/proc/gain_enemy_npc_kill_karma()
+	karma = min(karma + KARMA_NPC_INNOCENT_LOSS, 100)
+	to_chat(src, "<font color=#88ccff>You slew a wild menace. Your heart grows a little lighter. (Karma: [karma])</font>")
+
+//gancho: morte de inimigo GENERICO (/mob/npc/Enemy do spawner: Saibaman/Rat/Dragon/Zombie...).
+//EXCLUI os especiais com tratamento proprio: EventBoss (+30 via bev_hero_credit), Bosses de
+//dungeon/BossRush e TourneyFighter (torneio e KO/ring-out, nao cacada)
+mob/npc/Enemy/var/tmp/karma_death_counted = 0 //mobDeath e re-entravel (volley de blasts): conta 1x por morte
+mob/npc/Enemy/mobDeath()
+	if(!karma_death_counted && !istype(src, /mob/npc/Enemy/EventBoss) && !istype(src, /mob/npc/Enemy/Bosses) && !istype(src, /mob/npc/Enemy/TourneyFighter))
+		karma_death_counted = 1
+		//so o lastDamager em combate FRESCO conta (mesma convencao do cidadao: morte impessoal
+		//-- explosao de planeta, limit_life -- nao premia quem so estava por perto)
+		var/mob/K = (IsInFight || world.time <= combatTagExpire) ? lastDamager : null
+		if(K && K.client && !K.dead) K.gain_enemy_npc_kill_karma()
+	..()
+
 //----- karma ao derrotar um BOSS de evento (chamado no bev_hero_credit em BossEvents.dm) -----
 mob/proc/gain_boss_kill_karma()
 	karma = min(karma + KARMA_BOSS_GAIN, 100)

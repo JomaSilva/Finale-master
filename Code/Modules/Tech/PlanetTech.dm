@@ -11,12 +11,14 @@ obj/items
 			set src in usr
 			if(equipped==0)
 				usr.hasnav=1
-				to_chat(usr, "<b>You turn on your navigation system.(Only works while in space)")
 				equipped=1
+				usr.statsUItab = "Nav" //ja abre a aba nova do painel HTML (o statpanel nativo "Navigation" morreu com a skin)
+				to_chat(usr, "<b>You turn on your navigation system. Veja a aba NAV no painel de stats (so capta planetas no espaco).")
 			else
 				usr.hasnav=0
-				to_chat(usr, "<b>You turn off your navigation system")
 				equipped=0
+				if(usr.statsUItab == "Nav") usr.statsUItab = "Stats"
+				to_chat(usr, "<b>You turn off your navigation system")
 		verb/Call_Ship()
 			set category = null
 			set src in usr

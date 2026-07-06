@@ -22,5 +22,12 @@ mob/proc/mobDeath()
 		NPCDrop()
 		sleep(2)
 	src.loc = null
+	//desliga a IA ANTES do deleteMe: loops de estado (checkState/randattack/reaggro) checam
+	//hasAI/AIRunning/loc -- sem isto seguravam a ref e o mob nunca era coletado (lag progressivo)
+	var/mob/npc/N = src //hasAI/AIRunning sao vars de /mob/npc (mobDeath e proc de /mob)
+	if(istype(N))
+		N.hasAI = 0
+		N.AIRunning = 0
+	target = null
 	globalNPCcount-=1
 	src.deleteMe()

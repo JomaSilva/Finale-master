@@ -114,7 +114,7 @@ mob/proc/AgeCheck(var/skipTimeText)
 			yemmas=0
 			majinized=0
 			mystified=0
-			unlockPotential=0
+			//unlockPotential NAO reseta: o despertar do potencial e 1x POR PERSONAGEM, mesmo renascendo de velhice
 			Age=1
 			Body=1
 mob/proc/GreyHair() if(hair&&Age>=DeclineAge)

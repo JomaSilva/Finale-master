@@ -319,8 +319,17 @@ mob/var/tmp/sdingrange=0
 				spawn usr.Death()
 				to_chat(view(usr), "[usr] dies by [usr]'s Final Explosion!")
 		if(sdingrange>=25 && expressedBP >= 10000000)// > than 10m? blow the planet
-			var/area/currentarea=GetArea()
-			currentarea.DestroyPlanet(expressedBP)
+			//sem setar isBeingDestroyed o DestroyPlanet era um no-op silencioso (o loop/commit checam a flag)
+			//que so deixava a area "zumbi" (planet_dying=1 + death_proc_running=2 pra sempre)
+			var/obj/Planets/curP
+			for(var/obj/Planets/P in planet_list)
+				if(P.planetType==Planet)
+					curP = P
+					break
+			if(curP && curP.destroyAble && !curP.isDestroyed && canplanetdestroy)
+				curP.isBeingDestroyed = 1
+				var/area/currentarea=GetArea()
+				currentarea.DestroyPlanet(expressedBP)
 		move=1
 		chargecounter=0
 		return

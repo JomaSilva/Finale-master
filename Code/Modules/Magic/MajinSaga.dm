@@ -269,6 +269,10 @@ mob/proc/majin_release(datum/MajinAbsorbed/rec, escaped)
 		spawn if(M && !M.KO) M.KO()
 		to_chat(M, "<font color=#d050c0>You spill back out into the world.</font>", "system")
 	if(majin_absorbed) majin_absorbed -= rec
+	//Forma Pura: soltar o ULTIMO absorvido e o gatilho -- por QUALQUER caminho (expelir voluntario,
+	//prisioneiro fugir/morrer dentro, KO). Antes so o caminho do KO re-checava; quem expelia
+	//voluntariamente esvaziava a lista mas a forma nunca destravava.
+	spawn majin_check_pure_unlock()
 
 mob/proc/majin_release_by_mob(mob/M) // an absorbed player died inside -> free them, Majin loses their gains
 	if(!majin_absorbed) return
@@ -469,6 +473,15 @@ mob/npc/MajinClone // a hostile other-half: copies the player's stats/skills, mu
 	AIAlwaysActive = 1
 	monster = 1
 	Player = 0
+	attackable = 1
+	ai_no_powerup = 1 //BP pinado: sem surto de power-up (o NPCAscension daria BPBoost ate 200x pra BP>=1M -- clone de mestre forte viraria imbativel)
+	var/clone_seed_bp = 0 //BP fixo do clone (metade do expressedBP do mestre no spawn; o NPCTicker base re-escalaria pelo AverageBP)
+	//BP pinado: nao chama o NPCTicker base -- MESMO padrao do AbsorbGuardian ("buu interno")
+	NPCTicker()
+		set waitfor = 0
+		set background = 1
+		BPBoost = 1
+		if(clone_seed_bp) BP = clone_seed_bp
 
 mob/proc/majin_spawn_clone()
 	var/mob/npc/MajinClone/clone = makeCopy(2, Race, Class, /mob/npc/MajinClone, TRUE)
@@ -481,12 +494,14 @@ mob/proc/majin_spawn_clone()
 	if(majin_color) clone.icon += majin_color
 	clone.nokill = 0       // it CAN be defeated (then absorbed)
 	clone.temporary = 0    // doesn't auto-clean
+	clone.clone_seed_bp = clone.BP // pina o BP (= expressedBP/2 do mestre, setado no makeCopy) contra a re-escala do ticker
 	clone.hasAI = 1
 	clone.AIAlwaysActive = 1
 	clone.loc = locate(src.x, src.y, src.z)
 	step(clone, turn(dir, 180))
-	clone.target = src
-	spawn clone.foundTarget(src)
+	//NAO pre-setar clone.target: o foundTarget exige !target (guard anti-empilhamento) -- com o
+	//target ja setado ele retornava na ENTRADA, AIRunning nunca ligava e o clone ficava de estatua
+	spawn clone.foundTarget(src) //seta target + AIRunning + initialState; monster=1 -> chaseState direto
 	to_chat(view(src), "<font color=#d050c0>*A second Majin tears its way out of [src]!*</font>", "combat")
 
 // ---- PURE FORM ---------------------------------------------------------------

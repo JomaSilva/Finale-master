@@ -51,8 +51,17 @@ datum/genetics/proc/copy_races()//Remember, this happens TWICE per bred genome. 
 	var/datum/genetics/chad_parent = prevalentlist[2]
 	Class_Spread = chad_parent.Class_Spread
 	class_stats = chad_parent.class_stats
+	//o genoma pessoal do pai/mae quase sempre so tem o default list("None"=100) (o spread real
+	//mora no PROTO da raca): resolve pelo proto dominante do chad -- senao a cria rolava classe "None"
+	if(!Class_Spread || !Class_Spread.len || (Class_Spread.len == 1 && Class_Spread[1] == "None"))
+		var/prname = chad_parent.majority_genome
+		if(!prname && chad_parent.racial_protos && chad_parent.racial_protos.len) prname = "[chad_parent.racial_protos[1]]"
+		var/datum/genetics/pr = prname ? fetch_race_by_Name("[prname]") : null
+		if(pr && pr.Class_Spread && pr.Class_Spread.len)
+			Class_Spread = pr.Class_Spread.Copy() //Copy(): o ++ abaixo NAO pode mutar o spread GLOBAL do proto
+			class_stats = pr.class_stats
 	base_icon = chad_parent.base_icon //base is the same as the CHAD parent.
-	if(chad_parent.this_class) Class_Spread[chad_parent.this_class]++ //increase the weight of the parent's class to make it picked more frequently. This means breeding works across generations too lol.
+	if(chad_parent.this_class && chad_parent.this_class != "None") Class_Spread[chad_parent.this_class]++ //increase the weight of the parent's class to make it picked more frequently. This means breeding works across generations too lol.
 	if(chad_parent.dominateClass)//this is important in the Ayyliens case: if a class should be ALWAYS picked, then make it always picked in bloodline.
 		Class_Spread = list(chad_parent.dominateClass = 1)
 		dominateClass = chad_parent.dominateClass

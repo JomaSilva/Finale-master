@@ -2,6 +2,8 @@ mob/proc/makeCopy(var/type,var/targetRace,var/targetClass,var/mobType,var/sentie
 	//copias sao SEMPRE dirigidas por jogador/evento (splitform, clone da mente, saga Majin, Geti/Tier3):
 	//ignoram o toggle de spawns ambientes -- mob/npc/New() DELETA o mob na hora se npcspawnson=0 (e a
 	//flag persiste no save de settings!), o que matava o makeCopy com um runtime em AssignDupeVars(null)
+	//ERA TUDO usr: em contexto de engine (clone da saga Majin dispara pela RAIVA via Death.dm) usr e
+	//null/errado -- null.expressedBP matava o proc e o clone NUNCA spawnava. src = o mob sendo copiado.
 	var/oldspawns = npcspawnson
 	npcspawnson = 1
 	var/mob/z = new mobType
@@ -12,44 +14,47 @@ mob/proc/makeCopy(var/type,var/targetRace,var/targetClass,var/mobType,var/sentie
 		z.Race=targetRace
 		z.Class=targetClass
 		z.genome = new/datum/genetics/Artificial(fetch_race_by_Name("[targetRace]"))
+		//ancora a classe no genoma da copia (o decide_Class do finalize nao re-rola por cima);
+		//"None" com a MESMA raca do original espelha a classe dele (splitform)
+		var/anchor_class = (targetClass && targetClass != "None") ? targetClass : ((targetRace == Race && Class != "None") ? Class : null)
+		if(anchor_class)
+			z.Class = anchor_class
+			z.genome.this_class = anchor_class
+			z.genome.old_class = anchor_class
 	switch(type)
 		if(1) //meta
-			z.name="[usr.name] Meta-#[rand(1,1000)]"
-			var/icon/I= icon(usr.icon)
+			z.name="[name] Meta-#[rand(1,1000)]"
+			var/icon/I= icon(icon)
 			I.Blend(rgb(50,100,200,255),ICON_MULTIPLY)
 			z.icon=I
 			z.oicon=I
 			z.Age=1
-			z.Father = usr.name
+			z.Father = name
 			z.spacebreather=1
 		if(2) //splitform
-			z.BP = usr.expressedBP/2
-			z.loc=locate(usr.x+rand(-1,1),usr.y+rand(-1,1),usr.z)
-			z.name="[usr.name] Copy"
-			if(usr.Race=="Bio-Android")
+			z.BP = expressedBP/2
+			z.loc=locate(x+rand(-1,1),y+rand(-1,1),src.z)
+			z.name="[name] Copy"
+			if(Race=="Bio-Android")
 				z.overlayList.Remove(z.overlayList)
 				z.overlaychanged=1
 				z.icon='Cell Jr.dmi'
-			if(usr.Race=="Tsujin"|usr.Class=="Tsujin") z.icon='GochekAndroid.dmi'
+			if(Race=="Tsujin"|Class=="Tsujin") z.icon='GochekAndroid.dmi'
 			else z.icon = icon
-			if(!z.genome) z.genome = new usr.genome.type(fetch_race_by_Name("[usr.genome.majority_genome]"))
+			if(!z.genome && genome) z.genome = new genome.type(fetch_race_by_Name("[genome.majority_genome ? genome.majority_genome : Race]"))
 			z.attackable = 1
 			z.temporary=1
 		if(3) //clone
-			z.name="[usr.name] (Clone)"
-			var/icon/I= icon(usr.icon)
+			z.name="[name] (Clone)"
+			var/icon/I= icon(icon)
 			z.icon=I
 			z.oicon=I
-			z.Father = usr.name
+			z.Father = name
 		if(4) // droid
-			z.name="[usr.name] Android Body Model-#[rand(1,1000)]"
+			z.name="[name] Android Body Model-#[rand(1,1000)]"
 			z.icon='GochekAndroid.dmi'
-			//var/icon/I= icon(z.icon)
-			//I.Blend(rgb(50,100,200,255),ICON_MULTIPLY)
-			//z.icon=I
-			//z.oicon=I
 			z.Age=1
-			z.Father = usr.name
+			z.Father = name
 			z.genome = new/datum/genetics/Android(/datum/genetics/proto/Android)
 			z.spacebreather=1
 	if(sentient)
@@ -67,14 +72,19 @@ mob/proc/makeCopy(var/type,var/targetRace,var/targetClass,var/mobType,var/sentie
 	z.Player=0
 	z.oicon=z.icon
 	z.BirthYear=Year
-	z.overlayList = usr.overlayList//shouldn't need the overlayList var, but here it is
-	z.overlays = usr.overlayList
+	z.overlayList = overlayList.Copy() //Copy(): a lista era COMPARTILHADA -- mudar a aura/overlay de um mudava o outro
+	z.overlays = z.overlayList
 	z.clone = 1
-	z.loc=locate(usr.x,usr.y,usr.z)
+	z.loc=locate(x,y,src.z)
 	if(z.genome)
-		z.genome.savant = src
+		//era "savant = src" (o ORIGINAL!): o post_init aplicava os stats do genoma DA COPIA no
+		//jogador -- assign_starting_BP RESETAVA o BP dele (os runtimes antigos da genetica matavam
+		//o proc antes disso e "protegiam"; consertados, a bomba armou). A copia e a dona do genoma.
+		var/keepBP = z.BP //o assign_starting_BP setaria o BP da copia pro inicial da classe
+		z.genome.savant = z
 		z.genome.post_init_savant()
-	step(z,usr.dir)
+		z.BP = keepBP
+	step(z,dir)
 	return z
 mob/var/needs_manual_custom = 0
 mob/var/clone = 0

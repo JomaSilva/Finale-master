@@ -28,6 +28,12 @@
 #define BEV_BOSS_AGGRO_DIST 40   // raio de aggro dos bosses de evento
 #define BEV_PD_CHARGE       300  // ticks carregando o Planet Destroy (30s: janela p/ matar/nocautear e interromper)
 #define BEV_PD_RETRY        1200 // se a carga foi interrompida por KO, tenta de novo depois disto (2 min)
+// avisos de paciencia do Freeza parado em Vegeta (ticks ANTES do ultimato de ocio)
+#define BEV_IDLE_WARN1      6000 // 10 min antes: "esta ficando impaciente"
+#define BEV_IDLE_WARN2      1200 // 2 min antes: aviso final
+// letreiro de tela dos anuncios de saga (linha de chat se afoga no spam de combate)
+#define BEV_BANNER_TIME     90   // ticks que o letreiro fica na tela (9s)
+#define BEV_BANNER_VOLUME   65   // volume do trovao que acompanha cada anuncio
 
 // ---- gatilhos (sempre no BP BASE do player) ----
 #define BEV_M1_TRIGGER_BP 20000        // Saga 1: um SAIYAJIN atinge isto
@@ -90,9 +96,45 @@ var/list/BEV_CELL_ICONS = list('Bio Android 1.dmi','Bio Android 2.dmi','Bio Andr
 var/bev_enabled = 1                       // interruptor mestre (verb de admin)
 var/datum/boss_events/boss_events = null  // singleton do controller
 
-// anuncio global: chat legado + aba "Events" (categoria announce) do chat HTML
+// anuncio global: linha no chat (aba Events do HTML) + LETREIRO no topo da tela + trovao.
+// Licao do incidente de Vegeta ("nao vimos no chat ele falando q ia explodir"): uma linha
+// de chat se afoga no spam de combate -- anuncio de saga tem que ser impossivel de perder.
 proc/bev_announce(msg)
 	to_chat(world, "<font color=#e0a030><b>[msg]</b></font>", "announce")
+	world << sound('thunderclap.wav', volume = BEV_BANNER_VOLUME, wait = 0)
+	for(var/mob/M in player_list)
+		if(!M || !M.client || istype(M, /mob/lobby)) continue //no lobby/criacao nao ha tela de jogo (a linha fica no backlog do chat)
+		spawn bev_banner_show(M, msg)
+
+// objeto de tela do letreiro: maptext centralizado no topo da view, some sozinho
+obj/bev_banner
+	plane = 15  //acima do clima (WEATHER_LAYER = 10)
+	layer = 99
+	screen_loc = "CENTER-6,NORTH-2"
+	maptext_width = 416
+	maptext_height = 96
+	mouse_opacity = 0
+
+proc/bev_banner_show(mob/M, msg)
+	if(!M || !M.client) return
+	var/obj/bev_banner/B = new
+	B.maptext = "<center><span style=\"font-size:9pt;font-weight:bold;color:#ffd070;-dm-text-outline:1px #000000\">[msg]</span></center>"
+	M.client.screen += B
+	sleep(BEV_BANNER_TIME)
+	if(M && M.client) M.client.screen -= B
+	del(B)
+
+// minutos REAIS aproximados de N dias in-game (1 dia = DAY_REAL_MINUTES min / Yearspeed);
+// "5 dias" soam distantes mas sao ~100 min reais -- os anuncios agora mostram os dois
+proc/bev_days_to_min(days)
+	return max(1, round(days * DAY_REAL_MINUTES / max(Yearspeed, 1)))
+
+// tem alguem VIVO online pra reagir? (sem ninguem, o ultimato do boss ESPERA --
+// senao o planeta "explode sozinho" com o servidor vazio/de madrugada)
+proc/bev_players_online()
+	for(var/mob/M in player_list)
+		if(M && M.client && !M.dead && !istype(M, /mob/lobby)) return 1
+	return 0
 
 // o planeta ainda existe e pode receber o evento?
 proc/bev_planet_ok(planet)
@@ -270,6 +312,7 @@ datum/boss_events
 		tmp/last_day_seen = 0
 		tmp/loop_running = 0
 		tmp/s1_engaged = 0    // Freeza de Vegeta ja entrou em combate
+		tmp/s1_warned = 0     // avisos de paciencia ja emitidos (0/1/2) enquanto ninguem o enfrenta
 		tmp/s1_spawn_time = 0
 		tmp/s1_deadline = 0   // world.time em que ele casta o Planet Destroy
 		tmp/s1_casting = 0
@@ -325,7 +368,7 @@ datum/boss_events
 			return
 		m1_days = rand(BEV_M1_DAYS_MIN, BEV_M1_DAYS_MAX)
 		s1_state = 1
-		bev_announce("O poder crescente dos Saiyajins chamou uma atencao terrivel... Freeza se aproxima do Planeta Vegeta! Ele chegara em [m1_days] dias.")
+		bev_announce("O poder crescente dos Saiyajins chamou uma atencao terrivel... Freeza se aproxima do Planeta Vegeta! Ele chegara em [m1_days] dias (aprox. [bev_days_to_min(m1_days)] minutos reais).")
 		save_state()
 
 	proc/fire_m2(mob/M)
@@ -336,7 +379,7 @@ datum/boss_events
 			return
 		m2_days = BEV_M2_DAYS
 		s2_state = 1
-		bev_announce("Freeza partiu em direcao a Namek atras das Esferas do Dragao! Ele chegara em [m2_days] dias.")
+		bev_announce("Freeza partiu em direcao a Namek atras das Esferas do Dragao! Ele chegara em [m2_days] dias (aprox. [bev_days_to_min(m2_days)] minutos reais).")
 		save_state()
 
 	proc/fire_m3(mob/M)
@@ -358,7 +401,7 @@ datum/boss_events
 			return
 		m4_days = BEV_M4_DAYS
 		s4_state = 1
-		bev_announce("Uma presenca maligna e ancestral comeca a despertar... Algo terrivel acontecera em [m4_days] dias.")
+		bev_announce("Uma presenca maligna e ancestral comeca a despertar... Algo terrivel acontecera em [m4_days] dias (aprox. [bev_days_to_min(m4_days)] minutos reais).")
 		save_state()
 
 	// -------------------------- virada de dia -------------------------------
@@ -366,12 +409,16 @@ datum/boss_events
 		if(s1_state == 1 && m1_days > 0)
 			m1_days--
 			if(m1_days <= 0) spawn_freeza_vegeta()
-			else save_state()
+			else
+				bev_announce("A nave de Freeza se aproxima do Planeta Vegeta... chegada em [m1_days] dia\s (~[bev_days_to_min(m1_days)] min).") //lembrete diario: os dias in-game passam rapido e um aviso unico se perdia
+				save_state()
 		if(s2_state == 1 && m2_days > 0)
 			m2_days--
 			if(m2_days <= 0) spawn_freeza_namek(s2_form)
-			else save_state()
-		if(s3_state == 1 && cell_days > 0)
+			else
+				bev_announce("Freeza se aproxima de Namek... chegada em [m2_days] dia\s (~[bev_days_to_min(m2_days)] min).")
+				save_state()
+		if(s3_state == 1 && cell_days > 0) // sem lembrete: o surgimento do Cell e uma surpresa
 			cell_days--
 			if(cell_days <= 0) spawn_cell(1)
 			else save_state()
@@ -382,7 +429,9 @@ datum/boss_events
 		if(s4_state == 1 && m4_days > 0)
 			m4_days--
 			if(m4_days <= 0) spawn_boo()
-			else save_state()
+			else
+				bev_announce("A presenca maligna fica mais forte a cada dia... [m4_days] dia\s restante\s (~[bev_days_to_min(m4_days)] min).")
+				save_state()
 
 	// --------------------------- spawns das sagas ---------------------------
 	proc/spawn_freeza_vegeta(resume)
@@ -395,11 +444,12 @@ datum/boss_events
 		boss1 = B
 		s1_state = 2
 		s1_engaged = 0
+		s1_warned = 0
 		s1_casting = 0
 		s1_spawn_time = world.time
 		s1_deadline = 0
 		if(resume) bev_announce("Freeza continua no Planeta Vegeta... e seu ultimato ainda esta de pe!")
-		else bev_announce("A nave de Freeza pousou! FREEZA esta no Planeta Vegeta -- e ele nao pretende deixar pedra sobre pedra!")
+		else bev_announce("A nave de Freeza pousou! FREEZA esta no Planeta Vegeta -- se ninguem o enfrentar em ~[round(BEV_FREEZA1_IDLE_TIMER/600)] minutos, ele DESTRUIRA o planeta!")
 		save_state()
 
 	proc/spawn_freeza_namek(form, resume)
@@ -491,8 +541,18 @@ datum/boss_events
 				if(!s1_engaged && boss1.target) // primeira vez que alguem o enfrenta: comeca o timer da luta
 					s1_engaged = 1
 					s1_deadline = world.time + BEV_FREEZA1_FIGHT_TIMER
-					bev_announce("A batalha contra Freeza comecou no Planeta Vegeta! Derrotem-no antes que ele perca a paciencia!")
+					bev_announce("A batalha contra Freeza comecou no Planeta Vegeta! Derrotem-no antes que ele perca a paciencia! (~[round(BEV_FREEZA1_FIGHT_TIMER/600)] minutos)")
+				if(!s1_engaged && !bev_players_online()) // servidor vazio: o ultimato ESPERA (o planeta nao explode "sozinho" sem ninguem online pra reagir)
+					s1_spawn_time = world.time
+					s1_warned = 0
 				var/dl = s1_engaged ? s1_deadline : (s1_spawn_time + BEV_FREEZA1_IDLE_TIMER)
+				if(!s1_engaged && !s1_casting) // avisos de paciencia enquanto ninguem o enfrentou
+					if(s1_warned < 1 && world.time >= dl - BEV_IDLE_WARN1)
+						s1_warned = 1
+						bev_announce("Freeza esta ficando IMPACIENTE no Planeta Vegeta... se ninguem aparecer em ~[max(1, round((dl - world.time) / 600))] minutos, ele destruira o planeta!")
+					if(s1_warned < 2 && world.time >= dl - BEV_IDLE_WARN2)
+						s1_warned = 2
+						bev_announce("FREEZA PERDEU A PACIENCIA! Restam ~[max(1, round((dl - world.time) / 600))] minuto\s antes que ele destrua o Planeta Vegeta!")
 				if(!s1_casting && world.time >= dl)
 					s1_casting = 1
 					spawn cast_planet_destroy(boss1, BEV_FREEZA1_PLANET, 1)
@@ -512,8 +572,11 @@ datum/boss_events
 					if(bev_worst_limb_frac(boss2) <= BEV_FREEZA2_THRESHOLDS[s2_form])
 						freeza_transform()
 				if(s2_form >= BEV_FREEZA2_BPS.len && s2_deadline && !s2_casting && world.time >= s2_deadline)
-					s2_casting = 1
-					spawn cast_planet_destroy(boss2, BEV_FREEZA2_PLANET, 2)
+					if(!bev_players_online()) // todos cairam/sairam no meio da luta final: adia em vez de destruir Namek num servidor vazio
+						s2_deadline = world.time + BEV_PD_RETRY
+					else
+						s2_casting = 1
+						spawn cast_planet_destroy(boss2, BEV_FREEZA2_PLANET, 2)
 				if(bev_planet_destroyed(BEV_FREEZA2_PLANET))
 					bev_announce(s2_casting ? "NAMEKUSEI FOI DESTRUIDO... Freeza riu enquanto o planeta explodia." : "NAMEKUSEI FOI DESTRUIDO... nada restou do planeta verde.")
 					bev_despawn(boss2, 1)
@@ -649,7 +712,7 @@ datum/boss_events
 				s2_casting = 0
 				s2_deadline = world.time + BEV_PD_RETRY
 			return
-		bev_announce("[B.name] comecou a concentrar uma energia COLOSSAL... ele vai destruir o planeta [planet == "Earth" ? "Terra" : planet]!")
+		bev_announce("[B.name] comecou a concentrar uma energia COLOSSAL... ele vai destruir o planeta [planet == "Earth" ? "Terra" : planet]! Nocauteiem-no em 30 SEGUNDOS para interromper -- depois disso, so a morte dele antes do colapso final (~5 min) salva o planeta!")
 		to_chat(view(B), "<font color=yellow>*[B.name] begins focusing their energy on destroying the planet!*")
 		WriteToLog("rplog","[B.name] (boss de evento) iniciou o Planet Destroy em [planet]   ([time2text(world.realtime,"Day DD hh:mm")])")
 		B.emit_Sound('deathball_charge.wav')

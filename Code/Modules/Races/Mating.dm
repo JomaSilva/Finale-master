@@ -57,30 +57,57 @@ mob/verb/Propose_Marriage()
 	if(cands.len == 1) M = cands[1]
 	else M = input(usr, "Pedir quem em casamento?", "Casamento") as null|anything in cands
 	if(!M) return
-	if(!mate_pair_ok(usr, M))
-		to_chat(usr, "Voces precisam estar lado a lado, vivos e conscientes.")
+	usr.propose_marriage_to(M)
+
+//nucleo do pedido: usado pelo verb do painel (acima) e pelo menu de botao direito (abaixo)
+mob/proc/propose_marriage_to(mob/M)
+	if(!M || M == src || !M.client || M.isNPC || !M.signature)
+		to_chat(src, "So da pra casar com outro jogador.")
 		return
-	if(usr.married_to)
-		to_chat(usr, "Voce ja e casado(a) com [usr.married_name].")
+	if(!mate_pair_ok(src, M))
+		to_chat(src, "Voces precisam estar lado a lado, vivos e conscientes.")
+		return
+	if(married_to)
+		to_chat(src, "Voce ja e casado(a) com [married_name].")
 		return
 	if(M.married_to)
-		to_chat(usr, "[M] ja e casado(a).")
+		to_chat(src, "[M] ja e casado(a).")
 		return
-	if(!usr.is_friend(M))
-		to_chat(usr, "Voces precisam ser AMIGOS antes de pensar em casamento. (Envie um pedido de amizade primeiro.)")
+	if(!is_friend(M))
+		to_chat(src, "Voces precisam ser AMIGOS antes de pensar em casamento. (Envie um pedido de amizade primeiro.)")
 		return
-	switch(input(M, "[usr] te pediu em casamento! Aceita?", "Casamento") in list("Sim","Nao"))
+	switch(input(M, "[src] te pediu em casamento! Aceita?", "Casamento") in list("Sim","Nao"))
 		if("Sim")
-			usr.married_to = M.signature
-			usr.married_name = M.name
-			M.married_to = usr.signature
-			M.married_name = usr.name
-			usr.emit_Sound('powerup.wav')
-			to_chat(view(9), "<font color=#FFB6C1><b>[usr] e [M] se casaram!</b></font>")
-			chatcast(world, "<font color=#FFB6C1><b>[usr] e [M] se casaram!</b></font>", "announce")
+			married_to = M.signature
+			married_name = M.name
+			M.married_to = signature
+			M.married_name = name
+			emit_Sound('powerup.wav')
+			to_chat(view(9), "<font color=#FFB6C1><b>[src] e [M] se casaram!</b></font>")
+			chatcast(world, "<font color=#FFB6C1><b>[src] e [M] se casaram!</b></font>", "announce")
+			to_chat(src, "<font color=#FFB6C1>Para ter um filho: botao direito no seu conjuge -> Have Child (ou o verb na aba Other).</font>")
+			to_chat(M, "<font color=#FFB6C1>Para ter um filho: botao direito no seu conjuge -> Have Child (ou o verb na aba Other).</font>")
 		if("Nao")
-			to_chat(usr, "[M] recusou o pedido.")
-			to_chat(M, "Voce recusou o pedido de [usr].")
+			to_chat(src, "[M] recusou o pedido.")
+			to_chat(M, "Voce recusou o pedido de [src].")
+
+// ---- menu de BOTAO DIREITO no alvo (onde o casal procura primeiro) ----
+// o menu de contexto lista verbs do ALVO acessiveis a quem clica; nao da pra
+// esconder por relacao (amigo/conjuge) por viewer, entao aparecem sempre e a
+// validacao roda por dentro -- mesmo padrao dos verbs de amizade desse menu.
+mob/verb/CtxProposeMarriage()
+	set name = "Propose Marriage"
+	set category = null
+	set src in oview(1)
+	if(!usr || usr == src) return
+	usr.propose_marriage_to(src)
+
+mob/verb/CtxHaveChild()
+	set name = "Have Child"
+	set category = null
+	set src in oview(1)
+	if(!usr || usr == src) return
+	usr.try_have_child(src) //valida casamento/lado-a-lado/sexos por dentro
 
 mob/verb/Divorce()
 	set category = "Other"
@@ -170,6 +197,24 @@ mob/proc/try_have_child(var/mob/M)
 	mom.womb = return_new_genome(dad.genome, mom.genome) // o genoma do bebe: a MESMA logica de hibridos de sempre
 	to_chat(view(9), "<font color=#FFB6C1><b>[mom] esta gravida! O bebe de [dad] e [mom] podera nascer como um novo personagem (hibrido) na criacao.</b></font>")
 	to_chat(mom, "<font color=#FFB6C1>Enquanto voce estiver online, um novo jogador (ou voce mesmo em outro slot) podera nascer como o filho do casal na criacao de personagem.</font>")
+
+// ---------------------------------------------------------------------------
+// RETRO-FIX: cria de casal que nasceu com Race/Class "None" (antes do conserto do
+// majority_genome + Class_Spread do genoma de cria). Re-deriva raca e classe do
+// genoma e re-aplica os stats -- roda 1x (depois Race != "None" e o gate barra).
+// ---------------------------------------------------------------------------
+mob/proc/bred_race_login_fix()
+	if(!client || dead) return
+	if(Race && Race != "None") return
+	if(!genome || !genome.racial_protos || !genome.racial_protos.len) return
+	genome.savant = src
+	genome.old_class = null //a ancora "None" da era quebrada nao vale
+	genome.this_class = null
+	genome.decide_Race() //re-deriva nome/dominante + rola a classe real (fixes no Genetic_Datum)
+	genome.finalize_Race() //sincroniza Race/Class no mob
+	genome.build_stats() //stats de classe agora aplicam (o this_class real resolve class_stats do proto)
+	genome.apply_stats()
+	to_chat(src, "<font color=#cda434><b>Sua heranca desperta: voce e um(a) [Race].</b></font>")
 
 // ---------------------------------------------------------------------------
 // OVO (racas E_Breed, ex.: Namekuseijin) -- inalterado

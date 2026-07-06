@@ -590,23 +590,35 @@ datum/genetics
 				if(majority_point==0) for(var/A in running_list) //bing bing wahoo we did it lads. simple for() layering the name.
 					var/nn = A + running_name
 					running_name = nn
-				if(majority_genome == 0)
-					var/datum/genetics/major_pick = fetch_race_by_Name(pick(racial_protos))
-					majority_genome = major_pick.name//we do this funky way instead of pick(racial_protos).name so that the editor doesn't murder us.
+				if(!majority_genome) //era "== 0": null == 0 e FALSO em DM -- hibrido 50/50 nunca ganhava raca dominante e finalize_Race deixava savant.Race em "None"
+					var/datum/genetics/major_pick = fetch_race_by_Name("[pick(racial_protos)]")
+					if(major_pick) majority_genome = major_pick.name
 				name = running_name //note the NAME is for our eventual coming-on to the user of this given race datum.
 			else
-				name = fetch_race_by_Name("[racial_protos[1]]").name //if the parts of our biology are singular, just use that singular race lmao
+				var/datum/genetics/only_race = fetch_race_by_Name("[racial_protos[1]]")
+				name = only_race.name //if the parts of our biology are singular, just use that singular race lmao
+				majority_genome = only_race.name //raca pura (ex.: filho de casal Saiyajin+Saiyajin): a unica raca E a dominante -- sem isto finalize_Race nunca setava savant.Race na cria
 			decide_Class()
 
 		decide_Class(class_override)//this is actually ran
-			if(old_class && !class_override) //safety button.
+			if(old_class && old_class != "None" && !class_override) //safety button ("None" da era quebrada nao vale como ancora)
+				if(!this_class) this_class = old_class //finalize_Race sincroniza savant.Class por this_class
 				return old_class
-			for(var/I = 1, I <= Class_Spread.len,I++) //so this looks at the class spread for the generated race.
-				if(prob(Class_Spread[Class_Spread[I]]))//we run probability checks for each class
-					this_class = Class_Spread[I]//bing badda boom they pass it? break the for loop.
+			//o genoma VIVO quase nunca carrega o spread real (ele mora no PROTO da raca; o carrier
+			//herda o default list("None"=100)) -> sem este fallback, cria de casal rolava classe "None"
+			var/list/cs = Class_Spread
+			if(!cs || !cs.len || (cs.len == 1 && cs[1] == "None"))
+				var/prname = majority_genome
+				if(!prname && racial_protos && racial_protos.len) prname = "[racial_protos[1]]"
+				if(!prname) prname = name
+				var/datum/genetics/pr = prname ? fetch_race_by_Name("[prname]") : null
+				if(pr && pr.Class_Spread && pr.Class_Spread.len) cs = pr.Class_Spread
+			for(var/I = 1, I <= cs.len,I++) //so this looks at the class spread for the generated race.
+				if(prob(cs[cs[I]]))//we run probability checks for each class
+					this_class = cs[I]//bing badda boom they pass it? break the for loop.
 					break
-				if(I == Class_Spread.len)//only one "class"? we done here, set it and gtfo
-					this_class = Class_Spread[I]
+				if(I == cs.len)//only one "class"? we done here, set it and gtfo
+					this_class = cs[I]
 			if(class_override)
 				this_class = class_override//if, for some reason, you can change classes, you can specify within here.
 			old_class = this_class
@@ -630,9 +642,10 @@ datum/genetics
 				
 		finalize_Race()
 			if(!savant) return FALSE //no savant, we return.
-			if(majority_genome) //hybrids: dominant genome decides race; single-race chars keep the race set in Race()
+			if(majority_genome && (savant.Race == "None" || !savant.Race)) //cria/hibrido: o genoma dominante decide a raca; personagem de MENU ja tem Race do Race() e nao e sobrescrito
 				savant.Race = "[majority_genome]"
 				savant.Parent_Race = "[majority_genome]"
+			if(!this_class) decide_Class() //personagem de MENU: NENHUM caller rolava a classe (decide_Race so roda em genoma de cria via build()) -- Majin/Kai/etc. nasciam "None"; "None" EXPLICITO (statnamek/bio Cell-type) e respeitado
 			var/pk = savant.ckey //admin debug: resolve the account key robustly (savant.ckey can be empty if the mob isn't fully bound yet during creation)
 			if(!pk && savant.key) pk = ckey(savant.key)
 			if(pk && (pk in force_rarest_class)) //backup to the StatRace force: catches paths where the early hook couldn't resolve the race proto

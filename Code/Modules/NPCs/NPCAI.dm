@@ -742,9 +742,12 @@ mob
 				if(hasAI && monster && !allied && AIAlwaysActive && !reaggro_running)
 					reaggro_running = 1
 					spawn
-						while(src && !AIRunning && !target)
+						//&& loc: mob MORTO (mobDeath = loc null + deleteMe) tem AIRunning=0 e target=null --
+						//exatamente a condicao de CONTINUAR; o loop segurava a ref pra sempre (mob nunca era
+						//coletado) e cada inimigo morto virava um proc zumbi eterno = LAG progressivo
+						while(src && loc && !AIRunning && !target)
 							sleep(20)
-							if(!src || AIRunning || target) break
+							if(!src || !loc || AIRunning || target) break
 							//ANTI-LAG: NPC comum num planeta sem players CONGELA a varredura (sleep fundo);
 							//boss continua cacando normalmente (excecao pedida)
 							if(!isBoss && current_area && current_area.Planet && !planet_has_players(current_area.Planet))
@@ -798,7 +801,7 @@ mob
 			checkState() //basically a Stats.dm but for NPCs only.
 				set waitfor=0
 				set background = 1
-				spawn while(src && src.AIRunning)
+				spawn while(src && src.AIRunning && loc) //&& loc: NPC morto em combate (AIRunning=1) mantinha os DOIS loops vivos pra sempre
 					sleep(5)
 					//emotions
 					if(prob(60)) behavior_check()
@@ -822,7 +825,7 @@ mob
 					if(combatTag && world.time >= combatTagExpire) clear_combat_tag()
 					if(Anger > 100) Anger = max(100,Anger - 1)
 					HealthSync()
-				while(src && src.AIRunning)
+				while(src && src.AIRunning && loc) //&& loc: idem -- o relogio de acao nao pode sobreviver ao mobDeath
 					//
 					sleep(chase_speed)
 					//WATCHDOG: AIRunning is on but if NO state proc has iterated for ~3 ticks, the state machine
@@ -969,6 +972,27 @@ mob
 			if(notSpawned) src.home_loc = src.loc
 //DEBUG: append a full combat-AI state snapshot to DEBUG.log (readable from disk in the game directory).
 //Fired automatically by the freeze detector, and on demand by the DBG NPC AI verb.
+//censo de mobs: separa NPCs vivos dos ZUMBIS (mortos via mobDeath = loc null, mas nunca
+//coletados porque algum proc segura a ref). Zumbi alto = leak de loop = a causa do lag.
+mob/Admin3/verb/DBG_Mob_Census()
+	set category = "Admin"
+	var/live_npc = 0
+	var/zombie = 0
+	var/zombie_ai = 0
+	var/players = 0
+	for(var/mob/M in world) //world pega TODOS os mobs, inclusive loc=null
+		if(M.client) { players++; continue }
+		if(!M.isNPC) continue
+		if(M.loc) live_npc++
+		else
+			zombie++
+			var/mob/npc/N = M //AIRunning/hasAI sao vars de /mob/npc (clones do makeCopy podem ser /mob puro)
+			if(istype(N) && (N.AIRunning || N.hasAI)) zombie_ai++
+	var/atks = 0
+	for(var/obj/attack/A in world) atks++
+	to_chat(usr, "<font color=yellow>== CENSO ==  players: [players] | NPCs vivos: [live_npc] | NPCs ZUMBIS (loc=null nao-coletados): [zombie] (com IA ainda ligada: [zombie_ai]) | obj/attack vivos: [atks]</font>")
+	to_chat(usr, "<font color=#888>Zumbi alto e que cresce com o tempo = leak (rode de novo em 10 min e compare). world.cpu agora: [world.cpu]</font>")
+
 mob/npc/proc/ai_debug_dump(reason)
 	WriteToLog("debug","[time2text(world.realtime,"Day DD hh:mm:ss")] NPC-AI [src.name] ([src.type]) reason=[reason]")
 	WriteToLog("debug","  engage: AIRunning=[AIRunning] target=[target] hasAI=[hasAI] KO=[KO] dead=[dead] IsInFight=[IsInFight] combatTag=[combatTag] state_alive=[state_alive] stall=[state_stall] stuck=[stuck_notime]")

@@ -135,6 +135,7 @@ mob/proc/BuildStatsHTML()
 	var/list/tabs = list("Stats","Items","Equip","Body","Forms","Ki","People","World","Skills","Other","Learning")
 	if(Admin) tabs += "Admin"
 	if(html_skill_tabs && html_skill_tabs.len) tabs += html_skill_tabs //skill-added panels (Sense, etc.)
+	if(hasnav) tabs += "Nav" //Nav System ligado: o painel nativo StatNav morreu com a skin HTML -- a aba e a leitura agora
 	//SCOUTER: com ele ligado a aba Sense VIRA "Scan" (leitura exata de BP, como o painel antigo StatScouter)
 	if(scouteron)
 		var/si = tabs.Find("Sense")
@@ -156,6 +157,7 @@ mob/proc/BuildStatsHTML()
 		if("Ki")       h += ui_tab_ki()
 		if("People")   h += ui_tab_people()
 		if("World")    h += ui_tab_world()
+		if("Nav")      h += ui_tab_nav()
 		if("Scan")     h += ui_tab_scan()
 		if("Skills")   h += ui_tab_verbs("Skills")
 		if("Other")    h += ui_tab_verbs("Other")
@@ -315,6 +317,27 @@ proc/sense_dir_word(d)
 	return "?"
 
 // ---- SENSE (HTML mirror of StatSense; this is the tab the Sense skill registers) -------------------
+//Nav System (PlanetTech.dm): substitui o statpanel nativo "Navigation" (StatNav), que nao
+//existe mais na skin HTML -- planetas do MESMO z do espaco, com distancia e direcao
+mob/proc/ui_tab_nav()
+	var/list/h = list()
+	h += ui_sec("NAV SYSTEM")
+	if(!hasnav)
+		h += "<div class='mut' style='padding:8px'>O sistema de navegacao esta desligado.</div>"
+		return jointext(h, "")
+	if(Planet != "Space")
+		h += "<div class='mut' style='padding:8px'>Sem sinal: o nav so capta planetas no ESPACO. (Voce esta em: [Planet])</div>"
+		return jointext(h, "")
+	var/found = 0
+	for(var/obj/Planets/F in planet_list)
+		if(F.z != z) continue
+		if(F.isDestroyed) continue //planeta destruido nao emite sinal
+		found = 1
+		h += ui_row(html_encode("[F.planetType]"), "[get_dist(src, F)] tiles <span class='mut'>[sense_dir_word(get_dir(src, F))] &middot; ([F.x], [F.y])</span>", "")
+	if(!found)
+		h += "<div class='mut' style='padding:8px'>Nenhum planeta detectado neste setor.</div>"
+	return jointext(h, "")
+
 mob/proc/ui_tab_sense()
 	var/list/h = list()
 	h += ui_sec("SENSE")

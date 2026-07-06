@@ -78,6 +78,8 @@
 #define FILE_DIR "Sounds/Effects/voiced"
 #define FILE_DIR "Sounds/Music"
 #define FILE_DIR "Sounds/Music/battle ost"
+#define FILE_DIR "Sounds/Music/bio forms"
+#define FILE_DIR "Sounds/Music/Menu ost"
 // END_FILE_DIR
 // BEGIN_PREFERENCES
 #define DEBUG
@@ -136,11 +138,11 @@
 #include "Code\Modules\Character Customization\Mutations.dm"
 #include "Code\Modules\Character Customization\OverlayMobHandlers.dm"
 #include "Code\Modules\Character Customization\Overlays.dm"
+#include "Code\Modules\Character Customization\Wardrobe.dm"
 #include "Code\Modules\Character Customization\Races\BioCustom.dm"
 #include "Code\Modules\Character Customization\Races\IcerCustom.dm"
 #include "Code\Modules\Character Customization\Races\SaiyanObjects.dm"
 #include "Code\Modules\Character Customization\Races\Tails.dm"
-#include "Code\Modules\Character Customization\Wardrobe.dm"
 #include "Code\Modules\cinematics\DemonEvolve.dm"
 #include "Code\Modules\cinematics\imperfecttrans.dm"
 #include "Code\Modules\cinematics\perfecttrans.dm"

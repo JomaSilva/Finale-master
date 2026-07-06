@@ -313,6 +313,7 @@ mob/proc
 		tourney_login_check() //Torneio: save feito TRAVADO na area de espera (autosave/crash) -> destrava
 		outfit_login_check() //Guarda-roupa: re-veste as pecas cosmeticas (overlays morrem no logout)
 		bp_milestone_login_fix() //Marcos: re-sela o "godki" x5 dado por engano na criacao do datum-conteiner (LinearGain.dm)
+		bred_race_login_fix() //Cria de casal nascida "None/None" (bug do majority_genome/Class_Spread): re-deriva raca+classe do genoma (Mating.dm)
 		if(needs_manual_custom) //Handles logging into clones for the first time.
 			CustomizeFurther()
 			StatRace(Race)

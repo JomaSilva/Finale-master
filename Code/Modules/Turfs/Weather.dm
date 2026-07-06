@@ -70,7 +70,7 @@ area
 				a?.my_player_list |= my_player_list
 				my_player_list |= a?.my_player_list //sync lists. Outside of vegeta should track those inside vegeta.
 			if(!death_proc_running && planet_dying)
-				death_proc_running = 1
+				//o proprio Planet_Death/DestroyPlanet trava o death_proc_running (pre-setar aqui fazia o guard de entrada do Planet_Death abortar na hora)
 				if(planet_death_stage <= 3) spawn Planet_Death(AverageBP)
 				else spawn DestroyPlanet(AverageBP)
 			if(src in area_inside_list)

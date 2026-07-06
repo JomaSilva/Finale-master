@@ -7,6 +7,8 @@ area/var
 	planet_death_stage = 0
 area/proc/Planet_Death(var/expressedBP)
 	set background = 1 //estagios longos com goto: sem background o watchdog matava como "Infinite loop suspected"
+	if(death_proc_running) return //ja ha morte rodando nesta area (Ticker + propagacao criavam instancias DUPLAS do proc)
+	death_proc_running = 1
 	//BUG CORRIGIDO: o local se chamava "Planet" e SOMBREAVA a var string da area -- as comparacoes
 	//abaixo comparavam com o proprio local (null), nunca casavam, e la embaixo dava null.isBeingDestroyed
 	var/obj/Planets/planetObj
@@ -78,7 +80,7 @@ area/proc/DestroyPlanet(var/mexpressedBP)
 	death_proc_running=2
 	for(var/area/A in area_list)
 		if(A.Planet == Planet && A != src)
-			if(A.death_proc_running!=2) spawn DestroyPlanet(mexpressedBP)
+			if(A.death_proc_running!=2) spawn A.DestroyPlanet(mexpressedBP) //era sem "A.": re-chamava a SI MESMO (early-return no dpr==2) e as areas irmas nunca eram destruidas
 	for(var/mob/M in my_player_list)
 		if(M.client)
 			M.Quake()
