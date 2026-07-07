@@ -54,7 +54,7 @@ mob/proc
 	//buffs to delays border//do not cross//buffs to delays border//
 			if(HP>0&&!undelayed) mobTime*=HP/100 //Damage delay
 			if(weight>1) mobTime-=weight*(1/Espeed) //Weight delay
-			if(Planetgrav+gravmult>GravMastered) mobTime-=max(log((((Planetgrav+gravmult)/(GravMastered)))**2),2) //Grav delay
+			if(Planetgrav+gravmult>GravMastered) mobTime /= (1 + ((Planetgrav+gravmult)/max(GravMastered,1) - 1) * GRAVCRUSH_SLOW) //Grav delay: esmagamento MULTIPLICATIVO (2x da maestria ~ 1/2 da velocidade, 4x ~ 1/4) -- o -2 flat antigo sumia no ganho dos personagens rapidos
 			if(bigform||expandlevel) mobTime -= 0.1 //Buff delay
 			if(swim)
 				mobTime-=0.3 //Swim Delay

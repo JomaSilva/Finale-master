@@ -34,28 +34,34 @@ mob/proc/Grav_Gain()
 //Grav training (in the show and as weight training) is destructive: pushing far above your mastery still
 //hurts (see Grav_Handler tiers 2/3), but the PAYOFF now tracks the gravity you can actually withstand.
 
+mob/var/tmp
+	gravcrush_dmg_next = 0 //throttle de 1s do dano de esmagamento (o Grav pode ser chamado em taxas diferentes)
+	gravcrush_warn_cd = 0  //cooldown dos avisos no chat
+
 mob/proc/Grav_Handler(var/Gravity)
 	set waitfor = 0
 	if(Gravity>GravMastered&&(!dead||KeepsBody))//dead people can no longer abuse not dying for grav gains without an actual body
-		if(Gravity>(GravMastered*4))
-			SpreadDamage((0.1*(Gravity/GravMastered))/(1+(Ephysdef*Ekidef)))
-			stamina-=(0.1*(maxstamina/100))/(1+(Ephysdef*Ekidef))
+		//ESMAGAMENTO (estilo Kaioken alto): dano em TODOS os membros e slow escalam com a razao
+		//gravidade/maestria. A formula antiga dividia pela defesa (/(1+Ephysdef*Ekidef)) -- pra
+		//qualquer personagem forte o dano virava ~0 e "gravidade nao fazia nada".
+		var/r = Gravity / max(GravMastered, 1)
+		var/excess = r - 1
+		if(world.time >= gravcrush_dmg_next) //1x por segundo, independente de quem chamou
+			gravcrush_dmg_next = world.time + 10
+			var/dmg = min(GRAVCRUSH_DMG_BASE * excess * max(excess, 0.2), GRAVCRUSH_DMG_CAP)
+			SpreadDamage(dmg) //membro vital quebrando = DESMAIA; continuando no chao, letal = MORRE (sistema de membros faz o resto)
+			stamina -= maxstamina * 0.002 * r
+			if(world.time >= gravcrush_warn_cd)
+				gravcrush_warn_cd = world.time + GRAVCRUSH_WARN_CD
+				if(r >= GRAVCRUSH_EXPLODE_R) to_chat(src, "<font color=red><b>A gravidade esta ESMAGANDO seu corpo! Saia AGORA ou ele nao vai aguentar!</b></font>")
+				else to_chat(src, "<font color=#cc8844>Seu corpo range sob a gravidade... (x[round(Gravity,0.1)] contra x[round(GravMastered,0.1)] masterizado)</font>")
+			if(r >= GRAVCRUSH_EXPLODE_R && HP <= 5 && !dead) //MUITO alem do limite + corpo em farrapos: nao aguenta (igual Kaioken passado demais)
+				to_chat(view(src), "<font color=red><b>[src] e esmagado alem do limite -- e seu corpo EXPLODE!</b></font>")
+				spawn Body_Parts()
+		if(r >= GRAVCRUSH_EXPLODE_R)
 			gravParalysis=1 //you're in above your head, this stops you from moving.
-			//zenkai antigo removido: gravidade pesada nao acumula mais zenkaiStore
 			return 3
-		else if(Gravity>=(GravMastered*2))
-			SpreadDamage((0.07*(Gravity/GravMastered))/(2+(Ephysdef*Ekidef)))
-			stamina-=(0.1*(maxstamina/100))/(1+(Ephysdef*Ekidef))
-			//movement delays already handled by movement handler.dm
-			return 2
-		else if(Gravity>=(GravMastered*1.5))
-			SpreadDamage((0.03*(Gravity/GravMastered))/(5+(Ephysdef*Ekidef)))
-			stamina-=(0.1*(maxstamina/100))/(2+(Ephysdef*Ekidef))
-			//basically no stamina drain whatsoever.
-			return 2
-		else
-			stamina-=(0.1*(maxstamina/100))/(2+(Ephysdef*Ekidef))
-			return 1
+		return 2
 	else
 		gravParalysis=0
 		if(Gravity==GravMastered && Gravity > 10) return 4
