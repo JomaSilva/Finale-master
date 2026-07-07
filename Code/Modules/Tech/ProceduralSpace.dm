@@ -31,12 +31,19 @@
 #define PSURF_H_HILL 0.75
 #define PSURF_H_MOUNTAIN 0.86
 
+// ---- SUPER DRAGON BALLS ----
+#define SDB_MIN_DIST 2      // distancia minima |sx|+|sy| do setor central (forca exploracao)
+#define SDB_MAX_DIST 8      // raio maximo do espalhamento
+#define SDB_HINT_RANGE 2    // o Nav acusa "sinal dourado" a ate isto de distancia (Chebyshev)
+#define SDB_WISH_ZENNI 5000000 // desejo de riqueza
+
 var
 	pspace_seed = 0                    // seed da galaxia (persistida no savefile "Galaxy")
 	list/pspace_sectors = list()       // "sx,sy" -> /datum/space_sector
 	list/pspace_planets = list()       // nome -> /datum/pspace_planet (lookup de gravidade/pouso)
 	list/pspace_sector_zs = list()     // z's alocados pra setores (pool)
 	list/pspace_surface_zs = list()    // z's alocados pra superficies (pool)
+	list/pspace_superdb = null         // 7 entradas list(num, sx, sy, x, y, held) -- persistem no "Galaxy"
 	pspace_booted = 0
 
 // ---------------------------------------------------------------------------
@@ -76,10 +83,13 @@ proc/pspace_boot()
 		S["seed"] >> pspace_seed
 		S["sectors"] >> secdata
 		S["planets"] >> pladata
+		S["superdb"] >> pspace_superdb
 	if(!pspace_seed)
 		pspace_seed = rand(1, 134455)
 		var/savefile/S = new("Galaxy")
 		S["seed"] << pspace_seed
+	if(!islist(pspace_superdb) || !pspace_superdb.len) //galaxia nova: espalha as 7 Super Dragon Balls
+		pspace_sdb_scatter()
 	//o setor central (0,0) e o espaco original
 	var/datum/space_sector/home = new
 	home.sx = 0
@@ -130,6 +140,7 @@ proc/pspace_save()
 	S["seed"] << pspace_seed
 	S["sectors"] << secdata
 	S["planets"] << pladata
+	S["superdb"] << pspace_superdb
 
 // ---------------------------------------------------------------------------
 // DATUMS
@@ -360,6 +371,11 @@ proc/pspace_generate_sector(datum/space_sector/S)
 			P.density = 0
 		D.pobj = P
 		S.spawned += P
+	//Super Dragon Ball escondida neste setor? (entrada viva = ainda nao coletada)
+	if(islist(pspace_superdb))
+		for(var/list/E in pspace_superdb)
+			if(!E[6] && E[2] == S.sx && E[3] == S.sy)
+				S.spawned += pspace_sdb_spawn(E, S.z)
 	pspace_save() //persiste a galaxia descoberta (nomes de setor + planetas conhecidos)
 
 // ---------------------------------------------------------------------------
@@ -594,8 +610,110 @@ proc/pspace_nav_header(z)
 		var/datum/space_sector/V = pspace_sectors["[S.sx + dd[1]],[S.sy + dd[2]]"]
 		viz += " &middot; [dn]: [V ? "[V.name]" : "<span class='mut'>inexplorado</span>"]"
 	h += "<br><span class='mut' style='font-size:10px'>[viz]</span></div>"
+	//radar de Super Dragon Ball: sinal dourado a ate SDB_HINT_RANGE setores
+	if(islist(pspace_superdb))
+		for(var/list/E in pspace_superdb)
+			if(E[6]) continue //coletada: sem sinal
+			var/dist = max(abs(E[2] - S.sx), abs(E[3] - S.sy))
+			if(dist <= SDB_HINT_RANGE)
+				h += "<div style='padding:2px 8px;color:#e8b64c;font-size:10px'><b>&#10022; Sinal DOURADO anomalo</b> no setor ([E[2]], [E[3]])[dist == 0 ? " -- NESTE setor, perto de ([E[4]], [E[5]])!" : ""]</div>"
 	h += pspace_nav_map(S)
 	return h
+
+// ---------------------------------------------------------------------------
+// SUPER DRAGON BALLS: 7 esferas gigantes espalhadas em setores aleatorios.
+// A POSICAO vive no registro (persistido no "Galaxy"); o obj so existe quando o
+// setor esta carregado. Coletar marca held; com as 7 no inventario, o portador
+// invoca SUPER SHENRON (1 desejo) e elas se espalham de novo.
+// ---------------------------------------------------------------------------
+proc/pspace_sdb_scatter() //posicoes NOVAS aleatorias (nao-deterministico de proposito)
+	pspace_superdb = list()
+	for(var/n = 1 to 7)
+		var/sx = 0
+		var/sy = 0
+		while(abs(sx) + abs(sy) < SDB_MIN_DIST)
+			sx = rand(-SDB_MAX_DIST, SDB_MAX_DIST)
+			sy = rand(-SDB_MAX_DIST, SDB_MAX_DIST)
+		pspace_superdb += list(list(n, sx, sy, rand(20, PSPACE_SIZE - 20), rand(20, PSPACE_SIZE - 20), 0))
+	//setor da esfera ja carregado agora (re-espalhamento pos-desejo): poe o obj na hora
+	for(var/list/E in pspace_superdb)
+		var/datum/space_sector/S = pspace_sectors["[E[2]],[E[3]]"]
+		if(S && S.z)
+			S.spawned += pspace_sdb_spawn(E, S.z)
+
+proc/pspace_sdb_spawn(list/E, z)
+	var/obj/items/SuperDragonBall/B = new(locate(E[4], E[5], z))
+	B.sdb_num = E[1]
+	B.icon_state = "[E[1]]"
+	B.name = "Super Dragon Ball ([E[1]] estrela\s)"
+	return B
+
+proc/pspace_sdb_entry(num)
+	if(!islist(pspace_superdb)) return null
+	for(var/list/E in pspace_superdb)
+		if(E[1] == num) return E
+	return null
+
+obj/items/SuperDragonBall
+	icon = 'SuperDragonball.dmi'
+	icon_state = "1"
+	name = "Super Dragon Ball"
+	desc = "Uma esfera do dragao GIGANTE, do tamanho de um pequeno planetoide. Dizem que as sete invocam um dragao capaz de qualquer coisa."
+	pixel_x = -16 //64x64 centrado no tile
+	pixel_y = -16
+	density = 0
+	SaveItem = 0 //a posicao no mundo vive no registro da galaxia; no inventario salva com o dono
+	var/sdb_num = 1
+	Click()
+		if(!usr || !usr.client) return
+		if(!loc || ismob(loc)) return //ja esta com alguem
+		if(get_dist(usr, src) > 1)
+			to_chat(usr, "Chegue mais perto da esfera.")
+			return
+		var/list/E = pspace_sdb_entry(sdb_num)
+		if(E) E[6] = 1 //held: o registro para de spawnar/apontar esta esfera
+		loc = usr
+		usr.InvenSet()
+		to_chat(world, "<font color=#e8b64c><b>[usr] encontrou a Super Dragon Ball de [sdb_num] estrela\s nas profundezas da galaxia!</b></font>", "announce")
+		pspace_save()
+	verb/Invocar_Super_Shenron()
+		set category = null
+		set src in usr
+		var/mob/U = usr
+		var/list/have = list()
+		for(var/obj/items/SuperDragonBall/B in U.contents)
+			have["[B.sdb_num]"] = B
+		if(have.len < 7)
+			to_chat(U, "<font color=#e8b64c>Voce sente o poder da esfera... mas so tem [have.len] de 7. O dragao exige todas.</font>")
+			return
+		var/wish = input(U, "SUPER SHENRON atende UM desejo.", "Super Shenron") as null|anything in list("Riqueza colossal ([FullNum(SDB_WISH_ZENNI)] zenni)", "Reviver um guerreiro caido", "Cancelar")
+		if(!wish || wish == "Cancelar") return
+		if(wish == "Reviver um guerreiro caido")
+			var/list/deads = list()
+			for(var/mob/M in player_list)
+				if(M.client && M.dead) deads += M
+			if(!deads.len)
+				to_chat(U, "Nenhum guerreiro caido (online) para reviver.")
+				return
+			var/mob/T = input(U, "Reviver quem?", "Super Shenron") as null|anything in deads
+			if(!T || !T.dead) return
+			to_chat(world, "<font color=#e8b64c><b>O ceu de TODA a galaxia escurece... [U] invocou SUPER SHENRON!</b></font>", "announce")
+			U.emit_Sound('thunderclap.wav')
+			Revive(T, 1)
+			T.loc = locate(U.x + 1, U.y, U.z)
+			to_chat(world, "<font color=#e8b64c><b>SUPER SHENRON trouxe [T] de volta a vida!</b></font>", "announce")
+		else
+			to_chat(world, "<font color=#e8b64c><b>O ceu de TODA a galaxia escurece... [U] invocou SUPER SHENRON!</b></font>", "announce")
+			U.emit_Sound('thunderclap.wav')
+			U.zenni += SDB_WISH_ZENNI
+			to_chat(world, "<font color=#e8b64c><b>SUPER SHENRON concedeu riqueza colossal a [U]!</b></font>", "announce")
+		//consome as 7 e re-espalha pela galaxia
+		for(var/k in have)
+			var/obj/B = have[k]
+			del B
+		pspace_sdb_scatter()
+		pspace_save()
+		to_chat(world, "<font color=#e8b64c>O desejo foi realizado... e as Super Dragon Balls, drenadas, se espalharam novamente pela galaxia.</font>", "announce")
 
 //visao de admin: seed, pools, setores descobertos e seus planetas
 mob/Admin3/verb/Galaxy_Status()
@@ -609,6 +727,21 @@ mob/Admin3/verb/Galaxy_Status()
 		for(var/datum/pspace_planet/D in S.planets)
 			pl += "[pl ? ", " : ""][D.name] (x[D.gravity], [pspace_biomes[D.biome][1]][(D.name in PlanetDisableList) ? ", DESTRUIDO" : ""][D.surface_z ? ", superficie z[D.surface_z]" : ""])"
 		to_chat(usr, "[S.name] ([S.sx],[S.sy]) [S.z ? "carregado z[S.z]" : "descarregado"] -- [pl ? pl : "sem planetas"]")
+	if(islist(pspace_superdb))
+		for(var/list/E in pspace_superdb)
+			to_chat(usr, "<font color=#e8b64c>SDB [E[1]] -- [E[6] ? "COLETADA" : "setor ([E[2]],[E[3]]) em ([E[4]],[E[5]])"]</font>")
+
+//recupera esferas perdidas (portador sumiu etc.): apaga TODAS e re-espalha
+mob/Admin3/verb/Galaxy_SuperDB_Reset()
+	set category = "Admin"
+	pspace_boot()
+	switch(input(usr, "Apagar TODAS as Super Dragon Balls (mundo e inventarios) e re-espalhar?", "Super DB Reset") in list("Nao", "Sim"))
+		if("Nao") return
+	for(var/obj/items/SuperDragonBall/B in world) del B
+	pspace_sdb_scatter()
+	pspace_save()
+	to_chat(usr, "Super Dragon Balls re-espalhadas.")
+	WriteToLog("rplog","[usr] re-espalhou as Super Dragon Balls   ([time2text(world.realtime,"Day DD hh:mm")])")
 
 //mapa 7x7 da galaxia centrado no setor atual: dourado = voce, claro = explorado
 //(nome + n de planetas, vermelho se todos destruidos), escuro = inexplorado
