@@ -122,6 +122,7 @@ mob/var/tmp
 //pnm/pagetxt/pbs: valores DIGITADOS preservados quando a validacao falha (so o campo errado "reseta")
 mob/proc/ctform_render(err, pnm, pagetxt, pbs)
 	if(ctform_done) return //etapa ja concluida: nenhum render fantasma (fila/corrida) reabre a janela
+	age_table_apply() //deriva o DeclineAge da TABELA por raca AGORA (o assign_life do genoma so roda depois do form)
 	var/agemax = (DeclineAge > 1) ? round(DeclineAge) : 130 //teto de idade = inicio do declinio da RACA
 	var/list/h = list()
 	h += {"<html><head><meta http-equiv='X-UA-Compatible' content='IE=edge'><style>
@@ -150,7 +151,7 @@ function sendForm(){
 	var/showbs = isnull(pbs) ? backstory : pbs
 	h += "<label>NOME (ate 29 letras)</label><input id='nm' maxlength='29' value='[html_encode(shownm)]'>"
 	if(!cansetage)
-		h += "<label>IDADE (1 a [agemax] -- limite da sua raca)</label><input id='age' maxlength='3' value='[html_encode(showage)]'>"
+		h += "<label>IDADE (1 a [agemax] -- limite da sua raca)</label><input id='age' maxlength='[length("[agemax]")]' value='[html_encode(showage)]'>" //maxlength acompanha o teto (Kai 75000 = 5 digitos; era fixo em 3)
 	else
 		h += "<label>IDADE</label><div class='sub'>Definida pela sua raca.</div><input id='age' type='hidden' value='0'>"
 	h += "<label>HISTORIA / BACKSTORY (minimo 10 caracteres, ate [CTFORM_BS_MAX])</label><textarea id='bs' maxlength='[CTFORM_BS_MAX]'>[html_encode(showbs)]</textarea>"
@@ -178,6 +179,7 @@ mob/proc/creation_text_form()
 mob/proc/ctform_submit(nm, agetxt, bs)
 	if(ctform_done) return
 	nm = copytext("[nm]", 1, 30)
+	age_table_apply() //mesma derivacao do render: o teto validado tem que ser o da TABELA da raca
 	var/agemax = (DeclineAge > 1) ? round(DeclineAge) : 130
 	//regras do Name() antigo: nao-vazio, sem espaco-solitario, sem espaco duplo
 	if(!length(nm) || (findtext(nm, " ") && length(nm) == 1) || findtext(nm, "  "))

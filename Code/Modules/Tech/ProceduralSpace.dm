@@ -15,7 +15,7 @@
 // ============================================================================
 #define PSPACE_HOME_Z 26        // z do espaco original (setor 0,0)
 #define PSPACE_SIZE 200         // lado da regiao util de um setor gerado
-#define PSURF_SIZE 100          // lado da superficie de um planeta procedural
+#define PSURF_SIZE 500          // lado da superficie de um planeta procedural (mundo inteiro; 1a visita gera ~250k turfs, alguns segundos)
 #define PSPACE_MAX_SECTORS 12   // pool de z's de setor (recicla o mais antigo sem players)
 #define PSURF_MAX_SURFACES 10   // pool de z's de superficie
 #define PSPACE_MIN_PLANETS 2    // planetas por setor (min)
@@ -23,8 +23,8 @@
 #define PSURF_TREE_PROB 5       // % de chance de arvore por tile de PLANICIE (dobra na colina)
 #define PSURF_PLANT_PROB 2      // % de chance de planta colhivel por tile de planicie
 #define PSURF_ORE_PROB 3        // % de chance de minerio por tile de COLINA (x ore_mult do bioma)
-#define PSURF_ENEMY_MIN 4       // inimigos por planeta (min)
-#define PSURF_ENEMY_MAX 8       // inimigos por planeta (max)
+#define PSURF_ENEMY_MIN 12      // inimigos por planeta (min; escalado pro mundo 500x500)
+#define PSURF_ENEMY_MAX 20      // inimigos por planeta (max)
 // relevo (value noise 0..1): abaixo de agua vira lago, acima de montanha vira parede
 #define PSURF_H_WATER 0.32
 #define PSURF_H_BEACH 0.38
@@ -475,7 +475,7 @@ proc/pspace_land(mob/M, obj/Planets/Procedural/P)
 	if(!M || !P || !P.pdatum) return
 	var/datum/pspace_planet/D = P.pdatum
 	if(!D.surface_z) //constroi/regenera a superficie (lazy, deterministico)
-		if(M.client) to_chat(M, "<font color=#88ccff>Entrando na atmosfera de [D.name]...</font>")
+		if(M.client) to_chat(M, "<font color=#88ccff>Entrando na atmosfera de [D.name]... (primeira visita: mapeando o terreno, aguarde)</font>")
 		D.surface_z = pspace_alloc_z(pspace_surface_zs, PSURF_MAX_SURFACES, /proc/pspace_unload_surface_on)
 		pspace_generate_surface(D)
 	D.last_visit = world.time
@@ -527,10 +527,14 @@ proc/pspace_generate_surface(datum/pspace_planet/D)
 	D.land_x = 0
 	D.land_y = 0
 	for(var/xx = 1 to PSURF_SIZE)
+		if(xx % 8 == 0) sleep(-1) //yield regular: 250k turfs sem engasgar o servidor inteiro
 		for(var/yy = 1 to PSURF_SIZE)
 			CHECK_TICK
 			if(xx == 1 || yy == 1 || xx == PSURF_SIZE || yy == PSURF_SIZE)
 				var/turf/T = new/turf/Other/Stars_Exit(locate(xx, yy, D.surface_z)) //borda do planetoide: volta pro espaco
+				T.icon = 'Grass.dmi' //com cara de CHAO do bioma (a textura de estrelas na borda ficava horrivel)
+				T.icon_state = R.pickfrom(gstates)
+				T.color = B[6] //tint de colina: borda levemente distinta comunica "fim do planetoide"
 				D.parea.contents += T
 				continue
 			var/h = pspace_noise_at(g1, c1, (xx - 1) / 16, (yy - 1) / 16) * 0.7 + pspace_noise_at(g2, c2, (xx - 1) / 6, (yy - 1) / 6) * 0.3
@@ -553,7 +557,7 @@ proc/pspace_generate_surface(datum/pspace_planet/D)
 					bestd = d
 					D.land_x = xx
 					D.land_y = yy
-				if(R.next(20) == 1) landspots += locate(xx, yy, D.surface_z)
+				if(R.next(150) == 1) landspots += locate(xx, yy, D.surface_z) //amostra ~0.7% (mundo 500x500: manter a lista pequena)
 				if(R.next(100) <= PSURF_TREE_PROB)
 					var/ttype = R.pickfrom(B[8])
 					var/obj/tr = new ttype(locate(xx, yy, D.surface_z))

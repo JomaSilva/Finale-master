@@ -44,8 +44,9 @@ mob/proc/UnlockPotential(rUPMod)
 		kiskill+= 0.4
 		if(Age>=DeclineAge)
 			Body=25
-			genome.add_to_stat("Lifespan",(2*rUPMod/10))
 		if(Age<=InclineAge)
 			Body=25
 			InclineAge=(Age/1.1) //Incline is now behind ya!
-		genome.add_to_stat("Lifespan",(5*rUPMod/10))
+		//extensao de vida: +15% do peak da raca, PERSISTENTE (o stat "Lifespan" legado nao rege mais a idade)
+		up_life_bonus = max(up_life_bonus, 0.15)
+		age_table_apply()

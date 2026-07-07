@@ -314,6 +314,7 @@ mob/proc
 		outfit_login_check() //Guarda-roupa: re-veste as pecas cosmeticas (overlays morrem no logout)
 		bp_milestone_login_fix() //Marcos: re-sela o "godki" x5 dado por engano na criacao do datum-conteiner (LinearGain.dm)
 		bred_race_login_fix() //Cria de casal nascida "None/None" (bug do majority_genome/Class_Spread): re-deriva raca+classe do genoma (Mating.dm)
+		age_table_login_fix() //Peak age/lifespan pela TABELA por raca (Aging.dm): sincroniza personagens antigos
 		if(needs_manual_custom) //Handles logging into clones for the first time.
 			CustomizeFurther()
 			StatRace(Race)

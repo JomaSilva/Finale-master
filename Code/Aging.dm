@@ -40,6 +40,64 @@ proc/LoadYear() if(fexists("Year"))
 		GENGAIN=(Year/10)
 var/GENGAIN=0.01
 var/Yearspeed=1
+
+// ============================================================================
+// PEAK AGE por raca (anos): DeclineAge = peak (declinio/cabelo grisalho comeca);
+// LIFESPAN = peak * 1.5 -- o DeclineMod e calibrado (100/peak) pra o Body cair
+// de 25 a 0 em exatamente peak*0.5 anos => morte de velhice em peak*1.5.
+// 0 = NAO ENVELHECE (Majin). Bio-Android herda o MAIOR peak dos DNAs doadores.
+// ============================================================================
+proc/race_peak_age(r)
+	switch(r)
+		if("Human") return 50            //lifespan 75
+		if("Saiyan", "Legendary Saiyan") return 80 //lifespan 120
+		if("Half-Saiyan", "Half-Breed") return 70
+		if("Quarter-Saiyan") return 60
+		if("Frost Demon") return 2000    //lifespan 3000
+		if("Majin") return 0             //nao envelhece (sem peak, sem limite)
+		if("Namekian") return 200        //lifespan 300
+		if("Android") return 200
+		if("Kai") return 75000
+		if("Demon") return 75000
+		if("Demigod") return 10000       //sangue divino diluido
+		if("Makyo") return 5000          //demonios da Estrela Makyo
+		if("Gray") return 300            //raca misteriosa
+		if("Yardrat") return 150         //sabios do Instant Transmission
+		if("Tsujin") return 130          //extensao de vida por tecnologia
+		if("Kanassa-Jin") return 120     //psiquicos
+		if("Alien") return 100
+		if("Shapeshifter") return 100
+		if("Heran") return 90            //raca guerreira, queima rapido
+		if("Arlian") return 40           //insetoides de vida curta
+		if("Saibamen") return 10         //armas cultivadas descartaveis
+		if("Spirit Doll") return 200     //constructo
+		if("Meta") return 200            //corpo artificial
+	return 100 //raca fora da tabela: padrao generoso
+
+mob/var/up_life_bonus = 0 //Unlock Potential estende a vida (fracao do peak; persistido)
+
+//re-deriva DeclineAge/DeclineMod/imortalidade da TABELA (usado na criacao, no login e no Unlock Potential)
+mob/proc/age_table_apply()
+	var/peak = race_peak_age(Race)
+	if(Race == "Bio-Android" || Parent_Race == "Bio-Android") //bio: MAIOR peak entre os DNAs doadores (sem piso proprio)
+		peak = 0
+		if(genome && genome.racial_protos)
+			for(var/rn in genome.racial_protos)
+				peak = max(peak, race_peak_age("[rn]"))
+		if(!peak) peak = 100 //sem doador com idade (so Majin/nenhum): padrao
+	if(!peak) //Majin: imortal biologico, nunca declina
+		biologicallyimmortal = 1
+		DeclineAge = 999999
+		DeclineMod = 0
+		return
+	biologicallyimmortal = 0
+	DeclineAge = round(peak * (1 + up_life_bonus), 0.1)
+	DeclineMod = 100 / peak //morte de velhice ~= peak * 1.5
+
+mob/proc/age_table_login_fix() //personagens criados antes da tabela sincronizam no login
+	if(!client) return
+	age_table_apply()
+
 mob/var
 	biologicallyimmortal=0
 	AgeDiv=1

@@ -227,13 +227,24 @@ datum/genetics
 			return TRUE
 
 		assign_life()
-			savant.DeclineMod = (1 / max(misc_stats["Lifespan"],1)) //guard /0: a collapsed/half-applied Lifespan (0 or null) threw Division-by-zero here (~176/session)
-			savant.DeclineAge = 60 * (max(misc_stats["Lifespan"],0)**2)
-			savant.DeclineAge=round(savant.DeclineAge,0.1)
-			if(misc_stats["Lifespan"] > 20)
+			//PEAK AGE agora vem da TABELA por raca (race_peak_age em Aging.dm; lifespan = peak*1.5).
+			//A formula antiga 60*Lifespan^2 dava idades sem controle (o stat Lifespan segue existindo
+			//so como legado). Bio-Android herda o MAIOR peak entre os DNAs doadores (racial_protos).
+			var/peak = race_peak_age(savant.Race)
+			if(savant.Race == "Bio-Android" || savant.Parent_Race == "Bio-Android")
+				peak = 0 //a regra e o MAIOR peak DOS DOADORES (sem piso proprio; DNA Majin conta 0)
+				if(racial_protos)
+					for(var/rn in racial_protos)
+						peak = max(peak, race_peak_age("[rn]"))
+				if(!peak) peak = 100 //sem doador com idade (so Majin/nenhum): padrao
+			if(!peak) //0 = nao envelhece (Majin)
 				savant.biologicallyimmortal = 1
+				savant.DeclineAge = 999999
+				savant.DeclineMod = 0
 			else
 				savant.biologicallyimmortal = 0
+				savant.DeclineAge = round(peak * (1 + savant.up_life_bonus), 0.1)
+				savant.DeclineMod = 100 / peak //Body 25->0 em peak*0.5 anos => morte de velhice em peak*1.5
 		assign_potential()
 			savant.UPMod = misc_stats["Potential"]
 		assign_regen()
@@ -526,15 +537,7 @@ datum/genetics
 			return TRUE
 
 		redo_life()//all below are now 'safe'
-			var/o_l = list()
-			o_l = old_stats[2]
-			savant.DeclineMod = (savant.DeclineMod - o_l["Lifespan"]) + (1 / (misc_stats["Lifespan"]))
-			savant.DeclineAge = (savant.DeclineAge - o_l["Lifespan"]) + (60 * (misc_stats["Lifespan"]**2))
-			savant.DeclineAge=round(savant.DeclineAge,0.1)
-			if(misc_stats["Lifespan"] > 10)
-				savant.biologicallyimmortal = 1
-			else
-				savant.biologicallyimmortal = 0
+			assign_life() //idade agora e 100% derivada da tabela por raca (nada de deltas do stat Lifespan legado)
 		redo_potential()
 			var/o_l = list()
 			o_l  =old_stats[2]

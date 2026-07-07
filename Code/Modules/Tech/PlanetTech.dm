@@ -50,6 +50,7 @@ obj/Spacepod
 	var/link = "" //link of the ship, for calling
 	var/Speed=1 //divisor of the probability of delay (*100) the pod will have when it moves.
 	var/tmp/mob/pilot = null
+	var/tmp/pod_had_flight = 0 //o piloto ja voava por conta propria? (devolve o estado ao desembarcar)
 	var/eject = 0
 	New()
 		..()
@@ -82,12 +83,15 @@ obj/Spacepod
 			eject = 1
 			pilot.launchParalysis = 0
 			pilot.ship = null
+			if(!pod_had_flight) pilot.flight = 0 //desembarcou: quem nao voava por conta propria volta ao chao
 			density = 1
 			pilot = null
 		else
 			spawn
 				pilot = usr
 				pilot.ship = src
+				pod_had_flight = pilot.flight
+				pilot.flight = 1 //pilotar o pod CONTA como voo: atravessa agua/lava/abismo (testWaters checa flight)
 				density = 0
 				eject = 0
 				pilot.launchParalysis = 0
@@ -97,11 +101,14 @@ obj/Spacepod
 					if(!pilot) return
 					loc = locate(pilot.x,pilot.y,pilot.z)
 					pilot.ship = src
-				pilot.ship = null
+				var/mob/expilot = pilot //no eject via Use o pilot ja foi nulado (o tail antigo dava null.launchParalysis)
+				if(expilot)
+					expilot.ship = null
+					if(!pod_had_flight) expilot.flight = 0
+					expilot.launchParalysis = 0
 				pilot = null
 				density = 1
 				eject = 0
-				pilot.launchParalysis = 0
 
 	Del()
 		if(pilot)
