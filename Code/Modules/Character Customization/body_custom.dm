@@ -187,67 +187,115 @@ mob/proc/formchoose(rtype)
 		skin_list += 'King Kold Form 2.dmi'
 		skin_list += 'Koola Final Form.dmi'
 
-	var/list/tmp_obj_list = list()
-	for(var/a in skin_list)
-		var/obj/Dummy_Form_Icon/oba = new
-		oba.icon = a
-		tmp_obj_list += oba
-	inAwindow = 1
-	winshow(src,"race_pick",1)
-	contents += new/obj/formwindowverbs
-	var/dummyobjs
-	for(var/obj/obja in tmp_obj_list)
-		src<<output(obja,"race_pick.grid1: [++dummyobjs]")
-	while(inAwindow)
-		sleep(5)
-	icon = form1icon
+	//---- tela HTML (substitui a grade nativa race_pick + Dummy_Form_Icon, deletados):
+	//chips FORMA 1..6 clicaveis mostram QUAL slot esta sendo escolhido; o card escolhido
+	//ganha borda dourada + badge "F[n]" -- nao tem mais como se perder na sequencia
+	form_pick_icons = skin_list
+	form_pick_sel = list(0,0,0,0,0,0)
+	form_pick_slot = 1
+	form_pick_done = 0
+	form_pick_race = rtype
+	for(var/i = 1 to skin_list.len) //previews (padrao do guarda-roupa/ui_choose)
+		var/icon/P = ui_choose_preview(skin_list[i])
+		if(P) src << browse_rsc(P, "fp[i].png")
+		if(i % 15 == 0) sleep(1)
+	form_pick_render()
+	var/t = 0
+	while(client && !form_pick_done) //bloqueia igual input(); reabre so se a janela foi FECHADA
+		sleep(2)
+		t += 2
+		if(t >= 100)
+			t = 0
+			if(!winexists(src, "formpick")) form_pick_render()
+	src << browse(null, "window=formpick")
+	//aplica: slot vazio cai no padrao da raca
 	switch(rtype)
 		if("Frost Demon")
-			if(isnull(form1icon)) form1icon = 'Changeling Frieza 2.dmi'
-			if(isnull(form2icon)) form2icon='Changling - Form 2.dmi'
-			if(isnull(form3icon)) form3icon='Frostdemon Form 3.dmi'
-			if(isnull(form4icon)) form4icon='Frostdemon Form 4.dmi'
-			if(isnull(form5icon)) form5icon='Changeling 5 Kold.dmi'
-			if(isnull(form6icon)) form6icon='GoldIcer.dmi'
+			form1icon = form_pick_res(1, 'Changeling Frieza 2.dmi')
+			form2icon = form_pick_res(2, 'Changling - Form 2.dmi')
+			form3icon = form_pick_res(3, 'Frostdemon Form 3.dmi')
+			form4icon = form_pick_res(4, 'Frostdemon Form 4.dmi')
+			form5icon = form_pick_res(5, 'Changeling 5 Kold.dmi')
+			form6icon = form_pick_res(6, 'GoldIcer.dmi')
 			icon = form4icon
 			originalicon = form4icon
-		if("Bio-Android")
-			if(isnull(form1icon)) form1icon = 'Bio Android 1.dmi'
-			if(isnull(form2icon)) form2icon = 'Bio Android 2.dmi'
-			if(isnull(form3icon)) form3icon = 'Bio Android 3.dmi'
-			if(isnull(form4icon)) form4icon = 'Bio Android 4.dmi'
-			if(isnull(form5icon)) form5icon = 'Bio Android - Form 5.dmi'
-			if(isnull(form6icon)) form6icon = 'Bio Android 6.dmi'
+		if("Biodroid") //era "Bio-Android" no switch antigo: NUNCA batia com o arg "Biodroid" -> bio ficava sem defaults
+			form1icon = form_pick_res(1, 'Bio Android 1.dmi')
+			form2icon = form_pick_res(2, 'Bio Android 2.dmi')
+			form3icon = form_pick_res(3, 'Bio Android 3.dmi')
+			form4icon = form_pick_res(4, 'Bio Android 4.dmi')
+			form5icon = form_pick_res(5, 'Bio Android - Form 5.dmi')
+			form6icon = form_pick_res(6, 'Bio Android 6.dmi')
 			icon = form1icon
 			originalicon = form1icon
 	oicon=icon
-	formdone_remove()
+	form_pick_icons = null
+	form_pick_sel = null
 
-mob/var/tmp/temp_form_var
-obj/Dummy_Form_Icon
-	name = "<- Icon"
-	IsntAItem=1
-	Click()
-		usr.temp_form_var++
-		if(usr.temp_form_var>6) usr.temp_form_var=1
-		switch(usr.temp_form_var)
-			if(1) usr.form1icon = icon
-			if(2) usr.form2icon = icon
-			if(3) usr.form3icon = icon
-			if(4) usr.form4icon = icon
-			if(5) usr.form5icon = icon
-			if(6) usr.form6icon = icon
-		to_chat(usr, "Form [usr.temp_form_var] updated.")
-obj/formwindowverbs
-	IsntAItem=1
-	verb/racedone()
-		set category = null
-		set hidden = 1
-		winshow(usr,"race_pick", 0)
-		usr.inAwindow=0
-		usr.formdone_remove()//causes a infinite cross reference loop otherwise
-		del(src)
-mob/proc/formdone_remove()
-	verbs -= typesof(/obj/formwindowverbs/verb)
-	contents -= /obj/formwindowverbs
-	inAwindow=0
+mob/var/tmp
+	list/form_pick_icons = null //catalogo de .dmi da tela de formas aberta
+	list/form_pick_sel = null   //form_pick_sel[slot 1..6] = indice escolhido no catalogo (0 = vazio)
+	form_pick_slot = 1          //slot sendo escolhido agora
+	form_pick_done = 0
+	form_pick_race = ""
+
+//icone escolhido do slot, ou o padrao da raca se ficou vazio
+mob/proc/form_pick_res(slot, dflt)
+	if(!islist(form_pick_sel) || !islist(form_pick_icons)) return dflt
+	var/i = form_pick_sel[slot]
+	return (i && i <= form_pick_icons.len) ? form_pick_icons[i] : dflt
+
+mob/proc/form_pick_render()
+	if(!client || !islist(form_pick_icons)) return
+	var/list/h = list()
+	h += {"<html><head><meta http-equiv='X-UA-Compatible' content='IE=edge'><style>
+ *{box-sizing:border-box} body{margin:0;background:#0f1115;color:#c8cdd6;font-family:'Segoe UI',Tahoma,sans-serif;font-size:12px;padding:12px}
+ h1{font-size:17px;color:#e8b64c;letter-spacing:2px;margin:0 0 2px 0}
+ .sub{color:#8b919c;font-size:11px;margin-bottom:8px}
+ .slots{margin:0 0 10px 0}
+ .slot{display:inline-block;background:#151820;border:1px solid #262b35;border-radius:14px;padding:4px 10px;margin:0 4px 4px 0;color:#8b919c;text-decoration:none;font-weight:bold;font-size:11px}
+ .slot.ok{color:#7ec87e;border-color:#3a5c3a}
+ .slot.cur{border-color:#e8b64c;color:#e8b64c;box-shadow:0 0 6px rgba(232,182,76,0.35)}
+ .vsearch{width:100%;background:#0b0d11;color:#e6e9ef;border:1px solid #2b303a;border-radius:6px;padding:6px 9px;font-size:12px;outline:none;margin:0 0 10px 0}
+ .grid{display:flex;flex-wrap:wrap;gap:7px}
+ .card{width:112px;background:#151820;border:2px solid #262b35;border-radius:8px;padding:8px 5px;text-align:center;text-decoration:none;color:#c8cdd6;position:relative}
+ .card:hover{border-color:#e8b64c;background:#1d1a12}
+ .card.on{border-color:#e8b64c;background:#241d0e;box-shadow:0 0 10px rgba(232,182,76,0.4)}
+ .badge{position:absolute;top:-9px;right:-5px;background:#e8b64c;color:#15130a;font-weight:bold;font-size:10px;border-radius:9px;padding:2px 6px}
+ .card img{width:72px;height:72px}
+ .nm{display:block;font-size:10px;margin-top:4px;line-height:1.2;word-wrap:break-word;color:#8b919c}
+ .done{display:inline-block;background:#2e7d32;color:#fff;font-weight:bold;border-radius:8px;padding:8px 18px;text-decoration:none;margin-top:10px}
+ .clr{display:inline-block;background:#1b1e25;color:#c8cdd6;border:1px solid #2b303a;border-radius:8px;padding:8px 14px;text-decoration:none;margin:10px 0 0 8px}
+ .tnone{color:#8b919c;padding:14px;text-align:center}
+</style>
+<script>
+function uflt(){
+ var b=document.getElementById('us'); var g=document.getElementById('grid'); if(!b||!g){return;}
+ var q=b.value.toLowerCase(); var a=g.getElementsByTagName('a'); var n=0;
+ for(var i=0;i<a.length;i++){ var el=a.item(i); var t=(el.innerText||el.textContent||'').toLowerCase();
+  var show=(t.indexOf(q)>=0); el.style.display=show?'':'none'; if(show){n++;} }
+ var none=document.getElementById('unone'); if(none){none.style.display=(n==0)?'':'none';}
+}
+</script></head><body>"}
+	h += "<h1>FORMAS DO [form_pick_race == "Biodroid" ? "BIO-ANDROID" : "FROST DEMON"]</h1>"
+	h += "<div class='sub'>Escolhendo a <b>FORMA [form_pick_slot]</b> -- clique um corpo pra ela. Os chips abaixo trocam a forma sendo escolhida; o numero dourado no card mostra onde cada corpo ja foi usado.[form_pick_race == "Frost Demon" ? " (Voce COMECA na forma 4; a 6a e a forma Golden.)" : " (Bio-Android comeca na forma 1.)"]</div>"
+	h += "<div class='slots'>"
+	for(var/s = 1 to 6)
+		var/cls = "slot"
+		if(s == form_pick_slot) cls += " cur"
+		else if(form_pick_sel[s]) cls += " ok"
+		h += "<a class='[cls]' href='byond://?src=\ref[src];fpslot=[s]'>FORMA [s][form_pick_sel[s] ? " &#10003;" : ""]</a>"
+	h += "</div>"
+	if(form_pick_icons.len > 12) h += "<input id='us' class='vsearch' type='text' autocomplete='off' placeholder='Filtrar [form_pick_icons.len] corpos...' oninput='uflt()' onkeyup='uflt()'>"
+	h += "<div id='grid' class='grid'>"
+	for(var/i = 1 to form_pick_icons.len)
+		var/list/tags = list()
+		for(var/s = 1 to 6)
+			if(form_pick_sel[s] == i) tags += "F[s]"
+		var/nm = "[form_pick_icons[i]]" //'X.dmi' vira "X.dmi" em string
+		nm = copytext(nm, 1, max(length(nm) - 3, 1)) //tira o ".dmi"
+		h += "<a class='card[tags.len ? " on" : ""]' href='byond://?src=\ref[src];fpick=[i]'>[tags.len ? "<span class='badge'>[jointext(tags, " ")]</span>" : ""]<img src='fp[i].png'><span class='nm'>[html_encode(nm)]</span></a>"
+	h += "</div><div id='unone' class='tnone' style='display:none'>Nada com esse nome.</div>"
+	h += "<a class='done' href='byond://?src=\ref[src];fpdone=1'>CONCLUIR</a><a class='clr' href='byond://?src=\ref[src];fpclear=1'>Limpar tudo</a>"
+	h += "</body></html>"
+	src << browse(jointext(h, ""), "window=formpick;size=720x600")

@@ -26,10 +26,14 @@ mob/verb
 	Countdown()
 		set category="Other"
 		var/CDTime=input("Input the amount you wish to countdown. (i.e; 60 for 1 minute, or 30 for 30 seconds.") as num
-		for(var/mob/M in view(screenx,usr)) M<<output("<font size=[M.TextSize]><[SayColor]>[name] is counting down for [CDTime] seconds","Chatpane.Chat")
+		for(var/mob/M in view(screenx,usr))
+			M<<output("<font size=[M.TextSize]><[SayColor]>[name] is counting down for [CDTime] seconds","Chatpane.Chat")
+			chatcast(M, "<font size=[M.TextSize]><[SayColor]>[name] is counting down for [CDTime] seconds", "say")
 		WriteToLog("rplog","[src] is counting down for [CDTime]    ([time2text(world.realtime,"Day DD hh:mm")])")
 		sleep(CDTime*10)
-		for(var/mob/M in view(screenx,usr)) M<<output("<font size=[M.TextSize]><[SayColor]>[name] has waited [CDTime] seconds","Chatpane.Chat")
+		for(var/mob/M in view(screenx,usr))
+			M<<output("<font size=[M.TextSize]><[SayColor]>[name] has waited [CDTime] seconds","Chatpane.Chat")
+			chatcast(M, "<font size=[M.TextSize]><[SayColor]>[name] has waited [CDTime] seconds", "say")
 		WriteToLog("rplog","[src] counted down for [CDTime]    ([time2text(world.realtime,"Day DD hh:mm")])")
 	Goto_Spawn()
 		set category="Other"
@@ -51,7 +55,9 @@ mob/keyable/verb/Telepathy(mob/M in player_list)
 		return
 	if(M.seetelepathy)
 		var/message=input("Say what in telepathy?") as text
-		if(M) M<<output("<font size=[M.TextSize]><font face=Old English Text MT><font color=red>[usr] says in telepathy, '[html_encode(message)]'","Chatpane.Chat")
+		if(M)
+			M<<output("<font size=[M.TextSize]><font face=Old English Text MT><font color=red>[usr] says in telepathy, '[html_encode(message)]'","Chatpane.Chat")
+			chatcast(M, "<font size=[M.TextSize]><font face=Old English Text MT><font color=red>[usr] says in telepathy, '[html_encode(message)]'", "say") //o RECEBEDOR nao via telepatia no chat HTML (so o eco do remetente tinha espelho)
 		usr<<output("<font face=Old English Text MT><font color=red>[usr] says in telepathy, '[html_encode(message)]'","Chatpane.Chat")
 		chatcast(usr, "<font face=Old English Text MT><font color=red>[usr] says in telepathy, '[html_encode(message)]'", "system")
 		WriteToLog("rplog","(Telepathy to [M])[src]: [message]   ([time2text(world.realtime,"Day DD hh:mm")])")

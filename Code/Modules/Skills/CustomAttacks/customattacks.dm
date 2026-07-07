@@ -386,10 +386,11 @@ mob/proc/forgetcustomizableskill()
 // -----------------
 
 // Use this to say shit - usually the name of your attack.
-/mob/proc/voice(var/S)
-	for(var/mob/M in view(usr))
+/mob/proc/voice(var/S) //shout de skill (grito de carga + grito do disparo de todo ataque com doshout)
+	for(var/mob/M in view(src)) //era view(usr): em contexto de engine/NPC a origem se perdia
 		if(M.client)
 			M << output("<font size=[src.TextSize]><[src.SayColor]>[src.name] says, '[html_encode(S)]'","Chatpane.Chat")
+			chatcast(M, "<font size=[src.TextSize]><[src.SayColor]>[src.name] says, '[html_encode(S)]'", "say") //espelho no chat HTML (o painel nativo morreu com a skin)
 
 // Big bad proc function that handles every custom attack verbs insides.
 /mob/proc/CustomAttackHandler(giv_id)

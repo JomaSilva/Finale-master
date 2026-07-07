@@ -804,6 +804,32 @@ mob/Topic(href, list/href_list)
 		var/ci = text2num(href_list["uichoose"])
 		if(islist(ui_choose_opts) && ci >= 1 && ci <= ui_choose_opts.len) ui_choose_result = ui_choose_opts[ci]
 		return
+	if(href_list["fpick"]) //escolha de formas (body_custom.dm): card clicado vai pro slot atual
+		var/fi = text2num(href_list["fpick"])
+		if(islist(form_pick_icons) && islist(form_pick_sel) && fi >= 1 && fi <= form_pick_icons.len)
+			form_pick_sel[form_pick_slot] = fi
+			for(var/s = 1 to 6) //avanca pro proximo slot VAZIO (com todos cheios, fica onde esta)
+				var/ns = ((form_pick_slot + s - 1) % 6) + 1
+				if(!form_pick_sel[ns])
+					form_pick_slot = ns
+					break
+			form_pick_render()
+		return
+	if(href_list["fpslot"]) //chip FORMA n clicado: troca o slot sendo escolhido
+		var/fs = text2num(href_list["fpslot"])
+		if(fs >= 1 && fs <= 6 && islist(form_pick_sel))
+			form_pick_slot = fs
+			form_pick_render()
+		return
+	if(href_list["fpclear"])
+		if(islist(form_pick_sel))
+			for(var/s = 1 to 6) form_pick_sel[s] = 0
+			form_pick_slot = 1
+			form_pick_render()
+		return
+	if(href_list["fpdone"])
+		form_pick_done = 1
+		return
 	if(href_list["wardrobepick"]) //guarda-roupa cosmetico (Wardrobe.dm): vestir/tirar peca
 		wardrobe_pick(text2num(href_list["wardrobepick"]))
 		return

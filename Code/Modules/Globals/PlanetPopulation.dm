@@ -208,6 +208,7 @@ mob/npc/Citizen
 				chatcast(view(8), "[killer] has slain the King of Vegeta and claimed the throne!", "combat")
 			else
 				view(8) << output("<font color=red><b>The King of Vegeta has fallen!</b></font>","Chatpane.Chat")
+				chatcast(view(8), "<font color=red><b>The King of Vegeta has fallen!</b></font>", "combat")
 
 	// -----------------------------------------------------------------------
 	// O Grande Patriarca (Guru) de Namek: falar com ele (clique) desperta o

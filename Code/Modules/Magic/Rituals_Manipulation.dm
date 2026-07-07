@@ -366,7 +366,9 @@ obj/Ritual/proc
 		else
 			view(magnitude,r_target)<<output("<font size=[invoker.TextSize]><font face=Old English Text MT><font color=red>[invoker] says in telepathy, '[html_encode(message)]'","Chatpane.Chat")
 			chatcast(view(magnitude,r_target), "<font size=[invoker.TextSize]><font face=Old English Text MT><font color=red>[invoker] says in telepathy, '[html_encode(message)]'", "say")
-			if(!invoker in view(magnitude,r_target)) invoker<<output("<font face=Old English Text MT><font color=red>[invoker] says in telepathy, '[html_encode(message)]'","Chatpane.Chat")
+			if(!(invoker in view(magnitude,r_target))) //era "!invoker in view": precedencia fazia o eco NUNCA disparar
+				invoker<<output("<font face=Old English Text MT><font color=red>[invoker] says in telepathy, '[html_encode(message)]'","Chatpane.Chat")
+				chatcast(invoker, "<font face=Old English Text MT><font color=red>[invoker] says in telepathy, '[html_encode(message)]'", "say")
 			WriteToLog("rplog","(Telepathy to [r_target])[invoker]: [message]   ([time2text(world.realtime,"Day DD hh:mm")])")
 
 	e_silence(magnitude)

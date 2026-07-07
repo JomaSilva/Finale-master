@@ -39,7 +39,9 @@ mob/proc/MurderTheFollowing(var/isFinishing,var/mob/M as mob) //isFinishing mean
 			killer_stuff(M)
 			sleep(Eactspeed)
 			finishing=0
-		else view(6)<<output("[usr] tries to finish [M] off, but they won't die!","Chatpane.Chat")
+		else
+			view(6)<<output("[usr] tries to finish [M] off, but they won't die!","Chatpane.Chat")
+			chatcast(view(6), "[usr] tries to finish [M] off, but they won't die!", "combat")
 	else if(isFinishing==1)
 		killer_stuff(M)
 		sleep(Eactspeed)
