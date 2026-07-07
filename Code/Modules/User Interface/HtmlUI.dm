@@ -328,12 +328,16 @@ mob/proc/ui_tab_nav()
 	if(Planet != "Space")
 		h += "<div class='mut' style='padding:8px'>Sem sinal: o nav so capta planetas no ESPACO. (Voce esta em: [Planet])</div>"
 		return jointext(h, "")
+	h += pspace_nav_header(z) //setor procedural atual + vizinhos explorados (ProceduralSpace.dm)
 	var/found = 0
 	for(var/obj/Planets/F in planet_list)
 		if(F.z != z) continue
 		if(F.isDestroyed) continue //planeta destruido nao emite sinal
 		found = 1
-		h += ui_row(html_encode("[F.planetType]"), "[get_dist(src, F)] tiles <span class='mut'>[sense_dir_word(get_dir(src, F))] &middot; ([F.x], [F.y])</span>", "")
+		var/extra = ""
+		var/datum/pspace_planet/PD = pspace_planets["[F.planetType]"] //planeta procedural: mostra gravidade/bioma (seguranca c/ o esmagamento!)
+		if(PD) extra = " &middot; grav x[PD.gravity] &middot; [pspace_biomes[PD.biome][1]]"
+		h += ui_row(html_encode("[F.planetType]"), "[get_dist(src, F)] tiles <span class='mut'>[sense_dir_word(get_dir(src, F))] &middot; ([F.x], [F.y])[extra]</span>", "")
 	if(!found)
 		h += "<div class='mut' style='padding:8px'>Nenhum planeta detectado neste setor.</div>"
 	return jointext(h, "")

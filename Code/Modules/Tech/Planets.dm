@@ -178,6 +178,9 @@ mob/proc/testPlanetbump(var/A)
 		var/obj/Planets/P = A
 		if(P.isDestroyed)
 			return
+		if(istype(P, /obj/Planets/Procedural)) //planeta procedural: pouso generico (ProceduralSpace.dm)
+			pspace_land(src, P)
+			return
 		switch(P.planetType)
 			if("Earth")
 				usr.loc=locate(rand(240,260),rand(240,260),1)

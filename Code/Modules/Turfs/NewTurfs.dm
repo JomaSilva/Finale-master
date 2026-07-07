@@ -40,6 +40,7 @@ turf/Other
 		Enter(atom/movable/O)
 			if(ismob(O))
 				var/mob/M = O
+				if(M.isNPC && !M.client) return 0 //NPC nao "sai do planeta" pela borda (vazava pro espaco e virava orfao)
 				for(var/obj/Planets/P in world)
 					if(P.planetType==M.Planet)
 						var/list/randTurfs = list()

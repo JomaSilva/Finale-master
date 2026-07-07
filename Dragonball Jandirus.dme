@@ -525,6 +525,7 @@
 #include "Code\Modules\Tech\MiscTier.dm"
 #include "Code\Modules\Tech\Planets.dm"
 #include "Code\Modules\Tech\PlanetTech.dm"
+#include "Code\Modules\Tech\ProceduralSpace.dm"
 #include "Code\Modules\Tech\ShipVessel.dm"
 #include "Code\Modules\Tech\TechMinigame.dm"
 #include "Code\Modules\Tech\TechResearch.dm"
