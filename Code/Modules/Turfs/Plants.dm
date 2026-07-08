@@ -10,6 +10,8 @@ obj/Turfs
 				else return
 			else return 1
 
+var/list/trees_pixelx_cache = list() //"icone:state" -> pixel_x (o icon() por ARVORE decodificava o .dmi inteiro so pra medir largura)
+
 obj/Trees
 	canGrab = 0
 	Savable=0
@@ -19,11 +21,18 @@ obj/Trees
 	var/IsEquipped
 	New()
 		..()
-		spawn(1) if(src) if(!Builder) for(var/turf/A in view(0,src)) if(A.Builder) del(src)
-		spawn(1) if(src) for(var/obj/A in view(0,src)) if(A!=src) if(loc==initial(loc)) del(src)
-		var/icon/I = icon(icon,icon_state)
-		pixel_x = 16 - I.Width()/2
-		del(I)
+		//anti-Builder adiado (o turf pode virar Builder durante o load): le o turf DIRETO --
+		//era um view(0) por arvore + um segundo spawn de condicao impossivel (loc==initial(loc)
+		//com loc setado) -- milhares de view() que travavam a geracao dos planetas procedurais
+		spawn(1)
+			if(src && !Builder)
+				var/turf/T = loc
+				if(istype(T) && T.Builder) del(src)
+		var/ck = "[icon]:[icon_state]"
+		if(isnull(trees_pixelx_cache[ck]))
+			var/icon/I = icon(icon,icon_state)
+			trees_pixelx_cache[ck] = 16 - I.Width()/2
+		pixel_x = trees_pixelx_cache[ck]
 	verb/Drop()
 		set category=null
 		set src in usr
@@ -472,6 +481,7 @@ obj/Plants
 	icon = 'potatos.dmi'
 	icon_state = "stage 1" //plants can have several stages
 	var/planter = ""
+	var/tmp/ticking = 0 //latch: nunca dois loops de crescimento na mesma planta
 	SaveItem = 0
 	density = 0
 	plane = 8
@@ -512,6 +522,7 @@ obj/Plants
 			currentstage = initialStage
 			growthPercent = 0
 			icon_state = "stage [currentstage]"
+			spawn Tick() //re-arma o crescimento (o loop morre quando a planta madura)
 			return TRUE
 		else
 			spawn(1) del(src)
@@ -519,18 +530,22 @@ obj/Plants
 
 	proc/Tick()
 		set background = 1
-		while(src)
+		//o loop MORRE quando a planta madura (milhares de plantas selvagens dos planetas
+		//procedurais mantinham um while eterno cada = lag permanente); o Harvest re-arma
+		if(ticking) return
+		ticking = 1
+		while(src && currentstage != maxstage)
 			if(Yearspeed==0||!Yearspeed)
 				Yearspeed=1
-			if(currentstage!=maxstage)
-				growthMeter += 1 * growthSpeed
-				if(growthMeter >= gotostageMeter)
-					growthMeter = 0
-					currentstage = min((currentstage + 1),maxstage)
-					if(icon_state!="stage [currentstage]")
-						icon_state = "stage [currentstage]"
-					growthPercent = currentstage / maxstage
+			growthMeter += 1 * growthSpeed
+			if(growthMeter >= gotostageMeter)
+				growthMeter = 0
+				currentstage = min((currentstage + 1),maxstage)
+				if(icon_state!="stage [currentstage]")
+					icon_state = "stage [currentstage]"
+				growthPercent = currentstage / maxstage
 			sleep(max(10,(100/Yearspeed)))
+		ticking = 0
 
 obj/Plants
 	Wheat

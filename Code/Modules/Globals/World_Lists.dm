@@ -8,7 +8,6 @@ var
 	list/obj_list = list() //all objects
 	list/item_list = list() // all item objects
 	list/attack_list = list() //all attack objects
-	list/turf_list = list() //all turfs
 	list/planet_list = list() //all planets
 	list/mob_list = list() //list of all mobs.
 //

@@ -16,6 +16,7 @@
 #define PSPACE_HOME_Z 26        // z do espaco original (setor 0,0)
 #define PSPACE_SIZE 200         // lado da regiao util de um setor gerado
 #define PSURF_SIZE 500          // lado da superficie de um planeta procedural (mundo inteiro; 1a visita gera ~250k turfs, alguns segundos)
+#define PSPACE_GEN_TICKCAP 92   // % de tick que a geracao pode ocupar antes de ceder (checado por COLUNA -- o CHECK_TICK por tile + lagstopsleep escalonado derrubava o ritmo pra ~3%)
 #define PSPACE_MAX_SECTORS 12   // pool de z's de setor (recicla o mais antigo sem players)
 #define PSURF_MAX_SURFACES 10   // pool de z's de superficie
 #define PSPACE_MIN_PLANETS 2    // planetas por setor (min)
@@ -47,17 +48,30 @@ var
 	pspace_booted = 0
 
 // ---------------------------------------------------------------------------
-// RNG deterministico proprio (LCG mod 134456): rand() do BYOND nao pode ser
-// semeado por-geracao sem bagunçar o RNG global do jogo
+// RNG deterministico proprio (Wichmann-Hill: 3 LCGs pequenos combinados).
+// NAO trocar por um LCG grande: numeros do DM sao FLOAT 32 (mantissa 2^24) --
+// um state*8121 chega a ~1e9, perde precisao e ENVIESA os residuos baixos
+// (medido: next(100)<=10 dava 17% num trecho e 2% noutro; flora quase nao
+// nascia e os acentos de chao listravam). Aqui todo produto fica < 5.3M =
+// exato em float; periodo ~7e12. rand() do BYOND nao pode ser semeado
+// por-geracao sem bagunçar o RNG global do jogo.
 // ---------------------------------------------------------------------------
 datum/pspace_rng
-	var/state = 1
+	var/s1 = 1
+	var/s2 = 2
+	var/s3 = 3
 	New(s)
-		state = round(abs(s)) % 134456
-		if(state <= 0) state = 1
+		var/v = round(abs(s))
+		s1 = (v % 30268) + 1
+		s2 = (round(v / 100) % 30306) + 1
+		s3 = (round(v / 10000) % 30322) + 1
 	proc/next(max) //1..max
-		state = (state * 8121 + 28411) % 134456
-		return (state % max) + 1
+		s1 = (s1 * 171) % 30269
+		s2 = (s2 * 172) % 30307
+		s3 = (s3 * 170) % 30323
+		var/u = s1 / 30269 + s2 / 30307 + s3 / 30323
+		u -= round(u) //parte fracionaria: uniforme em [0,1)
+		return min(max, round(u * max) + 1)
 	proc/pickfrom(list/L)
 		if(!L || !L.len) return null
 		return L[next(L.len)]
@@ -267,6 +281,7 @@ proc/pspace_alloc_z(list/pool, cap, unload_cb)
 	if(pool.len < cap)
 		world.maxz++
 		pool += world.maxz
+		pspace_pool_z["[world.maxz]"] = 1 //turfs deste z ficam FORA das listas de area (TurfOnNew.dm)
 		return world.maxz
 	//recicla: z do pool sem NENHUM client, cujo dono esta ha mais tempo sem visita
 	var/bestz = 0
@@ -286,6 +301,7 @@ proc/pspace_alloc_z(list/pool, cap, unload_cb)
 	if(!bestz) //todos ocupados: cresce alem do teto (memoria > quebrar exploracao)
 		world.maxz++
 		pool += world.maxz
+		pspace_pool_z["[world.maxz]"] = 1
 		WriteToLog("debug","pspace: pool estourou o teto ([cap]) -- novo z [world.maxz]")
 		return world.maxz
 	call(unload_cb)(bestz, 0) //descarrega o dono de verdade
@@ -333,16 +349,16 @@ proc/pspace_unload_surface_on(pz, peek)
 proc/pspace_generate_sector(datum/space_sector/S)
 	var/datum/pspace_rng/R = new(S.seed)
 	var/area/SA = locate(/area/pspace_sector)
+	var/gen_t0 = world.time
 	//regiao util [1..PSPACE_SIZE]^2: estrelas, com anel de borda que cruza de setor
 	for(var/xx = 1 to PSPACE_SIZE)
+		if(world.tick_usage > PSPACE_GEN_TICKCAP) sleep(world.tick_lag) //cede 1 tick por COLUNA (igual a superficie)
 		for(var/yy = 1 to PSPACE_SIZE)
-			CHECK_TICK
-			var/turf/T
 			if(xx == 1 || yy == 1 || xx == PSPACE_SIZE || yy == PSPACE_SIZE)
-				T = new/turf/pspace_edge(locate(xx, yy, S.z))
+				new/turf/pspace_edge(locate(xx, yy, S.z))
 			else
-				T = new/turf/Other/Stars(locate(xx, yy, S.z))
-			if(SA) SA.contents += T
+				new/turf/Other/Stars(locate(xx, yy, S.z))
+	if(SA) SA.contents.Add(block(locate(1, 1, S.z), locate(PSPACE_SIZE, PSPACE_SIZE, S.z))) //area em UM bloco
 	//planetas (se ainda nao existem os datums; num setor reciclado eles ja existem)
 	if(!S.planets.len)
 		var/n = PSPACE_MIN_PLANETS + R.next(PSPACE_MAX_PLANETS - PSPACE_MIN_PLANETS + 1) - 1
@@ -388,6 +404,7 @@ proc/pspace_generate_sector(datum/space_sector/S)
 			if(!E[6] && E[2] == S.sx && E[3] == S.sy)
 				S.spawned += pspace_sdb_spawn(E, S.z)
 	pspace_save() //persiste a galaxia descoberta (nomes de setor + planetas conhecidos)
+	WriteToLog("debug","pspace: setor [S.name] ([S.sx],[S.sy]) gerado em [(world.time - gen_t0) / 10]s")
 
 // ---------------------------------------------------------------------------
 // CRUZAMENTO DE BORDA
@@ -463,6 +480,23 @@ turf/pspace_edge
 		else if(x >= PSPACE_SIZE) ed = EAST
 		else if(x <= 1) ed = WEST
 		if(ed) pspace_cross(M, ed)
+
+//montanha dos planetas procedurais: parede densa e permanente, SOBREVOAVEL (igual as
+//rochas dos mapas canonicos). O Void_Wall usado antes tinha state PRETO ('Hell turf.dmi')
+//e opacity=1 -- alem do tile preto, a opacidade pintava de preto a visao atras da
+//cordilheira (as "zonas pretas" que apareciam nos planetas)
+turf/pspace_mountain
+	icon = 'JEFcliff.dmi'
+	icon_state = ""
+	density = 1
+	opacity = 0
+	destroyable = 0
+	Enter(atom/movable/O)
+		if(ismob(O))
+			var/mob/M = O
+			if(M.flight) return 1
+			return 0
+		return 1
 
 //borda do espaco ORIGINAL (z26): as pontas do mapa .dmm viram fronteira
 turf/Other/Stars/Entered(atom/movable/O)
@@ -598,7 +632,7 @@ proc/pspace_generate_surface(datum/pspace_planet/D)
 		g2 = pspace_noise_grid(R, c2)
 	//---- KIT DE TERRENO por planeta: familias/states REAIS dos planetas canonicos, sorteados
 	//da seed DENTRO do arquetipo do bioma (planetas do mesmo bioma ficam diferentes entre si) ----
-	var/list/gr_verde = list("Grass1","Grass2","Grass3","Grass4","Grass5","Grass6","Grass14","Grass19","Grass20")
+	var/list/gr_verde = list("Grass1","Grass2","Grass3","Grass4","Grass5","Grass6","Grass14") //Grass19/20 sao BRANCOS (neve): salpicavam branco na planicie
 	var/list/gr_terra = list("Ground1","Ground2","Ground4","Ground6","Ground7","Ground8","Ground9","Ground12","Ground13","Ground16")
 	var/list/gr_gelo = list("GroundIce1","GroundIce2","GroundIce3","GroundSnow1")
 	var/list/wa_states = list("1","2","3","5","6","8","9","10","11","12","13")
@@ -671,21 +705,15 @@ proc/pspace_generate_surface(datum/pspace_planet/D)
 	var/list/landspots = list() //amostra de tiles de planicie (spawn de inimigo/pouso)
 	var/bestd = 999999 //tile de terra mais perto do centro = ponto de pouso
 	var/ctr = round(PSURF_SIZE / 2)
+	var/gen_t0 = world.time
 	D.land_x = 0
 	D.land_y = 0
 	D.land_spots = list()
 	for(var/xx = 1 to PSURF_SIZE)
-		if(xx % 8 == 0) sleep(-1) //yield regular: 250k turfs sem engasgar o servidor inteiro
+		if(world.tick_usage > PSPACE_GEN_TICKCAP) sleep(world.tick_lag) //cede 1 tick por COLUNA quando aperta (o jogador esta ESPERANDO pousar)
 		for(var/yy = 1 to PSURF_SIZE)
-			CHECK_TICK
-			if(xx == 1 || yy == 1 || xx == PSURF_SIZE || yy == PSURF_SIZE)
-				var/turf/T = new/turf/Other/Stars_Exit(locate(xx, yy, D.surface_z)) //borda do planetoide: da a VOLTA (wrap)
-				T.icon = plains_icon //com cara do CHAO do planeta (a textura de estrelas na borda ficava horrivel)
-				T.icon_state = plains_main
-				T.color = hill_tint ? hill_tint : B[6] //tint de colina: borda levemente distinta
-				D.parea.contents += T
-				continue
 			//classe do tile: 1 agua, 2 praia, 3 planicie, 4 colina, 5 montanha
+			//(classificada ANTES da borda: o anel de wrap se pinta da classe local do noise)
 			var/tc = 3
 			if(dllmap)
 				switch(text2ascii(dllmap, (xx - 1) * PSURF_SIZE + yy)) //indice 1-based: (xx-1)*size + yy
@@ -701,6 +729,30 @@ proc/pspace_generate_surface(datum/pspace_planet/D)
 				else if(h < PSURF_H_HILL) tc = 3
 				else if(h < PSURF_H_MOUNTAIN) tc = 4
 				else tc = 5
+			if(xx == 1 || yy == 1 || xx == PSURF_SIZE || yy == PSURF_SIZE)
+				var/turf/T = new/turf/Other/Stars_Exit(locate(xx, yy, D.surface_z)) //borda do planetoide: da a VOLTA (wrap)
+				switch(tc) //VISUAL da classe do noise (o contorno uniforme destoava do terreno vizinho)
+					if(1)
+						T.icon = 'Waters.dmi'
+						T.icon_state = water_lava ? "7" : wsa
+						if(!water_lava && water_tint) T.color = water_tint
+					if(2)
+						T.icon = 'Ground.dmi'
+						T.icon_state = beach_state
+						T.color = beach_tint ? beach_tint : hill_tint
+					if(3)
+						T.icon = plains_icon
+						T.icon_state = plains_main
+						if(plains_tint) T.color = plains_tint
+					if(4)
+						T.icon = hill_icon
+						T.icon_state = hill_main
+						if(hill_tint) T.color = hill_tint
+					else
+						T.icon = 'JEFcliff.dmi'
+						T.icon_state = ""
+						if(mount_tint) T.color = mount_tint
+				continue
 			var/turf/T
 			if(tc == 1) //lago (Vulcanico: LAVA com dano)
 				if(water_lava)
@@ -751,10 +803,11 @@ proc/pspace_generate_surface(datum/pspace_planet/D)
 					var/obj/tr = new ttype(locate(xx, yy, D.surface_z))
 					tr.color = B[3]
 					D.spawned += tr
-			else //montanha: parede densa
-				T = new/turf/UnbreakableTurfs/Void_Wall(locate(xx, yy, D.surface_z))
-				T.color = mount_tint
-			D.parea.contents += T
+			else //montanha: parede densa sobrevoavel (Void_Wall era PRETO + opacity: zonas pretas)
+				T = new/turf/pspace_mountain(locate(xx, yy, D.surface_z))
+				if(mount_tint) T.color = mount_tint
+	//area em UM bloco (250k `contents +=` um-a-um custavam mais que os proprios turfs)
+	D.parea.contents.Add(block(locate(1, 1, D.surface_z), locate(PSURF_SIZE, PSURF_SIZE, D.surface_z)))
 	if(!D.land_x) //planeta 100% agua/rocha (raro): pousa no centro mesmo
 		D.land_x = ctr
 		D.land_y = ctr
@@ -769,6 +822,7 @@ proc/pspace_generate_surface(datum/pspace_planet/D)
 		E.loc = spot
 		D.spawned += E
 	npcspawnson = oldspawns
+	WriteToLog("debug","pspace: superficie de [D.name] gerada em [(world.time - gen_t0) / 10]s ([D.spawned.len] objs)")
 
 // ---------------------------------------------------------------------------
 // NAV: infos de setor + MAPA DA GALAXIA pro ui_tab_nav (HtmlUI.dm)

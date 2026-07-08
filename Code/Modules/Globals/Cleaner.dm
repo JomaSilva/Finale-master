@@ -92,13 +92,3 @@ proc/Cleaner()
 		spawn(18000) Cleaner()
 		return
 
-proc/CleanTurfOverlays()
-	set waitfor=0
-	for(var/turf/T in turf_list)
-		sleep(1)
-		CHECK_TICK
-		if(T.overlays)
-			T.overlays-=T.overlays //this needs to be redone eventually, but this is essentially there to wipe annoying transformation artifacts.
-			//also, uh, this is really slow.
-			//like freezith gameith for fucking 5 whole entire minutes dwarfing the SSJ3 transformation
-		to_chat(world, "Turf overlays cleared.")

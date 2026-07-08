@@ -17,13 +17,6 @@ mob/Debug/verb/spawnNPC()
 	var/Choice=input("Spawn What?") in list1
 	var/mob/M = new Choice
 	M.loc = locate(x,y-1,z)
-mob/Debug/verb/RemoveTileOverlays()
-	set category = "Debug"
-	var/Choice=alert("Are you fucking sure? This will lag the game for a whopping 5 to 10 minutes depending on hardware.","","Yes","No")
-	switch(Choice)
-		if("No")
-			return //RETURN MOTHERFUCKER THIS WAS A MISTAAAAAAAAAAAAAAAAAAKE
-	CleanTurfOverlays()
 mob/Debug/verb/Start_Cleaner()
 	set category = "Debug"
 	Cleaner()

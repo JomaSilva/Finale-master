@@ -18,7 +18,7 @@ proc/dungeon_timer_check()
 
 proc/add_rnd_dungeon()
 	var/list/valid_dungeons = check_valid_dungeons()
-	if(isnull(valid_dungeons)||!valid_dungeons.len) return FALSE
+	if(!islist(valid_dungeons)||!valid_dungeons.len) return FALSE //check_valid_dungeons devolve FALSE (0) sem dungeon valida: isnull(0) passava e "0.len" estourava todo boot
 	var/i = rand(1,valid_dungeons.len)
 	var/list/allowed_areas = valid_dungeons[i]["allowed_areas"]
 	var/list/rng_dng_areas = active_o_play_areas
