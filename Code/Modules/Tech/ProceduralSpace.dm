@@ -154,6 +154,7 @@ datum/space_sector
 		name = ""
 		is_home = 0
 		last_visit = 0
+		tmp/generating = 0      // geracao em andamento (latch anti-corrida/anti-recycle)
 		list/planets = list()   // /datum/pspace_planet
 		list/spawned = list()   // objs criados no z do setor (limpos no recycle)
 
@@ -168,9 +169,11 @@ datum/pspace_planet
 		py = 0
 		seed = 0
 		surface_z = 0          // 0 = superficie nao construida/reciclada
+		tmp/generating = 0     // superficie sendo gerada AGORA (latch anti-corrida/anti-recycle)
 		last_visit = 0
 		land_x = 0             // ponto de pouso em TERRA (o noise pode por agua no centro)
 		land_y = 0
+		list/land_spots = null // candidatos de pouso (x*1000+y): pousa longe de inimigos
 		datum/space_sector/sector = null
 		obj/Planets/Procedural/pobj = null
 		area/pspace_planet/parea = null    // area propria (Planet = nome; reusada entre regens)
@@ -249,8 +252,13 @@ proc/pspace_get_sector(sx, sy)
 		S.name = "Setor [R.pickfrom(pspace_name_a)][R.pickfrom(pspace_name_b)]"
 		pspace_sectors[key] = S
 	if(!S.z && !S.is_home) //precisa de um z: pool ou recycle
-		S.z = pspace_alloc_z(pspace_sector_zs, PSPACE_MAX_SECTORS, /proc/pspace_unload_sector_on)
-		pspace_generate_sector(S)
+		if(S.generating) //outro jogador ja esta gerando este setor: espera em vez de gerar DUAS vezes no mesmo z
+			while(S.generating) sleep(5)
+		else
+			S.generating = 1
+			S.z = pspace_alloc_z(pspace_sector_zs, PSPACE_MAX_SECTORS, /proc/pspace_unload_sector_on)
+			pspace_generate_sector(S)
+			S.generating = 0
 	S.last_visit = world.time
 	return S
 
@@ -289,6 +297,7 @@ proc/pspace_unload_sector_on(pz, peek)
 		var/datum/space_sector/S = pspace_sectors[k]
 		if(S.z != pz || S.is_home) continue
 		if(peek)
+			if(S.generating) return 999999999 //NUNCA reciclar um z sendo gerado (duas geracoes no mesmo z = caos)
 			//player na SUPERFICIE de um planeta deste setor: reciclar mataria o obj do
 			//planeta e o Stars_Exit da superficie nao teria pra onde voltar (preso!)
 			for(var/datum/pspace_planet/D in S.planets)
@@ -310,7 +319,9 @@ proc/pspace_unload_surface_on(pz, peek)
 	for(var/pn in pspace_planets)
 		var/datum/pspace_planet/D = pspace_planets[pn]
 		if(D.surface_z != pz) continue
-		if(peek) return D.last_visit
+		if(peek)
+			if(D.generating) return 999999999 //superficie sendo gerada AGORA: reciclar = duas geracoes brigando pelo z (horda de NPC duplicada, terreno misturado)
+			return D.last_visit
 		for(var/o in D.spawned) if(o) del o
 		D.spawned.Cut()
 		for(var/mob/npc/N in world) if(N.z == pz) del N //inimigo que vagou pra fora da lista
@@ -424,6 +435,8 @@ proc/pspace_cross(mob/M, edge_dir)
 		spawn(5) if(M) M.pspace_crossing = 0
 
 mob/var/tmp/pspace_crossing = 0
+mob/var/tmp/pspace_noland_until = 0 //graca anti-rebump: acabou de SAIR de um planeta (borda/decolagem) -> nao re-pousa sem querer
+mob/var/tmp/pspace_noland_msg = 0   //rate-limit da dica
 
 //qual setor e este z? (home/setor gerado; null = nao e espaco)
 proc/pspace_sector_for_z(z)
@@ -473,18 +486,75 @@ obj/Planets/Procedural
 
 proc/pspace_land(mob/M, obj/Planets/Procedural/P)
 	if(!M || !P || !P.pdatum) return
+	//GRACA ANTI-REBUMP: sair do planeta (borda/decolagem) solta o mob COLADO no obj (view(1,P));
+	//um passo na direcao que ele ja segurava dava Bump -> re-pouso involuntario "na frente dos bichos"
+	if(M.pspace_noland_until > world.time)
+		if(M.client && world.time >= M.pspace_noland_msg)
+			M.pspace_noland_msg = world.time + 30
+			to_chat(M, "<font color=#88ccff>Voce acabou de deixar a orbita -- afaste-se e encoste de novo para pousar.</font>")
+		return
 	var/datum/pspace_planet/D = P.pdatum
+	if(D.generating) //JA esta sendo mapeado (Bump dispara varias vezes): nao gera 2x nem pousa num mapa pela metade
+		if(M.client && world.time >= M.pspace_noland_msg)
+			M.pspace_noland_msg = world.time + 30
+			to_chat(M, "<font color=#88ccff>Ainda mapeando o terreno de [D.name] -- um instante...</font>")
+		return
 	if(!D.surface_z) //constroi/regenera a superficie (lazy, deterministico)
 		if(M.client) to_chat(M, "<font color=#88ccff>Entrando na atmosfera de [D.name]... (primeira visita: mapeando o terreno, aguarde)</font>")
+		D.generating = 1
 		D.surface_z = pspace_alloc_z(pspace_surface_zs, PSURF_MAX_SURFACES, /proc/pspace_unload_surface_on)
 		pspace_generate_surface(D)
+		D.generating = 0
+		//a geracao leva SEGUNDOS: se o jogador se afastou/saiu nesse meio tempo, NAO puxa ele de volta
+		if(!M || !M.client || M.z != P.z || get_dist(M, P) > 2)
+			if(M && M.client) to_chat(M, "<font color=#88ccff>[D.name] mapeado. Encoste de novo para pousar.</font>")
+			return
 	D.last_visit = world.time
-	M.loc = locate(max(2, D.land_x + rand(-1, 1)), max(2, D.land_y + rand(-1, 1)), D.surface_z) //pousa em TERRA (o noise pode por lago no centro)
+	//ponto de pouso SEGURO: tenta candidatos de planicie sem inimigo por perto (senao cai no central)
+	var/turf/spot = locate(max(2, D.land_x), max(2, D.land_y), D.surface_z)
+	if(islist(D.land_spots) && D.land_spots.len)
+		for(var/attempt = 1 to min(8, D.land_spots.len))
+			var/enc = pick(D.land_spots)
+			var/turf/cand = locate(round(enc / 1000), enc % 1000, D.surface_z)
+			if(!cand) continue
+			var/hostiles = 0
+			for(var/mob/npc/N in range(8, cand))
+				hostiles = 1
+				break
+			if(!hostiles)
+				spot = cand
+				break
+	M.loc = spot
 	M.Planet = D.name
 	if(M.client) to_chat(M, "<font color=#88ccff><b>[D.name]</b> -- bioma [pspace_biomes[D.biome][1]], gravidade x[D.gravity].[D.gravity > M.GravMastered ? " <font color=red>CUIDADO: acima da sua maestria!</font>" : ""]</font>")
 
+// ---- DLL DE TERRENO (jandirus_noise.dll, fonte em Tools\jandirus_noise.c) ----
+//fBm de 4 oitavas em C: classifica o mapa INTEIRO (250k tiles) numa chamada (~15ms vs
+//segundos do noise em DM). Se a DLL faltar/falhar, cai automaticamente pro noise em DM.
+var/pspace_dll_ok = 1 //auto-desliga no primeiro erro (nao fica tentando a cada planeta)
+
+proc/pspace_dll_surface(seed, size)
+	if(!pspace_dll_ok) return null
+	if(!fexists("jandirus_noise.dll"))
+		pspace_dll_ok = 0
+		WriteToLog("debug","pspace: jandirus_noise.dll nao encontrada -- usando o noise em DM")
+		return null
+	var/map = null
+	try
+		map = call_ext("jandirus_noise.dll", "surface_map")("[seed]", "[size]", "[PSURF_H_WATER]", "[PSURF_H_BEACH]", "[PSURF_H_HILL]", "[PSURF_H_MOUNTAIN]")
+	catch(var/exception/e)
+		pspace_dll_ok = 0
+		WriteToLog("debug","pspace: call_ext na DLL de noise falhou ([e]) -- usando o noise em DM")
+		return null
+	if(!istext(map) || length(map) < size * size)
+		pspace_dll_ok = 0
+		WriteToLog("debug","pspace: DLL de noise devolveu resposta invalida -- usando o noise em DM")
+		return null
+	return map
+
 // ---- VALUE NOISE (Fase 2): grade coarse de valores + interpolacao bilinear suavizada ----
 //BYOND nao tem Perlin nativo; isto gera relevo continuo deterministico do seed do planeta
+//(FALLBACK: usado quando a DLL acima nao esta disponivel)
 proc/pspace_noise_grid(datum/pspace_rng/R, cells)
 	var/list/g = new/list(cells * cells)
 	for(var/i = 1 to cells * cells)
@@ -515,50 +585,149 @@ proc/pspace_generate_surface(datum/pspace_planet/D)
 		D.parea = new/area/pspace_planet
 		D.parea.Planet = D.name
 		D.parea.name = "Outside"
-	//2 oitavas de noise: forma geral (celulas ~16 tiles) + detalhe (celulas ~6 tiles)
-	var/c1 = round(PSURF_SIZE / 16) + 2
-	var/c2 = round(PSURF_SIZE / 6) + 2
-	var/list/g1 = pspace_noise_grid(R, c1)
-	var/list/g2 = pspace_noise_grid(R, c2)
-	var/list/gstates = list("Grass1","Grass2","Grass3","Grass4","Grass5","Grass6")
+	//mapa classificado pela DLL (1 chamada, ~15ms); fallback = 2 oitavas de noise em DM
+	var/dllmap = pspace_dll_surface(D.seed, PSURF_SIZE)
+	var/c1 = 0
+	var/c2 = 0
+	var/list/g1 = null
+	var/list/g2 = null
+	if(!dllmap)
+		c1 = round(PSURF_SIZE / 16) + 2
+		c2 = round(PSURF_SIZE / 6) + 2
+		g1 = pspace_noise_grid(R, c1)
+		g2 = pspace_noise_grid(R, c2)
+	//---- KIT DE TERRENO por planeta: familias/states REAIS dos planetas canonicos, sorteados
+	//da seed DENTRO do arquetipo do bioma (planetas do mesmo bioma ficam diferentes entre si) ----
+	var/list/gr_verde = list("Grass1","Grass2","Grass3","Grass4","Grass5","Grass6","Grass14","Grass19","Grass20")
+	var/list/gr_terra = list("Ground1","Ground2","Ground4","Ground6","Ground7","Ground8","Ground9","Ground12","Ground13","Ground16")
+	var/list/gr_gelo = list("GroundIce1","GroundIce2","GroundIce3","GroundSnow1")
+	var/list/wa_states = list("1","2","3","5","6","8","9","10","11","12","13")
+	var/plains_icon = 'Grass.dmi'
+	var/list/plains_states = gr_verde
+	var/plains_tint = null
+	var/hill_icon = 'Ground.dmi'
+	var/list/hill_states = gr_terra
+	var/hill_tint = null
+	var/beach_tint = null
+	var/water_tint = null
+	var/water_lava = 0
+	var/mount_tint = B[7]
+	var/tree_prob = PSURF_TREE_PROB //densidade de arvores por bioma (mundo-jardim = floresta; deserto = rara)
+	switch(B[1])
+		if("Verdejante")
+			tree_prob = PSURF_TREE_PROB * 2 //mundo-jardim tipo Terra: bem arborizado
+			if(R.next(10) <= 3) plains_tint = pspace_gen_tint(R) //30%: vegetacao de outro mundo
+		if("Gelido")
+			if(R.next(10) <= 6) //60% gelo/neve REAIS (sem tint); 40% "tundra" verde-azulada
+				plains_states = gr_gelo
+				plains_icon = 'Ground.dmi'
+				hill_states = gr_gelo
+				hill_tint = "#dfeaf5"
+			else
+				plains_tint = "#bcd8f0"
+				hill_tint = "#a8c4e0"
+			water_tint = "#bfe8ff"
+			beach_tint = "#cfe0ee"
+		if("Deserto")
+			plains_icon = 'Ground.dmi' //deserto = TERRA/areia de verdade, nao grama pintada
+			plains_states = gr_terra
+			tree_prob = 1 //palmeiras raras (oasis)
+			if(R.next(10) <= 5) plains_tint = "#e8cf7a"
+			hill_tint = "#c8a858"
+			beach_tint = "#e0c070"
+		if("Vulcanico")
+			plains_icon = 'Ground.dmi'
+			plains_states = gr_terra
+			tree_prob = 1 //quase esteril
+			plains_tint = (R.next(10) <= 5) ? "#b87858" : "#8a6a5a"
+			hill_tint = "#7a5040"
+			water_lava = 1
+		if("Alienigena") //aqui o TINT forte E a identidade
+			if(R.next(10) <= 5)
+				plains_icon = 'Ground.dmi'
+				plains_states = gr_terra
+			plains_tint = pspace_gen_tint(R)
+			hill_tint = pspace_gen_tint(R)
+			water_tint = pspace_gen_tint(R)
+		if("Sombrio")
+			if(R.next(10) <= 5)
+				plains_icon = 'Ground.dmi'
+				plains_states = gr_terra
+			plains_tint = "#8a93a8"
+			hill_tint = "#5a6378"
+			water_tint = "#4a5368"
+	//CROSS-MIX: ~25% dos planetas roubam a AGUA de outro mundo (agua rosa no deserto etc.)
+	if(!water_lava && R.next(100) <= 25) water_tint = pspace_gen_tint(R)
+	if(R.next(100) <= 20) mount_tint = pspace_gen_tint(R) //montanhas de rocha exotica
+	//CONSISTENCIA: cada planeta fixa 1 state PRINCIPAL + 1 acento por camada (85/15) --
+	//o sorteio por tile entre states de cores diferentes fazia xadrez/listras no chao
+	var/plains_main = R.pickfrom(plains_states)
+	var/plains_alt = R.pickfrom(plains_states)
+	var/hill_main = R.pickfrom(hill_states)
+	var/hill_alt = R.pickfrom(hill_states)
+	var/beach_state = R.pickfrom(list("Ground2","Ground7","Ground8")) //UM tipo de areia por planeta (era 3 por tile = xadrez)
+	var/wsa = R.pickfrom(wa_states) //1 visual de agua dominante + 1 raro
+	var/wsb = R.pickfrom(wa_states)
 	var/list/landspots = list() //amostra de tiles de planicie (spawn de inimigo/pouso)
 	var/bestd = 999999 //tile de terra mais perto do centro = ponto de pouso
 	var/ctr = round(PSURF_SIZE / 2)
 	D.land_x = 0
 	D.land_y = 0
+	D.land_spots = list()
 	for(var/xx = 1 to PSURF_SIZE)
 		if(xx % 8 == 0) sleep(-1) //yield regular: 250k turfs sem engasgar o servidor inteiro
 		for(var/yy = 1 to PSURF_SIZE)
 			CHECK_TICK
 			if(xx == 1 || yy == 1 || xx == PSURF_SIZE || yy == PSURF_SIZE)
-				var/turf/T = new/turf/Other/Stars_Exit(locate(xx, yy, D.surface_z)) //borda do planetoide: volta pro espaco
-				T.icon = 'Grass.dmi' //com cara de CHAO do bioma (a textura de estrelas na borda ficava horrivel)
-				T.icon_state = R.pickfrom(gstates)
-				T.color = B[6] //tint de colina: borda levemente distinta comunica "fim do planetoide"
+				var/turf/T = new/turf/Other/Stars_Exit(locate(xx, yy, D.surface_z)) //borda do planetoide: da a VOLTA (wrap)
+				T.icon = plains_icon //com cara do CHAO do planeta (a textura de estrelas na borda ficava horrivel)
+				T.icon_state = plains_main
+				T.color = hill_tint ? hill_tint : B[6] //tint de colina: borda levemente distinta
 				D.parea.contents += T
 				continue
-			var/h = pspace_noise_at(g1, c1, (xx - 1) / 16, (yy - 1) / 16) * 0.7 + pspace_noise_at(g2, c2, (xx - 1) / 6, (yy - 1) / 6) * 0.3
+			//classe do tile: 1 agua, 2 praia, 3 planicie, 4 colina, 5 montanha
+			var/tc = 3
+			if(dllmap)
+				switch(text2ascii(dllmap, (xx - 1) * PSURF_SIZE + yy)) //indice 1-based: (xx-1)*size + yy
+					if(87) tc = 1 //'W'
+					if(66) tc = 2 //'B'
+					if(80) tc = 3 //'P'
+					if(72) tc = 4 //'H'
+					else tc = 5   //'M'
+			else
+				var/h = pspace_noise_at(g1, c1, (xx - 1) / 16, (yy - 1) / 16) * 0.7 + pspace_noise_at(g2, c2, (xx - 1) / 6, (yy - 1) / 6) * 0.3
+				if(h < PSURF_H_WATER) tc = 1
+				else if(h < PSURF_H_BEACH) tc = 2
+				else if(h < PSURF_H_HILL) tc = 3
+				else if(h < PSURF_H_MOUNTAIN) tc = 4
+				else tc = 5
 			var/turf/T
-			if(h < PSURF_H_WATER) //lago (Vulcanico: LAVA com dano)
-				if(B[5] == "LAVA")
+			if(tc == 1) //lago (Vulcanico: LAVA com dano)
+				if(water_lava)
 					T = new/turf/Water/Water7(locate(xx, yy, D.surface_z))
 				else
-					T = new/turf/Water/Water1(locate(xx, yy, D.surface_z))
-					T.color = B[5]
-			else if(h < PSURF_H_BEACH) //margem de terra batida
-				T = new/turf/Ground/Ground8(locate(xx, yy, D.surface_z))
-				T.color = B[6]
-			else if(h < PSURF_H_HILL) //PLANICIE: onde a vida acontece
-				T = new/turf/Grass(locate(xx, yy, D.surface_z))
-				T.icon_state = R.pickfrom(gstates)
-				T.color = B[2]
+					T = new/turf/Water(locate(xx, yy, D.surface_z))
+					T.icon_state = (R.next(100) <= 90) ? wsa : wsb //agua dominante + detalhe raro
+					if(water_tint) T.color = water_tint
+			else if(tc == 2) //margem de terra batida (UM tipo de areia por planeta)
+				T = new/turf/Ground(locate(xx, yy, D.surface_z))
+				T.icon_state = beach_state
+				if(beach_tint) T.color = beach_tint
+				else T.color = hill_tint
+			else if(tc == 3) //PLANICIE: onde a vida acontece
+				T = new/turf(locate(xx, yy, D.surface_z))
+				T.icon = plains_icon
+				T.icon_state = (R.next(100) <= 85) ? plains_main : plains_alt //chao consistente + acento
+				if(plains_tint) T.color = plains_tint
 				var/d = (xx - ctr) * (xx - ctr) + (yy - ctr) * (yy - ctr)
 				if(d < bestd)
 					bestd = d
 					D.land_x = xx
 					D.land_y = yy
-				if(R.next(150) == 1) landspots += locate(xx, yy, D.surface_z) //amostra ~0.7% (mundo 500x500: manter a lista pequena)
-				if(R.next(100) <= PSURF_TREE_PROB)
+				if(R.next(150) == 1)
+					landspots += locate(xx, yy, D.surface_z) //amostra ~0.7% (mundo 500x500: manter a lista pequena)
+					if(D.land_spots.len < 15) D.land_spots += (xx * 1000 + yy) //candidatos de pouso seguro
+				if(R.next(100) <= tree_prob)
 					var/ttype = R.pickfrom(B[8])
 					var/obj/tr = new ttype(locate(xx, yy, D.surface_z))
 					tr.color = B[3]
@@ -567,23 +736,24 @@ proc/pspace_generate_surface(datum/pspace_planet/D)
 					var/ptype = R.pickfrom(B[9])
 					var/obj/pl = new ptype(locate(xx, yy, D.surface_z))
 					D.spawned += pl
-			else if(h < PSURF_H_MOUNTAIN) //colina: arvores densas + MINERIOS
-				T = new/turf/Grass(locate(xx, yy, D.surface_z))
-				T.icon_state = R.pickfrom(gstates)
-				T.color = B[6]
+			else if(tc == 4) //colina: arvores densas + MINERIOS
+				T = new/turf(locate(xx, yy, D.surface_z))
+				T.icon = hill_icon
+				T.icon_state = (R.next(100) <= 85) ? hill_main : hill_alt
+				if(hill_tint) T.color = hill_tint
 				if(R.next(100) <= PSURF_ORE_PROB * B[10])
 					var/obj/ore
 					if(R.next(4) == 1) ore = new/obj/Raw_Material/Quartz(locate(xx, yy, D.surface_z)) //gemas: 1/4 dos veios
 					else ore = new/obj/Raw_Material/Ore(locate(xx, yy, D.surface_z))
 					D.spawned += ore
-				else if(R.next(100) <= PSURF_TREE_PROB * 2)
+				else if(R.next(100) <= tree_prob * 2)
 					var/ttype = R.pickfrom(B[8])
 					var/obj/tr = new ttype(locate(xx, yy, D.surface_z))
 					tr.color = B[3]
 					D.spawned += tr
 			else //montanha: parede densa
 				T = new/turf/UnbreakableTurfs/Void_Wall(locate(xx, yy, D.surface_z))
-				T.color = B[7]
+				T.color = mount_tint
 			D.parea.contents += T
 	if(!D.land_x) //planeta 100% agua/rocha (raro): pousa no centro mesmo
 		D.land_x = ctr

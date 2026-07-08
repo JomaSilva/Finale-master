@@ -40,7 +40,20 @@ turf/Other
 		Enter(atom/movable/O)
 			if(ismob(O))
 				var/mob/M = O
-				if(M.isNPC && !M.client) return 0 //NPC nao "sai do planeta" pela borda (vazava pro espaco e virava orfao)
+				//LOOP DO PLANETA: encostar na borda leva pro LADO OPOSTO (planeta redondo) --
+				//vale pros mapas canonicos E pras superficies procedurais (aneis na borda do mundo).
+				//Sair pro espaco agora e SO decolando de nave (Launch).
+				var/nx = x
+				var/ny = y
+				if(x <= 3) nx = world.maxx - 3
+				else if(x >= world.maxx - 2) nx = 4
+				if(y <= 3) ny = world.maxy - 3
+				else if(y >= world.maxy - 2) ny = 4
+				if(nx != x || ny != y)
+					M.loc = locate(nx, ny, z)
+					return 0 //ja atravessou pro outro lado; o passo na borda nao acontece
+				//Stars_Exit FORA da borda do mundo (uso legado no interior de algum mapa): sai pro espaco como antes
+				if(M.isNPC && !M.client) return 0
 				for(var/obj/Planets/P in world)
 					if(P.planetType==M.Planet)
 						var/list/randTurfs = list()
@@ -48,6 +61,7 @@ turf/Other
 							randTurfs += T
 						var/turf/rT = pick(randTurfs)
 						O.loc = locate(rT.x,rT.y,rT.z)
+						M.pspace_noland_until = world.time + 80
 						break
 			..()
 

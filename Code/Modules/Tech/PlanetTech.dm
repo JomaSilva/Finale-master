@@ -64,12 +64,15 @@ obj/Spacepod
 		sleep(400/Speed)
 		for(var/obj/Planets/P in world)
 			if(P.planetType==usr.Planet)
+				//solta a 3-5 tiles do planeta (era view(1) = COLADO: qualquer passo re-pousava "do nada")
 				var/list/randTurfs = list()
-				for(var/turf/T in view(1,P))
-					randTurfs += T
+				for(var/turf/T in orange(5, P))
+					if(get_dist(T, P) >= 3) randTurfs += T
+				if(!randTurfs.len) for(var/turf/T in view(1,P)) randTurfs += T //fallback: planeta espremido num canto
 				var/turf/rT = pick(randTurfs)
 				src.loc = locate(rT.x,rT.y,rT.z)
 				pilot.loc = locate(rT.x,rT.y,rT.z)
+				pilot.pspace_noland_until = world.time + 80 //e ainda ha a graca anti-rebump por cima
 				icon_state = ""
 				break
 		icon_state = ""
