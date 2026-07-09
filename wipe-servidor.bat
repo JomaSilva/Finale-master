@@ -35,7 +35,7 @@ if /I not "%CONFIRMA%"=="SIM" (
 
 cd /d "%~dp0"
 if exist "Save" rmdir /s /q "Save"
-for %%F in (BossEvents PlanetRep PerWipeSettings Bank_Save RANK Year GAIN MapSave MapSaveBck AreaSave ItemSave MobSave Galaxy) do (
+for %%F in (BossEvents PlanetRep PerWipeSettings Bank_Save RANK Year GAIN MapSave MapSaveBck AreaSave ItemSave MobSave Galaxy PlanetCache) do (
     if exist "%%F" del /f /q "%%F"
 )
 

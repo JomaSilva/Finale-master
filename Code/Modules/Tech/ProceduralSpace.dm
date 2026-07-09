@@ -101,6 +101,9 @@ proc/pspace_boot()
 		S["sectors"] >> secdata
 		S["planets"] >> pladata
 		S["superdb"] >> pspace_superdb
+		var/list/slp = null
+		S["sleepers"] >> slp
+		if(islist(slp)) pspace_sleepers = slp
 	if(!pspace_seed)
 		pspace_seed = rand(1, 134455)
 		var/savefile/S = new("Galaxy")
@@ -125,6 +128,8 @@ proc/pspace_boot()
 			S2.name = sd[3]
 			S2.seed = pspace_mix_seed(S2.sx, S2.sy)
 			pspace_sectors["[S2.sx],[S2.sy]"] = S2
+	spawn(100) pspace_boot_pregen() //pre-aquece os planetas onde ha jogadores "dormindo" (retorno instantaneo)
+	spawn(600) pspace_cache_ticker() //snapshot periodico das construcoes
 	if(islist(pladata))
 		for(var/list/pd in pladata)
 			if(!islist(pd) || pd.len < 9) continue
@@ -159,6 +164,7 @@ proc/pspace_save()
 	S["sectors"] << secdata
 	S["planets"] << pladata
 	S["superdb"] << pspace_superdb
+	S["sleepers"] << pspace_sleepers
 
 // ---------------------------------------------------------------------------
 // DATUMS
@@ -354,9 +360,11 @@ proc/pspace_unload_surface_on(pz, peek)
 		if(peek)
 			if(D.generating) return 999999999 //superficie sendo gerada AGORA: reciclar = duas geracoes brigando pelo z (horda de NPC duplicada, terreno misturado)
 			return D.last_visit
+		pspace_builds_snapshot(D) //construcoes dos jogadores sobrevivem ao recycle (re-aplicadas na regen)
 		for(var/o in D.spawned) if(o) del o
 		D.spawned.Cut()
 		for(var/mob/npc/N in world) if(N.z == pz) del N //inimigo que vagou pra fora da lista
+		for(var/obj/O in obj_list.Copy()) if(O && O.z == pz) del O //sobras (buildables/itens largados) vazavam pro PROXIMO planeta do z; Copy: o proprio del encolhe a obj_list no meio da iteracao
 		D.surface_z = 0
 		return 0
 	return 0
@@ -586,11 +594,19 @@ proc/pspace_land(mob/M, obj/Planets/Procedural/P)
 //dispara a geracao da superficie num proc DESTACADO do requerente. A geracao inline morria
 //JUNTO com o mob (relog no meio deletava a pilha inteira SEM runtime error) e o latch
 //"generating" travava pra sempre -- todo pouso seguinte via "Ainda mapeando..." eterno.
+var/pspace_gen_active = 0 //geracoes de superficie RODANDO agora (fila global)
+
 proc/pspace_gen_request(datum/pspace_planet/D, mob/M)
 	if(!D || D.generating || D.surface_z) return
 	D.generating = world.time //timestamp: o watchdog reconhece latch morto
 	D.gen_priority = M ? 1 : 0 //com requerente = ritmo rapido; pre-aquecimento = leve
 	spawn(0)
+		//FILA GLOBAL: um rush de logins disparava N geracoes SIMULTANEAS e esmagava o tick --
+		//no maximo 2 por vez; as demais esperam na fila (com heartbeat pro watchdog)
+		while(pspace_gen_active >= 2)
+			D.generating = world.time
+			sleep(10)
+		pspace_gen_active++
 		var/ok = 0
 		try
 			D.surface_z = pspace_alloc_z(pspace_surface_zs, PSURF_MAX_SURFACES, /proc/pspace_unload_surface_on)
@@ -599,6 +615,7 @@ proc/pspace_gen_request(datum/pspace_planet/D, mob/M)
 		catch(var/exception/e)
 			WriteToLog("debug","pspace: geracao de [D.name] FALHOU: [e] ([e.file]:[e.line])")
 			D.surface_z = 0
+		pspace_gen_active--
 		D.generating = 0
 		D.gen_priority = 0
 		if(!ok || !M) return
@@ -654,6 +671,10 @@ proc/pspace_rename_planet(datum/pspace_planet/D, newname, mob/M)
 	pspace_planets -= old
 	D.name = newname
 	pspace_planets[newname] = D //a gravidade/pouso fazem lookup por NOME: re-chavear e obrigatorio
+	pspace_builds_migrate(old, newname) //cache de construcoes acompanha o batismo
+	if(old in pspace_sleepers)
+		pspace_sleepers -= old
+		pspace_sleepers += newname
 	if(D.pobj)
 		D.pobj.name = newname
 		D.pobj.planetType = newname
@@ -686,6 +707,7 @@ mob/proc/pspace_ctx_set() //chamado no mob/Write (roda em TODO save)
 		var/datum/pspace_planet/D = pspace_planets[pn]
 		if(D && D.surface_z == z)
 			pspace_ctx_planet = D.name
+			pspace_sleeper_mark(D.name) //o boot pre-aquece os mundos com gente dormindo
 			return
 	var/datum/space_sector/S = pspace_sector_for_z(z)
 	if(S && !S.is_home)
@@ -725,6 +747,123 @@ proc/pspace_login_restore(mob/M)
 			if(!M || !M.client || !S || !S.z) return
 			M.loc = locate(max(2, min(PSPACE_SIZE - 1, tx)), max(2, min(PSPACE_SIZE - 1, ty)), S.z)
 			to_chat(M, "<font color=#88ccff>Voce desperta a deriva em <b>[S.name]</b> ([S.sx], [S.sy]).</font>")
+
+// ---------------------------------------------------------------------------
+// CACHE DE CONSTRUCOES ("PlanetCache"): o TERRENO regenera da seed (deterministico,
+// ~5s -- mais rapido que carregar .dmm), mas o que os JOGADORES construiram
+// (turf/build + obj/buildables) e salvo FLAT por planeta e re-aplicado apos
+// cada regeneracao. Snapshot: no unload do pool, no shutdown e a cada 5 min.
+// ---------------------------------------------------------------------------
+proc/pspace_builds_snapshot(datum/pspace_planet/D)
+	if(!D || !D.surface_z) return
+	var/list/tdata = list()
+	for(var/turf/build/T in turfsave) //todo turf construido entra na turfsave (buildable.dm)
+		if(T.z != D.surface_z) continue
+		tdata += list(list("[T.type]", T.x, T.y, T.icon, "[T.icon_state]", T.density, T.opacity, "[T.proprietor]", T.Resistance))
+	var/list/odata = list()
+	for(var/obj/buildables/O in obj_list)
+		if(!O || O.z != D.surface_z) continue
+		odata += list(list("[O.type]", O.x, O.y, O.icon, "[O.icon_state]", O.density, O.dir, "[O.name]", "[O.proprietor]"))
+	if(!tdata.len && !odata.len && !fexists("PlanetCache")) return //nada a salvar e nada salvo antes
+	var/savefile/S = new("PlanetCache")
+	S["b_[D.name]"] << tdata
+	S["o_[D.name]"] << odata
+
+proc/pspace_builds_restore(datum/pspace_planet/D)
+	if(!D || !D.surface_z || !fexists("PlanetCache")) return
+	var/savefile/S = new("PlanetCache")
+	var/list/tdata = null
+	var/list/odata = null
+	S["b_[D.name]"] >> tdata
+	S["o_[D.name]"] >> odata
+	var/n = 0
+	if(islist(tdata))
+		for(var/list/e in tdata)
+			if(!islist(e) || e.len < 9) continue
+			var/tp = text2path(e[1])
+			if(!tp) continue
+			var/turf/base = locate(e[2], e[3], D.surface_z)
+			if(!base) continue
+			var/uic = base.icon //o chao regenerado vira o underlay (mesma logica do BuildATileHere)
+			var/ust = base.icon_state
+			var/turf/build/T = new tp(locate(e[2], e[3], D.surface_z))
+			T.icon = e[4]
+			T.icon_state = e[5]
+			T.density = e[6]
+			T.opacity = e[7]
+			T.proprietor = e[8]
+			T.Resistance = e[9]
+			T.underlays += image(uic, icon_state = ust)
+			turfsave.Add(T)
+			n++
+	if(islist(odata))
+		for(var/list/e in odata)
+			if(!islist(e) || e.len < 9) continue
+			var/tp = text2path(e[1])
+			if(!tp) continue
+			var/obj/O = new tp(locate(e[2], e[3], D.surface_z))
+			O.icon = e[4]
+			O.icon_state = e[5]
+			O.density = e[6]
+			O.dir = e[7]
+			O.name = e[8]
+			O.proprietor = e[9]
+			n++
+	if(n) WriteToLog("debug","pspace: [n] construcoes restauradas em [D.name]")
+
+proc/pspace_builds_migrate(oldname, newname) //planeta batizado: o cache muda de chave
+	if(!fexists("PlanetCache")) return
+	var/savefile/S = new("PlanetCache")
+	var/list/tdata = null
+	var/list/odata = null
+	S["b_[oldname]"] >> tdata
+	S["o_[oldname]"] >> odata
+	if(islist(tdata)) S["b_[newname]"] << tdata
+	if(islist(odata)) S["o_[newname]"] << odata
+	S.dir.Remove("b_[oldname]")
+	S.dir.Remove("o_[oldname]")
+
+proc/pspace_shutdown_save() //shutdown: snapshot de toda superficie carregada
+	for(var/pn in pspace_planets)
+		var/datum/pspace_planet/D = pspace_planets[pn]
+		if(D && D.surface_z && !D.generating) pspace_builds_snapshot(D)
+
+world/Del()
+	pspace_shutdown_save()
+	..()
+
+proc/pspace_cache_ticker() //snapshot periodico (crash do servidor nao come a casa de ninguem)
+	set waitfor = 0
+	while(1)
+		sleep(3000) //5 min
+		for(var/pn in pspace_planets)
+			var/datum/pspace_planet/D = pspace_planets[pn]
+			if(D && D.surface_z && !D.generating)
+				pspace_builds_snapshot(D)
+				sleep(5)
+
+// ---- PLANETAS COM "DORMINHOCOS": pre-aquece no BOOT os mundos onde jogadores
+// deslogaram -- quando eles voltarem, o retorno e instantaneo ----
+var/list/pspace_sleepers = list() //nomes; persiste no "Galaxy"
+
+proc/pspace_sleeper_mark(pname)
+	if(!pname) return
+	if(pname in pspace_sleepers) return
+	pspace_sleepers += pname
+	if(pspace_sleepers.len > 12) pspace_sleepers.Cut(1, 2) //mantem os 12 mais recentes
+	pspace_save()
+
+proc/pspace_boot_pregen()
+	set waitfor = 0
+	var/n = 0
+	for(var/pname in pspace_sleepers.Copy())
+		var/datum/pspace_planet/D = pspace_planets[pname]
+		if(!D || D.surface_z || (D.name in PlanetDisableList)) continue
+		if(D.sector) pspace_get_sector(D.sector.sx, D.sector.sy)
+		pspace_gen_request(D, null) //ritmo leve: o boot nao sente
+		while(D && D.generating) sleep(20)
+		n++
+		if(n >= 6) break //nao ocupa o pool inteiro com pre-aquecimento
 
 // ---- DLL DE TERRENO (jandirus_noise.dll, fonte em Tools\jandirus_noise.c) ----
 //fBm de 4 oitavas em C: classifica o mapa INTEIRO (250k tiles) numa chamada (~15ms vs
@@ -1067,6 +1206,7 @@ proc/pspace_generate_surface(datum/pspace_planet/D)
 		E.loc = spot
 		D.spawned += E
 	npcspawnson = oldspawns
+	pspace_builds_restore(D) //re-aplica as construcoes dos jogadores por cima do terreno
 	WriteToLog("debug","pspace: superficie de [D.name] ([B[1]]) gerada em [(world.time - gen_t0) / 10]s ([D.spawned.len] objs)")
 
 // ---------------------------------------------------------------------------
