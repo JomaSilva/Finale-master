@@ -17,8 +17,8 @@ mob/Debug/verb/spawnNPC()
 	var/Choice=input("Spawn What?") in list1
 	var/mob/M = new Choice
 	M.loc = locate(x,y-1,z)
-mob/Debug/verb/Profile_Servidor()
-	set category = "Debug"
+mob/Admin3/verb/Profile_Servidor() //Admin3 direto (nao exige o toggle AddDebugCommands) e categoria Admin: e a aba que existe no painel
+	set category = "Admin"
 	set desc = "Perfila o servidor por 60s e mostra o TOP de CPU (tambem vai pro DEBUG.log)"
 	to_chat(usr, "<b>Perfilando o servidor por 60 segundos... (Lag-O-Meter agora: [world.cpu]%)</b>")
 	world.Profile(PROFILE_START)

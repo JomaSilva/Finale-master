@@ -764,7 +764,7 @@ proc/pspace_login_restore(mob/M)
 // (turf/build + obj/buildables) e salvo FLAT por planeta e re-aplicado apos
 // cada regeneracao. Snapshot: no unload do pool, no shutdown e a cada 5 min.
 // ---------------------------------------------------------------------------
-proc/pspace_builds_snapshot(datum/pspace_planet/D)
+proc/pspace_builds_snapshot(datum/pspace_planet/D, list/pre_objs = null)
 	if(!D || !D.surface_z) return
 	var/list/tdata = list()
 	for(var/turf/build/T in turfsave) //todo turf construido entra na turfsave (buildable.dm)
@@ -774,7 +774,9 @@ proc/pspace_builds_snapshot(datum/pspace_planet/D)
 	var/list/pdata = list() //plantacoes (com estagio de crescimento)
 	var/list/rdata = list() //arvores plantadas
 	var/list/vdata = list() //naves/pods estacionados
-	for(var/obj/O in obj_list)
+	//pre_objs: o cache_ticker passa a lista JA filtrada do z (varrer a obj_list inteira POR
+	//planeta custava ~100ms x N planetas residentes = solavanco de segundos a cada 5 min)
+	for(var/obj/O in (islist(pre_objs) ? pre_objs : obj_list))
 		if(!O || O.z != D.surface_z || O.pspace_wild) continue //flora do TERRENO renasce da seed
 		if(istype(O, /obj/buildables))
 			odata += list(list("[O.type]", O.x, O.y, O.icon, "[O.icon_state]", O.density, O.dir, "[O.name]", "[O.proprietor]"))
@@ -896,10 +898,21 @@ proc/pspace_cache_ticker() //snapshot periodico (crash do servidor nao come a ca
 	set waitfor = 0
 	while(1)
 		sleep(3000) //5 min
+		//UMA varredura da obj_list para TODOS os planetas (por planeta era ~100ms x N residentes)
+		var/list/perz = list() //"z" -> objs de jogador naquele z
+		var/i = 0
+		for(var/obj/O in obj_list)
+			if(++i % 8192 == 0) sleep(world.tick_lag) //nunca segura o tick
+			if(!O || O.pspace_wild || !O.z) continue
+			if(istype(O, /obj/buildables) || istype(O, /obj/Plants) || istype(O, /obj/Trees) || istype(O, /obj/Spacepod))
+				var/k = "[O.z]"
+				if(!perz[k]) perz[k] = list()
+				var/list/L = perz[k]
+				L += O
 		for(var/pn in pspace_planets)
 			var/datum/pspace_planet/D = pspace_planets[pn]
 			if(D && D.surface_z && !D.generating)
-				pspace_builds_snapshot(D)
+				pspace_builds_snapshot(D, perz["[D.surface_z]"] || list())
 				sleep(5)
 
 // ---- STARTUP: no boot do servidor, gera a superficie de TODOS os planetas ja

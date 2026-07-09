@@ -162,7 +162,9 @@ mob/proc/BuildStatsHTML()
 		if("Skills")   h += ui_tab_verbs("Skills")
 		if("Other")    h += ui_tab_verbs("Other")
 		if("Learning") h += ui_tab_verbs("Learning")
-		if("Admin")    h += ui_tab_verbs("Admin")
+		if("Admin")
+			h += ui_tab_verbs("Admin")
+			if(debugCommandsadded) h += ui_tab_verbs("Debug") //verbs de debug (AddDebugCommands) na mesma aba: a categoria Debug nao tem aba propria
 		else
 			if(html_skill_tabs && (statsUItab in html_skill_tabs)) h += render_skill_tab(statsUItab)
 			else h += ui_tab_stats()

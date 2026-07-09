@@ -1,4 +1,5 @@
 mob/OnStep()
+	if(!grabMode) return //passo comum (99.9% dos casos): sem agarrao nao ha nada a fazer -- o spawn incondicional criava um proc por PASSO de cada mob do mundo
 	spawn
 		if(grabMode==1)
 			if(grabbee)
