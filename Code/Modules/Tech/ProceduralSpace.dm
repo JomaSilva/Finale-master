@@ -207,15 +207,15 @@ var/list/pspace_name_b = list("da","ko","ri","mu","ta","ze","no","va","li","sha"
 var/list/pspace_name_c = list("nia","los","dar","mia","tek","rus","via","don","xis","prime","IV","VII","Menor","Maior","X")
 
 //biomas -- indices da linha:
-// [1] nome | [2] tint planicie | [3] tint flora | [4] inimigo | [5] tint agua ("LAVA" = Water7)
-// [6] tint colina | [7] tint montanha | [8] arvores (lista) | [9] plantas colhiveis | [10] mult de minerio
+// [1] nome | [2] tint planicie | [3] tint flora (30% das copas) | [4] inimigo | [5] tint agua ("LAVA" = Water7)
+// [6] tint colina | [7] tint montanha | [8] POOL de arvores (o kit sorteia 1-2 especies POR PLANETA) | [9] plantas colhiveis | [10] mult de minerio
 var/list/pspace_biomes = list(
-	list("Verdejante", "#ffffff", "#ffffff", /mob/npc/Enemy/Small_Saibaman, "#ffffff", "#c9d69a", "#9a9a8a", list(/obj/Trees/SmallTree), list(/obj/Plants/Orange), 1),
-	list("Gelido", "#bcd8f0", "#9fc4e8", /mob/npc/Enemy/Dragon, "#bfe8ff", "#a8c4e0", "#dfeaf5", list(/obj/Trees/SmallTree), list(), 1),
+	list("Verdejante", "#ffffff", "#ffffff", /mob/npc/Enemy/Small_Saibaman, "#ffffff", "#c9d69a", "#9a9a8a", list(/obj/Trees/SmallTree, /obj/Trees/pspace/GoodTree, /obj/Trees/pspace/PineTree, /obj/Trees/pspace/JungleTree, /obj/Trees/Oaktree), list(/obj/Plants/Orange), 1),
+	list("Gelido", "#bcd8f0", "#9fc4e8", /mob/npc/Enemy/Dragon, "#bfe8ff", "#a8c4e0", "#dfeaf5", list(/obj/Trees/pspace/SnowTree, /obj/Trees/pspace/PineTree, /obj/Trees/SmallTree), list(), 1),
 	list("Deserto", "#e8cf7a", "#d8b860", /mob/npc/Enemy/Rat, "#8fd0c8", "#d8b860", "#b89848", list(/obj/Trees/PalmTree1), list(/obj/Plants/Opuntia), 1),
-	list("Vulcanico", "#d8836a", "#7a5040", /mob/npc/Enemy/Dragon, "LAVA", "#b86048", "#6a4038", list(/obj/Trees/SmallTree), list(), 2),
-	list("Alienigena", "#c9a0e8", "#a878d8", /mob/npc/Enemy/Small_Saibaman, "#b080e0", "#a878d8", "#7858a8", list(/obj/Trees/SmallTree), list(/obj/Plants/Orange), 1),
-	list("Sombrio", "#8a93a8", "#6a7388", /mob/npc/Enemy/Zombie, "#5a6378", "#6a7388", "#4a5368", list(/obj/Trees/SmallTree), list(), 2))
+	list("Vulcanico", "#d8836a", "#7a5040", /mob/npc/Enemy/Dragon, "LAVA", "#b86048", "#6a4038", list(/obj/Trees/pspace/AshTree, /obj/Trees/pspace/CrimsonTree), list(), 2),
+	list("Alienigena", "#c9a0e8", "#a878d8", /mob/npc/Enemy/Small_Saibaman, "#b080e0", "#a878d8", "#7858a8", list(/obj/Trees/pspace/NamekTall, /obj/Trees/pspace/NamekTall2, /obj/Trees/pspace/NamekSmall, /obj/Trees/pspace/TealTree, /obj/Trees/pspace/AlienShroom), list(/obj/Plants/Orange), 1),
+	list("Sombrio", "#8a93a8", "#6a7388", /mob/npc/Enemy/Zombie, "#5a6378", "#6a7388", "#4a5368", list(/obj/Trees/pspace/CrimsonTree, /obj/Trees/pspace/AshTree, /obj/Trees/SmallTree), list(), 2))
 
 var/list/pspace_planet_states = list("Earth", "Namek", "Vegeta", "Arlia", "Arconia", "Icer Planet")
 
@@ -799,61 +799,130 @@ proc/pspace_generate_surface(datum/pspace_planet/D)
 	var/list/gr_verde = list("Grass1","Grass2","Grass3","Grass4","Grass5","Grass6","Grass14") //Grass19/20 sao BRANCOS (neve): salpicavam branco na planicie
 	var/list/gr_terra = list("Ground1","Ground2","Ground4","Ground6","Ground7","Ground8","Ground9","Ground12","Ground13","Ground16")
 	var/list/gr_gelo = list("GroundIce1","GroundIce2","GroundIce3","GroundSnow1")
-	var/list/wa_states = list("1","2","3","5","6","8","9","10","11","12","13")
+	var/list/wa_states = list("1","2","3","6","9","10","12","13") //so os AZUIS: os states 5 (lilas), 8 (verde neon) e 11 (cinza) sem tint pareciam chao -- cor exotica vem do cross-mix/alien
 	var/plains_icon = 'Grass.dmi'
 	var/list/plains_states = gr_verde
 	var/plains_tint = null
 	var/hill_icon = 'Ground.dmi'
 	var/list/hill_states = gr_terra
 	var/hill_tint = null
+	var/beach_icon = 'Ground.dmi'
+	var/list/beach_states = list("Ground2","Ground7","Ground8")
 	var/beach_tint = null
+	var/water_icon = 'Waters.dmi'
 	var/water_tint = null
 	var/water_lava = 0
 	var/mount_tint = B[7]
 	var/tree_prob = PSURF_TREE_PROB //densidade de arvores por bioma (mundo-jardim = floresta; deserto = rara)
+	//cada bioma sorteia uma FAMILIA de terreno (assets reais de Icons/Turfs) -- planetas do
+	//mesmo bioma variam de verdade: deserto dourado vs vermelho, mundo Namek vs grama tintada...
 	switch(B[1])
 		if("Verdejante")
 			tree_prob = PSURF_TREE_PROB * 2 //mundo-jardim tipo Terra: bem arborizado
-			if(R.next(10) <= 3) plains_tint = pspace_gen_tint(R) //30%: vegetacao de outro mundo
+			switch(R.next(10))
+				if(1 to 6) //gramados canonicos da Terra (Grass.dmi)
+				if(7 to 8) //grama fechada de selva
+					plains_icon = 'Turfs 2.dmi'
+					plains_states = list("grass")
+				else //vegetacao de outro mundo (tint)
+					plains_tint = pspace_gen_tint(R)
 		if("Gelido")
-			if(R.next(10) <= 6) //60% gelo/neve REAIS (sem tint); 40% "tundra" verde-azulada
-				plains_states = gr_gelo
-				plains_icon = 'Ground.dmi'
-				hill_states = gr_gelo
-				hill_tint = "#dfeaf5"
-			else
-				plains_tint = "#bcd8f0"
-				hill_tint = "#a8c4e0"
 			water_tint = "#bfe8ff"
 			beach_tint = "#cfe0ee"
+			hill_tint = "#dfeaf5"
+			switch(R.next(10))
+				if(1 to 4) //gelo/neve canonicos
+					plains_icon = 'Ground.dmi'
+					plains_states = gr_gelo
+					hill_states = gr_gelo
+				if(5 to 7) //NEVE profunda a perder de vista
+					plains_icon = 'Turf Snow.dmi'
+					plains_states = list("Middle snow")
+					hill_states = gr_gelo
+				else //tundra azulada
+					plains_tint = "#bcd8f0"
+					hill_tint = "#a8c4e0"
 		if("Deserto")
-			plains_icon = 'Ground.dmi' //deserto = TERRA/areia de verdade, nao grama pintada
-			plains_states = gr_terra
 			tree_prob = 1 //palmeiras raras (oasis)
-			if(R.next(10) <= 5) plains_tint = "#e8cf7a"
-			hill_tint = "#c8a858"
-			beach_tint = "#e0c070"
+			switch(R.next(10))
+				if(1 to 4) //deserto DOURADO (Dirt.dmi: familias de areia)
+					plains_icon = 'Dirt.dmi'
+					plains_states = list("Sand2","Sand3","Sand5","Sand7")
+					hill_icon = 'Dirt.dmi'
+					hill_states = list("Dirt1","Dirt5","Dirt6")
+					beach_tint = "#e0c070"
+				if(5 to 7) //deserto VERMELHO marciano
+					plains_icon = 'Dirt.dmi'
+					plains_states = list("Sand9","Sand14","Sand16")
+					hill_icon = 'Dirt.dmi'
+					hill_states = list("Dirt3","Dirt6","Dirt12")
+					beach_tint = "#c88858"
+					mount_tint = "#8a5040"
+				else //terra batida classica
+					plains_icon = 'Ground.dmi'
+					plains_states = gr_terra
+					if(R.next(10) <= 5) plains_tint = "#e8cf7a"
+					hill_tint = "#c8a858"
+					beach_tint = "#e0c070"
 		if("Vulcanico")
-			plains_icon = 'Ground.dmi'
-			plains_states = gr_terra
 			tree_prob = 1 //quase esteril
-			plains_tint = (R.next(10) <= 5) ? "#b87858" : "#8a6a5a"
-			hill_tint = "#7a5040"
 			water_lava = 1
-		if("Alienigena") //aqui o TINT forte E a identidade
-			if(R.next(10) <= 5)
-				plains_icon = 'Ground.dmi'
-				plains_states = gr_terra
-			plains_tint = pspace_gen_tint(R)
-			hill_tint = pspace_gen_tint(R)
-			water_tint = pspace_gen_tint(R)
+			switch(R.next(10))
+				if(1 to 4) //planicies de CINZA (Turfs1.dmi)
+					plains_icon = 'Turfs1.dmi'
+					plains_states = list("ash","ash2","ash3","ash4","ash5")
+					hill_icon = 'Turfs1.dmi'
+					hill_states = list("hellground","hellground2","hellground3","hellground4","hellground5")
+					beach_icon = 'Turfs1.dmi'
+					beach_states = list("dirt","dirt2","dirt3")
+				if(5 to 7) //rocha infernal com veios de lava fria
+					plains_icon = 'Turfs1.dmi'
+					plains_states = list("hellground","hellground2","hellground3","hellground4","hellground5")
+					hill_icon = 'Turfs1.dmi'
+					hill_states = list("lava","lava2","lava3","lava4","lava5") //rocha de lava ESCURA (o liquido e o lago)
+					beach_icon = 'Turfs1.dmi'
+					beach_states = list("ash","ash2","ash3")
+				else //terra tostada classica
+					plains_icon = 'Ground.dmi'
+					plains_states = gr_terra
+					plains_tint = (R.next(10) <= 5) ? "#b87858" : "#8a6a5a"
+					hill_tint = "#7a5040"
+		if("Alienigena")
+			switch(R.next(10))
+				if(1 to 4) //mundo estilo NAMEK: grama teal + agua VERDE animada
+					plains_icon = 'Turfs 2.dmi'
+					plains_states = list("ngrass")
+					water_icon = 'Turfs 2.dmi'
+					wa_states = list("nwater")
+					hill_tint = "#4a9890"
+				if(5 to 7) //grama de cor impossivel (tint forte E a identidade)
+					plains_tint = pspace_gen_tint(R)
+					hill_tint = pspace_gen_tint(R)
+					water_tint = pspace_gen_tint(R)
+				else //solo estranho tintado
+					plains_icon = 'Ground.dmi'
+					plains_states = gr_terra
+					plains_tint = pspace_gen_tint(R)
+					hill_tint = pspace_gen_tint(R)
+					water_tint = pspace_gen_tint(R)
 		if("Sombrio")
-			if(R.next(10) <= 5)
-				plains_icon = 'Ground.dmi'
-				plains_states = gr_terra
-			plains_tint = "#8a93a8"
-			hill_tint = "#5a6378"
 			water_tint = "#4a5368"
+			switch(R.next(10))
+				if(1 to 4) //rocha escura morta (Turfs1.dmi)
+					plains_icon = 'Turfs1.dmi'
+					plains_states = list("hellground","hellground2","hellground3","hellground4","hellground5")
+					hill_icon = 'Turfs1.dmi'
+					hill_states = list("ash","ash2","ash3")
+					beach_icon = 'Turfs1.dmi'
+					beach_states = list("dirt","dirt2")
+				if(5 to 7) //grama morta acinzentada
+					plains_tint = "#8a93a8"
+					hill_tint = "#5a6378"
+				else //terra palida
+					plains_icon = 'Ground.dmi'
+					plains_states = gr_terra
+					plains_tint = "#8a93a8"
+					hill_tint = "#5a6378"
 	//CROSS-MIX: ~25% dos planetas roubam a AGUA de outro mundo (agua rosa no deserto etc.)
 	if(!water_lava && R.next(100) <= 25) water_tint = pspace_gen_tint(R)
 	if(R.next(100) <= 20) mount_tint = pspace_gen_tint(R) //montanhas de rocha exotica
@@ -863,9 +932,15 @@ proc/pspace_generate_surface(datum/pspace_planet/D)
 	var/plains_alt = R.pickfrom(plains_states)
 	var/hill_main = R.pickfrom(hill_states)
 	var/hill_alt = R.pickfrom(hill_states)
-	var/beach_state = R.pickfrom(list("Ground2","Ground7","Ground8")) //UM tipo de areia por planeta (era 3 por tile = xadrez)
+	var/beach_state = R.pickfrom(beach_states) //UM tipo de areia por planeta (era 3 por tile = xadrez)
 	var/wsa = R.pickfrom(wa_states) //1 visual de agua dominante + 1 raro
 	var/wsb = R.pickfrom(wa_states)
+	//ARVORES: 1 especie principal + 1 acento POR PLANETA (do pool do bioma); 30% das copas
+	//ganham a cor da flora do bioma (Alienigena: cor impossivel aleatoria)
+	var/tree_main = R.pickfrom(B[8])
+	var/tree_alt = R.pickfrom(B[8])
+	var/tree_tint = null
+	if(R.next(10) <= 3) tree_tint = (B[1] == "Alienigena") ? pspace_gen_tint(R) : B[3]
 	var/list/landspots = list() //amostra de tiles de planicie (spawn de inimigo/pouso)
 	var/bestd = 999999 //tile de terra mais perto do centro = ponto de pouso
 	var/ctr = round(PSURF_SIZE / 2)
@@ -901,11 +976,11 @@ proc/pspace_generate_surface(datum/pspace_planet/D)
 				var/turf/T = new/turf/Other/Stars_Exit(locate(xx, yy, D.surface_z)) //borda do planetoide: da a VOLTA (wrap)
 				switch(tc) //VISUAL da classe do noise (o contorno uniforme destoava do terreno vizinho)
 					if(1)
-						T.icon = 'Waters.dmi'
+						T.icon = water_lava ? 'Waters.dmi' : water_icon
 						T.icon_state = water_lava ? "7" : wsa
 						if(!water_lava && water_tint) T.color = water_tint
 					if(2)
-						T.icon = 'Ground.dmi'
+						T.icon = beach_icon
 						T.icon_state = beach_state
 						T.color = beach_tint ? beach_tint : hill_tint
 					if(3)
@@ -927,10 +1002,12 @@ proc/pspace_generate_surface(datum/pspace_planet/D)
 					T = new/turf/Water/Water7(locate(xx, yy, D.surface_z))
 				else
 					T = new/turf/Water(locate(xx, yy, D.surface_z))
+					T.icon = water_icon //familias exoticas (nwater de Namek etc.)
 					T.icon_state = (R.next(100) <= 90) ? wsa : wsb //agua dominante + detalhe raro
 					if(water_tint) T.color = water_tint
 			else if(tc == 2) //margem de terra batida (UM tipo de areia por planeta)
 				T = new/turf/Ground(locate(xx, yy, D.surface_z))
+				T.icon = beach_icon
 				T.icon_state = beach_state
 				if(beach_tint) T.color = beach_tint
 				else T.color = hill_tint
@@ -948,9 +1025,9 @@ proc/pspace_generate_surface(datum/pspace_planet/D)
 					landspots += locate(xx, yy, D.surface_z) //amostra ~0.7% (mundo 500x500: manter a lista pequena)
 					if(D.land_spots.len < 15) D.land_spots += (xx * 1000 + yy) //candidatos de pouso seguro
 				if(R.next(100) <= tree_prob)
-					var/ttype = R.pickfrom(B[8])
+					var/ttype = (R.next(100) <= 85) ? tree_main : tree_alt //1 especie dominante + acento
 					var/obj/tr = new ttype(locate(xx, yy, D.surface_z))
-					tr.color = B[3]
+					if(tree_tint) tr.color = tree_tint
 					D.spawned += tr
 				else if(islist(B[9]) && B[9]:len && R.next(100) <= PSURF_PLANT_PROB)
 					var/ptype = R.pickfrom(B[9])
@@ -967,9 +1044,9 @@ proc/pspace_generate_surface(datum/pspace_planet/D)
 					else ore = new/obj/Raw_Material/Ore(locate(xx, yy, D.surface_z))
 					D.spawned += ore
 				else if(R.next(100) <= tree_prob * 2)
-					var/ttype = R.pickfrom(B[8])
+					var/ttype = (R.next(100) <= 85) ? tree_main : tree_alt
 					var/obj/tr = new ttype(locate(xx, yy, D.surface_z))
-					tr.color = B[3]
+					if(tree_tint) tr.color = tree_tint
 					D.spawned += tr
 			else //montanha: parede densa sobrevoavel (Void_Wall era PRETO + opacity: zonas pretas)
 				T = new/turf/pspace_mountain(locate(xx, yy, D.surface_z))

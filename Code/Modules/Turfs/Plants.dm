@@ -127,6 +127,49 @@ obj/Trees
 				if(M.flight) return 1
 				else return
 			else return 1
+	//---- ARVORES DOS PLANETAS PROCEDURAIS (ProceduralSpace.dm) ----
+	//icones REAIS de Icons/Trees que nao tinham obj: variedade de copa por bioma.
+	//Densas e sobrevoaveis (mesmo padrao das demais arvores)
+	pspace
+		density = 1
+		Enter(mob/M)
+			if(istype(M,/mob))
+				if(M.flight) return 1
+				else return
+			else return 1
+		GoodTree //copa verde densa (mundo-jardim)
+			icon = 'Tree Good.dmi'
+			icon_state = "0"
+		PineTree //pinheiro alto
+			icon = 'Pine.dmi'
+			icon_state = "1"
+		JungleTree //copa larga de selva
+			icon = 'tree1.dmi'
+			icon_state = "tree"
+		SnowTree //copa nevada
+			icon = 'Tree Snow.dmi'
+			icon_state = ""
+		NamekTall //arvore alta estilo Namek
+			icon = 'NamekTrees.dmi'
+			icon_state = "A 1"
+		NamekTall2 //variante mais larga
+			icon = 'NamekTrees2.dmi'
+			icon_state = "A 1"
+		NamekSmall //muda azulada
+			icon = 'Namek Tree.dmi'
+			icon_state = ""
+		TealTree //copa ciano alienigena
+			icon = 'Tree Teal.dmi'
+			icon_state = ""
+		AlienShroom //cogumelo gigante
+			icon = 'Mushroom12013.dmi'
+			icon_state = ""
+		CrimsonTree //copa vermelho-sangue
+			icon = 'Tree Red.dmi'
+			icon_state = ""
+		AshTree //arvore seca de mundo queimado
+			icon = 'RedTree.dmi'
+			icon_state = ""
 	PalmTreeRight
 		icon='Palm.dmi'
 		icon_state="1"
