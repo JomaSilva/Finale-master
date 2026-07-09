@@ -3,7 +3,7 @@ turf/proc/Destroy()
 	set waitfor = 0
 	if(src.destroyable)//need to overhaul building anyway w-wew
 		sleep(2)
-		if(prob(25)) createDust(loc,1)
+		if(prob(25)) createDust(src,1) //src (o TILE), nao loc: loc de turf e a AREA -- a poeira nascia invisivel dentro dela
 		var/area/currentArea = GetArea()
 		//var/hasgravity = src.gravity
 		var/turf/T = new/turf/Ground/Ground8(locate(x,y,z))

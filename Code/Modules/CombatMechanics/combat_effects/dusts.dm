@@ -1,6 +1,9 @@
 proc/createDust(loc,magnitude)
 	set waitfor = 0
 	set background = 1
+	var/turf/dT = loc
+	if(!istype(dT)) return //loc de AREA/null criava objs invisiveis (turf/Destroy passava a area ha anos)
+	if(!z_has_client(dT.z)) return //efeito visual sem testemunha = trabalho jogado fora
 	while(magnitude >= 1)
 		magnitude--
 		if(prob(35)) spawn new/obj/Dust(loc)
@@ -22,6 +25,8 @@ proc/createDustmisc(loc,s)
 proc/createDustshock(loc,magnitude)
 	set waitfor = 0
 	set background = 1
+	var/turf/dT = loc
+	if(!istype(dT) || !z_has_client(dT.z)) return
 	var/list/dirlist = list(NORTH,SOUTH,EAST,WEST,NORTHEAST,SOUTHEAST,NORTHWEST,SOUTHWEST)
 	while(magnitude >= 1)
 		magnitude--

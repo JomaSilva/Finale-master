@@ -17,6 +17,33 @@ mob/Debug/verb/spawnNPC()
 	var/Choice=input("Spawn What?") in list1
 	var/mob/M = new Choice
 	M.loc = locate(x,y-1,z)
+mob/Debug/verb/Profile_Servidor()
+	set category = "Debug"
+	set desc = "Perfila o servidor por 60s e mostra o TOP de CPU (tambem vai pro DEBUG.log)"
+	to_chat(usr, "<b>Perfilando o servidor por 60 segundos... (Lag-O-Meter agora: [world.cpu]%)</b>")
+	world.Profile(PROFILE_START)
+	spawn(600)
+		var/pjson = world.Profile(PROFILE_REFRESH, format = "json")
+		world.Profile(PROFILE_STOP)
+		if(!istext(pjson))
+			to_chat(usr, "Profiler indisponivel nesta versao do BYOND.")
+			return
+		text2file(pjson, "profile_live_[world.realtime].json") //JSON completo pra analise fina
+		var/list/data = json_decode(pjson)
+		if(!islist(data)) return
+		var/r = "== PROFILE 60s (cpu final [world.cpu]%): top 15 por CPU propria =="
+		var/list/used = list()
+		for(var/i = 1 to 15)
+			var/list/best = null
+			for(var/list/p in data)
+				if(p in used) continue
+				if(!best || p["self"] > best["self"]) best = p
+			if(!best || best["self"] <= 0) break
+			used += list(best)
+			r += "\n[best["self"]]s self | [best["calls"]] calls | [best["name"]]"
+		WriteToLog("debug", r)
+		to_chat(usr, "<font color=#e8b64c><pre>[r]</pre></font>")
+
 mob/Debug/verb/Start_Cleaner()
 	set category = "Debug"
 	Cleaner()

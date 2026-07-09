@@ -8,6 +8,7 @@ mob
 	icon_state = "health_hud"
 	screen_loc = "EAST-2,NORTH-2"
 	mouse_opacity = 0
+	var/tmp/last_sig = "" //assinatura do ultimo redesenho (cache: ver update_icon)
 	New()
 		..() //the /obj/screen base New() applies a 3x2 stretch meant for the HP/Ki bars; reset so this 96x96 limb paperdoll renders at its native size instead of a giant distorted body
 		transform = matrix()
@@ -35,6 +36,13 @@ proc/health_hud_color(pct)
 	if(source)
 		savant = source
 	else return
+	//CACHE: o HudUpdate chama isto ~3x/s por player; reconstruir ~15 overlays sem NADA ter
+	//mudado era churn puro (CPU + re-envio de appearance pro client). So redesenha se mudou.
+	var/sig = "[round(savant.HP)]"
+	for(var/datum/Body/S in savant.body)
+		sig += "|[S.lopped ? "L" : round((S.health / max(S.maxhealth, 1)) * 100, 1)]"
+	if(sig == last_sig) return
+	last_sig = sig
 	overlays.Cut()
 	var/list/overlayList = list()
 	//SHAPE is a single uniform silhouette frame (the yellow "Slightly Injured" art, present + identical-shape on

@@ -67,6 +67,7 @@ mob/proc/GenerateAttackFlavorText(var/attacktype,var/mob/M as mob,var/customflav
 			M.OutputAttack(textstring,attackcolor)
 		else OutputAttack(textstring,attackcolor)
 mob/proc/OutputAttack(var/S as text, var/C)
+	if(!z_has_client(z)) return //flavor de golpe sem testemunha: economiza DOIS view() por ataque
 	if(src.attack_flavor) view(src)<<output("<font size=1 color=[C]>[S]!</font>","Chatpane.Chat") //src not usr: flavor is routed to the actor; usr is null/wrong for NPC attacks
 	else view(src)<<output("<font size=1 color=[C]>[S]!</font>","Attackpane.Chat")
 	chatcast(view(src), "<font color=[C]>[S]!</font>", "combat")
