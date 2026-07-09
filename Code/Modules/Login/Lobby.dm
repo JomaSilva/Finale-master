@@ -112,10 +112,16 @@ mob/lobby
 
 
 	proc/load(var/N)
+		if(!pspace_world_ready && world.time < 6000) //startup gerando os planetas (teto de 10 min: nunca tranca pra sempre)
+			to_chat(client, "<font color=#e8b64c><b>O universo ainda esta sendo gerado ([pspace_startup_progress])... aguarde alguns segundos e tente de novo.</b></font>")
+			return
 		if(client.LoadPlayer(GetSavePath(N)))
 		else to_chat(client, "Load failed!")
 
 	proc/create(var/N)
+		if(!pspace_world_ready && world.time < 6000)
+			to_chat(client, "<font color=#e8b64c><b>O universo ainda esta sendo gerado ([pspace_startup_progress])... aguarde alguns segundos e tente de novo.</b></font>")
+			return
 		if(winexists(usr,"characterpane[usr]"))
 			winshow(src,"characterpane[usr]",0)
 			winset(usr,"characterpane[usr]","parent=none")

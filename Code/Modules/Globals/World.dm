@@ -19,6 +19,7 @@ world
 		log = file("DEBUG.log")
 		world.status="<font color=#000000 size=1><b> Dragonball Jandirus: Hosting: [world.host], Main Fork version [gameversion] | [server_desc]</b></font>"
 		spawn(10) Initialize()
+		spawn(15) pspace_startup() //gera TODOS os planetas conhecidos antes de liberar o login (ProceduralSpace.dm)
 		spawn(50) AutoRevive()
 /*
 		spawn pixelproccess()
