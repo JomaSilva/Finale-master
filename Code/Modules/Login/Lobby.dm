@@ -137,6 +137,7 @@ mob
 		if(BlankPlayer)
 			return
 		loc = locate(xco,yco,zco)
+		pspace_login_restore(src) //dormiu num z procedural: o zco salvo ja era de outro mundo (ou nem existe) -- reconstroi e teleporta
 		checkclient
 		sleep(1)
 		if(client)
@@ -290,4 +291,5 @@ mob
 		yco = y
 		zco = z
 		storedname = name
+		pspace_ctx_set() //z de POOL procedural nao sobrevive a reboot/recycle: salva o CONTEXTO (planeta/setor) pro login reconstruir
 		..()

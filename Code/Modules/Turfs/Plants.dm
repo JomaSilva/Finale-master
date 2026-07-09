@@ -494,7 +494,7 @@ obj/Plants
 
 	New()
 		..()
-		src.Tick()
+		spawn src.Tick() //DESTACADO: chamado direto, o new() da planta so retornava quando ela MATURAVA (~60s) -- "set background" NAO libera o caller
 
 	verb/Pick()
 		set background = 1
@@ -534,7 +534,7 @@ obj/Plants
 		//procedurais mantinham um while eterno cada = lag permanente); o Harvest re-arma
 		if(ticking) return
 		ticking = 1
-		while(src && currentstage != maxstage)
+		while(src && loc && currentstage != maxstage) //&& loc: planta removida do mundo nao segura loop
 			if(Yearspeed==0||!Yearspeed)
 				Yearspeed=1
 			growthMeter += 1 * growthSpeed

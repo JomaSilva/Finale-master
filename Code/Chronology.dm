@@ -1,63 +1,59 @@
-
+//GUIA DO JOGO (verb "Guia do Jogo" na aba Other -- Communication.dm faz browse(Guide)).
+//Reescrito 2026-07-08 pro estado atual do jogo (o antigo era da base original, em ingles,
+//e descrevia mecanicas que nao existem mais). Texto sem acentos (padrao das strings DM).
 
 var/Guide={"
 <html>
-<head><title>Information</title></head><body><body bgcolor="black" text="#0099FF"><font size=2>
-<center><B><H1></H1></B><H3><font size=2><b>
-*Game Mechanics Overview*
-</center><font color=white>
-<p>First of all, this game aims to distance itself from other sources. Many things look similar, but are not. This guide will give you the BASICS.</p>
-<p>Some of the believed appeal is in discovering what is what.</p>
-<b>
-<p>PROTIP: TAKE YOUR TIME EXPLORING THE INTERFACE, TOP LEFT BAR HOLDS A LOT OF IMPORTANT STUFF.</p>
-<b>
-<p>1. Train!??!?!</p>
-    <p>Yes, you can train to get stronger. BP gain is based on averages and some calculations, configurable by admins. You can check your cap in the stats tab.</p>
-    <p>AFK Training is NOT effective. To get stronger, you should fight other people. You have some pity gains for AFK training, but don't expect to be the strongest by pressing K and popping in a movie.</p>
-<p>2. Nutrition (NT) and Stamina</p>
-    <p>This is probably your most valuable resource. Ki regens based off of this, your fighting skills degrade off of low stamina, so on. You want to keep this up, even if you're AFKing, because it even affects gains.</p>
-    <p>You can, and will find yourself taking damage at the lowest amount. You can train this up to roughly 200x your Willpower Mod. </p>
-<p>3. How do I increase these?</p>
-    <p>Food. That's about it. You can get a basic source via Tech, or getting a Fishing Pole and heading to the nearest body of water/lava/cloud. You can make this if there is none nearby (player made water works.)</p>
-    <p>You can cook food to increase its effectiveness, via campfire in the build tab. There are other food sources in the form of Wheat and Apples, Oputunias and oranges. You must find these.</p>
-<p>4. Progression? SSJ? Whaaaat?</p>
-    <p>Ki is grinding 101. You grind Ki by using it, or its abilities. SSJ is midgame, around 1-3 million. You can get it off of death anger. Admins may be upset on RP servers if you abuse anger :)</p>
-    <p>At 1-3 million, ascension hits. It's not instant, and it scales with your progression past 1 million. The classic cap for the first level of ascension for all races except Saiyans is 15x mult (modified further by your ascension mod)</p>
-    <p>MILESTONES ARE GAINED VIA RAW BP. EXPRESSED BP DOES NOT AFFECT GAINS. Be careful, your raw BP is generally what affects most points of progression and requirements.</p>
-    <p>Tech skill is capped based on averages. The higher your intelligence is, the higher your cap is and the faster you gain it.</p>
-    <p>The cap for Techskill in general is 100. If you go higher for some reason, you will not find new tech.</p>
-    <p><font color=red size=2>YOU INCREASE STATS BY GOING INTO THE LEARNING TAB, AND PRESSING LEARN SKILL, IT OPENS UP THE SKILL/TREE WINDOW. Explore it.</font></p>
-<p>5. Alright, bugs, questions?</p>
-    <p>First of all, quick disclaimer. The races descriptions are not completely accurate. This game aims to be more like a game based on the show, not a game with the show's elements.</p>
-    <p>There are some non-canon elements, some extensions to races, and stat modifications and frankly incorrect descriptions.</p>
-    <p>Races all have different things they're good at, but building is not end-all-be-all with these different things.</p>
-    <p>More powerful races have lower Milestone gains, lower stats, so on as expected. </p>
-<p>6. Do I get anything special for reading this guide?</p>
-    <p>Yes! Dungeons exist, and they have valuable loot. You get the special knowledge that they are incredibly good places to train and fight- but they are temporary. Do not dwaddle in them. Get a dungeon needle to find one.</p>
-<p>7. Rules? Anything else?</p>
-    <p>Not really? This guide only covers the basics. You'll have to figure out SSJ2, and SSJ3, and SSJ4 all on your own. Other race's transformations have special gimmicks too.</p>
-    <p>We generally have everything from Dragonball Z covered, so fusion, wishing, and even a really cool magic system. (Get four+ points into Spirit, get the Magic tree.)</p>
-    <p>A inquisitive mind will be a powerful mind.</p>
-    <p>Also, dash via Shift, makes you go faster in some circumstances, and lets you use heavy attacks.</p>
+<head><title>Guia do Jogo</title></head>
+<body bgcolor="#0d0f14" text="#cfd6e4" link="#6ab0f3">
+<font face="Segoe UI" size=2>
+<center><font color="#e8842c" size=5><b>DRAGONBALL JANDIRUS</b></font><br>
+<font color="#8a93a8" size=2>Guia rapido de mecanicas -- leia, explore, descubra</font></center>
+<hr color="#2a2f3a">
 
-<p>8. Stat explanations:</p>
-<p>Battle Power: (BP) for short. Affects how effective your stats are in comparison to other players. Some things are not based on BP, and can only be done via Stats.</p>
-<p>Stats are not how good you are at something neccessarily, stats are more your body's potential to do something. Stats cannot be trained. You get more stats via investing in skills</p>
-in the Learning tab, and slowly at that. You get around 50 or so stat points over the course of an entire wipe (balanced from 1 BP to 200 million BP. Mastery-type skills for post game to come later.)</p>
-<p>Health is not a static number either. Each limb has HP, which is averaged and calculated to be this number. It is a representation and it is unreliable. Someone can give you internal damage and HP will show 20-30%</p>
-<p>Stamina drains into Ki, which is used for attacks. Some attacks use Stamina directly. Your main concern with Stamina is that it's usually how long you can last in a fight.</p>
-<p>Emotions: Anger is a finite resource. It starts at 0, and then slowly, over the course of about four hours, refills to around 50%. By sparring, that maximum number goes up a bit (until you spend anger.) You can spend anger for a power boost, changing your emotion. Death instantly maxes out your anger to 100%.</p>
-<p>Physoff: More damage. Nuff said.</p>
-<p>Physdef: Takes down the damage you take. Can affect stuns.</p>
-<p>Speed: Movement speed, and also cooldowns.</p>
-<p>Kioff: More Ki damage, Ki effectiveness.</p>
-<p>Kidef: Takes down the Ki damage you take, and also affects Ki armor.</p>
-<p>Kiskill: Basically Technique but for Ki, affects cooldowns and the like. And damages. Do note that in Ki calculations, Technique and Kiskill CAN be added together.</p>
-<p>Technique: How often you dodge/hit, also affects damages.</p>
-<p>Esoteric skill:  Magic skill. Affects anything else not listed here, but only affects Magic right now.</p>
-<p>Intelligence: How much your Tech cap is, how effective your upgrading is, and how much Techskill you can gain.</p>
-<p>Gravity: All it does is increase BP by a small amount, and lets you withstand higher gravities. Training in high gravity gives you more gains.</p>
-<p>Milestones: Used for buying skills. Can be 'allocated' (no need to save Milestones, you can spend and allocate the same point) into Styles for customized stat increases.</p>
-<p>Buff/Aura/Form: You have limited buff slots. One for each type. Stack 'em wisely.</p>
-<p>Inventory Space: Can be increased by rare items, there are containers you can build.</p>
+<font color="#e8842c" size=3><b>1. Interface</b></font>
+<p>Quase tudo vive no <b>painel de Status</b> (abas: Stats, Items, Equip, Body, Forms, Ki, People, World, Skills, Learning, Other...) e no <b>chat com abas</b>. A barra superior esconde muita coisa -- explore com calma. Dash = <b>Shift</b> (mais rapido e libera golpes pesados).</p>
+
+<font color="#e8842c" size=3><b>2. Criacao e envelhecimento</b></font>
+<p>Cada raca tem forcas, formas e <b>expectativa de vida propria</b>: o auge (peak) varia de 50 anos (Humano) a milhares (Frost Demon 2000, Kai/Demonio 75000) -- Majin nao envelhece. Depois do auge o corpo decai e a morte por velhice chega perto de <b>1.5x o peak</b>. Classes (Elite, Legendary...) sao sorteadas por raridade. A historia (backstory) e obrigatoria.</p>
+
+<font color="#e8842c" size=3><b>3. Como ficar forte</b></font>
+<p>O ganho de BP e <b>LINEAR e individual</b>: uma base fixa multiplicada pelo seu BPMod e pelos seus <b>marcos</b> (virar SSJ, forma perfeita, God Ki... cada raca tem sua escada). Nada de media do servidor.</p>
+<p><b>Lutar &gt; treinar.</b> Treino AFK rende pouco. Sparring, cacar inimigos e sobreviver a lutas de verdade e o caminho. Ao ser <b>derrotado</b> voce recebe <b>Zenkai na hora</b> (proporcional ao BP do inimigo -- para de valer perto do BP de SSJ3). Combate desliga sua regeneracao: leve comida.</p>
+
+<font color="#e8842c" size=3><b>4. Gravidade</b></font>
+<p>Treinar em gravidade alta multiplica os ganhos, e o ganho conta a gravidade <b>absoluta</b> do lugar. MAS: acima da sua <b>maestria de gravidade</b> o planeta te esmaga -- voce anda muito mais devagar e TODO o corpo toma dano crescente (estilo Kaioken). Muito acima: desmaio... e desmaiar sozinho na gravidade mata. Absurdamente acima: o corpo <b>explode</b>. O Nav System mostra a gravidade dos planetas antes de pousar.</p>
+
+<font color="#e8842c" size=3><b>5. Nutricao, Stamina e Ki</b></font>
+<p>Nutricao e stamina alimentam TUDO: a regeneracao passiva de vida/Ki so funciona alimentado e descansado. Coma (pesca, frutas, plantas colhiveis, cozinhar em fogueira melhora a comida). Ki sobe usando Ki -- cargas, ataques, tecnicas. Stamina define quanto tempo voce aguenta uma luta.</p>
+
+<font color="#e8842c" size=3><b>6. Combate</b></font>
+<p>Golpes leves/pesados, bloqueio, esquiva e <b>mira por zonas do corpo</b>: cada membro tem HP proprio (o HP mostrado e uma media -- da pra quebrar por dentro). Membro vital quebrado = KO; destruido = morte; decepado e permanente. <b>KO'd fica exposto</b> (finalizacao). Raiva so cresce contra <b>inimigos de verdade</b> e explode em power boost. Beams em rota de colisao entram em <b>BeamClash</b> (disputa de forca com empurrao). Dois lutadores com Afterimage trocando golpes ao mesmo tempo = <b>ZanzoClash</b>. Fusao existe: BP = (A+B)x2, KO separa, 1h de cooldown.</p>
+
+<font color="#e8842c" size=3><b>7. Transformacoes</b></font>
+<p>Formas destravam por <b>BP BASE + gatilhos</b> (furia, morte, treino...). A maestria de forma vai de 0 a 100% em degraus: dominar reduz o dreno e libera o proximo estagio. Cada raca tem sua arvore (SSJ ate SSJ4, Lendario, formas do Frost, evolucao Bio, Majin puro, God Ki e alem) -- descobrir os gatilhos faz parte do jogo. Seu BP fica <b>oculto ("???")</b> pra quem nao tem scouter ou Sense.</p>
+
+<font color="#e8842c" size=3><b>8. Skills e Stats</b></font>
+<p>Aba <b>Learning &gt; Learn Skill</b> abre as arvores (Core, avancadas, raciais). Compra-se com <b>Milestones</b> (ganhos por marcos de BP e por tempo de jogo; podem tambem ser ALOCADOS em Styles sem gastar). Skills podem ser <b>ensinadas</b> a outros jogadores.</p>
+<p><font color="#8a93a8">Resumo: <b>Physoff/Physdef</b> dano/defesa fisica - <b>Speed</b> movimento e cooldowns - <b>Kioff/Kidef</b> dano/defesa de Ki - <b>Kiskill</b> tecnica de Ki - <b>Technique</b> acerto/esquiva - <b>Esoteric</b> magia - <b>Intelligence</b> teto de Tech - <b>Willpower</b> stamina/vontade.</font></p>
+
+<font color="#e8842c" size=3><b>9. O espaco e a galaxia infinita</b></font>
+<p>Alem dos planetas conhecidos (Terra, Vegeta, Namek...) existe uma <b>GALAXIA PROCEDURAL</b>: voando ate a borda do espaco voce cruza pra setores novos, cada um com planetas proprios -- bioma, gravidade, minerios nas colinas, plantas colhiveis e criaturas nativas (mata-las da karma positivo). Encoste a nave no planeta pra pousar. <b>As bordas de um planeta dao a volta nele</b> (e redondo!) -- sair e SO decolando de nave. O <b>Nav System</b> mostra o setor, os planetas (com gravidade e bioma!) e o mapa da galaxia.</p>
+<p><font color="#e8b64c"><b>Super Dragon Balls:</b></font> 7 esferas do tamanho de planetoides estao espalhadas pela galaxia. O Nav acusa um <b>sinal dourado</b> a ate 2 setores. Com as 7, invoque o <b>Super Shenron</b> (riqueza... ou trazer alguem de volta). As esferas comuns tambem existem e concedem desejos.</p>
+
+<font color="#e8842c" size=3><b>10. Karma e o Outro Mundo</b></font>
+<p>Matar inocentes e civis <b>suja seu karma</b>; derrotar viloes, bosses e criaturas selvagens limpa. Ao morrer, <b>Enma te julga</b>: os dignos aguardam (ou treinam com o <b>Sr. Kaioh</b>, que ensina Kaio-ken e Genkidama a quem merece); os sujos cumprem pena no <b>Inferno</b> proporcional ao karma. Reviver: esferas, ou pagando Zeni ao Enma (com enfraquecimento temporario). Os planetas tambem tem memoria: <b>reputacao local</b> -- testemunhas fofocam, povo se vinga, herois sao celebrados.</p>
+
+<font color="#e8842c" size=3><b>11. O servidor vivo</b></font>
+<p><b>Sagas de boss</b> (Freeza, androides/Cell, Boo) despertam conforme o servidor fica forte -- anuncios em banner avisam com antecedencia real, e planeta ameacado explode DE VERDADE se ninguem lutar. <b>Torneio de Artes Marciais</b> mensal (chave de 16, ring-out, premios). <b>Sala do Tempo</b>: 40 min por dia real a 280x (envelhece!). <b>Dimensao Mental</b> via meditacao profunda. <b>Dungeons</b> temporarias com loot (ache uma dungeon needle). E da pra <b>casar</b> com outro jogador e <b>ter filhos</b> -- o bebe hibrido vira um novo personagem jogavel da conta.</p>
+
+<font color="#e8842c" size=3><b>12. Dicas finais</b></font>
+<p>- O jogo se inspira no anime, mas NAO e uma copia: descobrir o que mudou e parte da graca.<br>
+- Racas mais fortes progridem mais devagar -- equilibrio.<br>
+- Spacepod conta como voo (da pra cruzar agua e lava com ele).<br>
+- Uma mente curiosa e uma mente poderosa.</p>
+
+<hr color="#2a2f3a">
+<center><font color="#8a93a8" size=1>Duvidas? Fale com a staff ou consulte o Guia de Mecanicas completo (PDF) com o host.</font></center>
+</font>
 </body></html>"}

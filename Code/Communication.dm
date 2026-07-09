@@ -1,7 +1,7 @@
 mob/verb/Chronology()
 	set category="Other"
-	set name ="Game Guide"
-	usr<<browse(Guide,"window=Guide;size=500x500")
+	set name ="Guia do Jogo"
+	usr<<browse(Guide,"window=Guide;size=560x640")
 var/OOC=1
 mob/var
 	OOCing=0

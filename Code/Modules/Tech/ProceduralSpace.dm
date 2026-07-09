@@ -16,7 +16,10 @@
 #define PSPACE_HOME_Z 26        // z do espaco original (setor 0,0)
 #define PSPACE_SIZE 200         // lado da regiao util de um setor gerado
 #define PSURF_SIZE 500          // lado da superficie de um planeta procedural (mundo inteiro; 1a visita gera ~250k turfs, alguns segundos)
-#define PSPACE_GEN_TICKCAP 92   // % de tick que a geracao pode ocupar antes de ceder (checado por COLUNA -- o CHECK_TICK por tile + lagstopsleep escalonado derrubava o ritmo pra ~3%)
+#define PSPACE_GEN_TICKCAP 92   // % de tick que a geracao pode ocupar antes de ceder (o CHECK_TICK por tile + lagstopsleep escalonado derrubava o ritmo pra ~3%)
+#define PSPACE_GEN_COLSTRIDE 8    // pouso (alguem ESPERANDO): colunas entre checagens de yield -- rapido, tolera tick estourado por ~5s
+#define PSPACE_PREGEN_COLSTRIDE 1 // pre-aquecimento em background: dorme 1 tick POR COLUNA -- invisivel no Lag-O-Meter (o ritmo do pouso em background dava 400% de tick)
+#define PSPACE_GEN_TIMEOUT 900    // 90s SEM PROGRESSO (o gerador da heartbeat no latch por coluna) = proc morto -- watchdog destrava e recomeca
 #define PSPACE_MAX_SECTORS 12   // pool de z's de setor (recicla o mais antigo sem players)
 #define PSURF_MAX_SURFACES 10   // pool de z's de superficie
 #define PSPACE_MIN_PLANETS 2    // planetas por setor (min)
@@ -137,6 +140,7 @@ proc/pspace_boot()
 			D.px = text2num(pd[7])
 			D.py = text2num(pd[8])
 			D.seed = text2num(pd[9])
+			if(pd.len >= 10) D.player_named = text2num(pd[10]) //batismo ja usado (saves antigos: 9 campos)
 			pspace_planets[D.name] = D
 			owner.planets += D
 
@@ -149,7 +153,7 @@ proc/pspace_save()
 		if(S.is_home) continue
 		secdata += list(list("[S.sx]", "[S.sy]", S.name))
 		for(var/datum/pspace_planet/D in S.planets)
-			pladata += list(list(D.name, "[S.sx],[S.sy]", "[D.biome]", "[D.gravity]", D.tint, D.pstate, "[D.px]", "[D.py]", "[D.seed]"))
+			pladata += list(list(D.name, "[S.sx],[S.sy]", "[D.biome]", "[D.gravity]", D.tint, D.pstate, "[D.px]", "[D.py]", "[D.seed]", "[D.player_named]"))
 	var/savefile/S = new("Galaxy")
 	S["seed"] << pspace_seed
 	S["sectors"] << secdata
@@ -183,10 +187,12 @@ datum/pspace_planet
 		py = 0
 		seed = 0
 		surface_z = 0          // 0 = superficie nao construida/reciclada
-		tmp/generating = 0     // superficie sendo gerada AGORA (latch anti-corrida/anti-recycle)
+		tmp/generating = 0     // superficie sendo gerada AGORA (timestamp com heartbeat; latch anti-corrida/anti-recycle)
+		tmp/gen_priority = 0   // 1 = tem jogador ESPERANDO pousar: geracao no ritmo rapido (0 = pre-aquecimento leve)
 		last_visit = 0
 		land_x = 0             // ponto de pouso em TERRA (o noise pode por agua no centro)
 		land_y = 0
+		player_named = 0       // batismo: o PRIMEIRO player a pousar pode nomear o planeta (1 = direito ja usado)
 		list/land_spots = null // candidatos de pouso (x*1000+y): pousa longe de inimigos
 		datum/space_sector/sector = null
 		obj/Planets/Procedural/pobj = null
@@ -266,12 +272,22 @@ proc/pspace_get_sector(sx, sy)
 		S.name = "Setor [R.pickfrom(pspace_name_a)][R.pickfrom(pspace_name_b)]"
 		pspace_sectors[key] = S
 	if(!S.z && !S.is_home) //precisa de um z: pool ou recycle
-		if(S.generating) //outro jogador ja esta gerando este setor: espera em vez de gerar DUAS vezes no mesmo z
-			while(S.generating) sleep(5)
-		else
-			S.generating = 1
-			S.z = pspace_alloc_z(pspace_sector_zs, PSPACE_MAX_SECTORS, /proc/pspace_unload_sector_on)
-			pspace_generate_sector(S)
+		//outro jogador ja esta gerando: espera COM PRAZO (o gerador pode ter morrido no meio --
+		//relog do requerente deleta a pilha inteira SEM runtime; o latch travava pra sempre)
+		while(S.generating && world.time - S.generating < PSPACE_GEN_TIMEOUT)
+			sleep(5)
+		if(S.generating) //estagnado alem do prazo: watchdog destrava e gera de novo
+			WriteToLog("debug","pspace: geracao do setor [S.name] estagnada -- watchdog destravou")
+			S.generating = 0
+			S.z = 0
+		if(!S.z)
+			S.generating = world.time //timestamp: o watchdog reconhece latch morto
+			try
+				S.z = pspace_alloc_z(pspace_sector_zs, PSPACE_MAX_SECTORS, /proc/pspace_unload_sector_on)
+				pspace_generate_sector(S)
+			catch(var/exception/e)
+				WriteToLog("debug","pspace: geracao do setor [S.name] FALHOU: [e] ([e.file]:[e.line])")
+				S.z = 0
 			S.generating = 0
 	S.last_visit = world.time
 	return S
@@ -352,7 +368,7 @@ proc/pspace_generate_sector(datum/space_sector/S)
 	var/gen_t0 = world.time
 	//regiao util [1..PSPACE_SIZE]^2: estrelas, com anel de borda que cruza de setor
 	for(var/xx = 1 to PSPACE_SIZE)
-		if(world.tick_usage > PSPACE_GEN_TICKCAP) sleep(world.tick_lag) //cede 1 tick por COLUNA (igual a superficie)
+		if(xx % PSPACE_GEN_COLSTRIDE == 0 && world.tick_usage > PSPACE_GEN_TICKCAP) sleep(world.tick_lag) //cede 1 tick por LOTE de colunas (igual a superficie)
 		for(var/yy = 1 to PSPACE_SIZE)
 			if(xx == 1 || yy == 1 || xx == PSPACE_SIZE || yy == PSPACE_SIZE)
 				new/turf/pspace_edge(locate(xx, yy, S.z))
@@ -449,6 +465,7 @@ proc/pspace_cross(mob/M, edge_dir)
 				ty = max(3, min(dsize - 2, round(M.y * dsize / csize)))
 		M.loc = locate(tx, ty, dz)
 		to_chat(M, "<font color=#88ccff><b>[dest.name] ([nx], [ny])</b> -- [dest.is_home ? "espaco conhecido" : "[dest.planets.len] corpo\s celeste\s no sensor"].</font>")
+		if(!dest.is_home) spawn(10) pspace_pregen_sector(dest) //PRE-AQUECE as superficies em background: pousar vira instantaneo
 		spawn(5) if(M) M.pspace_crossing = 0
 
 mob/var/tmp/pspace_crossing = 0
@@ -529,20 +546,20 @@ proc/pspace_land(mob/M, obj/Planets/Procedural/P)
 		return
 	var/datum/pspace_planet/D = P.pdatum
 	if(D.generating) //JA esta sendo mapeado (Bump dispara varias vezes): nao gera 2x nem pousa num mapa pela metade
-		if(M.client && world.time >= M.pspace_noland_msg)
-			M.pspace_noland_msg = world.time + 30
-			to_chat(M, "<font color=#88ccff>Ainda mapeando o terreno de [D.name] -- um instante...</font>")
-		return
-	if(!D.surface_z) //constroi/regenera a superficie (lazy, deterministico)
-		if(M.client) to_chat(M, "<font color=#88ccff>Entrando na atmosfera de [D.name]... (primeira visita: mapeando o terreno, aguarde)</font>")
-		D.generating = 1
-		D.surface_z = pspace_alloc_z(pspace_surface_zs, PSURF_MAX_SURFACES, /proc/pspace_unload_surface_on)
-		pspace_generate_surface(D)
-		D.generating = 0
-		//a geracao leva SEGUNDOS: se o jogador se afastou/saiu nesse meio tempo, NAO puxa ele de volta
-		if(!M || !M.client || M.z != P.z || get_dist(M, P) > 2)
-			if(M && M.client) to_chat(M, "<font color=#88ccff>[D.name] mapeado. Encoste de novo para pousar.</font>")
+		if(world.time - D.generating > PSPACE_GEN_TIMEOUT) //WATCHDOG: o gerador morreu no meio -- destrava e recomeca
+			WriteToLog("debug","pspace: geracao de [D.name] estagnada ha [(world.time - D.generating) / 10]s -- watchdog destravou")
+			D.generating = 0
+			D.surface_z = 0 //mapa pela metade: regenera do zero
+		else
+			D.gen_priority = 1 //encostou num planeta em PRE-AQUECIMENTO: acelera a geracao ao vivo
+			if(M.client && world.time >= M.pspace_noland_msg)
+				M.pspace_noland_msg = world.time + 30
+				to_chat(M, "<font color=#88ccff>Ainda mapeando o terreno de [D.name] -- um instante...</font>")
 			return
+	if(!D.surface_z) //constroi/regenera num WORKER destacado: quem pediu pousa sozinho ao final
+		if(M.client) to_chat(M, "<font color=#88ccff>Entrando na atmosfera de [D.name]... (mapeando o terreno, aguarde em orbita)</font>")
+		pspace_gen_request(D, M)
+		return
 	D.last_visit = world.time
 	//ponto de pouso SEGURO: tenta candidatos de planicie sem inimigo por perto (senao cai no central)
 	var/turf/spot = locate(max(2, D.land_x), max(2, D.land_y), D.surface_z)
@@ -561,6 +578,153 @@ proc/pspace_land(mob/M, obj/Planets/Procedural/P)
 	M.loc = spot
 	M.Planet = D.name
 	if(M.client) to_chat(M, "<font color=#88ccff><b>[D.name]</b> -- bioma [pspace_biomes[D.biome][1]], gravidade x[D.gravity].[D.gravity > M.GravMastered ? " <font color=red>CUIDADO: acima da sua maestria!</font>" : ""]</font>")
+	if(M.client && !D.player_named) //BATISMO: o direito e do PRIMEIRO player a pisar no mundo
+		D.player_named = 1
+		pspace_save()
+		spawn(2) pspace_offer_name(M, D)
+
+//dispara a geracao da superficie num proc DESTACADO do requerente. A geracao inline morria
+//JUNTO com o mob (relog no meio deletava a pilha inteira SEM runtime error) e o latch
+//"generating" travava pra sempre -- todo pouso seguinte via "Ainda mapeando..." eterno.
+proc/pspace_gen_request(datum/pspace_planet/D, mob/M)
+	if(!D || D.generating || D.surface_z) return
+	D.generating = world.time //timestamp: o watchdog reconhece latch morto
+	D.gen_priority = M ? 1 : 0 //com requerente = ritmo rapido; pre-aquecimento = leve
+	spawn(0)
+		var/ok = 0
+		try
+			D.surface_z = pspace_alloc_z(pspace_surface_zs, PSURF_MAX_SURFACES, /proc/pspace_unload_surface_on)
+			pspace_generate_surface(D)
+			ok = 1
+		catch(var/exception/e)
+			WriteToLog("debug","pspace: geracao de [D.name] FALHOU: [e] ([e.file]:[e.line])")
+			D.surface_z = 0
+		D.generating = 0
+		D.gen_priority = 0
+		if(!ok || !M) return
+		//quem pediu e continuou colado no planeta pousa sozinho; quem se afastou so recebe o aviso
+		if(M.client && D.pobj && M.z == D.pobj.z && get_dist(M, D.pobj) <= 2)
+			pspace_land(M, D.pobj)
+		else if(M.client)
+			to_chat(M, "<font color=#88ccff>[D.name] mapeado. Encoste de novo para pousar.</font>")
+
+//PRE-AQUECIMENTO: ao entrar num setor, as superficies dos planetas dele sao mapeadas em
+//background (um por vez) -- quando o jogador chega no planeta, o pouso e instantaneo
+var/pspace_pregen_busy = 0
+proc/pspace_pregen_sector(datum/space_sector/S)
+	if(!S || S.is_home || pspace_pregen_busy) return //um pre-aquecimento por vez no servidor
+	pspace_pregen_busy = 1
+	for(var/datum/pspace_planet/D in S.planets)
+		if(!S.z) break //setor foi reciclado no meio tempo
+		if(D.surface_z || D.generating) continue
+		if(D.pobj && D.pobj.isDestroyed) continue //destruido: sem superficie
+		var/haspl = 0
+		for(var/mob/PM in player_list)
+			if(PM && PM.client && PM.z == S.z)
+				haspl = 1
+				break
+		if(!haspl) break //ninguem mais no setor: nao gasta CPU
+		pspace_gen_request(D, null)
+		while(D.generating) sleep(10)
+	pspace_pregen_busy = 0
+
+//BATISMO: o primeiro jogador a pousar num mundo procedural escolhe o nome dele
+proc/pspace_offer_name(mob/M, datum/pspace_planet/D)
+	if(!M || !M.client || !D) return
+	var/nm = input(M, "Voce e o primeiro ser a pisar neste mundo! Que nome ele recebera? (Cancele para manter '[D.name]')", "Batizar o planeta", D.name) as text|null
+	if(!nm || !D || !M) return
+	nm = html_encode(nm)
+	while(length(nm) && copytext(nm, 1, 2) == " ") nm = copytext(nm, 2) //trim
+	while(length(nm) && copytext(nm, length(nm)) == " ") nm = copytext(nm, 1, length(nm))
+	if(nm == D.name) return
+	if(length(nm) < 3 || length(nm) > 24)
+		to_chat(M, "<font color=#e8b64c>Nome invalido (3 a 24 caracteres). O planeta continua [D.name].</font>")
+		return
+	if(pspace_planets[nm])
+		to_chat(M, "<font color=#e8b64c>Ja existe um planeta com esse nome. O planeta continua [D.name].</font>")
+		return
+	for(var/obj/Planets/PL in planet_list) //nomes canonicos (Earth/Vegeta/...) colidem com o switch do Grav()
+		if(PL && PL.planetType == nm)
+			to_chat(M, "<font color=#e8b64c>Esse nome pertence a um mundo conhecido. O planeta continua [D.name].</font>")
+			return
+	pspace_rename_planet(D, nm, M)
+
+proc/pspace_rename_planet(datum/pspace_planet/D, newname, mob/M)
+	var/old = D.name
+	pspace_planets -= old
+	D.name = newname
+	pspace_planets[newname] = D //a gravidade/pouso fazem lookup por NOME: re-chavear e obrigatorio
+	if(D.pobj)
+		D.pobj.name = newname
+		D.pobj.planetType = newname
+	if(D.parea) D.parea.Planet = newname
+	for(var/mob/X in mob_list) //quem ja esta NO planeta (M.Planet alimenta o Grav())
+		if(X && X.Planet == old) X.Planet = newname
+	pspace_save()
+	to_chat(world, "<font color=#e8b64c><b>[M ? M.name : "Alguem"] batizou um novo mundo: [old] agora se chama [newname]!</b></font>", "events")
+	WriteToLog("debug","pspace: planeta [old] renomeado para [newname] por [M ? M.name : "?"]")
+
+// ---------------------------------------------------------------------------
+// POSICAO PERSISTENTE: xco/yco/zco salvos apontavam pra um z de POOL que nao
+// sobrevive a reboot/recycle -- o load caia no spawn da raca (ou num mundo
+// ERRADO se o z foi reciclado). Salvamos o CONTEXTO (planeta ou setor) no
+// Write() do mob e reconstruimos no login (geracao deterministica: o terreno
+// volta identico, entao o x/y salvo continua valendo).
+// ---------------------------------------------------------------------------
+mob/var/pspace_ctx_planet = ""  //deslogou na SUPERFICIE deste planeta procedural
+mob/var/pspace_ctx_insector = 0 //deslogou no ESPACO de um setor procedural
+mob/var/pspace_ctx_sx = 0
+mob/var/pspace_ctx_sy = 0
+
+mob/proc/pspace_ctx_set() //chamado no mob/Write (roda em TODO save)
+	pspace_ctx_planet = ""
+	pspace_ctx_insector = 0
+	pspace_ctx_sx = 0
+	pspace_ctx_sy = 0
+	if(!z || !pspace_booted) return
+	for(var/pn in pspace_planets)
+		var/datum/pspace_planet/D = pspace_planets[pn]
+		if(D && D.surface_z == z)
+			pspace_ctx_planet = D.name
+			return
+	var/datum/space_sector/S = pspace_sector_for_z(z)
+	if(S && !S.is_home)
+		pspace_ctx_insector = 1
+		pspace_ctx_sx = S.sx
+		pspace_ctx_sy = S.sy
+
+proc/pspace_login_restore(mob/M)
+	if(!M || !M.client) return
+	if(!M.pspace_ctx_planet && !M.pspace_ctx_insector) return
+	var/tx = M.xco
+	var/ty = M.yco
+	spawn(10) //worker destacado (nao morre com relog) + 1s pro OnLogin assentar antes do teleporte
+		pspace_boot()
+		if(M && M.client && M.pspace_ctx_planet) //dormiu na superficie de um planeta
+			var/datum/pspace_planet/D = pspace_planets[M.pspace_ctx_planet]
+			if(!D || (D.name in PlanetDisableList))
+				to_chat(M, "<font color=#e8b64c>O mundo onde voce dormiu ([M.pspace_ctx_planet]) nao existe mais...</font>")
+				M.pspace_ctx_planet = ""
+				return
+			if(D.sector) pspace_get_sector(D.sector.sx, D.sector.sy) //recarrega o setor: o planeta precisa existir no espaco (decolagem/orbita)
+			if(!D.surface_z)
+				to_chat(M, "<font color=#88ccff>Remapeando [D.name] -- voce voltara ao ponto onde estava...</font>")
+				pspace_gen_request(D, null) //null: o teleporte de volta e NOSSO (nao e pouso)
+				D.gen_priority = 1 //mas o jogador esta esperando: ritmo rapido
+				while(D && D.generating) sleep(10)
+			if(!M || !M.client || !D || !D.surface_z) return
+			var/turf/T = locate(max(2, min(PSURF_SIZE - 1, tx)), max(2, min(PSURF_SIZE - 1, ty)), D.surface_z)
+			if(!T) return
+			if(T.density) T = locate(max(2, D.land_x), max(2, D.land_y), D.surface_z) //deslogou voando sobre montanha: volta pelo pouso
+			M.loc = T
+			M.Planet = D.name
+			D.last_visit = world.time
+			to_chat(M, "<font color=#88ccff>Voce acorda em <b>[D.name]</b>, onde havia parado.</font>")
+		else if(M && M.client && M.pspace_ctx_insector) //dormiu a deriva no espaco de um setor
+			var/datum/space_sector/S = pspace_get_sector(M.pspace_ctx_sx, M.pspace_ctx_sy)
+			if(!M || !M.client || !S || !S.z) return
+			M.loc = locate(max(2, min(PSPACE_SIZE - 1, tx)), max(2, min(PSPACE_SIZE - 1, ty)), S.z)
+			to_chat(M, "<font color=#88ccff>Voce desperta a deriva em <b>[S.name]</b> ([S.sx], [S.sy]).</font>")
 
 // ---- DLL DE TERRENO (jandirus_noise.dll, fonte em Tools\jandirus_noise.c) ----
 //fBm de 4 oitavas em C: classifica o mapa INTEIRO (250k tiles) numa chamada (~15ms vs
@@ -710,7 +874,11 @@ proc/pspace_generate_surface(datum/pspace_planet/D)
 	D.land_y = 0
 	D.land_spots = list()
 	for(var/xx = 1 to PSURF_SIZE)
-		if(world.tick_usage > PSPACE_GEN_TICKCAP) sleep(world.tick_lag) //cede 1 tick por COLUNA quando aperta (o jogador esta ESPERANDO pousar)
+		D.generating = world.time //HEARTBEAT: o watchdog so destrava gerador que PAROU de progredir
+		if(D.gen_priority) //alguem esperando pousar: ritmo rapido (tolera tick estourado por ~5s)
+			if(xx % PSPACE_GEN_COLSTRIDE == 0 && world.tick_usage > PSPACE_GEN_TICKCAP) sleep(world.tick_lag)
+		else //pre-aquecimento em background: 1 tick de sono POR COLUNA (invisivel no servidor; escala ao vivo se alguem encostar)
+			if(xx % PSPACE_PREGEN_COLSTRIDE == 0) sleep(world.tick_lag)
 		for(var/yy = 1 to PSURF_SIZE)
 			//classe do tile: 1 agua, 2 praia, 3 planicie, 4 colina, 5 montanha
 			//(classificada ANTES da borda: o anel de wrap se pinta da classe local do noise)
@@ -822,7 +990,7 @@ proc/pspace_generate_surface(datum/pspace_planet/D)
 		E.loc = spot
 		D.spawned += E
 	npcspawnson = oldspawns
-	WriteToLog("debug","pspace: superficie de [D.name] gerada em [(world.time - gen_t0) / 10]s ([D.spawned.len] objs)")
+	WriteToLog("debug","pspace: superficie de [D.name] ([B[1]]) gerada em [(world.time - gen_t0) / 10]s ([D.spawned.len] objs)")
 
 // ---------------------------------------------------------------------------
 // NAV: infos de setor + MAPA DA GALAXIA pro ui_tab_nav (HtmlUI.dm)
