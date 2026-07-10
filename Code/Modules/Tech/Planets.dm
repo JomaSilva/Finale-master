@@ -251,6 +251,34 @@ proc/LoadPlanets()
 				if("Northern Quadrant")
 					A.loc=locate(rand(225,275),rand(300,499),26)
 
+//RESTAURA um planeta destruido AO VIVO (sem reboot): tira da PlanetDisableList (persistida
+//via PerWipeSettings), recria o obj em orbita (LoadPlanets so instancia o que falta) e,
+//se for procedural, reergue o pobj do setor. Derrotar o boss NAO desfazia a destruicao.
+mob/Admin3/verb/Restaurar_Planeta()
+	set category = "Admin"
+	if(!PlanetDisableList.len)
+		to_chat(usr, "Nenhum planeta destruido registrado.")
+		return
+	var/alvo = input(usr, "Restaurar qual planeta?", "Restaurar Planeta") in (PlanetDisableList + "Cancelar")
+	if(!alvo || alvo == "Cancelar") return
+	PlanetDisableList -= alvo
+	Save_Settings() //persiste: sem isto o proximo boot re-destruia
+	var/datum/pspace_planet/D = pspace_planets ? pspace_planets[alvo] : null
+	if(D) //procedural: reergue o obj do setor se ele estiver carregado (senao renasce no proximo load)
+		if(D.pobj)
+			D.pobj.isDestroyed = 0
+			D.pobj.icon = 'Planets.dmi'
+			D.pobj.icon_state = D.pstate
+			D.pobj.color = D.tint
+			D.pobj.density = 1
+		to_chat(world, "<font color=#e8b64c><b>[alvo] reaparece nos ceus -- o planeta foi restaurado!</b></font>")
+	else
+		//canonico: NUNCA rodar LoadPlanets() ao vivo -- os wander-loops dos planetas tem um
+		//dedup que SE DELETA ao ver um duplicado, e a corrida com os objs temporarios do
+		//LoadPlanets MATOU TODOS os planetas do espaco. O boot recria limpo.
+		to_chat(usr, "<font color=#e8b64c><b>[alvo] foi retirado da lista de destruidos. REINICIE o servidor para ele reaparecer em orbita (o LoadPlanets do boot recria com seguranca).</b></font>")
+	WriteToLog("debug","planeta [alvo] restaurado por [usr] (PlanetDisableList)")
+
 mob/Admin3/verb/Planet_Options()
 	set category = "Admin"
 	switch(input(usr,"Enable a planet, disable a planet, check planets that are disabled. Toggle planet destroy, and restore/destroy existing planets.") in list("Disable","Enable","Check","Toggle","Restore/Destroy","Cancel"))

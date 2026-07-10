@@ -8,6 +8,10 @@
 #define GRAVCRUSH_DMG_CAP   3    //teto de dano/seg: esmagado desmaia rapido mas morre DEVAGAR (da tempo de alguem resgatar)
 #define GRAVCRUSH_EXPLODE_R 4    //razao gravidade/maestria a partir da qual o corpo em farrapos EXPLODE (gib, estilo Kaioken x100)
 #define GRAVCRUSH_WARN_CD   100  //ticks (10s) entre avisos de esmagamento no chat
+#define PSPACE_HOME_Z 26 //z do espaco original (setor 0,0) -- compartilhado: ProceduralSpace.dm + PlanetTech.dm (Launch de planeta destruido)
+//---- WEIGHTED CLOTHING x GRAVIDADE (Stats.dm calcula weight_ratio; Gravity.dm esmaga; movement handler freia) ----
+#define WEIGHT_GAIN_MAX 8       //teto do multiplicador de ganhos do peso (razao 1 = 2x, razao 2 = 4x, razao 4 = 8x)
+#define TECH_BENCH_ZENI 250000  //custo em zenni da Research Bench construida pela aba Tech (HtmlUI.dm)
 #define DOESEXIST if(isnull(src)) return
 #define CLIENTEXIST if(isnull(client)) return
 #define CHECK_TICK if(world.tick_usage > 75) lagstopsleep()

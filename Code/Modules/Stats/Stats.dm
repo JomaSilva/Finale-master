@@ -360,11 +360,22 @@ mob/proc/Stats()
 		//Makes sure that the Supreme Kai can grant Mystic indefinitely.
 		if(prob(1)) if(Supreme_Kai==key) mystified=0
 		if(client)
+			//CATRACA do limite de peso: vestir o peso derrubava o expressedBP (deBuff divide por
+			//weight*BPrestriction), que derrubava o proprio cap -- espiral de esmagamento. O cap
+			//agora e o RECORDE do corpo: nunca cai com BP; sobe quando o BP/physoff superam o
+			//recorde. A semente desfaz o efeito do PROPRIO peso (x weight*BPrestriction).
+			weight_cap_hw = max(weight_cap_hw, expressedBP * max(weight * BPrestriction, 1) * Ephysoff * 20)
 			if(Weighted>0)
-				weight= max(min((Weighted/(max((expressedBP*Ephysoff*10),1))),2),1)
+				//PESO x GRAVIDADE: o peso efetivo e Weighted x gravidade local. weight_ratio = 1 no
+				//"cap" (o peso que dobra os ganhos em 1x -- formula historica destampada); acima
+				//disto ESMAGA como gravidade acima da maestria (Grav_Handler/movement handler) e os
+				//efeitos padroes escalam junto (ganhos = 2x a razao, BPrestriction = menos BP acessivel)
+				weight_ratio = (Weighted * max(Planetgrav + gravmult, 1)) / max(weight_cap_hw, 1)
+				weight = max(min(weight_ratio * 2, WEIGHT_GAIN_MAX), 1)
 				BPrestriction = weight
 			if(Weighted<=0)
 				weight = 1
+				weight_ratio = 0
 				BPrestriction = 1
 			if(!invenrunning)
 				spawn CondenseLoop()

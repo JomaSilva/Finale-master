@@ -128,6 +128,10 @@ datum/Body
 		bodypartType = /obj/bodyparts/Head
 		DamageMe(var/number as num, var/nonlethal as num)
 			..()
+			//o Brain HERDA este DamageMe (e subtipo de Head): quando o SpreadDamage do esmagamento
+			//o atinge direto, propagar "cabeca->cerebro" de si mesmo com savant null estourava
+			//("Cannot read null.body") e MATAVA o SpreadDamage no meio -- membros seguintes escapavam
+			if(!savant || istype(src, /datum/Body/Head/Brain)) return
 			for(var/datum/Body/Head/Brain/B in savant.body)
 				if(nonlethal)
 					if(B.health - 0.2*number >= 0.1*B.maxhealth/savant.Ewillpower)//this has to be set lower than the KO threshold, otherwise they'll never get KO'd

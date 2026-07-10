@@ -108,11 +108,13 @@ obj
 			equipped=0
 			stackable=0
 			name = "Weights"
-			var/pounds = 1
+			var/pounds = 1     //peso ATUAL vestido (ajustavel pelo Change_Weight)
+			var/pounds_max = 1 //teto ja destravado pelo Upgrade (o Change_Weight escolhe uma fracao disto)
 
 			verb/Equip()
 				set category=null
 				set src in usr
+				if(pounds_max < pounds) pounds_max = pounds //saves antigos: so existia pounds
 				var/hasoneon=0
 				for(var/obj/items/Weight/G in usr.contents) if(G!=src&&G.equipped) hasoneon=1
 				if(!hasoneon)
@@ -127,6 +129,7 @@ obj
 						equipped=0
 						usr.Weighted=0
 						usr.weight=1
+						usr.weight_ratio=0
 						suffix=""
 						usr.overlayList-=icon
 						usr.overlaychanged=1
@@ -135,11 +138,25 @@ obj
 			verb/Upgrade()
 				set category=null
 				set src in usr
-				pounds = max(log(10,usr.intBPcap) * (usr.peakexBP*usr.Ephysoff*5),pounds)
+				pounds_max = max(log(10,usr.intBPcap) * (usr.peakexBP*usr.Ephysoff*5), pounds_max, pounds)
+				pounds = pounds_max //upgrade veste o novo maximo (comportamento historico); use Change_Weight pra aliviar
 				if(!equipped)
 				else
 					usr.Weighted=pounds
 				to_chat(view(usr), "Weighted Clothing changed to [pounds] pounds.")
+			verb/Change_Weight()
+				set category=null
+				set src in usr
+				//estilo reward-power: um MULTIPLICADOR do peso MAXIMO (0.3 = 30% do maximo, 1 = maximo).
+				//CUIDADO: o peso efetivo multiplica pela GRAVIDADE local -- no cap em gravidade 2x voce
+				//sofre como 2x acima do limite; em 36x, use ~1/36 do maximo ou vire panqueca.
+				if(pounds_max < pounds) pounds_max = pounds //saves antigos
+				var/frac = input(usr, "Fracao do peso maximo ([FullNum(round(pounds_max))] libras). Ex.: 0.3 = 30% do maximo; 1 = maximo. Peso atual: [FullNum(round(pounds))] ([pounds_max > 0 ? round(pounds / pounds_max * 100) : 0]%).", "Change Weight", (pounds_max > 0 ? pounds / pounds_max : 1)) as num|null
+				if(isnull(frac)) return
+				frac = min(max(frac, 0), 1) //nunca acima do maximo destravado (o "alem do cap" vem da GRAVIDADE, nao daqui)
+				pounds = pounds_max * frac
+				if(equipped) usr.Weighted = pounds
+				to_chat(usr, "[src]: ajustado para [FullNum(round(pounds))] libras ([round(frac * 100)]% do maximo).")
 			verb/Icon()
 				set category=null
 				set src in usr

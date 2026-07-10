@@ -130,7 +130,7 @@ mob/proc/Un_KO(var/angery)
 		if(Savable) icon_state=""
 		attacking=0
 		blasting=0
-		SpreadHeal(25,1,1)
+		if(has_regen_energy()) SpreadHeal(25,1,1) //a cura de acordar exige energia: faminto E sem stamina sob esmagamento (peso/gravidade) virava moto-perpetuo KO->cura->KO = "regeneracao infinita"
 		if(angery)
 			Anger-=0.5*MaxAnger
 		else

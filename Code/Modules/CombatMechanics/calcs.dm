@@ -28,10 +28,12 @@ proc/ArmorCalc(var/damage, var/armor, var/truearmor)
 		if(TRUE)
 			if(armor == 0) return damage
 			else
-				return damage * (1 - (armor / 2))
-			//armor = armor / 100
-			//armor = 1 / (1.7 * armor + 1) //at 99% armor, reduces damage to 0.336x
-			//return max(damage * armor,0) + (damage * (1/5))
+				//Esuperkiarmor e 0..100 (master.dm:164). A linear antiga (1 - armor/2) NEGATIVAVA
+				//com armor > 2: o golpe CURAVA o alvo (quanto mais forte o atacante, maior a cura --
+				//"25M de BP curando um de 100k"). Formula restaurada da intencao original comentada:
+				//reducao suave que NUNCA zera nem inverte (armor 50 = ~0.54x, armor 100 = ~0.37x)
+				var/afrac = min(max(armor, 0), 100) / 100
+				return damage * (1 / (1.7 * afrac + 1))
 		if(FALSE)
 			if(damage>armor) return damage
 			else return 0

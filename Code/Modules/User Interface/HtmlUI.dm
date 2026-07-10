@@ -132,7 +132,7 @@ mob/proc/render_skill_tab(tabname)
 	return ui_sec(html_encode("[tabname]")) + "<div class='mut' style='padding:8px'>(this panel has no detailed view yet)</div>"
 
 mob/proc/BuildStatsHTML()
-	var/list/tabs = list("Stats","Items","Equip","Body","Forms","Ki","People","World","Skills","Other","Learning")
+	var/list/tabs = list("Stats","Items","Equip","Body","Forms","Ki","People","World","Skills","Other","Learning","Tech")
 	if(Admin) tabs += "Admin"
 	if(html_skill_tabs && html_skill_tabs.len) tabs += html_skill_tabs //skill-added panels (Sense, etc.)
 	if(hasnav) tabs += "Nav" //Nav System ligado: o painel nativo StatNav morreu com a skin HTML -- a aba e a leitura agora
@@ -162,6 +162,7 @@ mob/proc/BuildStatsHTML()
 		if("Skills")   h += ui_tab_verbs("Skills")
 		if("Other")    h += ui_tab_verbs("Other")
 		if("Learning") h += ui_tab_verbs("Learning")
+		if("Tech")     h += ui_tab_tech()
 		if("Admin")
 			h += ui_tab_verbs("Admin")
 			if(debugCommandsadded) h += ui_tab_verbs("Debug") //verbs de debug (AddDebugCommands) na mesma aba: a categoria Debug nao tem aba propria
@@ -585,6 +586,42 @@ function vflt(){
 </script>"}
 	return jointext(h, "")
 
+// ---- TECH: Research Bench por zenni + status da roupa de peso ----------------
+mob/proc/ui_tab_tech()
+	var/h = ""
+	h += ui_sec("TECNOLOGIA")
+	h += ui_row("Zenni", "[FullNum(round(zenni))]", "")
+	h += ui_row("Research Bench por perto", (locate(/obj/Technology/Research_Station) in oview(8, src)) ? "Sim" : "Nao", "")
+	h += ui_row("Construir Research Bench", "<a class='verb' href='byond://?src=\ref[src];techbench=1'>Construir aqui ([FullNum(TECH_BENCH_ZENI)]z)</a>", "")
+	h += ui_sec("PESO (WEIGHTED CLOTHING)")
+	var/obj/items/Weight/WEq = null
+	var/obj/items/Weight/WAny = null
+	for(var/obj/items/Weight/WW in contents)
+		if(!WAny) WAny = WW
+		if(WW.equipped)
+			WEq = WW
+			break
+	var/obj/items/Weight/W = WEq || WAny
+	if(!W)
+		h += "<div class='row'><span class='mut'>Sem Weighted Clothing no inventario (compra-se na loja de Tech).</span></div>"
+	else
+		if(W.pounds_max < W.pounds) W.pounds_max = W.pounds //saves antigos
+		var/wcap = max(weight_cap_hw, expressedBP * Ephysoff * 20, 1) //catraca: o limite nao cai com o BP
+		var/grav = max(Planetgrav + gravmult, 1)
+		var/wr = WEq ? weight_ratio : (W.pounds * grav) / wcap //nao vestida: PREVISAO do que aconteceria
+		h += ui_row("Vestida", WEq ? "Sim" : "Nao <span class='mut'>(valores em previsao)</span>", "")
+		h += ui_row("Peso da roupa", "[FullNum(round(W.pounds))] / [FullNum(round(W.pounds_max))] libras <span class='mut'>([W.pounds_max > 0 ? round(W.pounds / W.pounds_max * 100) : 0]% do maximo)</span>", "")
+		h += ui_row("Limite do corpo (grav 1x)", "[FullNum(round(wcap))] libras", "")
+		h += ui_row("Gravidade local", "x[grav] <span class='mut'>(multiplica o peso efetivo!)</span>", "")
+		var/wrtxt = "x[round(wr, 0.01)] do limite"
+		if(wr >= GRAVCRUSH_EXPLODE_R) wrtxt = "<font color=#ff4444><b>[wrtxt] -- ESMAGAMENTO FATAL</b></font>"
+		else if(wr > 1) wrtxt = "<font color=#e8b64c><b>[wrtxt] -- esmagando (dano/lentidao)</b></font>"
+		else wrtxt = "<font color=#7fe07f>[wrtxt]</font>"
+		h += ui_row("Peso efetivo", wrtxt, "")
+		h += ui_row("Ganho de treino", "x[round(max(min(wr * 2, WEIGHT_GAIN_MAX), 1), 0.1)] <span class='mut'>(2x no limite, 4x no dobro... teto [WEIGHT_GAIN_MAX]x)</span>", "")
+		h += ui_row("Ajustar", "<a class='verb' href='byond://?src=\ref[src];itemverb=Change_Weight;iref=\ref[W]'>Change Weight</a> &middot; <a class='verb' href='byond://?src=\ref[src];itemverb=Upgrade;iref=\ref[W]'>Upgrade</a> &middot; <a class='verb' href='byond://?src=\ref[src];itemverb=Equip;iref=\ref[W]'>[WEq ? "Tirar" : "Vestir"]</a>", "")
+	return h
+
 // ---- render loop (into the embedded browser) -------------------------------
 mob/proc/OpenStatsUI()
 	if(!client || statsUIrunning) return
@@ -848,6 +885,19 @@ mob/Topic(href, list/href_list)
 	if(href_list["statsTab"])
 		statsUItab = href_list["statsTab"]
 		last_stats_html = "" //force re-render on tab change
+		RefreshStatsUI()
+		return
+	if(href_list["techbench"]) //aba Tech: construir Research Bench pagando zenni
+		if(locate(/obj/Technology/Research_Station) in oview(5, src))
+			to_chat(src, "<font color=#e8b64c>Ja existe uma Research Bench aqui perto.</font>")
+		else if(zenni < TECH_BENCH_ZENI)
+			to_chat(src, "<font color=#e8b64c>Voce precisa de [FullNum(TECH_BENCH_ZENI)] zenni (tem [FullNum(round(zenni))]).</font>")
+		else
+			zenni -= TECH_BENCH_ZENI
+			var/obj/Technology/Research_Station/RS = new(loc)
+			RS.Bolted = 1 //nasce fixada e pronta pra usar
+			to_chat(view(src), "<font color=#e8b64c><b>[src] constroi uma Research Bench! (-[FullNum(TECH_BENCH_ZENI)]z)</b></font>")
+		last_stats_html = ""
 		RefreshStatsUI()
 		return
 	if(href_list["runverb"])

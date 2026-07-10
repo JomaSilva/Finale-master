@@ -103,6 +103,7 @@ obj/GK_Well
 			water = 1
 mob/var/tmp/inhealtank=0
 mob/var/tmp/weight=1
+mob/var/tmp/weight_ratio=0 //peso EFETIVO (Weighted x gravidade local) / cap do corpo -- >1 esmaga (Gravity.dm)
 mob/var/tmp/SeedSaiba
 mob/var/yemmas=0
 mob/var/might=0
@@ -110,6 +111,7 @@ mob/var/eden=0
 mob/var/eating=0
 mob/var
 	Weighted=0
+	weight_cap_hw=0 //CATRACA do limite de peso (libras): nunca cai com o BP, so sobe com o recorde (persistida)
 obj/var/NotSavable
 obj/var/equipped=0
 mob/var/equipped=0

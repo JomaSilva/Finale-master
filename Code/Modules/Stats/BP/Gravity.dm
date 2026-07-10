@@ -40,12 +40,16 @@ mob/var/tmp
 
 mob/proc/Grav_Handler(var/Gravity)
 	set waitfor = 0
-	if(Gravity>GravMastered&&(!dead||KeepsBody))//dead people can no longer abuse not dying for grav gains without an actual body
-		//ESMAGAMENTO (estilo Kaioken alto): dano em TODOS os membros e slow escalam com a razao
-		//gravidade/maestria. A formula antiga dividia pela defesa (/(1+Ephysdef*Ekidef)) -- pra
-		//qualquer personagem forte o dano virava ~0 e "gravidade nao fazia nada".
-		var/r = Gravity / max(GravMastered, 1)
+	//PESO conta como gravidade: weight_ratio > 1 (peso efetivo alem do cap do corpo) esmaga
+	//IGUAL gravidade acima da maestria -- vale a PIOR das duas razoes (o peso ja embute a
+	//gravidade local: Weighted x grav, calculado no Stats.dm)
+	var/r = max(Gravity / max(GravMastered, 1), weight_ratio)
+	if(r > 1 && (!dead||KeepsBody))//dead people can no longer abuse not dying for grav gains without an actual body
+		//ESMAGAMENTO (estilo Kaioken alto): dano em TODOS os membros e slow escalam com a razao.
+		//A formula antiga dividia pela defesa (/(1+Ephysdef*Ekidef)) -- pra qualquer personagem
+		//forte o dano virava ~0 e "gravidade nao fazia nada".
 		var/excess = r - 1
+		var/porpeso = (weight_ratio > Gravity / max(GravMastered, 1)) //quem manda no esmagamento: o PESO ou a gravidade?
 		if(world.time >= gravcrush_dmg_next) //1x por segundo, independente de quem chamou
 			gravcrush_dmg_next = world.time + 10
 			var/dmg = min(GRAVCRUSH_DMG_BASE * excess * max(excess, 0.2), GRAVCRUSH_DMG_CAP)
@@ -53,7 +57,8 @@ mob/proc/Grav_Handler(var/Gravity)
 			stamina -= maxstamina * 0.002 * r
 			if(world.time >= gravcrush_warn_cd)
 				gravcrush_warn_cd = world.time + GRAVCRUSH_WARN_CD
-				if(r >= GRAVCRUSH_EXPLODE_R) to_chat(src, "<font color=red><b>A gravidade esta ESMAGANDO seu corpo! Saia AGORA ou ele nao vai aguentar!</b></font>")
+				if(r >= GRAVCRUSH_EXPLODE_R) to_chat(src, "<font color=red><b>[porpeso ? "O PESO" : "A gravidade"] esta ESMAGANDO seu corpo! [porpeso ? "Diminua o peso (Change Weight)" : "Saia"] AGORA ou ele nao vai aguentar!</b></font>")
+				else if(porpeso) to_chat(src, "<font color=#cc8844>Seu corpo range sob o PESO... (x[round(weight_ratio,0.1)] do limite do seu corpo nesta gravidade)</font>")
 				else to_chat(src, "<font color=#cc8844>Seu corpo range sob a gravidade... (x[round(Gravity,0.1)] contra x[round(GravMastered,0.1)] masterizado)</font>")
 			if(r >= GRAVCRUSH_EXPLODE_R && HP <= 5 && !dead) //MUITO alem do limite + corpo em farrapos: nao aguenta (igual Kaioken passado demais)
 				to_chat(view(src), "<font color=red><b>[src] e esmagado alem do limite -- e seu corpo EXPLODE!</b></font>")

@@ -58,25 +58,63 @@ obj/Spacepod
 	verb/Launch()
 		set category=null
 		set src in view(1)
+		var/mob/expilot = pilot
+		if(!expilot) //Launch sem piloto: o "pilot.launchParalysis" estourava e o verb morria SEM AVISO
+			to_chat(usr, "<font color=#e8b64c>Ninguem esta pilotando o pod -- use-o primeiro (Use).</font>")
+			return
 		to_chat(usr, "ETA [((400/Speed)/10)] second(s)")
 		icon_state = "Launching"
-		pilot.launchParalysis = 1
+		expilot.launchParalysis = 1
 		sleep(400/Speed)
-		for(var/obj/Planets/P in world)
-			if(P.planetType==usr.Planet)
-				//solta a 3-5 tiles do planeta (era view(1) = COLADO: qualquer passo re-pousava "do nada")
-				var/list/randTurfs = list()
-				for(var/turf/T in orange(5, P))
-					if(get_dist(T, P) >= 3) randTurfs += T
-				if(!randTurfs.len) for(var/turf/T in view(1,P)) randTurfs += T //fallback: planeta espremido num canto
-				var/turf/rT = pick(randTurfs)
-				src.loc = locate(rT.x,rT.y,rT.z)
-				pilot.loc = locate(rT.x,rT.y,rT.z)
-				pilot.pspace_noland_until = world.time + 80 //e ainda ha a graca anti-rebump por cima
-				icon_state = ""
-				break
+		if(!pilot || pilot != expilot) //desembarcou durante o ETA: aborta o launch limpo
+			icon_state = ""
+			expilot.launchParalysis = 0
+			return
+		//acha o planeta em orbita: procedural via registro (RECARREGA o setor se o obj foi
+		//reciclado -- pod "orfao" travava aqui pra sempre), canonico pela varredura classica
+		var/obj/Planets/P = null
+		var/datum/pspace_planet/D = pspace_planets ? pspace_planets[expilot.Planet] : null
+		if(D)
+			if((!D.pobj || !D.pobj.loc) && D.sector) pspace_get_sector(D.sector.sx, D.sector.sy)
+			P = D.pobj
+		if(!P)
+			for(var/obj/Planets/PP in world)
+				if(PP.planetType == expilot.Planet)
+					P = PP
+					break
+		if(!P || !P.loc) //planeta DESTRUIDO (saga) ou obj orfao: decola pro ESPACO ABERTO mesmo assim
+			var/turf/liftoff = null
+			for(var/attempt = 1 to 8)
+				var/turf/T = locate(rand(20, world.maxx - 20), rand(20, world.maxy - 20), PSPACE_HOME_Z)
+				if(T && !T.density)
+					liftoff = T
+					break
+			icon_state = ""
+			expilot.launchParalysis = 0
+			if(liftoff)
+				src.loc = liftoff
+				expilot.loc = liftoff
+				expilot.pspace_noland_until = world.time + 80
+				to_chat(expilot, "<font color=#e8b64c>[expilot.Planet ? expilot.Planet : "Este mundo"] nao esta mais em orbita registrada (destruido?) -- o pod decola pro espaco aberto.</font>")
+			else
+				to_chat(expilot, "<font color=#e8b64c>O pod nao encontra orbita alguma -- tente novamente.</font>")
+			return
+		//solta a 3-5 tiles do planeta (era view(1) = COLADO: qualquer passo re-pousava "do nada")
+		var/list/randTurfs = list()
+		for(var/turf/T in orange(5, P))
+			if(get_dist(T, P) >= 3) randTurfs += T
+		if(!randTurfs.len) for(var/turf/T in view(1,P)) randTurfs += T //fallback: planeta espremido num canto
+		if(!randTurfs.len)
+			icon_state = ""
+			expilot.launchParalysis = 0
+			to_chat(expilot, "<font color=#e8b64c>Sem espaco livre em orbita -- tente de novo.</font>")
+			return
+		var/turf/rT = pick(randTurfs)
+		src.loc = locate(rT.x,rT.y,rT.z)
+		expilot.loc = locate(rT.x,rT.y,rT.z)
+		expilot.pspace_noland_until = world.time + 80 //e ainda ha a graca anti-rebump por cima
 		icon_state = ""
-		pilot.launchParalysis = 0
+		expilot.launchParalysis = 0
 
 	verb/Use()
 		set category=null

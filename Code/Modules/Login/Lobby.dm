@@ -85,7 +85,7 @@ mob/lobby
 		if(worldloading)
 			to_chat(usr, "The world is still loading")
 			return
-		opencharacterwindow()
+		OpenLobbyUI() //seletor de personagem em HTML (characterselect.dm)
 
 	verb/startnewcharacter()
 		if(worldloading)
@@ -122,9 +122,7 @@ mob/lobby
 		if(!pspace_world_ready && world.time < 6000)
 			to_chat(client, "<font color=#e8b64c><b>O universo ainda esta sendo gerado ([pspace_startup_progress])... aguarde alguns segundos e tente de novo.</b></font>")
 			return
-		if(winexists(usr,"characterpane[usr]"))
-			winshow(src,"characterpane[usr]",0)
-			winset(usr,"characterpane[usr]","parent=none")
+		src << browse(null, "window=lobbysel") //fecha o seletor HTML
 		client.iscreating =1
 		var/mob/player = new
 		player.name = name
@@ -155,6 +153,7 @@ mob
 		set waitfor = 0
 		winshow(src,"Login_Pane",0)
 		winshow(src,"characterpane",0)
+		src << browse(null, "window=lobbysel") //a janela browse pertence ao CLIENT: fecha ao entrar no jogo
 		client.TitleMusicOn=0
 		if(!client.iscreating && Created && Race != "None") //personagem PRONTO carregado: menu se despede agora
 			client.Music_Fade()

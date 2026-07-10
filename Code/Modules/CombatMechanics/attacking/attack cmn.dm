@@ -95,7 +95,7 @@ mob/proc/doAttack(mob/M,addeddamage,iscrit,vampdamage,customFlavor,isBarrage,Typ
 	if(umulti && prob(50) && !multd)
 		doAttack(M,addeddamage,iscrit,vampdamage,customFlavor,isBarrage,Type,kboverride,TRUE)
 	if(!isBarrage) combo_count++
-	if(M.attackable&&!inregen&&!ctrlParalysis&&!med&&!train&&!KO&&move&&(Ki>=(weight*weight*1.5*BaseDrain))) //Ki do ATACANTE (src): usr e null/0 quando um NPC ataca -- "Cannot read null.Ki"
+	if(M.attackable&&!inregen&&!ctrlParalysis&&!med&&!train&&!KO&&move&&(Ki>=(min(weight,2)**2*1.5*BaseDrain))) //Ki do ATACANTE (src): usr e null/0 quando um NPC ataca. min(weight,2): o peso destampado (ate 8) fazia o soco custar 96x BaseDrain e o gate engolia TODO golpe sem aviso
 		var/testactspeed = Eactspeed
 		testactspeed /= 3 * globalmeleeattackspeed * hitspeedMod
 		testactspeed *= Type
@@ -130,7 +130,7 @@ mob/proc/AttackMultiple(var/mob/M,var/addeddamage,var/iscrit,var/vampdamage,var/
 	var/dmg=1
 	dmg = attackCalcs(M,addeddamage,iscrit,vampdamage,0,1) * BPModulus(expressedBP,M.expressedBP)
 	if(isBarrage) dmg /= isBarrage
-	if(M.attackable&&!inregen&&!ctrlParalysis&&!med&&!train&&!KO&&move&&(Ki>=(weight*weight*1.5*BaseDrain))) //Ki do src (usr null em NPC)
+	if(M.attackable&&!inregen&&!ctrlParalysis&&!med&&!train&&!KO&&move&&(Ki>=(min(weight,2)**2*1.5*BaseDrain))) //Ki do src (usr null em NPC); min(weight,2): custo do peso na curva historica (peso alto pune por BP/lentidao/esmagamento, nao por soco impagavel)
 		commonAttackProcs(M,1,1)
 		hitProc(M,dmg,iscrit,customFlavor,1)
 		var/testactspeed = Eactspeed
@@ -157,7 +157,7 @@ mob/proc/commonAttackProcs(var/mob/M,testactspeed,barrage)
 	StartFightingStatus()
 	dir = get_dir(loc,M.loc)
 	if(Ki>=1&&!KO&&!Apeshit)
-		Ki-=angerBuff*weight*weight*1.5*BaseDrain
+		Ki-=angerBuff*min(weight,2)**2*1.5*BaseDrain //min: custo do peso no teto historico (2)
 	if(Anger>100)
 		Anger-=((MaxAnger-100)/8000)
 	canbeleeched=1

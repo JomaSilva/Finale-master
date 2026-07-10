@@ -110,8 +110,8 @@ mob/verb/testdash()
 //and etc based on technique and martial arts. (melee attacks and stuff.)
 mob/proc/Whiff(Type)
 	if(KO || !hasTime) return
-	if(Ki>=5 * BaseDrain * weight**2)
-		Ki-=5 * BaseDrain * weight**2
+	if(Ki>=5 * BaseDrain * min(weight,2)**2) //min: o peso destampado (ate 8) cobrava 320x BaseDrain POR PASSO em combate
+		Ki-=5 * BaseDrain * min(weight,2)**2
 	training=1
 	missedtrain=0
 	Fight()

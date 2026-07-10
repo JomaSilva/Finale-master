@@ -22,12 +22,16 @@ proc
 			F<<L
 			to_chat(world, "Map Saved ([amount])")
 	MapLoad()
-		var/amount =0 
+		var/amount =0
 		if(fexists("MapSave"))
-			var/savefile/F=new("MapSave")
-			var/list/L=new/list
-			F>>L
-			amount = L.len
+			try //um MapSave antigo/corrompido estourava AQUI ("bad loc") e MATAVA o resto do boot:
+				//LoadPlanets nunca rodava = espaco SEM NENHUM planeta canonico ("todos sumiram")
+				var/savefile/F=new("MapSave")
+				var/list/L=new/list
+				F>>L
+				amount = L.len
+			catch(var/exception/e)
+				WriteToLog("debug","MapLoad: MapSave corrompido/invalido ([e]) -- ignorado; os planetas carregam normalmente")
 		LoadPlanets()
 		maploadcomplete=1
 		to_chat(world, "<font size=1>Map Loaded. ([amount])")

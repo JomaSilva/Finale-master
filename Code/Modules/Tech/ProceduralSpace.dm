@@ -13,7 +13,7 @@
 // Ganchos externos: testPlanetbump (Planets.dm), Grav() (Gravity.dm),
 // ui_tab_nav (HtmlUI.dm), wipe-servidor.bat ("Galaxy").
 // ============================================================================
-#define PSPACE_HOME_Z 26        // z do espaco original (setor 0,0)
+//PSPACE_HOME_Z (z26, o espaco original) mora no 1A Defines.dm: o Launch do PlanetTech.dm tambem usa
 #define PSPACE_SIZE 200         // lado da regiao util de um setor gerado
 #define PSURF_SIZE 500          // lado da superficie de um planeta procedural (mundo inteiro; 1a visita gera ~250k turfs, alguns segundos)
 #define PSPACE_GEN_TICKCAP 92   // % de tick que a geracao pode ocupar antes de ceder (o CHECK_TICK por tile + lagstopsleep escalonado derrubava o ritmo pra ~3%)
@@ -353,6 +353,7 @@ proc/pspace_unload_sector_on(pz, peek)
 		for(var/o in S.spawned) if(o) del o
 		S.spawned.Cut()
 		for(var/mob/npc/N in world) if(N.z == pz) del N //NPC orfao que vazou pro espaco do setor
+		for(var/obj/O in obj_list.Copy()) if(O && O.z == pz) del O //sobras (itens/maquinas largados no espaco) vazavam pro PROXIMO setor do z
 		for(var/datum/pspace_planet/D in S.planets)
 			D.pobj = null //os objs morrem no del acima
 		S.z = 0 //revisita regenera do seed
@@ -764,6 +765,11 @@ proc/pspace_login_restore(mob/M)
 // (turf/build + obj/buildables) e salvo FLAT por planeta e re-aplicado apos
 // cada regeneracao. Snapshot: no unload do pool, no shutdown e a cada 5 min.
 // ---------------------------------------------------------------------------
+//maquinas de tech que persistem INTEIRAS no PlanetCache (serializacao nativa do savefile:
+//upgrades/energia/conteudo sobrevivem). Todas ja nascem com SaveItem=1 (design do MapSave)
+proc/pspace_is_machine(obj/O)
+	return (istype(O, /obj/Technology) || istype(O, /obj/DNALab) || istype(O, /obj/items/Gravity) || istype(O, /obj/items/Clone_Machine) || istype(O, /obj/items/Regenerator) || istype(O, /obj/items/Simulator) || istype(O, /obj/items/Radar))
+
 proc/pspace_builds_snapshot(datum/pspace_planet/D, list/pre_objs = null)
 	if(!D || !D.surface_z) return
 	var/list/tdata = list()
@@ -774,6 +780,7 @@ proc/pspace_builds_snapshot(datum/pspace_planet/D, list/pre_objs = null)
 	var/list/pdata = list() //plantacoes (com estagio de crescimento)
 	var/list/rdata = list() //arvores plantadas
 	var/list/vdata = list() //naves/pods estacionados
+	var/list/mdata = list() //maquinas de tech (bench/gravidade/labs/clonagem...): objs INTEIROS
 	//pre_objs: o cache_ticker passa a lista JA filtrada do z (varrer a obj_list inteira POR
 	//planeta custava ~100ms x N planetas residentes = solavanco de segundos a cada 5 min)
 	for(var/obj/O in (islist(pre_objs) ? pre_objs : obj_list))
@@ -788,13 +795,18 @@ proc/pspace_builds_snapshot(datum/pspace_planet/D, list/pre_objs = null)
 		else if(istype(O, /obj/Spacepod))
 			var/obj/Spacepod/V = O
 			vdata += list(list("[V.type]", V.x, V.y, V.dir, "[V.name]", "[V.channel]", "[V.link]", V.Speed))
-	if(!tdata.len && !odata.len && !pdata.len && !rdata.len && !vdata.len && !fexists("PlanetCache")) return
+		else if(pspace_is_machine(O))
+			O.saved_x = O.x //padrao MapSave: as coords viajam DENTRO do obj serializado
+			O.saved_y = O.y
+			mdata += O
+	if(!tdata.len && !odata.len && !pdata.len && !rdata.len && !vdata.len && !mdata.len && !fexists("PlanetCache")) return
 	var/savefile/S = new("PlanetCache")
 	S["b_[D.name]"] << tdata
 	S["o_[D.name]"] << odata
 	S["p_[D.name]"] << pdata
 	S["r_[D.name]"] << rdata
 	S["v_[D.name]"] << vdata
+	S["m_[D.name]"] << mdata
 
 proc/pspace_builds_restore(datum/pspace_planet/D)
 	if(!D || !D.surface_z || !fexists("PlanetCache")) return
@@ -874,12 +886,20 @@ proc/pspace_builds_restore(datum/pspace_planet/D)
 			V.link = e[7] //o New sorteia link novo: restaura o original (senao o Call_Ship perde a nave)
 			V.Speed = e[8]
 			n++
+	var/list/mdata = null
+	S["m_[D.name]"] >> mdata
+	if(islist(mdata)) //maquinas INTEIRAS (o >> ja recriou os objs com upgrades/energia/conteudo)
+		for(var/obj/M in mdata)
+			if(!M) continue
+			M.loc = locate(max(2, M.saved_x), max(2, M.saved_y), D.surface_z)
+			if(hascall(M, "Ticker")) spawn call(M, "Ticker")() //o >> NAO roda New(): religa o loop interno (gravidade/regenerator)
+			n++
 	if(n) WriteToLog("debug","pspace: [n] construcoes/plantas/naves restauradas em [D.name]")
 
 proc/pspace_builds_migrate(oldname, newname) //planeta batizado: o cache muda de chave
 	if(!fexists("PlanetCache")) return
 	var/savefile/S = new("PlanetCache")
-	for(var/pref in list("b", "o", "p", "r", "v"))
+	for(var/pref in list("b", "o", "p", "r", "v", "m"))
 		var/list/data = null
 		S["[pref]_[oldname]"] >> data
 		if(islist(data)) S["[pref]_[newname]"] << data
@@ -904,7 +924,7 @@ proc/pspace_cache_ticker() //snapshot periodico (crash do servidor nao come a ca
 		for(var/obj/O in obj_list)
 			if(++i % 8192 == 0) sleep(world.tick_lag) //nunca segura o tick
 			if(!O || O.pspace_wild || !O.z) continue
-			if(istype(O, /obj/buildables) || istype(O, /obj/Plants) || istype(O, /obj/Trees) || istype(O, /obj/Spacepod))
+			if(istype(O, /obj/buildables) || istype(O, /obj/Plants) || istype(O, /obj/Trees) || istype(O, /obj/Spacepod) || pspace_is_machine(O))
 				var/k = "[O.z]"
 				if(!perz[k]) perz[k] = list()
 				var/list/L = perz[k]
