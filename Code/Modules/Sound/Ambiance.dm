@@ -42,6 +42,7 @@ atom/proc/o_emit_Sound(var/snd,volume)
 			M << sound(snd,volume=targvol,channel=rand(2,49)) //explicit SFX channel range (never the music channels 58/59/60 or 1021-1024): channel 0 auto-alloc could grab ch 60 and cut the battle music (e.g. during a ZanzoClash sound burst)
 
 proc/emit_Sound_to(var/snd,var/mob/M,volume)
+	if(!M) return //mob deletado/null: o runtime em massa daqui inundava o DEBUG.log ate o BYOND SUPRIMIR os crashes seguintes (cegava a triagem)
 	if(M.client)
 		var/targvol
 		if(volume != null) targvol = M.client.clientvolume * volume

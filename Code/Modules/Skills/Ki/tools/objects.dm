@@ -239,6 +239,20 @@ obj/attack/blast
 					mods=proprietor.beammods*(rangemod**(maxdistance-distance))
 					murderToggle=proprietor.murderToggle//so the damage and lethality can change as the user's stats change
 					if(!in_beamclash) walk(src,src.dir,beamspeed)//we want each beam object to decide if it should move, while the rest stay where they are (numa DISPUTA a cabeca fica plantada; BeamClash.dm)
+					//DISPUTA POR PROXIMIDADE: o Bump so dispara dense-contra-dense no MESMO tile, entao dois
+					//beams RETOS (carregados, sem homing: Galick etc.) em fileiras vizinhas se atravessavam sem
+					//nunca colidir -- so os basicos (homing curva pro alvo) alinhavam e disputavam. Cabeca
+					//inimiga a <=1 tile vindo na direcao contraria (+-45) = disputa igual a do Bump frontal.
+					if(!in_beamclash && proprietor && proprietor.beaming)
+						var/opp = get_opposite_dir(src)
+						for(var/obj/attack/blast/R in range(1, src))
+							if(R == src || R.in_beamclash || !R.loc) continue
+							if(!R.WaveAttack && !R.is_genkidama) continue
+							if(R.proprietor == proprietor || !ismob(R.proprietor)) continue
+							if(!R.is_genkidama)
+								if(R.icon_state != "head" && R.icon_state != "") continue //so a PONTA do beam inimigo (corpo/tail quem corta e o Crossed)
+								if(R.dir != opp && R.dir != turn(opp,45) && R.dir != turn(opp,-45)) continue //vindo CONTRA nos (paralelo no mesmo sentido = aliados atirando juntos)
+							if(bcl_try_start(src, R)) break
 				else
 					obj_list-=src
 					attack_list-=src

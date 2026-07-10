@@ -55,7 +55,12 @@ mob/proc
 			if(HP>0&&!undelayed) mobTime*=HP/100 //Damage delay
 			if(weight>1) mobTime-=weight*(1/Espeed) //Weight delay
 			var/mvcrush = max((Planetgrav+gravmult)/max(GravMastered,1), weight_ratio) //PESO efetivo esmaga a velocidade IGUAL gravidade (a pior das duas razoes)
-			if(mvcrush > 1) mobTime /= (1 + (mvcrush - 1) * GRAVCRUSH_SLOW) //esmagamento MULTIPLICATIVO (2x da maestria ~ 1/2 da velocidade, 4x ~ 1/4) -- o -2 flat antigo sumia no ganho dos personagens rapidos
+			if(mvcrush > 1)
+				//o while do totalTime consome no MAXIMO ~(MAXIMUM_TIME+OMEGA_RATE) de mobTime por tick e DESCARTA o excesso.
+				//Dash soma +0.5*Epspeed (~55 com Espeed ~10): dividir 57 por 2.13 dava 27, ainda acima do teto de ~11 passos --
+				//na tela o esmagado corria NORMAL. Clampando no teto real primeiro, a divisao sempre morde: 2x = metade REAL.
+				mobTime = min(mobTime, MAXIMUM_TIME + OMEGA_RATE)
+				mobTime /= (1 + (mvcrush - 1) * GRAVCRUSH_SLOW) //esmagamento MULTIPLICATIVO (2x da maestria ~ 1/2 da velocidade, 4x ~ 1/4) -- o -2 flat antigo sumia no ganho dos personagens rapidos
 			if(bigform||expandlevel) mobTime -= 0.1 //Buff delay
 			if(swim)
 				mobTime-=0.3 //Swim Delay

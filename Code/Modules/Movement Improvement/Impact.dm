@@ -12,8 +12,8 @@ mob/proc/Impact(var/mob/M,var/dmg,var/unavoidable,var/grnd)
 	var/threshold = 4*M.Ewillpower*M.hpratio*BPModulus(M.expressedBP,expressedBP)
 	if((dmg > threshold||unavoidable)&&!M.KB)
 		dmg = round(min(max(dmg,5)/1.5,9),1)
-		M.kbdir = usr.dir
-		M.kbpow = usr.expressedBP
+		M.kbdir = dir //src, NUNCA usr: Impact roda em cadeia de dano (engine) onde usr e null -- runtime matava o knockback e inundava o log
+		M.kbpow = expressedBP
 		M.kbdur = dmg
 		M.AddEffect(/effect/knockback)
 
