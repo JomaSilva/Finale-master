@@ -336,6 +336,39 @@ proc/pspace_alloc_z(list/pool, cap, unload_cb)
 	call(unload_cb)(bestz, 0) //descarrega o dono de verdade
 	return bestz
 
+//LIMPEZA EM LOTE de um z do pool. NUNCA del em massa aqui: cada del no BYOND faz uma
+//cacada GLOBAL de referencias, e o obj/Del ainda paga obj_list -= src (varredura linear
+//da lista global POR OBJETO; item_list idem) -- descarregar uma superficie com milhares
+//de flora/minerio CONGELAVA o mundo por minutos sem processar tick (o world.time para
+//junto, entao o log jurava "5s"). Aqui: tudo que RENASCE da seed (spawned/pspace_wild)
+//sai por loc=null (GC por refcount, sem cacada) e obj_list/item_list sao RECONSTRUIDAS
+//em uma unica passada; del de verdade sobra so pro punhado de coisa de jogador (maquina
+//com Ticker while(src), nave, item largado -- que virariam zumbi com loc=null).
+proc/pspace_z_wipe(pz, list/spawned)
+	if(spawned)
+		for(var/obj/o in spawned) if(o) o.pspace_wild = 1 //conteudo gerado: caminho barato (renasce na regen)
+		spawned.Cut()
+	var/list/okeep = list()
+	var/list/hard = list() //os poucos que precisam de del real
+	for(var/obj/O in obj_list)
+		if(!O) continue
+		if(O.z != pz)
+			okeep += O
+			continue
+		if(O.pspace_wild) O.loc = null //GC coleta; plantas/blasts saem dos proprios loops via loc
+		else hard += O
+	obj_list = okeep
+	var/list/ikeep = list() //item_list: mesma reconstrucao (o caminho GC nao roda Del() = ninguem faria o -=)
+	for(var/obj/items/I in item_list)
+		if(I && !(I.z == pz && I.pspace_wild)) ikeep += I
+	item_list = ikeep
+	for(var/obj/o in hard)
+		if(!o) continue
+		if(istype(o, /obj/items)) o:amount = 1 //pilha: o Del() de items so DECREMENTA amount>1 e o obj sobrevivia no z reciclado
+		del o
+	for(var/mob/npc/N in mob_list.Copy()) //mob_list, NUNCA "in world" (varre TODOS os atomos do mundo, turfs inclusos)
+		if(N && N.z == pz) del N //poucos: cidadaos/monstros precisam de del real (loops de IA seguram a ref)
+
 //descarrega o SETOR que ocupa o z (cb do alloc): devolve last_visit no modo consulta
 proc/pspace_unload_sector_on(pz, peek)
 	for(var/k in pspace_sectors)
@@ -350,12 +383,9 @@ proc/pspace_unload_sector_on(pz, peek)
 				for(var/mob/M in player_list)
 					if(M.client && M.z == D.surface_z) return 999999999
 			return S.last_visit
-		for(var/o in S.spawned) if(o) del o
-		S.spawned.Cut()
-		for(var/mob/npc/N in world) if(N.z == pz) del N //NPC orfao que vazou pro espaco do setor
-		for(var/obj/O in obj_list.Copy()) if(O && O.z == pz) del O //sobras (itens/maquinas largados no espaco) vazavam pro PROXIMO setor do z
+		pspace_z_wipe(pz, S.spawned) //limpeza em LOTE (del em massa congelava o mundo por minutos)
 		for(var/datum/pspace_planet/D in S.planets)
-			D.pobj = null //os objs morrem no del acima
+			D.pobj = null //solta a ultima ref -> o GC coleta o obj do planeta
 		S.z = 0 //revisita regenera do seed
 		return 0
 	return 0
@@ -369,10 +399,7 @@ proc/pspace_unload_surface_on(pz, peek)
 			if(D.generating) return 999999999 //superficie sendo gerada AGORA: reciclar = duas geracoes brigando pelo z (horda de NPC duplicada, terreno misturado)
 			return D.last_visit
 		pspace_builds_snapshot(D) //construcoes dos jogadores sobrevivem ao recycle (re-aplicadas na regen)
-		for(var/o in D.spawned) if(o) del o
-		D.spawned.Cut()
-		for(var/mob/npc/N in world) if(N.z == pz) del N //inimigo que vagou pra fora da lista
-		for(var/obj/O in obj_list.Copy()) if(O && O.z == pz) del O //sobras (buildables/itens largados) vazavam pro PROXIMO planeta do z; Copy: o proprio del encolhe a obj_list no meio da iteracao
+		pspace_z_wipe(pz, D.spawned) //limpeza em LOTE (del em massa congelava o mundo por minutos)
 		D.surface_z = 0
 		return 0
 	return 0
