@@ -6,8 +6,12 @@
 //     aleatorio em torno da MEDIA dos players inscritos, Zanzoken e ki basico.
 //   * Bracket 1v1: oitavas -> quartas -> semifinal -> final (NPC vs NPC rola).
 //   * RING-OUT: sair do retangulo da arena SEM estar voando = derrota imediata.
+//     A IA SABE da regra: perto da linha ela recua pro centro; se ALGUM player
+//     inscrito possui voo, parte dos NPCs entra VOADORA (espelha oponente que
+//     voa / voo de emergencia na borda) -- luta aerea so termina em NOCAUTE.
 //   * Premios: 1o lugar 1.000.000z, 2o 500.000z, 3o (cada semifinalista) 250.000z.
-//   * Quem nao esta lutando assiste da beirada; verb "Assistir Torneio" (aba
+//   * Quem NAO esta lutando (aguardando OU eliminado) fica TRAVADO fora da
+//     arena (nao anda, nao bate, nao apanha); verb "Assistir Torneio" (aba
 //     Other) mostra a luta pela camera de um dos lutadores.
 // TODOS os numeros de ajuste ficam neste bloco.
 // ============================================================================
@@ -28,6 +32,8 @@
 #define TRN_NPC_BP_MIN 60       // BP do NPC = media dos players x rand(MIN..MAX)/100
 #define TRN_NPC_BP_MAX 140
 #define TRN_NPC_BP_FLOOR 500    // BP minimo de um NPC do torneio
+#define TRN_AI_FLY_CHANCE 60    // % de cada NPC lutador entrar VOADOR (so quando algum player inscrito possui a skill de voo)
+#define TRN_AI_EDGE_MARGIN 2    // a quantos tiles da linha a IA reage (recua pro centro / voo de emergencia)
 
 // ---- TORNEIO DO OUTRO MUNDO (so mortos; arena no ceu, z6) ----
 #define TRNH_ARENA_X1 117       // vertice esquerdo da arena celeste
@@ -48,6 +54,7 @@ var/list/trn_frost_names = list("Frieza","Cooler","Frost","Chilled","Kuriza","Gl
 // ---------------------------------------------------------------------------
 mob/npc/var
 	tourney_lock = 0                 // 1 = lutador de torneio: a IA SO encara tourney_opponent (guards no NPCAI.dm)
+	tourney_can_fly = 0              // escalado pra VOAR nesta luta (sorteado quando algum player inscrito possui voo)
 	tmp/mob/tourney_opponent = null  // oponente designado da luta atual
 mob/var/tmp
 	trn_watching = 0                 // esta assistindo pela camera de um lutador
@@ -100,6 +107,8 @@ mob/npc/proc/tourney_standdown()
 	tourney_opponent = null
 	AIRunning = 0
 	IsInFight = 0
+	flight = 0 //pousa (o voo e ferramenta DA LUTA)
+	if(icon_state == "Flight") icon_state = ""
 	walk(src,0)
 	if(KO) spawn Un_KO()
 
@@ -259,6 +268,31 @@ datum/tournament
 		var/turf/T2 = rest_turf()
 		if(T2) M.loc = T2
 
+	//---- IA DO RING-OUT -------------------------------------------------------
+	//O lutador NPC "sabe" que pisar fora = derrota: perto da linha ele recua pro
+	//centro; se estiver ESCALADO pra voar (tourney_can_fly), espelha oponente
+	//voador e levanta voo de EMERGENCIA na borda -- voando o ring-out nao vale
+	//(regra ja existente no monitor), entao a luta aerea so termina em nocaute.
+	proc/edge_margin(mob/M) //distancia ate a linha mais proxima (<=0 = em cima/fora)
+		return min(M.x - arena_x1, arena_x2 - M.x, M.y - arena_y1, arena_y2 - M.y)
+
+	proc/trn_ai_assist(mob/npc/N, mob/foe)
+		if(!N || !N.loc || N.KO || N.dead || N.z != arena_z) return
+		var/m = edge_margin(N)
+		if(N.tourney_can_fly && !N.flight)
+			if((foe && foe.flight) || m <= TRN_AI_EDGE_MARGIN) //espelha o voo do oponente OU salva-se da borda
+				N.flight = 1
+				if("Flight" in icon_states(N.icon)) N.icon_state = "Flight"
+				tell("[N.name] levanta voo!")
+		else if(N.flight && N.tourney_can_fly && foe && !foe.flight && m >= 5)
+			N.flight = 0 //oponente no chao e area segura: pousa (a luta volta ao solo)
+			if(N.icon_state == "Flight") N.icon_state = ""
+		if(!N.flight && m <= TRN_AI_EDGE_MARGIN)
+			var/turf/C = locate(round((arena_x1 + arena_x2) / 2), round((arena_y1 + arena_y2) / 2), arena_z)
+			if(C)
+				step(N, get_dir(N, C)) //recua pro centro ANTES da checagem de ring-out
+				if(m <= 0) step(N, get_dir(N, C)) //ja na linha/fora (knockback): passo duplo pra dentro
+
 	proc/eligible(mob/M) //quem recebe o CONVITE (Terra: vivos na Terra)
 		return (!M.dead && M.Planet == "Earth")
 
@@ -288,7 +322,7 @@ datum/tournament
 	// os gates de ataque checam canfight) e INTOCAVEL (attackable=0: melee e
 	// blast checam o attackable do alvo). Ele so observa da beirada ou usa o
 	// verb Assistir Torneio. Resolve a INVASAO de luta por outro inscrito.
-	proc/apply_hold(mob/M)
+	proc/apply_hold(mob/M, quiet)
 		if(!M || M == fighter_a || M == fighter_b) return
 		var/fresh = !M.tourney_held //so avisa na 1a vez (re-travas silenciosas)
 		M.tourney_held = 1
@@ -298,7 +332,7 @@ datum/tournament
 		M.canfight = 0
 		M.attackable = 0
 		walk(M, 0)
-		if(fresh && M.client) to_chat(M, "<font color=#e0a030>Voce esta na AREA DE ESPERA do torneio: imovel e intocavel ate a sua vez. Assista daqui ou use o verb <b>Assistir Torneio</b> (aba Other).")
+		if(fresh && !quiet && M.client) to_chat(M, "<font color=#e0a030>Voce esta na AREA DE ESPERA do torneio: imovel e intocavel ate a sua vez. Assista daqui ou use o verb <b>Assistir Torneio</b> (aba Other).")
 
 	proc/release_hold(mob/M)
 		if(!M) return
@@ -313,13 +347,17 @@ datum/tournament
 		for(var/mob/M in held.Copy()) release_hold(M)
 		held.Cut()
 
-	proc/eliminate(mob/M) //saiu da chave: PLAYER fica livre (vira publico comum); NPC convidado fica travado (nao vira saco de pancada ate o cleanup)
+	proc/eliminate(mob/M) //saiu da chave: TODO participante (player ou NPC) espera TRAVADO fora da arena ate o fim (eliminado solto andava DENTRO da arena no meio das lutas)
 		if(!M) return
 		if(istype(M, /mob/npc))
-			apply_hold(M)
+			apply_hold(M, 1)
 			return
-		release_hold(M)
-		if(M.client) to_chat(M, "<font color=#e0a030>Voce foi eliminado do torneio e esta livre. Acompanhe o resto das lutas pelo verb <b>Assistir Torneio</b> (aba Other).")
+		if(M.client && player_ok(M) && M.loc) //player em condicoes de ficar: espera na beirada igual todo mundo
+			if(in_arena(M)) rest_place(M) //garante que aguarda do lado de FORA da arena
+			apply_hold(M, 1)
+			to_chat(M, "<font color=#e0a030>Voce foi ELIMINADO! Aguarde o encerramento na area de espera (imovel e intocavel) -- assista daqui ou pelo verb <b>Assistir Torneio</b> (aba Other).")
+		else
+			release_hold(M) //morreu/deslogou no processo: nao pode ficar preso fora do evento
 
 	proc/hold_watch() //loop de RE-TRAVA: Un_KO() e fins de skill setam move/canfight=1 por fora da nossa conta
 		set waitfor = 0
@@ -463,6 +501,18 @@ datum/tournament
 		B.loc = fighter_spot(2)
 		A.dir = EAST
 		B.dir = WEST
+		//VOO da IA: se ALGUM player inscrito possui a skill de voo, parte dos NPCs entra voadora
+		var/anyfly = 0
+		for(var/mob/P in entrants)
+			if(P && P.client && (P.flight || (/mob/keyable/verb/Fly in P.verbs)))
+				anyfly = 1
+				break
+		if(istype(A, /mob/npc))
+			var/mob/npc/fA = A
+			fA.tourney_can_fly = (anyfly && prob(TRN_AI_FLY_CHANCE))
+		if(istype(B, /mob/npc))
+			var/mob/npc/fB = B
+			fB.tourney_can_fly = (anyfly && prob(TRN_AI_FLY_CHANCE))
 		announce("[round_name] - Luta [mnum]: [A.name] VS [B.name]!")
 		rebind_watchers()
 		for(var/c = TRN_COUNTDOWN, c >= 1, c--)
@@ -489,6 +539,13 @@ datum/tournament
 			if(A.KO && B.KO) { winner = (A.HP >= B.HP) ? A : B; break }
 			if(A.KO) { winner = B; break }
 			if(B.KO) { winner = A; break }
+			//IA do ring-out: o NPC recua da borda / levanta voo ANTES das checagens abaixo
+			if(istype(A, /mob/npc))
+				var/mob/npc/aiA = A
+				trn_ai_assist(aiA, B)
+			if(istype(B, /mob/npc))
+				var/mob/npc/aiB = B
+				trn_ai_assist(aiB, A)
 			//RING-OUT: fora da arena SEM voar = derrota na hora
 			if(!A.flight && !in_arena(A))
 				tell("[A.name] pisou fora da arena! RING-OUT!")

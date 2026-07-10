@@ -56,7 +56,7 @@
 		..()
 
 atom/movable
-	var/list/BB = list()
+	var/tmp/list/BB = list() //tmp OBRIGATORIO: BB nao-tmp serializava as caixas do campo junto com a maquina (PlanetCache/ItemSave) -- voltavam FANTASMAS sem loc e bounds() estourava "invalid bounds" (Click da gravidade morria com choosinggrav=1 preso = "clico e nada acontece")
 	proc
 		BBCross(obj/BB,argl)
 			. = TRUE

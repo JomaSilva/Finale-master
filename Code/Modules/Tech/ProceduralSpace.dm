@@ -875,6 +875,20 @@ proc/pspace_builds_restore(datum/pspace_planet/D)
 			O.name = e[8]
 			O.proprietor = e[9]
 			n++
+	//AREA CONSTRUIDA e zona do jogador: flora/pedra selvagem que a seed rolou em cima de
+	//turf construido ou de mobilia SOME (plantas/arvores "arrancadas" voltavam DENTRO da
+	//base a cada boot -- a seed regenera o mato, mas construcao marca o chao como domado)
+	for(var/list/zone in list(tdata, odata))
+		if(!islist(zone)) continue
+		for(var/list/e in zone)
+			if(!islist(e) || e.len < 3) continue
+			var/turf/BT = locate(e[2], e[3], D.surface_z)
+			if(!BT) continue
+			for(var/obj/W in BT)
+				if(W && W.pspace_wild)
+					obj_list -= W
+					item_list -= W
+					W.loc = null //GC coleta (mesma receita do wipe)
 	var/list/pdata = null
 	var/list/rdata = null
 	var/list/vdata = null
@@ -919,6 +933,11 @@ proc/pspace_builds_restore(datum/pspace_planet/D)
 		for(var/obj/M in mdata)
 			if(!M) continue
 			M.loc = locate(max(2, M.saved_x), max(2, M.saved_y), D.surface_z)
+			if(istype(M, /obj/items/Gravity)) //campo NAO sobrevive ao reboot: caches antigos traziam caixas fantasma na BB (bounds() estourava e travava o Click) -- volta DESLIGADA e limpa
+				var/obj/items/Gravity/GM = M
+				GM.BB = list()
+				GM.Grav = 0
+				GM.overlays.Cut()
 			if(hascall(M, "Ticker")) spawn call(M, "Ticker")() //o >> NAO roda New(): religa o loop interno (gravidade/regenerator)
 			n++
 	if(n) WriteToLog("debug","pspace: [n] construcoes/plantas/naves restauradas em [D.name]")

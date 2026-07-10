@@ -144,6 +144,7 @@ mob/proc/Grav()
 	for(var/obj/items/Gravity/GM in range(7, src))
 		if(GM.Grav <= 0 || GM.Energy <= 0) continue //maquina desligada/sem bateria nao conta
 		for(var/obj/bounding_box/bx in GM.BB)
+			if(!bx || !bx.loc) continue //caixa fantasma (veio de savefile antigo): bounds() estoura "invalid bounds"
 			if(src in bounds(bx)) //dentro do campo dessa maquina
 				fieldgrav += GM.Grav
 				break
@@ -191,6 +192,9 @@ obj/items/Gravity
 					Grav=0
 					src.overlays.Cut()
 					for(var/obj/o in BB)
+						if(!o || !o.loc) //caixa fantasma de savefile: bounds() estouraria e mataria o Ticker
+							BB -= o
+							continue
 						var/list/nL = bounds(o)
 						for(var/mob/M in nL)
 							M.gravmult = 0
@@ -295,6 +299,9 @@ obj/items/Gravity
 				src.overlays.Cut()
 				to_chat(view(src), "[src]: Gravity temporarily neutralized.")
 				for(var/obj/o in BB)
+					if(!o || !o.loc) //caixa fantasma de savefile: o runtime aqui matava o Click com choosinggrav=1 PRESO ("clico e nada acontece")
+						BB -= o
+						continue
 					var/list/nL = bounds(o)
 					for(var/mob/M in nL)
 						M.gravmult = 0

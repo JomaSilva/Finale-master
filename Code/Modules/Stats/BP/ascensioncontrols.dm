@@ -75,6 +75,9 @@ mob/proc/Auto_Gain()
 	if(bio_lab_born && bio_stage == 1) //LARVA de bio-androide: a carapaca SUPRIME a Ascensao (senao o BPBoost de ate ~317x montava sobre a restricao e a larva nascia um monstro em vez de expressar so 10% do base)
 		BPBoost = 1
 		return
+	if(Class == "Corrupted Majin" && !NoAscension) //classe COM transformacoes (regra do Saiyajin/Bio: forma e Ascensao nao se somam) -- RETROATIVO: normaliza chars antigos com boost salvo no primeiro tick
+		NoAscension = 1
+		BPBoost = 1
 	if(BPBoost > 20) BPBoost = 20 //teto 20x RETROATIVO: o Auto_Gain nunca REDUZIA o BPBoost (as branches so sobem) -- sem isto, players antigos com 127x-317x salvos ficariam acima do teto pra sempre
 	bp_milestone_check_ascension() //MARCOS das racas sem forma: BPBoost 5/10/20 sobem o ganho linear (LinearGain.dm)
 	var/BPprog = 0
@@ -106,6 +109,9 @@ mob/proc/Auto_Gain()
 mob/proc/SmoothGains(var/TargetBPBoost)
 	set waitfor = 0
 	while(BPBoost<TargetBPBoost)
+		if(NoAscension) //virou NoAscension no meio do smoothing (ex.: gate do Corrupted Majin re-zerou o boost): aborta, senao o alvo nunca e alcancado e BPincreasing fica preso em 1
+			BPincreasing = 0
+			return
 		BPBoost += (0.001 * max(1,(BP/100000)))
 		if(BPBoost>=TargetBPBoost)
 			BPBoost=TargetBPBoost
