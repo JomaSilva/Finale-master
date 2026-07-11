@@ -307,7 +307,7 @@ datum/genetics
 		
 		assign_starting_BP()
 			if(this_class == "Mutant Frost Demon") //rare powerful variant: always starts at a huge, per-player-random BP
-				savant.BP = rand(200000, 700000)
+				savant.BP = rand(1000000, 3000000) //media 2M: o mutante NASCE na forma 1 (25% -> ~500k expressos, a "casa dos 500k" de antes); 4x o rand antigo (200k-700k)
 				return
 			var/sbp = misc_stats["Starting BP"]
 			if(sbp <= 0) sbp = 1 //guard against divide-by-zero / missing seed

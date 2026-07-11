@@ -150,6 +150,12 @@ mob
 						AIRunning = 0
 						IsInFight = 0
 					return
+				//PRESA de evento (Cell vs androides): re-engaja enquanto ela estiver de pe e por perto.
+				//KO'd NAO: o monitor do BossEvents assume (Cell caminha ate o corpo e absorve por contato)
+				if(bev_prey && bev_prey.loc && !bev_prey.dead && !bev_prey.KO && hasAI && get_dist(src, bev_prey) <= 60)
+					target = bev_prey
+					spawn(1) chaseState()
+					return
 				//the CURRENT target is still valid and merely DISPLACED (ZanzoClash/rush/throw fling the NPC far from aggro_loc)?
 				//keep fighting it -- do NOT fall through to a spurious reset, which full-heals to 100% and drops the NPC to idle.
 				if(target && target.client && !target.KO && target.HP > 20 && get_dist(src,target) <= aggro_dist*2)
@@ -430,7 +436,7 @@ mob
 				while(d>keep_dist && src.hasAI && target)
 					state_alive++
 					//if the Target is out of range or dead, bail out.
-					if(!src.target.client && !(tourney_lock && src.target == tourney_opponent))//AI nao ataca AI -- EXCETO luta NPC vs NPC do torneio
+					if(!src.target.client && !(tourney_lock && src.target == tourney_opponent) && src.target != bev_prey)//AI nao ataca AI -- EXCETO torneio e PRESA de evento (Cell vs androides)
 						src.lostTarget()
 						return 0
 					if((get_dist(aggro_loc,src)>aggro_dist*2 && get_dist(src,target)>aggro_dist)||(src.target.KO&&!src.isBoss)||(src.target.KO&&src.isBoss&&prob(20))) //leash: give up ONLY if the NPC wandered far from home AND the target is far -- a ZanzoClash/throw that displaces the NPC but keeps the target adjacent must NOT trip this

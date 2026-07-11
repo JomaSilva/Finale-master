@@ -79,6 +79,7 @@ mob/proc/Auto_Gain()
 		NoAscension = 1
 		BPBoost = 1
 	if(BPBoost > 20) BPBoost = 20 //teto 20x RETROATIVO: o Auto_Gain nunca REDUZIA o BPBoost (as branches so sobem) -- sem isto, players antigos com 127x-317x salvos ficariam acima do teto pra sempre
+	if((Race=="Frost Demon"||Parent_Race=="Frost Demon") && BPBoost > FD_ASC_CAP) BPBoost = FD_ASC_CAP //rework Frost: retroativo pros ~17x salvos (as formas 10x/20x assumem o grosso)
 	bp_milestone_check_ascension() //MARCOS das racas sem forma: BPBoost 5/10/20 sobem o ganho linear (LinearGain.dm)
 	var/BPprog = 0
 	if(Race=="Frost Demon"||Parent_Race=="Frost Demon") BPprog = 15
@@ -94,6 +95,7 @@ mob/proc/Auto_Gain()
 				if(BPprog>=150) BPascenprog *= (((BPprog - 150) / ascensionmod3) + ascensionmodtpf) //127.5 mult cap
 				nuBPBoost = min(max(1,BPascenprog),BPBoostCap,20) //teto 20x cravado: BPBoostCap persiste no save (chars antigos vieram com 200)
 				nuBPBoost *= (GlobalBPBoost * log(ascensionascmodlg,ascBPmod))
+				if(Race=="Frost Demon"||Parent_Race=="Frost Demon") nuBPBoost = min(nuBPBoost, FD_ASC_CAP) //rework: as FORMAS (10x/20x) fazem o grosso; a Ascensao vira o acabamento (20 x 2.8 = 56x)
 				if(nuBPBoost>=(1.1*BPBoost))//smoothing code. goal is this: if you were to jump from a bpboost of like 2 to suddenly 5, it'll instead slowly increment by 0.01 every second, making the transition a bit smoother.
 					if(!BPincreasing)
 						BPincreasing = 1

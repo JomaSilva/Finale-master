@@ -180,7 +180,7 @@ mob/proc/lssj_form_mult() //multiplicador EFETIVO = max(piso pela maestria, ramp
 		else
 			return 1
 	var/floor_mult = lo + (hi - lo) * mstry / 100 //piso: cresce com a maestria (100% = max)
-	var/combat_mult = lo + (hi - lo) * min(combatTime / 720, 1) //combate: rampa MIN->MAX em ~3 min de luta continua (720 ticks @ ~4/s)
+	var/combat_mult = lo + (hi - lo) * min(combatTime / LSSJ_RAMP_TICKS, 1) //combate: rampa MIN->MAX com a TAG de combate ativa (Stats.dm alimenta o combatTime)
 	return max(floor_mult, combat_mult)
 
 
@@ -557,3 +557,102 @@ mob/proc/lssj_grand_cinematic() //cinematica GRANDE da PRIMEIRA transformacao Le
 	createShockwavemisc(loc, 2)
 	createCrater(loc, 3) //cratera final, igual ao climax da transformacao Evolve do Demon
 	move = 1
+
+// ============================================================================
+// FURIA LENDARIA (BERSERK) -- Legendary (normal ou Primal) que fica com raiva
+// ("Angry"/"Very Angry") NUMA FORMA NAO MASTERIZADA perde o controle: o corpo
+// ataca TUDO que ve (player OU NPC) ate a raiva passar; o jogador nao dirige
+// o personagem nesse meio tempo. Receita do rampage do Oozaru selvagem
+// (ctrlParalysis trava a direcao; MeleeAttack nao passa pelo gate de input).
+// ============================================================================
+#define LEGB_RANGE 10        // raio de busca de alvos do berserk
+#define LEGB_TICK 2          // passo do loop (2 ticks = 0.2s)
+#define LEGB_BLAST_PROB 12   // % por tick de cuspir uma rajada num alvo longe
+
+mob/var/tmp/leg_berserk = 0
+
+//maestria da forma legendary ATUAL (100 = dominada ou sem forma) -- gate do berserk
+mob/proc/legendary_cur_mastery()
+	if(lssj)
+		switch(lssj)
+			if(1) return lssj1mastery
+			if(2) return lssj2mastery
+			if(3) return lssj3mastery
+		return 100 //lssj 4 = Full Power CONTROLADO (o dominio e pre-requisito da forma)
+	switch(ssj)
+		if(1) return ssj1mastery
+		if(2) return (Class == "Legendary Primal Saiyan") ? legp_m2 : ssj2mastery
+		if(3) return ssj3mastery
+		if(3.5) return legp_m3
+		if(4) return ssj4mastery
+		if(5) return ssj4fpmastery
+	return 100
+
+//chamado do GlobalStats (todo tick): arma o berserk quando raiva + forma crua se encontram
+mob/proc/legendary_berserk_check()
+	if(leg_berserk || !client) return
+	if(Class != "Legendary" && Class != "Legendary Primal Saiyan") return
+	if(KO || dead || tourney_held) return
+	if(!ssj && !lssj) return //so EM FORMA
+	if(Emotion != "Angry" && Emotion != "Very Angry") return
+	if(legendary_cur_mastery() >= 100) return //forma dominada = a mente segura a furia
+	leg_berserk = 1
+	spawn legendary_berserk_loop()
+
+mob/proc/legendary_berserk_loop()
+	set waitfor = 0
+	set background = 1
+	ctrlParalysis = 1
+	emit_Sound('Roar.wav')
+	to_chat(src, "<font color=#76ff7a><b>A FURIA LENDARIA TOMA O SEU CORPO!</b> Voce nao controla mais o que ele faz -- so resta esperar a raiva passar...")
+	to_chat(oview(8, src), "<font color=#76ff7a><b>Os olhos de [src] se apagam -- a furia Legendary assumiu o controle!</b>")
+	var/mob/prey = null
+	while(src && client && !KO && !dead && (ssj || lssj) && (Emotion == "Angry" || Emotion == "Very Angry") && legendary_cur_mastery() < 100)
+		ctrlParalysis = 1 //re-trava (Un_KO/fins de skill restauram estados por fora)
+		//alvo mais proximo: QUALQUER um na frente (player OU NPC)
+		if(prey && (!prey.loc || prey.KO || prey.dead || prey.z != z || get_dist(src, prey) > LEGB_RANGE)) prey = null
+		if(!prey)
+			var/best = LEGB_RANGE + 1
+			for(var/mob/M in oview(LEGB_RANGE, src))
+				if(M == src || M.KO || M.dead || !M.attackable) continue
+				if(istype(M, /mob/lobby)) continue
+				var/d = get_dist(src, M)
+				if(d < best)
+					best = d
+					prey = M
+		if(prey)
+			target = prey
+			dir = get_dir(src, prey)
+			if(get_dist(src, prey) <= 1)
+				if(totalTime >= OMEGA_RATE) MeleeAttack()
+			else
+				step(src, get_dir(src, prey))
+				if(prob(25)) step(src, get_dir(src, prey)) //a furia nao anda: AVANCA
+				if(prob(LEGB_BLAST_PROB)) legendary_berserk_blast()
+		else
+			if(prob(60)) step_rand(src)
+			if(prob(6)) emit_Sound('Roar.wav')
+		sleep(LEGB_TICK)
+	ctrlParalysis = 0
+	leg_berserk = 0
+	if(src && client) to_chat(src, "<font color=#76ff7a>A furia se esvai... voce volta a controlar o proprio corpo.")
+
+//rajada descontrolada (mesma receita do rampage do Oozaru)
+mob/proc/legendary_berserk_blast()
+	var/bcolor = '12.dmi'
+	bcolor += rgb(blastR, blastG, blastB)
+	var/obj/attack/blast/A = new/obj/attack/blast/
+	emit_Sound('fire_kiblast.wav')
+	A.loc = locate(x, y, z)
+	A.icon = bcolor
+	A.density = 1
+	A.basedamage = 1
+	A.BP = expressedBP
+	A.mods = Ekioff * Ekiskill
+	A.murderToggle = murderToggle
+	A.proprietor = src
+	A.dir = dir
+	spawn A.Burnout()
+	if(client) A.ownkey = displaykey
+	step(A, A.dir)
+	walk(A, A.dir, 2)

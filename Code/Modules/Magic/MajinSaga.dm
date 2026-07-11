@@ -10,6 +10,7 @@
 // =============================================================================
 
 #define MAJIN_POCKET_SIZE 100
+#define MAJIN_PURE_BP 2000000000 // BP base minimo da Pure Form ("minimo de SSJ3": 20B expressos / ~10x de formas = 2B). Baixe pra 1e9 se quiser a forma mais cedo.
 
 mob/var
 	// --- saga form (persist across logout) ---
@@ -266,7 +267,9 @@ mob/proc/majin_release(datum/MajinAbsorbed/rec, escaped)
 		M.loc = majin_safe_release_turf()
 		M.icon_state = ""
 		M.majin_restore_appearance()
-		spawn if(M && !M.KO) M.KO()
+		//so sai NOCAUTEADO se o PROPRIO Majin caiu (libertacao por KO do absorvedor);
+		//vencer o guardiao interno / expulsao voluntaria = sai ACORDADO e de pe
+		if(KO) spawn if(M && !M.KO) M.KO()
 		to_chat(M, "<font color=#d050c0>You spill back out into the world.</font>", "system")
 	if(majin_absorbed) majin_absorbed -= rec
 	//Forma Pura: soltar o ULTIMO absorvido e o gatilho -- por QUALQUER caminho (expelir voluntario,
@@ -505,11 +508,13 @@ mob/proc/majin_spawn_clone()
 	to_chat(view(src), "<font color=#d050c0>*A second Majin tears its way out of [src]!*</font>", "combat")
 
 // ---- PURE FORM ---------------------------------------------------------------
-mob/proc/majin_check_pure_unlock()
+mob/proc/majin_check_pure_unlock(quiet)
 	if(majin_pure_unlocked) return
 	if(majin_saga_form != 4) return
-	if(BP < ssj3at / 10) return // "near the SSJ3 minimum for Saiyans" = the base SSJ3 gate (ssj3at/10)
-	if(majin_absorbed && majin_absorbed.len) return // must have LOST all absorptions (e.g. from a KO)
+	if(majin_absorbed && majin_absorbed.len) return // precisa ter PERDIDO todos os absorvidos (expelir/KO/fuga)
+	if(BP < MAJIN_PURE_BP) // o gate era MUDO: expelia os 3 e "nada acontecia" -- agora explica o que falta
+		if(!quiet) to_chat(src, "<font color=#d050c0>Vazio de almas, voce sente o proprio nucleo... mas ele ainda nao basta para a Forma Pura. (BP base: [FullNum(round(BP))] / [FullNum(MAJIN_PURE_BP)])</font>", "system")
+		return
 	majin_pure_unlocked = 1
 	verbs += /mob/keyable/verb/Pure_Form
 	emit_Sound('powerup.wav')

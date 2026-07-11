@@ -308,6 +308,7 @@ mob/proc
 			assignverb(/mob/keyable/verb/Namekian_Regeneration)
 			unassignverb(/mob/keyable/verb/Regenerate) //a antiga cura canalizada (passiva) saiu do kit Namekuseijin
 		dnl_login_check() //DNA Labs: re-arma verbs/loops (Absorb Ki, nucleo infinito, DNA Extractor, larva)
+		fd_login_check() //Frost Demon: migra save antigo pro sistema novo de formas (1-7) + verb de formas
 		htc_login_check() //Sala do Tempo: relogou la dentro -> retoma a sessao (ou expulsa se o tempo acabou)
 		mind_login_check() //Dimensao Mental: save feito em transe (queda) -> acorda no corpo com o snapshot restaurado
 		tourney_login_check() //Torneio: save feito TRAVADO na area de espera (autosave/crash) -> destrava
@@ -315,6 +316,7 @@ mob/proc
 		bp_milestone_login_fix() //Marcos: re-sela o "godki" x5 dado por engano na criacao do datum-conteiner (LinearGain.dm)
 		bred_race_login_fix() //Cria de casal nascida "None/None" (bug do majority_genome/Class_Spread): re-deriva raca+classe do genoma (Mating.dm)
 		age_table_login_fix() //Peak age/lifespan pela TABELA por raca (Aging.dm): sincroniza personagens antigos
+		ssj4_gate_login_fix() //SSJ4 subiu de ~200M pra casa dos 10/20B de BP base: re-sorteia o gate salvo dos chars antigos
 		if(needs_manual_custom) //Handles logging into clones for the first time.
 			CustomizeFurther()
 			StatRace(Race)

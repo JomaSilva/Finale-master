@@ -192,6 +192,12 @@ mob/proc/ui_tab_stats()
 	h += ui_row("STAMINA", "[round(staminapercent * 100)]%", "")
 	if(godki && godki.energy > 0 && godki.max_energy > 0)
 		h += ui_row("GOD KI", "[FullNum(round(godki.energy))] / [FullNum(round(godki.max_energy))]", "")
+	if(fd_is_frost()) //FROST DEMON: forma atual + (mutante) maestria da base / liberacao
+		h += ui_row("FORMA", "[fd_form_name(fd_form)] <span class='mut'>([fd_form_mult(fd_form)]x)</span>", "")
+		if(fd_is_mutant())
+			h += ui_row("MAESTRIA DA BASE", "[round(fd_base_mastery)]% <span class='mut'>(estavel ate: [fd_form_name(fd_stable_gate())])</span>", fd_base_mastery >= 100 ? "hi" : "")
+			if(fd_release < 1 || fd_ki_locked)
+				h += ui_row("LIBERACAO", "[round(fd_release * 100)]%[fd_ki_locked ? " <span class='mut'>KI DESCONTROLADO!</span>" : ""]", "lo")
 	h += ui_sec("ATTRIBUTES")
 	var/list/atts = list(
 		"Physical Offense" = Rphysoff, "Physical Defense" = Rphysdef,
@@ -851,22 +857,22 @@ mob/Topic(href, list/href_list)
 		var/fi = text2num(href_list["fpick"])
 		if(islist(form_pick_icons) && islist(form_pick_sel) && fi >= 1 && fi <= form_pick_icons.len)
 			form_pick_sel[form_pick_slot] = fi
-			for(var/s = 1 to 6) //avanca pro proximo slot VAZIO (com todos cheios, fica onde esta)
-				var/ns = ((form_pick_slot + s - 1) % 6) + 1
+			for(var/s = 1 to form_pick_slots) //avanca pro proximo slot VAZIO (com todos cheios, fica onde esta)
+				var/ns = ((form_pick_slot + s - 1) % form_pick_slots) + 1
 				if(!form_pick_sel[ns])
 					form_pick_slot = ns
 					break
 			form_pick_render()
 		return
-	if(href_list["fpslot"]) //chip FORMA n clicado: troca o slot sendo escolhido
+	if(href_list["fpslot"]) //chip de slot clicado: troca o slot sendo escolhido
 		var/fs = text2num(href_list["fpslot"])
-		if(fs >= 1 && fs <= 6 && islist(form_pick_sel))
+		if(fs >= 1 && fs <= form_pick_slots && islist(form_pick_sel))
 			form_pick_slot = fs
 			form_pick_render()
 		return
 	if(href_list["fpclear"])
 		if(islist(form_pick_sel))
-			for(var/s = 1 to 6) form_pick_sel[s] = 0
+			for(var/s = 1 to form_pick_slots) form_pick_sel[s] = 0
 			form_pick_slot = 1
 			form_pick_render()
 		return

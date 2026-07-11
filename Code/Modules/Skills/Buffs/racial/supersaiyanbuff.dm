@@ -50,8 +50,8 @@ mob/var
 	ssj3mod=1
 	ssj3mastery=0 //maestria do SSJ3 (0-100). Degraus: 16x ->(100%) 20x.
 
-	ssj4at=1.0e011//100 billion. As Golden Oozarou (SSJ x50 * x10 from Oozarou, but nerfed down to 500x) it's really only 200 mil base BP.
-	rawssj4at = 200000000 //200 mil
+	ssj4at=1.0e011//100 billion EXPRESSOS durante o Golden Oozaru (gate secundario; com o raw novo isso passa sozinho)
+	rawssj4at = 15000000000 //REWORK 2026-07-10: SSJ4 na casa dos 10/20 BILHOES de BP base (a criacao sorteia 0.9-1.3x -> 13.5B-19.5B; era 200M). Retro: ssj4_gate_login_fix
 	hasssj4
 	ssj4hair = 'Hair_SSj4.dmi'
 	ssj4mult=20 //SSJ4 base (escala ate ssj4maxmult conforme a maestria do SSJ4)
@@ -740,3 +740,9 @@ mob/proc/SSj4FPLB() //Super Saiyan 4 Limit Breaker (God Form: estagio acima do F
 	to_chat(view(6), "<font color=red>*A blinding crimson aura erupts around [src] as they shatter their limit!*")
 	transing=0
 	attackable=1
+
+//REWORK do gate do SSJ4 (2026-07-10): rawssj4at e POR PERSONAGEM (sorteado na criacao e salvo) --
+//saves antigos carregam ~180-260M; re-sorteia UMA vez na faixa nova (13.5B-19.5B). Chamado no Login.dm.
+mob/proc/ssj4_gate_login_fix()
+	if(rawssj4at && rawssj4at < 1000000000)
+		rawssj4at = initial(rawssj4at) * rand(9,13)/10

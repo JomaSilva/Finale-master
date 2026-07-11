@@ -129,24 +129,21 @@ mob
 							if(usr.cell3)
 								usr.icon = usr.form3icon
 					if("Frost Demon")
-						usr.form2icon='Changling - Form 2.dmi'
-						usr.form3icon='Frostdemon Form 3.dmi'
-						usr.form4icon='Frostdemon Form 4.dmi'
-						usr.form5icon='Cooler Form 4.dmi'
-						var/choice2 = alert(usr,"Change your default form icon into your current icon? Ex. if you changed your icon in form 3, it'll become your form 3 default. If not, you'll be reset to your current form's icon.","","Yes","No")
+						var/choice2 = alert(usr,"Change your current form's icon into this icon? Ex. if you changed your icon while in form [usr.fd_form], it'll become that form's default. If not, you'll be reset to your current form's icon.","","Yes","No")
 						if(choice2=="Yes")
 							var/Playericon = usr.icon
-							if(usr.cur_icr_form == 0)
-								usr.form5icon = Playericon
-							if(usr.cur_icr_form == 1)
-								usr.form4icon = Playericon
-							if(usr.cur_icr_form == 2)
-								usr.form3icon = Playericon
-							if(usr.cur_icr_form == 3)
-								usr.form2icon = Playericon
-							if(usr.cur_icr_form == 4)
-								usr.form1icon = Playericon
-								usr.originalicon=Playericon
+							switch(usr.fd_form) //numeracao NOVA: 1-4 supressao, 5 base, 6-7 evolucoes
+								if(1)
+									usr.form1icon = Playericon
+									usr.originalicon = Playericon
+								if(2) usr.form2icon = Playericon
+								if(3) usr.form3icon = Playericon
+								if(4) usr.form4icon = Playericon
+								if(6) usr.form6icon = Playericon
+								if(7) usr.form7icon = Playericon
+								else
+									usr.form5icon = Playericon
+									if(!usr.fd_is_mutant()) usr.originalicon = Playericon
 						else
 							icer_poll_icon()
 				usr.doexpandicon1=0

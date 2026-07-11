@@ -47,7 +47,17 @@ obj/DB
 					to_chat(view(), "[usr] cancels [usr]'s wish.")
 					break
 				else
-					var/list/nl = Wish(chosenwish,usr,Earth_Guardian,WishPower)
+					//BLOQUEIO DO CRIADOR: a checagem antiga passava o RANK global Earth_Guardian -- qualquer OUTRO
+					//player criava um set proprio e pedia Power PRA SI MESMO (e ganhava relBPmax/4). A regra da lore
+					//e "as esferas usam o poder do CRIADOR" -> o criador DESTE set nao pode se auto-amplificar.
+					//Identidade por SIGNATURE (persistida na estatua; robusta a relog/criador offline).
+					var/blockid = Earth_Guardian //fallback: set sem criador gravado (ex.: esferas eternas de Namek)
+					var/obj/DragonStatue/HS = HomeStatue
+					if(HS && HS.CreatorSig)
+						blockid = (usr.signature == HS.CreatorSig) ? usr.key : "\[criador offline\]"
+					else if(Creator)
+						blockid = (usr == Creator) ? usr.key : "\[criador offline\]"
+					var/list/nl = Wish(chosenwish,usr,blockid,WishPower)
 					if(nl.len)
 						WishPower *= max(nl[1],1)
 						if(nl[2] == TRUE) break

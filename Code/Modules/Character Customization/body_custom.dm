@@ -188,10 +188,22 @@ mob/proc/formchoose(rtype)
 		skin_list += 'Koola Final Form.dmi'
 
 	//---- tela HTML (substitui a grade nativa race_pick + Dummy_Form_Icon, deletados):
-	//chips FORMA 1..6 clicaveis mostram QUAL slot esta sendo escolhido; o card escolhido
-	//ganha borda dourada + badge "F[n]" -- nao tem mais como se perder na sequencia
+	//chips clicaveis mostram QUAL slot esta sendo escolhido; o card escolhido ganha borda
+	//dourada + badge -- nao tem mais como se perder na sequencia.
+	//SLOTS POR RACA/CLASSE: Frost normal = 3 (base + 2 evolucoes), Mutante = 7 (4 supressoes
+	//+ base + 2 evolucoes), Bio = 6 (inalterado)
+	form_pick_slots = 6
+	form_pick_labels = null
+	if(rtype == "Frost Demon")
+		if(Class == "Mutant Frost Demon")
+			form_pick_slots = 7
+			form_pick_labels = list("SUPRESSAO 1","SUPRESSAO 2","SUPRESSAO 3","SUPRESSAO 4","BASE","EVOLUCAO 1","FORMA BLACK")
+		else
+			form_pick_slots = 3
+			form_pick_labels = list("BASE","EVOLUCAO 1","FORMA BLACK")
 	form_pick_icons = skin_list
-	form_pick_sel = list(0,0,0,0,0,0)
+	form_pick_sel = list()
+	for(var/fs = 1 to form_pick_slots) form_pick_sel += 0
 	form_pick_slot = 1
 	form_pick_done = 0
 	form_pick_race = rtype
@@ -211,14 +223,25 @@ mob/proc/formchoose(rtype)
 	//aplica: slot vazio cai no padrao da raca
 	switch(rtype)
 		if("Frost Demon")
-			form1icon = form_pick_res(1, 'Changeling Frieza 2.dmi')
-			form2icon = form_pick_res(2, 'Changling - Form 2.dmi')
-			form3icon = form_pick_res(3, 'Frostdemon Form 3.dmi')
-			form4icon = form_pick_res(4, 'Frostdemon Form 4.dmi')
-			form5icon = form_pick_res(5, 'Changeling 5 Kold.dmi')
-			form6icon = form_pick_res(6, 'GoldIcer.dmi')
-			icon = form4icon
-			originalicon = form4icon
+			if(Class == "Mutant Frost Demon") //7 corpos: supressoes 1-4, base 5, evolucoes 6-7
+				form1icon = form_pick_res(1, 'Changeling Frieza 2.dmi')
+				form2icon = form_pick_res(2, 'Changling - Form 2.dmi')
+				form3icon = form_pick_res(3, 'Frostdemon Form 3.dmi')
+				form4icon = form_pick_res(4, 'Frostdemon Form 4.dmi')
+				form5icon = form_pick_res(5, 'Changeling 5 Kold.dmi')
+				form6icon = form_pick_res(6, 'Changeling Full Power.dmi')
+				form7icon = form_pick_res(7, 'Koola Final Form.dmi')
+				fd_form = 1 //MUTANTE nasce na forma mais suprimida (25% do BP -- o Starting BP ja e 4x por isso)
+				icon = form1icon
+				originalicon = form1icon
+			else //normal: 3 corpos (base + 2 evolucoes) nos slots 5/6/7
+				form5icon = form_pick_res(1, 'Changeling Frieza 2.dmi')
+				form6icon = form_pick_res(2, 'Changling - Form 2.dmi')
+				form7icon = form_pick_res(3, 'Koola Final Form.dmi')
+				fd_form = 5
+				icon = form5icon
+				originalicon = form5icon
+			fd_login_check() //no-op na migracao (fd_form ja setado); garante o verb Icer_Form_Settings
 		if("Biodroid") //era "Bio-Android" no switch antigo: NUNCA batia com o arg "Biodroid" -> bio ficava sem defaults
 			form1icon = form_pick_res(1, 'Bio Android 1.dmi')
 			form2icon = form_pick_res(2, 'Bio Android 2.dmi')
@@ -234,8 +257,10 @@ mob/proc/formchoose(rtype)
 
 mob/var/tmp
 	list/form_pick_icons = null //catalogo de .dmi da tela de formas aberta
-	list/form_pick_sel = null   //form_pick_sel[slot 1..6] = indice escolhido no catalogo (0 = vazio)
+	list/form_pick_sel = null   //form_pick_sel[slot] = indice escolhido no catalogo (0 = vazio)
 	form_pick_slot = 1          //slot sendo escolhido agora
+	form_pick_slots = 6         //quantos slots esta tela tem (Frost normal 3 / Mutante 7 / Bio 6)
+	list/form_pick_labels = null //nomes dos chips (null = "FORMA [n]")
 	form_pick_done = 0
 	form_pick_race = ""
 
@@ -278,19 +303,21 @@ function uflt(){
 }
 </script></head><body>"}
 	h += "<h1>FORMAS DO [form_pick_race == "Biodroid" ? "BIO-ANDROID" : "FROST DEMON"]</h1>"
-	h += "<div class='sub'>Escolhendo a <b>FORMA [form_pick_slot]</b> -- clique um corpo pra ela. Os chips abaixo trocam a forma sendo escolhida; o numero dourado no card mostra onde cada corpo ja foi usado.[form_pick_race == "Frost Demon" ? " (Voce COMECA na forma 4; a 6a e a forma Golden.)" : " (Bio-Android comeca na forma 1.)"]</div>"
+	var/curlbl = (islist(form_pick_labels) && form_pick_slot <= form_pick_labels.len) ? form_pick_labels[form_pick_slot] : "FORMA [form_pick_slot]"
+	h += "<div class='sub'>Escolhendo: <b>[curlbl]</b> -- clique um corpo pra ela. Os chips abaixo trocam o slot sendo escolhido; o selo dourado no card mostra onde cada corpo ja foi usado.[form_pick_race == "Frost Demon" ? (form_pick_slots == 7 ? " (MUTANTE: voce comeca na SUPRESSAO 1 -- 25% do seu poder.)" : " (Voce comeca na forma BASE; as evolucoes destravam com BP.)") : " (Bio-Android comeca na forma 1.)"]</div>"
 	h += "<div class='slots'>"
-	for(var/s = 1 to 6)
+	for(var/s = 1 to form_pick_slots)
 		var/cls = "slot"
 		if(s == form_pick_slot) cls += " cur"
 		else if(form_pick_sel[s]) cls += " ok"
-		h += "<a class='[cls]' href='byond://?src=\ref[src];fpslot=[s]'>FORMA [s][form_pick_sel[s] ? " &#10003;" : ""]</a>"
+		var/lbl = (islist(form_pick_labels) && s <= form_pick_labels.len) ? form_pick_labels[s] : "FORMA [s]"
+		h += "<a class='[cls]' href='byond://?src=\ref[src];fpslot=[s]'>[lbl][form_pick_sel[s] ? " &#10003;" : ""]</a>"
 	h += "</div>"
 	if(form_pick_icons.len > 12) h += "<input id='us' class='vsearch' type='text' autocomplete='off' placeholder='Filtrar [form_pick_icons.len] corpos...' oninput='uflt()' onkeyup='uflt()'>"
 	h += "<div id='grid' class='grid'>"
 	for(var/i = 1 to form_pick_icons.len)
 		var/list/tags = list()
-		for(var/s = 1 to 6)
+		for(var/s = 1 to form_pick_slots)
 			if(form_pick_sel[s] == i) tags += "F[s]"
 		var/nm = "[form_pick_icons[i]]" //'X.dmi' vira "X.dmi" em string
 		nm = copytext(nm, 1, max(length(nm) - 3, 1)) //tira o ".dmi"

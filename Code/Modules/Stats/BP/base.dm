@@ -16,7 +16,7 @@ mob/var
 	transBuff = 1
 	giantFormbuff = 1
 	formsBuff = 1 //eventually this will replace all above that are buffs that take up the 'form' slot.
-	buffsBuff = 1 //eventually this will replace all above that are buffs that take up the 'buff' slot.
+	//buffsBuff DELETADA (2026-07-10): era o x2 de BP das skills-toggle (Clarity/Burst/Fighting Power/Ultradense) -- viraram so-stat; save antigo com 2 salvo e ignorado na leitura
 	aurasBuff = 1 //eventually this will replace all above that are buffs that take up the 'aura' slot.
 	gravFelt = 1 //this var is for gravity calculation, determined by planet gravity alone. needs seperate var because in planet grav case 1=0 (earth grav = 1). When moons/space stuff is introduced,
 	//this variable will need to be written out, will not be the bare minimum gravity. Bare minimum gravity always needs to set gravFelt to 0 for grav equations to make sense.
@@ -78,7 +78,7 @@ mob/proc/powerlevel()
 	CHECK_TICK
 	staminaratio = max((staminadeBuff/100),0.3)
 //	kiBuff = kiBuff //all universal power modifiers
-	buffBuff = expandBuff * giantFormbuff * buffsBuff * ArtifactsBuff * eyeBuff//buff chunk 1, gets capped
+	buffBuff = expandBuff * giantFormbuff * ArtifactsBuff * eyeBuff//buff chunk 1, gets capped (buffsBuff saiu: skills-toggle nao dao mais BP)
 	CHECK_TICK
 	formBuff = ssjBuff * transBuff * formsBuff * gateBuff * HellstarBuff//buff chunk 2 does not get capped
 	CHECK_TICK
@@ -142,6 +142,7 @@ mob/proc/powerlevel()
 				spawn dnl_larva_mature()
 			else if(expressedBP > BP / DNL_BIO_LARVA_RESTRICT) //TETO DURO de 10% do base
 				expressedBP = round(max(BP / DNL_BIO_LARVA_RESTRICT, 1)) //raiva/Ki>100%/buffs/formas NAO furam a carapaca (o BPrestriction sozinho era so um divisor -- multiplicadores empilhavam por cima)
+	if(fd_release < 1) expressedBP = round(max(expressedBP * fd_release, 1)) //MUTANT FROST com ki descontrolado: o poder VAZA ate o piso (motor no icer.dm; recupera em forma de supressao estavel)
 	if(KO) expressedBP = round(max(BP * 0.1,1)) //a knocked-out fighter is COMPLETELY EXPOSED: effective power collapses to 10% of base BP (attackers hit harder + always land)
 
 	relBPmax = BP * (1 + UPMod) * relcaprate //PERSONAL ceiling from own BP+Potential (no server AverageBP). relcaprate = global growth-speed knob.

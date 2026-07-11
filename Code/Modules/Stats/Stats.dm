@@ -45,13 +45,19 @@ mob/proc/GlobalStats()
 		HealthSync()
 		CheckTime()
 		BuffLoop()
-		if(IsInFight) combatTime = min(combatTime + 1, 720) //bonus de combate das formas Legendary: sobe ate +20% em ~180s de luta continua
+		//Form Rising das formas Legendary: a rampa segue a TAG DE COMBATE (90s, atualizada por QUALQUER
+		//dano -- soco, blast, beam, dado ou recebido), NAO o IsInFight: o IsInFight e flag de MELEE com
+		//desliga-em-10s agendado (piscava no meio da luta) e blast/beam nem o setam -- Legendary de
+		//longa distancia nunca subia a rampa e o decaimento 2x comia o resto ("cresce mt mt devagar")
+		if(IsInFight || combatTag) combatTime = min(combatTime + 1, LSSJ_RAMP_TICKS)
 		else combatTime = max(combatTime - 2, 0) //decai 2x mais rapido fora de combate
 		if(combatTag && client && !battle_music_on) start_battle_music() //start the local battle-music playlist whenever the combat tag is up (incl. on being hit/blasted); the loop self-stops when the tag clears
 		CheckGodki()
 		accrue_friendship()
 		CheckSSj3Learn()
 		CheckDemonEvolve()
+		legendary_berserk_check() //Legendary com raiva em forma NAO masterizada = berserk sem controle (lssjbuff.dm)
+		if(majin_saga_form == 4 && !majin_pure_unlocked) majin_check_pure_unlock(1) //Pure Form: re-checa quando o BP cruza o gate DEPOIS de ja ter expelido todos (antes so re-checava soltando alguem)
 		if(isSealed) spawn TestEscape()
 		if(isNPC)
 			sleep(2)

@@ -3,7 +3,7 @@
 //
 //   Saga 1: Freeza no Planeta Vegeta  (gatilho: Saiyajin com 20k de BP base)
 //   Saga 2: Freeza em Namek           (gatilho: qualquer player com 100k)
-//   Saga 3: Androides 17/18 + Cell    (gatilho: qualquer player com 10M)
+//   Saga 3: Androides 17/18 + Cell    (gatilho: qualquer player com 5M)
 //   Saga 4: Majin Boo na Terra        (gatilho: qualquer player com 1,5B)
 //
 // COMO FUNCIONA:
@@ -38,7 +38,7 @@
 // ---- gatilhos (sempre no BP BASE do player) ----
 #define BEV_M1_TRIGGER_BP 20000        // Saga 1: um SAIYAJIN atinge isto
 #define BEV_M2_TRIGGER_BP 100000       // Saga 2: qualquer player
-#define BEV_M3_TRIGGER_BP 10000000     // Saga 3: qualquer player (10M)
+#define BEV_M3_TRIGGER_BP 5000000     // Saga 3: qualquer player (5M)
 #define BEV_M4_TRIGGER_BP 1500000000   // Saga 4: qualquer player (1,5B)
 
 // ---- delays em DIAS IN-GAME ----
@@ -260,6 +260,22 @@ proc/bev_hero_credit(mob/npc/Enemy/EventBoss/B, planet, amount)
 	K.gain_boss_kill_karma() //karma: derrotar um boss e uma grande acao heroica (SkyNPCs.dm)
 	bev_announce("[K.name] e aclamado(a) como HEROI pelo povo de [planet == "Earth" ? "Terra" : planet]!")
 
+// PRESA de NPC: alvo-NPC que a IA pode cacar (Cell vs androides) -- excecoes no NPCAI.dm
+mob/npc/var/tmp/mob/bev_prey = null
+
+// engaja um NPC de evento contra OUTRO NPC (espelho do foundTarget sem exigir client; receita do tourney_engage)
+proc/bev_engage(mob/npc/N, mob/foe)
+	if(!N || !foe || !N.hasAI || N.KO || N.dead) return
+	N.bev_prey = foe
+	N.target = foe
+	N.attackable = 1
+	N.aggro_loc = N.loc
+	N.dir = get_dir(N, foe)
+	if(!N.AIRunning)
+		N.AIRunning = 1
+		N.initialState()
+		N.chaseState()
+
 // remove um boss do mundo SEM contar como morte (absorcao/fuga/fim de evento)
 proc/bev_despawn(mob/npc/Enemy/EventBoss/M, fx)
 	if(!M) return
@@ -267,6 +283,7 @@ proc/bev_despawn(mob/npc/Enemy/EventBoss/M, fx)
 	M.hasAI = 0
 	M.AIRunning = 0
 	M.target = null
+	M.bev_prey = null
 	if(fx && M.loc)
 		flick('Zanzoken.dmi', M)
 		createDustmisc(M.loc, 2)
@@ -590,9 +607,38 @@ datum/boss_events
 		if(s4_state == 2 && !boss4)
 			s4_state = 3
 			save_state()
-		// ---- Saga 3: Cell (fuga p/ absorver + retorno da morte) ----
-		if(s3_state == 2 && cell)
-			if(s3_cell_form <= 2 && !cell.KO && cell.HP <= BEV_CELL_FLEE_HP)
+		// ---- Saga 3: Cell CACA os androides (absorcao por CONTATO evolui no local) ----
+		if(s3_state == 2 && cell && !cell.KO)
+			//1) androide NOCAUTEADO (por Cell OU por player): Cell larga TUDO e vai absorve-lo
+			var/mob/npc/Enemy/EventBoss/koed = null
+			if(a17 && a17_alive && a17.KO && a17.loc) koed = a17
+			else if(a18 && a18_alive && a18.KO && a18.loc) koed = a18
+			if(koed)
+				if(koed.z != cell.z) //caiu em outro z (interior/caverna): Cell "sente" a energia e aparece la
+					var/turf/JT = locate(max(2, koed.x + pick(-1, 1)), max(2, koed.y), koed.z)
+					if(JT && !JT.density) cell.loc = JT
+				if(cell.z == koed.z && get_dist(cell, koed) <= 1)
+					cell_absorb_contact(koed)
+				else
+					cell.target = null //absorcao e prioridade ABSOLUTA: larga a luta atual (player segura ele na base da porrada)
+					cell.bev_prey = koed
+					walk_to(cell, koed, 1, 3)
+			//2) ocioso (sem alvo): caca o androide VIVO mais proximo (luta NPC vs NPC; o androide revida)
+			else if(!cell.target)
+				var/mob/npc/Enemy/EventBoss/prey = null
+				if(a17 && a17_alive && a17.loc && a17.z == cell.z) prey = a17
+				if(a18 && a18_alive && a18.loc && a18.z == cell.z)
+					if(!prey || get_dist(cell, a18) < get_dist(cell, prey)) prey = a18
+				if(!prey) //androides vivos mas em OUTRO z: Cell farejou e vai atras
+					var/mob/npc/Enemy/EventBoss/far = (a17 && a17_alive && a17.loc) ? a17 : ((a18 && a18_alive && a18.loc) ? a18 : null)
+					if(far)
+						var/turf/JT2 = locate(max(2, far.x + pick(-1, 1)), max(2, far.y), far.z)
+						if(JT2 && !JT2.density) cell.loc = JT2
+				else
+					bev_engage(cell, prey)
+					if(!prey.target) bev_engage(prey, cell) //17/18 nao caem sem lutar
+			//3) fuga classica: muito ferido nas formas 1-2, some e absorve um androide fora da tela
+			if(cell && s3_cell_form <= 2 && !cell.KO && cell.HP <= BEV_CELL_FLEE_HP)
 				var/mob/npc/Enemy/EventBoss/victim = null
 				if(a17 && a17_alive) victim = a17
 				else if(a18 && a18_alive) victim = a18
@@ -628,6 +674,36 @@ datum/boss_events
 			bev_announce("FREEZA ATINGIU SUA FORMA FINAL EM NAMEK! Voces tem [round(BEV_FREEZA2_FINAL_TIMER/600)] minutos para derrota-lo antes que ele destrua o planeta!")
 		else
 			bev_announce("Freeza TRANSFORMOU-SE! Sua nova forma pulsa com um poder ainda maior! (Forma [s2_form])")
+		save_state()
+
+	// Cell alcancou um androide NOCAUTEADO: absorve por CONTATO e evolui NO LOCAL (estilo DBZ)
+	proc/cell_absorb_contact(mob/npc/Enemy/EventBoss/victim)
+		if(!cell || !victim) return
+		var/vname = victim.name
+		if(victim == a17)
+			a17 = null
+			a17_alive = 0
+		else
+			a18 = null
+			a18_alive = 0
+		bev_despawn(victim, 1)
+		cell.bev_prey = null
+		cell.target = null
+		walk(cell, 0)
+		s3_cell_form = min(s3_cell_form + 1, 3) //1->2 (Semi-Perfeito) / 2->3 (Perfeito); a forma 4 e so do retorno da morte
+		flick('Zanzoken.dmi', cell)
+		createDustmisc(cell.loc, 3)
+		createShockwavemisc(cell.loc, 3)
+		spawn cell.Quake()
+		cell.emit_Sound('powerup.wav')
+		cell.icon = BEV_CELL_ICONS[s3_cell_form]
+		cell.oicon = cell.icon
+		for(var/datum/Body/S in cell.body) //a evolucao renova o corpo inteiro (membro decepado volta)
+			if(S.lopped) S.RegrowLimb()
+			else S.health = S.maxhealth
+		cell.HealthSync()
+		bev_pin_bp(cell, BEV_CELL_BPS[s3_cell_form]) //BP da forma nova + Ki cheio
+		bev_announce("CELL ABSORVEU [uppertext(vname)]!! Seu corpo se retorce e se transforma diante de todos... um poder muito maior emana dele! (Forma [s3_cell_form])")
 		save_state()
 
 	// Cell ferido foge e absorve um androide; volta mais forte em BEV_CELL_RETURN_DAYS dia(s)

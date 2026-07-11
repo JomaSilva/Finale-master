@@ -193,8 +193,19 @@ mob
 	verb/save()
 		set category = "Other"
 		set name = "Save"
-		Revert()
+		//O Revert() daqui zerava ssj/lssj ANTES do save: salvar manualmente transformado gravava a BASE
+		//("a forma Legendary nao salva ao deslogar" -- o logout normal preserva; o verb Save e que apagava).
+		//Receita nova = a mesma do relog: derruba os buffs (nenhum buff-zumbi entra no savefile), restaura
+		//as VARS de forma na mao (o DeBuff do LSSJ zera lssj fora do logout) e re-veste depois de salvar.
+		var/_ssj = ssj
+		var/_lssj = lssj
+		clearbuffs()
+		ssj = _ssj
+		lssj = _lssj
 		Save()
+		if(ssj && !isBuffed(/obj/buff/SuperSaiyan)) startbuff(/obj/buff/SuperSaiyan,'SSJIcon.dmi')
+		if(lssj && !isBuffed(/obj/buff/LSSJ)) startbuff(/obj/buff/LSSJ,'SSJIcon.dmi')
+		if(ssj || lssj) AddHair()
 
 	verb/backtolobby()
 		set category = "Other"

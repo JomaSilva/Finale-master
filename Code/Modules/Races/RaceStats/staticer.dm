@@ -20,8 +20,6 @@ mob/proc/statfrost()
 		if(invoker.savant)
 			if(prev > 50 || invoker.majority_genome == "Frost Demon" || invoker.this_class == "Frost Demon" || invoker.this_class == "Mutant Frost Demon")
 				invoker.savant.AscensionAllowed=1//Icers start ascended.
-			if(invoker.this_class == "Mutant Frost Demon") //Mutant: forma final (Golden) reforcada -> equivalente lendario dos Frost Demons (4x -> 7x)
-				invoker.savant.f5mult = 7
 	m_stats = list(
 		"Physical Offense" = 1.5,//stats
 		"Physical Defense" = 1.1,
@@ -83,7 +81,7 @@ mob/proc/statfrost()
 			"Energy Level" = 2,
 			"Tech Modifier" = 2,
 			"Ki Regeneration" = 1.2,
-			"Starting BP" = 1200,
+			"Starting BP" = 1200, //IGNORADO pro mutante: o BP inicial dele e o rand(1M..3M) do assign_starting_BP (Genetic_Datum.dm, media 2M = ~500k expressos na forma 1)
 			"Potential" = 2.8,
 			"Anger" = 1.5
 		)

@@ -59,11 +59,10 @@ mob/keyable/verb/Ultradense_Body()
 		container.initbuff = 5
 		container.DrainMod*=container.initdrain
 		container.Tphysdef+=container.initbuff
-		container.buffsBuff= 2
+		//sem BP: o x2 de buffsBuff saiu (2026-07-10, junto do Clarity/Burst) -- o buff agora e SO o stat (Tphysdef)
 	DeBuff()
 		container.DrainMod/=container.initdrain
 		container.Tphysdef-=container.initbuff
-		container.buffsBuff= 1
 		..()
 
 /datum/skill/Atomic_Point

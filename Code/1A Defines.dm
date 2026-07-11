@@ -12,6 +12,20 @@
 //---- WEIGHTED CLOTHING x GRAVIDADE (Stats.dm calcula weight_ratio; Gravity.dm esmaga; movement handler freia) ----
 #define WEIGHT_GAIN_MAX 8       //teto do multiplicador de ganhos do peso (razao 1 = 2x, razao 2 = 4x, razao 4 = 8x)
 #define TECH_BENCH_ZENI 250000  //custo em zenni da Research Bench construida pela aba Tech (HtmlUI.dm)
+//---- FROST DEMON REWORK (IcerTransform.dm + icer.dm + ascensioncontrols.dm + base.dm -- defines AQUI pela ordem de include) ----
+#define FD_FORM6_MULT 10          //1a evolucao (forma 6)
+#define FD_FORM7_MULT 20          //evolucao final (forma 7): x FD_ASC_CAP = 56x (paridade com o topo das outras racas)
+#define FD_GOLDEN_MULT 28         //Golden Form (skill separada, acima da evolucao final)
+#define FD_ASC_CAP 2.8            //teto da Ascensao dos Frost Demons (as formas fazem o grosso agora)
+#define FD_FORM6_AT 250000000     //1a evolucao = tier do Golden do Freeza: BP base equivalente ao SSJ God/Blue (godki_at, godkiattain.dm)
+#define FD_FORM7_AT 15000000000   //FORMA BLACK: bem alem do Golden, na casa dos 10/20 bilhoes (mesma faixa do SSJ4 pos-rework)
+#define FD_MASTERY_PER_MIN 2      //MUTANTE: pontos de maestria da base por minuto em forma 5+ (100% = ~50min)
+#define FD_LOSS_SECS_F5 90        //segundos ate PERDER o controle do ki na forma base sem maestria (fd_form_losstime escala as outras; maestria alonga)
+#define FD_RELEASE_DECAY_PCT 1.2  //% de liberacao de BP perdida por segundo com o ki descontrolado
+#define FD_RELEASE_FLOOR 0.10     //piso da liberacao (fica com 10% do poder)
+#define FD_RELEASE_RECOVER_PCT 4  //% de liberacao recuperada por segundo em forma ESTAVEL
+#define FD_REGEN_PCT 0.2          //maestria 100: % do MaxKi por segundo POR grau de supressao (forma 1 = 4 graus = 0.8%/s)
+#define LSSJ_RAMP_TICKS 600       //Form Rising dos Legendary: ciclos de GlobalStats (~0.3s) com a TAG de combate ate o multiplicador chegar no teto da forma (600 = ~3min; compartilhado Stats.dm + lssjbuff.dm)
 #define DOESEXIST if(isnull(src)) return
 #define CLIENTEXIST if(isnull(client)) return
 #define CHECK_TICK if(world.tick_usage > 75) lagstopsleep()

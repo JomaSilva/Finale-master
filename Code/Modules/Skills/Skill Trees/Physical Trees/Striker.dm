@@ -60,11 +60,10 @@ mob/keyable/verb/Fighting_Power()
 		container.initbuff = 5
 		container.DrainMod*=container.initdrain
 		container.Tphysoff+=container.initbuff
-		container.buffsBuff= 2
+		//sem BP: o x2 de buffsBuff saiu (2026-07-10, junto do Clarity/Burst) -- o buff agora e SO o stat (Tphysoff)
 	DeBuff()
 		container.DrainMod/=container.initdrain
 		container.Tphysoff-=container.initbuff
-		container.buffsBuff=1
 		..()
 
 /datum/skill/Infinite_Strength

@@ -138,6 +138,11 @@ mob/var
 
 mob/proc/Energy_Draw()
 	if(!MeditateGivesKiRegen) return
+	if(fd_ki_locked) //MUTANT FROST com ki descontrolado: nao carrega energia nem sobe power-up (tecla C morta ate recuar pra forma estavel)
+		if(world.time >= fd_warn_cd)
+			fd_warn_cd = world.time + 60
+			to_chat(src, "<font color=#ff5544>Seu ki esta DESCONTROLADO -- voce nao consegue reunir energia! Recue para uma forma de supressao estavel.")
+		return
 	is_drawing = 1
 	poweruprunning = 1
 	if(canPower)

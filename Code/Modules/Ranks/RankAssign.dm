@@ -20,6 +20,8 @@ mob/proc/CheckRank()
 	if(Arconian_Guardian==signature) Arconian_Guardian=null
 	if(Saibamen_Rouge_Leader==signature) Saibamen_Rouge_Leader=null
 	if(King_Yemma==signature) King_Yemma=null
+	if(God_Of_Destruction==signature) God_Of_Destruction=null
+	if(Angel_Rank==signature) Angel_Rank=null
 proc/WipeRank()
 	if(Turtle!=null) Turtle=null
 	if(Crane!=null) Crane=null
@@ -42,6 +44,8 @@ proc/WipeRank()
 	if(Arconian_Guardian!=null) Arconian_Guardian=null
 	if(Saibamen_Rouge_Leader!=null) Saibamen_Rouge_Leader=null
 	if(King_Yemma!=null) King_Yemma=null
+	if(God_Of_Destruction!=null) God_Of_Destruction=null
+	if(Angel_Rank!=null) Angel_Rank=null
 mob/proc/Rank_Verb_Assign() //the //done checkmarks are to keep track of what ranks are fully converted over to the skills system
 	if(!signiture || !signature) return
 	if(Crane==signature) //done
@@ -110,6 +114,12 @@ mob/proc/Rank_Verb_Assign() //the //done checkmarks are to keep track of what ra
 	if(North_Kai==signature)//done
 		getTree(new /datum/skill/tree/RankTree)
 		Rank="North Kai"
+	if(God_Of_Destruction==signature) //rank NOVO (2026-07-11): por enquanto so titulo, sem poderes (a detalhar)
+		getTree(new /datum/skill/tree/RankTree)
+		Rank="God of Destruction"
+	if(Angel_Rank==signature) //rank NOVO (2026-07-11): por enquanto so titulo, sem poderes (a detalhar)
+		getTree(new /datum/skill/tree/RankTree)
+		Rank="Angel"
 	if(Admin) getTree(new /datum/skill/tree/RankTree)//done (obviously)
 proc/Save_Rank()
 	var/savefile/S=new("RANK")
@@ -140,6 +150,8 @@ proc/Save_Rank()
 	S["ML"]<<mutany
 	S["Geti"]<<Geti
 	S["Arlian"]<<Arlian
+	S["GODR"]<<God_Of_Destruction
+	S["ANGR"]<<Angel_Rank
 	S["RankList"]<<RankList
 proc/Load_Rank()
 	if(fexists("RANK"))
@@ -171,6 +183,8 @@ proc/Load_Rank()
 		S["ML"]>>mutany
 		S["Geti"]>>Geti
 		S["Arlian"]>>Arlian
+		S["GODR"]>>God_Of_Destruction
+		S["ANGR"]>>Angel_Rank
 		S["RankList"]>>RankList
 		if(isnull(RankList)) RankList=new/list()
 
@@ -198,6 +212,8 @@ var
 	East_Elder //Keeper of 1 Dragonball.
 	West_Elder //Keeper of 1 Dragonball.
 
+	God_Of_Destruction //rank NOVO: Deus da Destruicao (sem poderes ainda -- a detalhar)
+	Angel_Rank //rank NOVO: Anjo (sem poderes ainda -- a detalhar). "Angel_Rank" pq ha um turf chamado Angel (Turfs.dm)
 	North_Kai //Can teach Kaioken and Spirit Bomb.
 	South_Kai //Can teach Body Expansion. (x2 physoff, x1.2 End, /1.2 Spd, -2% Stam per second.)
 	East_Kai //Can teach Ki Burst. (x2 Ki Power, -2% Stam per second.)
@@ -258,6 +274,8 @@ Arconian Guardian: [RankList[Arconian_Guardian]]<br>
 Saibamen Rouge Leader: [RankList[Saibamen_Rouge_Leader]]<br>
 Grand Kai: [RankList[Grand_Kai]]<br>
 Kaioshin: [RankList[Supreme_Kai]]<br>
+God of Destruction: [RankList[God_Of_Destruction]]<br>
+Angel: [RankList[Angel_Rank]]<br>
 Demon Lord: [RankList[Demon_Lord]]<br>
 Frost Demon Lord: [RankList[Frost_Demon_Lord]]<br>
 King/Queen of Vegeta: [RankList[King_of_Vegeta]]<br>
