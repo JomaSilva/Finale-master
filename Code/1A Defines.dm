@@ -11,6 +11,7 @@
 #define PSPACE_HOME_Z 26 //z do espaco original (setor 0,0) -- compartilhado: ProceduralSpace.dm + PlanetTech.dm (Launch de planeta destruido)
 //---- WEIGHTED CLOTHING x GRAVIDADE (Stats.dm calcula weight_ratio; Gravity.dm esmaga; movement handler freia) ----
 #define WEIGHT_GAIN_MAX 8       //teto do multiplicador de ganhos do peso (razao 1 = 2x, razao 2 = 4x, razao 4 = 8x)
+#define WEIGHT_ITEM_CAP_MULT 2  //teto do UPGRADE dos pesos = weight_cap_hw x isto (2x o limite do corpo = razao 2.0 = ganhos 4x no maximo)
 #define TECH_BENCH_ZENI 250000  //custo em zenni da Research Bench construida pela aba Tech (HtmlUI.dm)
 //---- FROST DEMON REWORK (IcerTransform.dm + icer.dm + ascensioncontrols.dm + base.dm -- defines AQUI pela ordem de include) ----
 #define FD_FORM6_MULT 10          //1a evolucao (forma 6)

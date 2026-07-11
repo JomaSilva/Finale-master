@@ -616,8 +616,8 @@ mob/proc/ui_tab_tech()
 		var/grav = max(Planetgrav + gravmult, 1)
 		var/wr = WEq ? weight_ratio : (W.pounds * grav) / wcap //nao vestida: PREVISAO do que aconteceria
 		h += ui_row("Vestida", WEq ? "Sim" : "Nao <span class='mut'>(valores em previsao)</span>", "")
-		h += ui_row("Peso da roupa", "[FullNum(round(W.pounds))] / [FullNum(round(W.pounds_max))] libras <span class='mut'>([W.pounds_max > 0 ? round(W.pounds / W.pounds_max * 100) : 0]% do maximo)</span>", "")
-		h += ui_row("Limite do corpo (grav 1x)", "[FullNum(round(wcap))] libras", "")
+		h += ui_row("Peso da roupa", "[FullNum(round(W.pounds))] / [FullNum(round(W.pounds_max))] kg <span class='mut'>([W.pounds_max > 0 ? round(W.pounds / W.pounds_max * 100) : 0]% do maximo)</span>", "")
+		h += ui_row("Limite do corpo (grav 1x)", "[FullNum(round(wcap))] kg", "")
 		h += ui_row("Gravidade local", "x[grav] <span class='mut'>(multiplica o peso efetivo!)</span>", "")
 		var/wrtxt = "x[round(wr, 0.01)] do limite"
 		if(wr >= GRAVCRUSH_EXPLODE_R) wrtxt = "<font color=#ff4444><b>[wrtxt] -- ESMAGAMENTO FATAL</b></font>"

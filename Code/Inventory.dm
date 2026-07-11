@@ -111,7 +111,7 @@ mob/var/eden=0
 mob/var/eating=0
 mob/var
 	Weighted=0
-	weight_cap_hw=0 //CATRACA do limite de peso (libras): nunca cai com o BP, so sobe com o recorde (persistida)
+	weight_cap_hw=0 //CATRACA do limite de peso (kg): nunca cai com o BP, so sobe com o recorde (persistida)
 obj/var/NotSavable
 obj/var/equipped=0
 mob/var/equipped=0

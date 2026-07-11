@@ -189,7 +189,7 @@ proc/Load_Rank()
 		if(isnull(RankList)) RankList=new/list()
 
 var
-	Turtle //Can make shells up to 10000 pounds, can use and teach Kamehameha
+	Turtle //Can make shells up to 10000 kg, can use and teach Kamehameha
 	Crane
 	Geti
 

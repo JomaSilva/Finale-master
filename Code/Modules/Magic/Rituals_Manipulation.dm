@@ -566,7 +566,7 @@ obj/Ritual
 					var/GREEN=input("green...") as num
 					var/BLUE=input("blue...") as num
 					A.icon+=rgb(RED,GREEN,BLUE)
-					A.pounds=max(min(round(input(u,"How many pounds? [u.intBPcap*u.Emagiskill] is your maximum.") as num,1),u.intBPcap*u.Emagiskill),1)
+					A.pounds=max(min(round(input(u,"How many kg? [u.intBPcap*u.Emagiskill] is your maximum.") as num,1),u.intBPcap*u.Emagiskill),1)
 					u.contents+=A
 
 //enhance/enchant equipment spell
