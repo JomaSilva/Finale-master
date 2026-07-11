@@ -533,7 +533,7 @@ mob/proc/majin_enter_pure()
 	MajinSagaCinematicPure()
 	in_pure_form = 1
 	transBuff = 18 // 18x BP
-	icon = 'MajinForm11.dmi'
+	icon = 'MajinForm5.dmi' //o corpo do BOSS Majin Boo (Kid Boo) -- era MajinForm11; a cor do proprio Majin tinge por cima
 	if(majin_color) icon += majin_color
 	majin_saga_busy = 0
 	to_chat(src, "<font color=#ff70d0><b>You have become your Pure Form — every scrap of borrowed power burned away for your own.</b></font>", "system")
@@ -562,7 +562,7 @@ mob/proc/MajinSagaCinematicPure()
 	emit_Sound('rockmoving.wav')
 	emit_TransformMusic('Buu Is Fighting.mp3', 1060) //~106s; plays EVERY time Pure Form is activated
 	to_chat(view(src), "<font color=#ff70d0>*[src]'s flesh boils and shrinks as a pure, ancient power surfaces!*</font>", "combat")
-	icon = 'MajinForm11.dmi'
+	icon = 'MajinForm5.dmi' //corpo do boss Majin Boo (Kid Boo)
 	if(majin_color) icon += majin_color
 	flick("kid trans", src)
 	for(var/cyc = 1 to 12)

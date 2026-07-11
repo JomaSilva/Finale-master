@@ -55,7 +55,7 @@ mob/proc
 mob/Admin3/verb
 	Godki_Settings()
 		set category = "Admin"
-		switch(input(usr,"What to change? God Ki is attainable at [godki_at] base BP. Temporary version via Ritual possible at any base. God Ki SSJ cap is [godki_ssj_cap]. Max tier is [max_godki_tier]. Gt Mode: [gt_mode] (1 = On). Gt Mode being on will disable God Ki and mostly remove God Ki (Bonuses from mastery still remain.). God Ki utter cap is [godki_cap]. Anyone at that tier or [godki_cap-1] tier will be a Angel or GoD.") in list("Cancel",\
+		switch(input(usr,"What to change? God Ki is attainable at [godki_at] base BP. Temporary version via Ritual possible at any base. God Ki SSJ cap is [godki_ssj_cap]. Max tier is [max_godki_tier]. Gt Mode: [gt_mode] (1 = On). Gt Mode being on will disable God Ki and mostly remove God Ki (Bonuses from mastery still remain.). God Ki utter cap is [godki_cap]. (Angel/God of Destruction sao RANKS dados por admin, sem ligacao com tiers de God Ki.)") in list("Cancel",\
 			"God Ki At","Heal God Ki Energy","Modify God Ki Stats (Mob)","GT Mode","Max Attainable God Ki Tier","God Ki Tier Cap","God Ki SSJ cap"))
 
 			if("God Ki At")
@@ -103,7 +103,7 @@ mob/Admin3/verb
 				max_godki_tier = input(usr,"The maximum amount of God Ki Tier players can level up to.","",max_godki_tier) as num
 				to_chat(world, "<font color=yellow size=4>Players can level God Ki up to a max of [max_godki_tier]! The absolute cap is [godki_cap]</font>")
 			if("God Ki Tier Cap")
-				godki_cap = input(usr,"The absolute cap of God Ki tiers. This determines when players can get into Angel and GoD.","",godki_cap) as num
+				godki_cap = input(usr,"The absolute cap of God Ki tiers.","",godki_cap) as num
 				to_chat(world, "<font color=yellow size=4>Players can level God Ki up to a max of [max_godki_tier]! The absolute cap is [godki_cap]</font>")
 			if("God Ki SSJ cap")
 				godki_ssj_cap = input(usr,"The maximum level of SSJ players can get to while in God Ki. SSJ4 Blue is not supported.", godki_ssj_cap) as num
