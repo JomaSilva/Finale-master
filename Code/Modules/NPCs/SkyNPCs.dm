@@ -179,10 +179,11 @@ mob/proc/enma_judge_to_hell()
 
 //----- revive pagando Zeni - metodo 2 (src = quem revive) -----
 mob/proc/enma_zeni_revive()
-	if(zenni < ZENI_REVIVE_COST)
-		to_chat(src, "<font color=#d8a0ff><b>Enma Daioh</b>: \"You can't afford the trip back! Return when you have [ZENI_REVIVE_COST] Zeni.\"</font>")
+	var/cost = ZENI_REVIVE_COST * (hakai_mark ? GOD_HAKAI_REVIVE_MULT : 1) //apagado por HAKAI: o Enma cobra o dobro pra reconstruir a alma
+	if(zenni < cost)
+		to_chat(src, "<font color=#d8a0ff><b>Enma Daioh</b>: \"You can't afford the trip back! Return when you have [cost] Zeni.[hakai_mark ? " A God of Destruction erased you -- rebuilding THAT soul costs extra!" : ""]\"</font>")
 		return
-	zenni -= ZENI_REVIVE_COST
+	zenni -= cost
 	zeni_revive_debuff_until = world.realtime + 36000 //debuff de 1h
 	to_chat(src, "<font color=#d8a0ff><b>Enma Daioh</b> stamps your file: \"Back to the land of the living with you!\"</font>")
 	to_chat(src, "<font color=#cc8844>Your body is frail from the journey - your power is capped at 25% for 1 hour.</font>")

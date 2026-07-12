@@ -187,6 +187,7 @@ proc/Load_Rank()
 		S["ANGR"]>>Angel_Rank
 		S["RankList"]>>RankList
 		if(isnull(RankList)) RankList=new/list()
+	god_state_load() //estado do God of Destruction (tarefas/duelo) + liga o loop de tarefas (GodOfDestruction.dm)
 
 var
 	Turtle //Can make shells up to 10000 kg, can use and teach Kamehameha

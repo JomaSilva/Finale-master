@@ -287,7 +287,7 @@ mob/Admin3/verb/Give(mob/M in world)
 			,"Namekian Elder","North Elder","South Elder","East Elder","West Elder","King Yemma",\
 			"Grand Kai","Supreme Kai","God of Destruction","Angel","King of Vegeta","President","North Kai","South Kai",\
 			"East Kai","West Kai","Demon Lord","Frost Demon Lord","Turtle","Crane","King Of Mayko","King Of Acronia", "Arconian Guardian", "Saibamen Rouge Leader","Captain/King of Pirates","Mutany Leader","None",))
-				if("God of Destruction") God_Of_Destruction=M.signature //rank novo: so titulo por enquanto
+				if("God of Destruction") god_gain_title(M, "foi coroado(a) pelo proprio Zeno como") //fluxo completo: poderes+tarefas+carencia (GodOfDestruction.dm)
 				if("Angel") Angel_Rank=M.signature //rank novo: so titulo por enquanto
 				if("Frost Demon Lord") Frost_Demon_Lord=M.signature
 				if("Demon Lord") Demon_Lord=M.signature

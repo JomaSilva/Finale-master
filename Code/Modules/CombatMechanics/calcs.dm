@@ -171,6 +171,7 @@ mob/proc/damage_mob(mob/M,dmg)
 proc/damage_m(mob/M,dmg,selectzone,murderToggle,penetration,armorscaler = TRUE)
 	dmg = ArmorCalc(dmg,M.Esuperkiarmor,armorscaler)
 	if(M.Esuperkiarmor) M.damage_armor(dmg)
+	if(M.god_temper_armed) M.god_temper_hit() //GOD'S TEMPER: 10 danos seguidos sem bloquear = surto (GodOfDestruction.dm; 1 if barato p/ todos)
 	M.DamageLimb(dmg,selectzone,murderToggle,penetration)
 
 

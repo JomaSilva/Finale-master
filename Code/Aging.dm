@@ -134,7 +134,7 @@ mob/proc/AgeCheck(var/skipTimeText)
 	cap_hp()
 	var/newage = Year-BirthYear
 	if(SAge<=newage)
-		if(!dead&&!IsAVampire)
+		if(!dead&&!IsAVampire&&!god_is_god(src)) //GOD OF DESTRUCTION nao envelhece enquanto porta o titulo
 			Age+=max(Year-LastYear,0)
 		if(IsAVampire)
 			if(ParanormalBPMult<VampireBPMultMax)

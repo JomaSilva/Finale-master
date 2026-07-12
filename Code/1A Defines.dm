@@ -27,6 +27,7 @@
 #define FD_RELEASE_RECOVER_PCT 4  //% de liberacao recuperada por segundo em forma ESTAVEL
 #define FD_REGEN_PCT 0.2          //maestria 100: % do MaxKi por segundo POR grau de supressao (forma 1 = 4 graus = 0.8%/s)
 #define LSSJ_RAMP_TICKS 600       //Form Rising dos Legendary: ciclos de GlobalStats (~0.3s) com a TAG de combate ate o multiplicador chegar no teto da forma (600 = ~3min; compartilhado Stats.dm + lssjbuff.dm)
+#define GOD_HAKAI_REVIVE_MULT 2   //vitima de Hakai paga o revive do Enma x isto (compartilhado: GodOfDestruction.dm + SkyNPCs.dm -- ordem de include)
 #define DOESEXIST if(isnull(src)) return
 #define CLIENTEXIST if(isnull(client)) return
 #define CHECK_TICK if(world.tick_usage > 75) lagstopsleep()
