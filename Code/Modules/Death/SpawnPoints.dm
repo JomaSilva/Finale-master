@@ -169,6 +169,8 @@ mob/proc/Locate()
 
 	if(dead) //dead characters (e.g. logging in while dead) go to the death checkpoint, NOT their homeworld
 		loc=locate(187,104,6) //Outro Mundo: todo morto vai pro checkpoint do Enma (com ou sem alma)
+	else if(conq_spawn && conq_spawn_try(src))
+		return //spawnou no proprio dominio procedural conquistado (PlanetConquest.dm); se falhar cai no fluxo normal
 	else if(spawnPlanet)
 		GotoPlanet(effective_spawn_planet(),1) //planeta natal destruido -> spawn na Terra (volta sozinho quando o planeta voltar)
 	else

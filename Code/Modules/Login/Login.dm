@@ -318,6 +318,7 @@ mob/proc
 		age_table_login_fix() //Peak age/lifespan pela TABELA por raca (Aging.dm): sincroniza personagens antigos
 		ssj4_gate_login_fix() //SSJ4 subiu de ~200M pra casa dos 10/20B de BP base: re-sorteia o gate salvo dos chars antigos
 		god_login_check() //God of Destruction: re-arma os poderes do portador / limpa de ex-portadores (GodOfDestruction.dm)
+		conq_login_check() //Conquista: entrega recados de dominio (perdeu/defendeu) + valida o spawn-no-dominio (PlanetConquest.dm)
 		if(needs_manual_custom) //Handles logging into clones for the first time.
 			CustomizeFurther()
 			StatRace(Race)

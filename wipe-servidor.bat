@@ -21,6 +21,7 @@ echo  WIPE do "Dragonball Jandirus" -- isto apaga:
 echo    - Save\            (todos os personagens dos players)
 echo    - BossEvents       (estado das sagas Freeza/Cell/Boo)
 echo    - PlanetRep        (reputacao dos planetas)
+echo    - Conquest         (dominios planetarios da conquista)
 echo    - PerWipeSettings  (planetas destruidos, config por-wipe)
 echo    - Bank_Save / RANK / Year / GAIN
 echo    - MapSave / MapSaveBck / AreaSave / ItemSave / MobSave
@@ -35,7 +36,7 @@ if /I not "%CONFIRMA%"=="SIM" (
 
 cd /d "%~dp0"
 if exist "Save" rmdir /s /q "Save"
-for %%F in (BossEvents PlanetRep PerWipeSettings Bank_Save RANK Year GAIN MapSave MapSaveBck AreaSave ItemSave MobSave Galaxy PlanetCache) do (
+for %%F in (BossEvents PlanetRep Conquest PerWipeSettings Bank_Save RANK Year GAIN MapSave MapSaveBck AreaSave ItemSave MobSave Galaxy PlanetCache) do (
     if exist "%%F" del /f /q "%%F"
 )
 

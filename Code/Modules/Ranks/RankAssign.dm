@@ -287,6 +287,20 @@ Geti Star King/Queen: [RankList[Geti]]<br>
 Captain/King of Pirates: [RankList[capt]]<br>
 Mutany Leader: [RankList[mutany]]<br><br><br>
 </body><html>"}
+	if(conq_data.len) //dominios planetarios da conquista (PlanetConquest.dm)
+		Ranks+={"<html>
+<head><title>Ranks</head></title><body>
+<center><body bgcolor="#000000"><font size=2><font color="#FF8844"><b><i>
+*Dominios Planetarios*<br>
+</body><html>"}
+		for(var/cpl in conq_data)
+			var/list/CR = conq_data[cpl]
+			if(!islist(CR)) continue
+			Ranks+={"<html>
+<head><title>Ranks</head></title><body>
+<center><body bgcolor="#000000"><font size=2><font color="#FF8844"><b><i>
+[cpl]: [CR["name"]]<br>
+</body><html>"}
 	Ranks+={"<html>
 <head><title>Ranks</head></title><body>
 <center><body bgcolor="#000000"><font size=2><font color="#FFCC00"><b><i>

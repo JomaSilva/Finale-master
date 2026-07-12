@@ -346,6 +346,7 @@ mob/proc/ui_tab_nav()
 		var/extra = ""
 		var/datum/pspace_planet/PD = pspace_planets["[F.planetType]"] //planeta procedural: mostra gravidade/bioma (seguranca c/ o esmagamento!)
 		if(PD) extra = " &middot; grav x[PD.gravity] &middot; [pspace_biomes[PD.biome][1]]"
+		extra += conq_owner_tag("[F.planetType]") //planeta dominado por player (PlanetConquest.dm)
 		h += ui_row(html_encode("[F.planetType]"), "[get_dist(src, F)] tiles <span class='mut'>[sense_dir_word(get_dir(src, F))] &middot; ([F.x], [F.y])[extra]</span>", "")
 	if(!found)
 		h += "<div class='mut' style='padding:8px'>Nenhum planeta detectado neste setor.</div>"

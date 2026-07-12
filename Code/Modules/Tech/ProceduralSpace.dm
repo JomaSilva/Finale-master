@@ -1365,6 +1365,7 @@ proc/pspace_generate_surface(datum/pspace_planet/D)
 		D.spawned += E
 	npcspawnson = oldspawns
 	pspace_builds_restore(D) //re-aplica as construcoes dos jogadores por cima do terreno
+	conq_on_surface_ready(D) //re-finca a bandeira de dominio, se o planeta tiver dono (PlanetConquest.dm)
 	WriteToLog("debug","pspace: superficie de [D.name] ([B[1]]) gerada em [(world.time - gen_t0) / 10]s ([D.spawned.len] objs)")
 
 // ---------------------------------------------------------------------------

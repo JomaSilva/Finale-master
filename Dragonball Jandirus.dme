@@ -206,6 +206,7 @@
 #include "Code\Modules\Globals\Cleaner.dm"
 #include "Code\Modules\Globals\client.dm"
 #include "Code\Modules\Globals\Lists.dm"
+#include "Code\Modules\Globals\PlanetConquest.dm"
 #include "Code\Modules\Globals\PlanetPopulation.dm"
 #include "Code\Modules\Globals\PlanetReputation.dm"
 #include "Code\Modules\Globals\readme.dm"

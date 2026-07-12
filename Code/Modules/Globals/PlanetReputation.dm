@@ -20,9 +20,8 @@
 #define REP_KILL_ROYAL         -25  // matar o Rei/Principe (realeza doi mais)
 #define REP_KILL_VILLAIN_BONUS  40  // matar um PLAYER que e inimigo do povo (rep <= REP_VILLAIN) -> ganha isto em cada planeta que o odiava
 // ---- limiares ----
-#define REP_VILLAIN            -30  // daqui pra baixo: o povo fofoca/alerta sobre o player
+// REP_VILLAIN (-30) e REP_HERO (50) moram no 1A Defines.dm: a CONQUISTA (PlanetConquest.dm) compila antes deste arquivo
 #define REP_HOSTILE            -60  // daqui pra baixo: cidadaos ATACAM o player a vista (vinganca)
-#define REP_HERO                50  // daqui pra cima: o povo fofoca sobre o heroi
 #define REP_MIN               -200  // piso e teto da escala
 #define REP_MAX                200
 #define REP_DECAY_PER_DAY        1  // por dia in-game a rep anda isto em direcao a 0 (0 = nunca esquece)
