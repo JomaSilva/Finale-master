@@ -18,6 +18,7 @@ mob/proc/Revert(var/DontRevertSSJ)
 		stopbuff(/obj/buff/Werewolf)
 		stopbuff(/obj/buff/Giant_Form)
 		stopbuff(/obj/buff/Wrathful_State)
+		stopbuff(/obj/buff/UltraInstinct) //Ultra Instinct: reverter tambem derruba a forma (morte/base -- UltraInstinct.dm)
 		ssjBuff = 1
 		ssj=0
 		lssj=0

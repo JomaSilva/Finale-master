@@ -288,7 +288,12 @@ mob/Admin3/verb/Give(mob/M in world)
 			"Grand Kai","Supreme Kai","God of Destruction","Angel","King of Vegeta","President","North Kai","South Kai",\
 			"East Kai","West Kai","Demon Lord","Frost Demon Lord","Turtle","Crane","King Of Mayko","King Of Acronia", "Arconian Guardian", "Saibamen Rouge Leader","Captain/King of Pirates","Mutany Leader","None",))
 				if("God of Destruction") god_gain_title(M, "foi coroado(a) pelo proprio Zeno como") //fluxo completo: poderes+tarefas+carencia (GodOfDestruction.dm)
-				if("Angel") Angel_Rank=M.signature //rank novo: so titulo por enquanto
+				if("Angel")
+					Angel_Rank=M.signature //Anjo sempre possui o Ultra Instinto (UltraInstinct.dm)
+					if(!M.ui_learned)
+						M.ui_learned = 1
+						M.ui_give_verbs()
+						to_chat(M, "<font color=#eef2ff><b>Como Anjo, o Ultra Instinto e parte de voce.</b> (verbs na aba Skills)")
 				if("Frost Demon Lord") Frost_Demon_Lord=M.signature
 				if("Demon Lord") Demon_Lord=M.signature
 				if("Earth Guardian") Earth_Guardian=M.signature

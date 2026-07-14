@@ -198,6 +198,8 @@ mob/proc/ui_tab_stats()
 			h += ui_row("MAESTRIA DA BASE", "[round(fd_base_mastery)]% <span class='mut'>(estavel ate: [fd_form_name(fd_stable_gate())])</span>", fd_base_mastery >= 100 ? "hi" : "")
 			if(fd_release < 1 || fd_ki_locked)
 				h += ui_row("LIBERACAO", "[round(fd_release * 100)]%[fd_ki_locked ? " <span class='mut'>KI DESCONTROLADO!</span>" : ""]", "lo")
+	if(ui_learned) //ULTRA INSTINCT: precisao ATUAL (escala a esquiva) x maestria REAL (destrava habilidades)
+		h += ui_row("ULTRA INSTINTO", "[round(ui_prof, 1)]% precisao <span class='mut'>/ maestria [round(ui_prof_real, 1)]%[ui_form ? " &middot; [ui_form == 2 ? "Perfected" : "-Sign-"]" : ""][ui_active ? " &middot; ATIVO" : ""]</span>", (ui_form || ui_active) ? "hi" : "")
 	h += ui_sec("ATTRIBUTES")
 	var/list/atts = list(
 		"Physical Offense" = Rphysoff, "Physical Defense" = Rphysdef,

@@ -318,6 +318,9 @@ obj/attack/blast
 								proprietor.beamcounter+=3
 							else
 								proprietor.blastcounter+=3
+						if(ui_try_evade(M, "blast")) //ULTRA INSTINCT: o corpo desvia sozinho da rajada (UltraInstinct.dm)
+							ui_blast_evade_fx(M, src)
+							return 1
 						var/dmg
 						if(!physdamage)
 							dmg=DamageCalc(mods*6*globalKiDamage,(M.Ekidef**2*max(M.Etechnique,M.Ekiskill)),basedamage,maxdamage)

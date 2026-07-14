@@ -200,6 +200,7 @@ mob/proc/hitProc(var/mob/M,dmg,var/iscrit,var/customFlavor,var/forcehit,type)
 		M.countering--
 		hit = 1
 	if(M.KO) hit = 2 //a knocked-out target is completely exposed: no dodge, no block, no counter -- every hit lands clean
+	if((hit == 2 || hit == 3) && !forcehit && ui_try_evade(M, "melee")) hit = 0 //ULTRA INSTINCT: Esquiva Autonoma -- o corpo desvia sozinho, ate de crits (UltraInstinct.dm)
 	Attack_MasteryGain(1 + type)
 	switch(hit)
 		if(3)//crit

@@ -199,12 +199,15 @@ mob
 		//as VARS de forma na mao (o DeBuff do LSSJ zera lssj fora do logout) e re-veste depois de salvar.
 		var/_ssj = ssj
 		var/_lssj = lssj
+		var/_uif = ui_form //Ultra Instinct: mesmo tratamento (o clearbuffs zeraria a forma via DeBuff)
 		clearbuffs()
 		ssj = _ssj
 		lssj = _lssj
+		ui_form = _uif
 		Save()
 		if(ssj && !isBuffed(/obj/buff/SuperSaiyan)) startbuff(/obj/buff/SuperSaiyan,'SSJIcon.dmi')
 		if(lssj && !isBuffed(/obj/buff/LSSJ)) startbuff(/obj/buff/LSSJ,'SSJIcon.dmi')
+		if(ui_form && !isBuffed(/obj/buff/UltraInstinct)) startbuff(/obj/buff/UltraInstinct,'SSJIcon.dmi')
 		if(ssj || lssj) AddHair()
 
 	verb/backtolobby()
