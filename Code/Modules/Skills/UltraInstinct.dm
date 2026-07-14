@@ -60,6 +60,7 @@
 #define UI_GD_PROF_COST 10        //precisao ATUAL consumida no segundo cast
 #define UI_GD_CD 600              //cooldown (1 min) apos a rajada OU a janela expirar
 #define UI_TICKSECS 0.3           //duracao aproximada de 1 ciclo do GlobalStats (sleep(3))
+#define UI_OMEN_MUSIC_DS 2400     //janela (4min) do tema do despertar: ducka musica de combate/rage pelo periodo
 // ============================ FIM DO CONFIG =================================
 
 mob/var
@@ -67,10 +68,12 @@ mob/var
 	ui_prof_real = 0   //maestria REAL 0-100 (persiste; destrava habilidades)
 	ui_prof = 0        //precisao ATUAL 0-100 (persiste; drena com uso)
 	ui_form = 0        //0 = base | 1 = Sign | 2 = Perfected (persiste: relog mantem a forma)
+	ui_omen_cine = 0   //cinematica do DESPERTAR (1a vez no Sign) ja vista (persiste)
 mob/var/tmp
 	ui_active = 0          //passiva (Autonomous Evasion) ligada
 	ui_evade_stacks = 0    //pilhas do bonus pos-esquiva vivas
 	ui_evade_msg_cd = 0    //anti-spam das falas de esquiva de ki
+	ui_transing = 0        //latch da cinematica de transformacao
 	ui_gd_window = 0       //ate quando vale o 2o cast do Godly Display
 	ui_gd_cd = 0           //cooldown do Godly Display
 	ui_gd_marked_until = 0 //ate quando ESTE mob esta marcado por um Godly Display
@@ -234,16 +237,158 @@ mob/keyable/verb/Ultra_Instinct()
 
 // ---------------------------------------------------------------------------
 // FORMAS: Sign (60x) e Perfected (66x) -- exclusivas com formas raciais
+// VISUAL (ambas): aura UIAurafixed + fagulhas UI_Dots + olhos prateados +
+// cabelo -- estilo Goku vira o cabelo UI proprio; os demais ficam iguais a
+// base no Sign e prateados no Perfected.
 // ---------------------------------------------------------------------------
-obj/overlay/effects/ui_sign_aura //prata-azulada serena, colada no corpo
-	icon = 'god - grey.dmi'
-	color = rgb(150, 175, 230)
+obj/overlay/effects/ui_aura //a aura do Ultra Instinto (ja colorida no .dmi)
+	icon = 'UIAurafixed.dmi'
 	temporary = 0
 
-obj/overlay/effects/ui_perf_aura //prata-branca absoluta
-	icon = 'god - grey.dmi'
-	color = rgb(235, 240, 255)
+obj/overlay/effects/ui_dots //as fagulhas prateadas orbitando o corpo
+	icon = 'UI_Dots.dmi'
 	temporary = 0
+
+//olhos cinza/prateados (icone do olho padrao banhado de prata; cache global)
+var/icon/ui_eye_cache
+proc/ui_eye_icon()
+	if(!ui_eye_cache)
+		ui_eye_cache = icon('Eyes_Black.dmi')
+		ui_eye_cache.Blend(rgb(190, 196, 208), ICON_ADD)
+	return ui_eye_cache
+
+obj/overlay/eyes/ui_eyes
+	ID = 31460
+	name = "ui eyeballs"
+	EffectStart()
+		icon = ui_eye_icon()
+		..()
+
+//cabelos das formas (fora de /hairs/ssj de proposito: o tint de God Ki nao suja a prata)
+obj/overlay/hairs/uisign //estilo Goku no -Sign-
+	name = "ultra instinct hair"
+	EffectStart()
+		icon = 'Hair_UltraInstinct.dmi'
+		..()
+
+obj/overlay/hairs/uiperf //estilo Goku no Perfected
+	name = "mastered ultra instinct hair"
+	EffectStart()
+		icon = 'Hair_MasteredUltraInstinct.dmi'
+		..()
+
+obj/overlay/hairs/uisilver //Perfected sem estilo Goku: o cabelo BASE banhado de prata
+	name = "silvered hair"
+	EffectStart()
+		icon = container.hair
+		icon += rgb(185, 190, 200)
+		..()
+
+//chamado pelo AddHair() quando ui_form esta ativo (HairObject.dm)
+mob/proc/ui_apply_hair()
+	if(!hair) return //careca continua careca
+	if(hairtypeSaved == "Goku")
+		updateOverlay((ui_form == 2) ? /obj/overlay/hairs/uiperf : /obj/overlay/hairs/uisign)
+	else if(ui_form == 2)
+		updateOverlay(/obj/overlay/hairs/uisilver)
+	else
+		updateOverlay(/obj/overlay/hairs/hair) //Sign: os outros estilos ficam iguais a base
+
+//olhos: aplica/restaura (quem subiu olho custom mantem o proprio)
+mob/proc/ui_apply_eyes()
+	if(hascustomeye) return
+	removeOverlay(/obj/overlay/eyes/default_eye)
+	updateOverlay(/obj/overlay/eyes/ui_eyes)
+
+mob/proc/ui_restore_eyes()
+	removeOverlay(/obj/overlay/eyes/ui_eyes)
+	if(!hascustomeye) RefreshEyes()
+
+// ---------------------------------------------------------------------------
+// CINEMATICA DO DESPERTAR (1a vez no -Sign-): receita da fd_grand_cinematic,
+// com a aura grande AZULADA, o efeito UI Powerup no corpo e o tema do Omen.
+// ---------------------------------------------------------------------------
+var/icon/ui_blue_aura_cache
+proc/ui_blue_aura_icon() //'Aurabigcombined.dmi' tintada de azul (cache: icon() decodifica o .dmi inteiro)
+	if(!ui_blue_aura_cache)
+		ui_blue_aura_cache = icon('Aurabigcombined.dmi')
+		ui_blue_aura_cache.Blend(rgb(95, 145, 255), ICON_MULTIPLY)
+	return ui_blue_aura_cache
+
+mob/proc/ui_grand_cinematic()
+	var/turf/Td
+	var/image/I
+	var/image/P
+	var/obj/A
+	var/cyc
+	var/q
+	var/amount
+	move = 0
+	dir = SOUTH
+	emit_TransformMusic(file("Sounds/Music/Ui forms/omen/Ultimate Battle Theme Official Guitar Version - Full Song Montage Montaje.mp3"), UI_OMEN_MUSIC_DS)
+	emit_Sound('rockmoving.wav')
+	updateOverlay(/obj/overlay/effects/ui_dots)
+	to_chat(view(src), "<font color=#aebfe8>*O ar em volta de [src] esfria... fagulhas prateadas comecam a flutuar, e o chao treme baixinho.*", "combat")
+	for(cyc = 1 to 12) //build (~12s): poeira + raios + tremores crescendo
+		for(q = 1 to 3)
+			Td = locate(x + rand(-8,8), y + rand(-8,8), z)
+			if(Td && !Td.density) createDustmisc(Td,2)
+		if(prob(50))
+			Td = locate(x + rand(-7,7), y + rand(-7,7), z)
+			if(Td && !Td.density) createDustmisc(Td,3)
+		if(prob(45))
+			Td = locate(x + rand(-8,8), y + rand(-8,8), z)
+			if(Td) createLightningmisc(Td, pick(2,4,5,9))
+		if(cyc % 4 == 0) spawn Quake()
+		sleep(10)
+	I = image(icon = ui_blue_aura_icon()) //surto (~10s): aura grande AZUL + UI Powerup no corpo + feixes de chao
+	I.plane = 7
+	overlayList += I
+	P = image(icon = 'UI Powerup.dmi')
+	P.pixel_x = -44 //efeito de 120px de largura centralizado no tile de 32
+	P.plane = 7
+	overlayList += P
+	overlaychanged = 1
+	emit_Sound('chargeaura.wav')
+	to_chat(view(src), "<font color=#aebfe8>*Uma coluna de luz azul-prateada engole [src] -- a pressao do ar dobra os joelhos de quem assiste!*", "combat")
+	Quake()
+	spawn Quake()
+	amount = 8
+	while(amount)
+		A = new/obj
+		A.loc = locate(x,y,z)
+		A.icon = 'Electricgroundbeam2.dmi'
+		if(amount==8) spawn(rand(1,40)) walk(A,NORTH,2)
+		if(amount==7) spawn(rand(1,40)) walk(A,SOUTH,2)
+		if(amount==6) spawn(rand(1,40)) walk(A,EAST,2)
+		if(amount==5) spawn(rand(1,40)) walk(A,WEST,2)
+		if(amount==4) spawn(rand(1,40)) walk(A,NORTHWEST,2)
+		if(amount==3) spawn(rand(1,40)) walk(A,NORTHEAST,2)
+		if(amount==2) spawn(rand(1,40)) walk(A,SOUTHWEST,2)
+		if(amount==1) spawn(rand(1,40)) walk(A,SOUTHEAST,2)
+		spawn(50) del(A)
+		amount--
+	for(cyc = 1 to 10)
+		for(q = 1 to 4)
+			Td = locate(x + rand(-8,8), y + rand(-8,8), z)
+			if(Td && !Td.density) createDustmisc(Td, pick(2,2,2,3))
+		if(prob(50))
+			Td = locate(x + rand(-9,9), y + rand(-9,9), z)
+			if(Td) createLightningmisc(Td, pick(3,5,9))
+		if(cyc % 3 == 0) spawn Quake()
+		sleep(10)
+	createShockwavemisc(loc, 3) //climax: a onda de choque... e o SILENCIO
+	for(q = 1 to 10)
+		Td = locate(x + rand(-6,6), y + rand(-6,6), z)
+		if(Td && !Td.density) createDustmisc(Td, pick(2,2,3))
+	emit_Sound('aura.wav')
+	overlayList -= I
+	overlayList -= P
+	overlaychanged = 1
+	to_chat(view(src), "<font color=#eef2ff><b>*... e entao, silencio. A poeira paira no ar. Os olhos de [src] se abrem -- prateados.*</b>", "combat")
+	createShockwavemisc(loc, 2)
+	createCrater(loc, 3)
+	move = 1
 
 mob/proc/ui_form_revert()
 	if(isBuffed(/obj/buff/UltraInstinct)) stopbuff(/obj/buff/UltraInstinct)
@@ -252,7 +397,7 @@ mob/proc/ui_form_revert()
 mob/keyable/verb/Ultra_Instinct_Form()
 	set category = "Skills"
 	set name = "Ultra Instinct Transform"
-	if(!usr.ui_learned) return
+	if(!usr.ui_learned || usr.ui_transing) return
 	if(usr.ui_form)
 		usr.ui_form_revert()
 		return
@@ -271,6 +416,14 @@ mob/keyable/verb/Ultra_Instinct_Form()
 	if(usr.ssj || usr.lssj || usr.ssjBuff != 1 || usr.transBuff != 1) //EXCLUSIVO: derruba a forma racial antes
 		to_chat(view(usr), "<font color=#cfd8ff>[usr] abandona a forma anterior -- a aura muda por completo...</font>")
 		usr.Revert()
+	if(!usr.ui_omen_cine) //o DESPERTAR: cinematica grande + tema do Omen, uma unica vez na vida
+		usr.ui_omen_cine = 1
+		usr.ui_transing = 1
+		usr.ui_grand_cinematic()
+		usr.ui_transing = 0
+		if(!usr || usr.dead || usr.KO) //caiu no meio do despertar: limpa as fagulhas da cinematica
+			if(usr) usr.removeOverlay(/obj/overlay/effects/ui_dots)
+			return
 	usr.ui_form = stage
 	usr.ui_prof = (stage == 2) ? UI_PROF_PERF_START : UI_PROF_SIGN_START //a forma RENOVA a precisao
 	usr.startbuff(/obj/buff/UltraInstinct, 'SSJIcon.dmi')
@@ -282,10 +435,14 @@ obj/buff/UltraInstinct
 		..()
 		container.formsBuff = (container.ui_form == 2) ? UI_MULT_PERF : UI_MULT_SIGN
 		flick('flashtrans.dmi', container)
-		container.updateOverlay((container.ui_form == 2) ? /obj/overlay/effects/ui_perf_aura : /obj/overlay/effects/ui_sign_aura)
+		container.updateOverlay(/obj/overlay/effects/ui_aura)
+		container.updateOverlay(/obj/overlay/effects/ui_dots)
+		container.ui_apply_eyes() //olhos cinza/prateados em ambas as formas
+		container.RemoveHair()
+		container.AddHair() //AddHair ve o ui_form e aplica o cabelo da forma (ui_apply_hair)
 		container.emit_Sound('1aura.wav')
 		if(container.ui_form == 2)
-			to_chat(view(container), "<font color=#eef2ff><b>[container] alcanca o ULTRA INSTINTO PERFEITO!</b> Uma aura prateada serena envolve seu corpo -- cada movimento e absoluto.")
+			to_chat(view(container), "<font color=#eef2ff><b>[container] alcanca o ULTRA INSTINTO PERFEITO!</b> Cabelos e olhos prateados -- cada movimento e absoluto.")
 		else
 			to_chat(view(container), "<font color=#aebfe8><b>O instinto desperta em [container] -- ULTRA INSTINCT -SIGN-!</b> Seus olhos brilham em prata.")
 	Loop()
@@ -299,10 +456,13 @@ obj/buff/UltraInstinct
 		..()
 	DeBuff()
 		container.formsBuff = 1
-		container.removeOverlay(/obj/overlay/effects/ui_sign_aura)
-		container.removeOverlay(/obj/overlay/effects/ui_perf_aura)
+		container.removeOverlay(/obj/overlay/effects/ui_aura)
+		container.removeOverlay(/obj/overlay/effects/ui_dots)
 		if(!container.LoggingOut) //no logout a forma PERSISTE (padrao Legendary): so a queda real zera
 			container.ui_form = 0
+			container.RemoveHair()
+			container.AddHair() //cabelo base de volta
+			container.ui_restore_eyes()
 			to_chat(container, "<font color=#cfd8ff>O Ultra Instinto se dissipa.")
 		..()
 

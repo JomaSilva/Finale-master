@@ -153,11 +153,17 @@ mob/proc/RemoveHair()
 	removeOverlay(/obj/overlay/hairs/ssj/ussj)
 	removeOverlay(/obj/overlay/hairs/ssj/rlssjhair)
 	removeOverlay(/obj/overlay/hairs/ssj/lssjhair)
+	removeOverlay(/obj/overlay/hairs/uisign) //cabelos do Ultra Instinct (UltraInstinct.dm)
+	removeOverlay(/obj/overlay/hairs/uiperf)
+	removeOverlay(/obj/overlay/hairs/uisilver)
 	removeOverlay(/obj/overlay/effects/menacing_aura) //limpa a aura ameacadora do Wrathful ao trocar/limpar o cabelo
 	return TRUE
 
 mob/proc/AddHair()
 	if(bio_lab_born || Race == "Bio-Android" || Parent_Race == "Bio-Android") //bio-androide e SEMPRE careca: nenhuma forma (nem SSJ) poe cabelo nele -- so aura e raios
+		return
+	if(ui_form) //ULTRA INSTINCT: cabelo da forma (Goku = cabelo UI proprio; demais: base no Sign, prateado no Perfected) -- UltraInstinct.dm
+		ui_apply_hair()
 		return
 	if(!ssj&&!lssj)
 		updateOverlay(/obj/overlay/hairs/hair)
