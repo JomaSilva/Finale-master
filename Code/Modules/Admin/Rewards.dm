@@ -290,10 +290,12 @@ mob/Admin3/verb/Give(mob/M in world)
 				if("God of Destruction") god_gain_title(M, "foi coroado(a) pelo proprio Zeno como") //fluxo completo: poderes+tarefas+carencia (GodOfDestruction.dm)
 				if("Angel")
 					Angel_Rank=M.signature //Anjo sempre possui o Ultra Instinto (UltraInstinct.dm)
-					if(!M.ui_learned)
+					if(!M.ui_learned && !M.ue_learned) //paths exclusivos: quem ja trilha a Destruicao nao recebe o Instinto
 						M.ui_learned = 1
 						M.ui_give_verbs()
 						to_chat(M, "<font color=#eef2ff><b>Como Anjo, o Ultra Instinto e parte de voce.</b> (verbs na aba Skills)")
+					else if(M.ue_learned)
+						to_chat(usr, "AVISO: [M] ja trilha o ULTRA EGO -- o rank foi dado, mas o Ultra Instinto NAO (paths exclusivos).")
 				if("Frost Demon Lord") Frost_Demon_Lord=M.signature
 				if("Demon Lord") Demon_Lord=M.signature
 				if("Earth Guardian") Earth_Guardian=M.signature

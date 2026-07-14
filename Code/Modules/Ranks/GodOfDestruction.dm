@@ -90,10 +90,16 @@ proc/god_gain_title(mob/M, via)
 	god_task_next = world.realtime + GOD_TASK_INTERVAL
 	M.Rank_Verb_Assign()
 	M.god_apply_powers()
-	if(!M.ue_learned) //o GoD SEMPRE possui o Power of Destruction (Ultra Ego -- UltraEgo.dm)
+	//PATHS (UltraEgo.dm): sem path = o titulo desperta o Power of Destruction; path do Instinto = kit
+	//emprestado a 25% (verbs no god_apply_powers); path da Destruicao = kit inteiro amplificado em 25%
+	if(!M.ue_learned && !M.ui_learned)
 		M.ue_learned = 1
 		M.ue_give_verbs()
 		to_chat(M, "<font color=#e07a9a><b>O Power of Destruction desperta em voce.</b> (verbs na aba Skills)")
+	else if(M.ui_learned && !M.ue_learned)
+		to_chat(M, "<font color=#c060ff><b>Seu Instinto agora canaliza a Destruicao:</b> voce ganha a Aura of Destruction e a Hakai Infusion a [round(GOD_PATH_BORROW * 100)]% de eficiencia, movidas pela sua PRECISAO (verbs na aba Skills, enquanto portar o titulo).")
+	else if(M.ue_learned)
+		to_chat(M, "<font color=#c060ff><b>O trono reconhece seu caminho:</b> todas as habilidades do Power of Destruction sao AMPLIFICADAS em [round(GOD_PATH_BOOST * 100)]% enquanto portar o titulo.")
 	god_state_save()
 	bev_announce("[M.name] [via ? via : "foi coroado(a)"] GOD OF DESTRUCTION! Que os desequilibrados temam.")
 	to_chat(M, "<font color=#c060ff><b>Voce agora e um GOD OF DESTRUCTION.</b> Mantenha o equilibrio do universo: cumpra as tarefas (verb GoD Status) ou sera destituido. Voce nao envelhece e respira no vacuo enquanto portar o titulo.")
@@ -125,12 +131,26 @@ mob/proc/god_apply_powers()
 	Keyableverbs += /mob/keyable/verb/God_Destroyer_Sphere
 	Keyableverbs += /mob/keyable/verb/God_Energy_Nullification
 	Keyableverbs += /mob/keyable/verb/God_Fury
+	if(ui_learned && !ue_learned) //path do INSTINTO: o titulo EMPRESTA o kit da destruicao (25% -- UltraEgo.dm)
+		verbs += /mob/keyable/verb/Power_of_Destruction
+		verbs += /mob/keyable/verb/Hakai_Infusion
+		Keyableverbs += /mob/keyable/verb/Power_of_Destruction
+		Keyableverbs += /mob/keyable/verb/Hakai_Infusion
 
 //"perde todas as habilidades ao perder o titulo" -- remocao imediata e total
 mob/proc/god_strip_powers()
 	god_temper_armed = 0
 	if(genome) spacebreather = round(genome.misc_stats["Space Breath"]) //volta ao da raca
 	if(isBuffed(/obj/buff/GodFury)) stopbuff(/obj/buff/GodFury)
+	if(!ue_learned) //o kit EMPRESTADO da destruicao morre com o titulo (quem trilha o path fica com o seu)
+		ue_active = 0
+		ue_infuse_until = 0
+		ue_ego_mult = 1
+		removeOverlay(/obj/overlay/effects/ue_aura_pas)
+		verbs -= /mob/keyable/verb/Power_of_Destruction
+		verbs -= /mob/keyable/verb/Hakai_Infusion
+		Keyableverbs -= /mob/keyable/verb/Power_of_Destruction
+		Keyableverbs -= /mob/keyable/verb/Hakai_Infusion
 	verbs -= /mob/keyable/verb/God_Hakai
 	verbs -= /mob/keyable/verb/God_Power_Flick
 	verbs -= /mob/keyable/verb/God_Fury_Beam

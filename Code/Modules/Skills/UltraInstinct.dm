@@ -92,7 +92,7 @@ mob/proc/ui_give_verbs()
 	Keyableverbs += /mob/keyable/verb/Godly_Display
 
 mob/proc/ui_login_check()
-	if(Angel_Rank && Angel_Rank == signature && !ui_learned) //o Anjo SEMPRE possui o Ultra Instinto
+	if(Angel_Rank && Angel_Rank == signature && !ui_learned && !ue_learned) //o Anjo SEMPRE possui o Ultra Instinto (mas paths sao exclusivos: quem ja trilha a Destruicao nao recebe)
 		ui_learned = 1
 		to_chat(src, "<font color=#eef2ff><b>Como Anjo, o Ultra Instinto e parte de voce.</b> (verbs na aba Skills)")
 	if(!ui_learned) return
@@ -116,6 +116,10 @@ mob/keyable/verb/Ensinar_Ultra_Instinct()
 		return
 	var/mob/S = input(T2, "Ensinar o Ultra Instinto a quem?", "Ultra Instinct") as null|anything in cands
 	if(!S || !S.client || S.ui_learned || get_dist(T2, S) > 1) return
+	if(S.ue_learned) //PATHS EXCLUSIVOS: quem trilha a Destruicao nao pode trilhar o Instinto
+		to_chat(T2, "<font color=#cfd8ff>[S] ja trilha o caminho do ULTRA EGO -- os dois paths nao coexistem num mesmo corpo.")
+		to_chat(S, "<font color=#cfd8ff>Seu corpo ja pertence a Destruicao. O Instinto jamais o aceitara.")
+		return
 	if(!S.godki || S.godki.tier < 1) //corpo mortal nao suporta o instinto dos anjos
 		to_chat(T2, "<font color=#cfd8ff>[S] ainda nao sente o Ki Divino -- o corpo mortal nao suporta o instinto dos anjos (God Ki tier 1+).")
 		to_chat(S, "<font color=#cfd8ff>Voce ainda nao esta pronto para o Ultra Instinto: desperte o Ki Divino primeiro.")
@@ -206,8 +210,8 @@ mob/proc/ui_instinct_tick()
 	//2) maestria REAL cresce com uso EM COMBATE
 	if((ui_active || ui_form) && (combatTag || IsInFight))
 		ui_real_gain(UI_REAL_PER_SEC * UI_TICKSECS)
-	//3) recuperacao: NUNCA com tag de combate; devagar, so com tudo desligado
-	if(!combatTag && !IsInFight && !ui_active && !ui_form)
+	//3) recuperacao: NUNCA com tag de combate; devagar, so com tudo desligado (ue_active: o kit emprestado do GoD drena a MESMA precisao)
+	if(!combatTag && !IsInFight && !ui_active && !ui_form && !ue_active)
 		if(ui_prof < ui_prof_real) ui_prof = min(ui_prof + UI_REGEN_PROF * UI_TICKSECS, ui_prof_real)
 		else if(ui_prof > ui_prof_real) ui_prof = max(ui_prof - UI_REGEN_PROF * UI_TICKSECS, ui_prof_real) //o excesso da forma escoa de volta ao real
 	//4) formas: dreno de ki PERMANENTE

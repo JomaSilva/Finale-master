@@ -78,6 +78,7 @@
 #define UE_HKI_CLASH_KI 0.05      //DISPUTA DE BEAMS: fracao do MaxKi drenada do rival a cada pulso de 5s
 #define UE_HKI_CLASH_PUSH 8       //...e pontos do medidor empurrados a favor do infundido
 #define UE_TICKSECS 0.3           //duracao aproximada de 1 ciclo do GlobalStats
+//GOD_PATH_BOOST (0.25) e GOD_PATH_BORROW (0.25) moram no 1A Defines.dm: GodOfDestruction.dm (Ranks) compila antes deste arquivo
 // ============================ FIM DO CONFIG =================================
 
 mob/var
@@ -108,10 +109,10 @@ mob/proc/ue_give_verbs()
 	Keyableverbs += /mob/keyable/verb/Hakai_Infusion
 
 mob/proc/ue_login_check()
-	if(god_is_god(src) && !ue_learned) //o God of Destruction SEMPRE possui o Power of Destruction
+	if(god_is_god(src) && !ue_learned && !ui_learned) //GoD SEM path: o titulo desperta o Power of Destruction (vira o path dele)
 		ue_learned = 1
 		to_chat(src, "<font color=#e07a9a><b>Como God of Destruction, o Power of Destruction e parte de voce.</b> (verbs na aba Skills)")
-	if(!ue_learned) return
+	if(!ue_learned) return //GoD do path do Instinto usa o kit EMPRESTADO (verbs via god_apply_powers)
 	ue_energy_real = clamp(ue_energy_real, 0, 100)
 	ue_energy = clamp(ue_energy, 0, 100)
 	ue_give_verbs()
@@ -132,6 +133,10 @@ mob/keyable/verb/Ensinar_Power_of_Destruction()
 		return
 	var/mob/S = input(T2, "Ensinar o Power of Destruction a quem?", "Ultra Ego") as null|anything in cands
 	if(!S || !S.client || S.ue_learned || get_dist(T2, S) > 1) return
+	if(S.ui_learned) //PATHS EXCLUSIVOS: quem trilha o Instinto nao pode trilhar a Destruicao
+		to_chat(T2, "<font color=#e07a9a>[S] ja trilha o caminho do ULTRA INSTINCT -- os dois paths nao coexistem num mesmo corpo.")
+		to_chat(S, "<font color=#e07a9a>Seu corpo ja pertence ao Instinto. O Ego jamais o aceitara.")
+		return
 	if(!S.godki || S.godki.tier < 1) //a energia da destruicao consome corpos mortais
 		to_chat(T2, "<font color=#e07a9a>[S] ainda nao sente o Ki Divino -- a energia da destruicao consumiria um corpo mortal (God Ki tier 1+).")
 		to_chat(S, "<font color=#e07a9a>Voce ainda nao esta pronto para o Power of Destruction: desperte o Ki Divino primeiro.")
@@ -154,6 +159,7 @@ mob/keyable/verb/Ensinar_Power_of_Destruction()
 // Energia REAL: ganho + anuncios de destravamento
 // ---------------------------------------------------------------------------
 mob/proc/ue_real_gain(amount)
+	if(!ue_learned) return //kit EMPRESTADO (GoD do Instinto) nao acumula energia real
 	if(ue_energy_real >= 100 || amount <= 0) return
 	var/before = ue_energy_real
 	ue_energy_real = min(ue_energy_real + amount, 100)
@@ -166,9 +172,33 @@ mob/proc/ue_real_gain(amount)
 	if(before < UE_UNLOCK_HKI && ue_energy_real >= UE_UNLOCK_HKI)
 		to_chat(src, "<font color=#f2b9cb><b>HAKAI INFUSION destravada!</b> ([UE_UNLOCK_HKI]%) Infunda seus ataques de ki com a energia da destruicao (verb na aba Skills).")
 
+// ---------------------------------------------------------------------------
+// FATOR DO KIT (paths do God of Destruction):
+//   1.25 = GoD que trilha a DESTRUICAO (tudo amplificado em 25%)
+//   1    = Power of Destruction normal
+//   0.25 = GoD que trilha o INSTINTO (kit EMPRESTADO pelo titulo, sem formas,
+//          rodando na PRECISAO do Ultra Instinct dele)
+//   0    = nao tem o kit
+// ---------------------------------------------------------------------------
+proc/ue_kit_factor(mob/M)
+	if(!M) return 0
+	if(M.ue_learned) return god_is_god(M) ? (1 + GOD_PATH_BOOST) : 1
+	if(M.ui_learned && god_is_god(M)) return GOD_PATH_BORROW
+	return 0
+
+proc/ue_has_kit(mob/M)
+	return ue_kit_factor(M) > 0
+
+//energia efetiva: o GoD do Instinto canaliza o kit pela PROFICIENCIA do UI
+proc/ue_eff_energy(mob/M)
+	return M.ue_learned ? M.ue_energy : M.ui_prof
+
+proc/ue_eff_real(mob/M)
+	return M.ue_learned ? M.ue_energy_real : M.ui_prof_real
+
 //a aura esta valendo? (toggle ligado OU transformado)
 proc/ue_aura_on(mob/M)
-	if(!M || !M.ue_learned) return 0
+	if(!M || !ue_has_kit(M)) return 0
 	if(M.dead) return 0
 	return (M.ue_active || M.ue_form)
 
@@ -178,7 +208,8 @@ proc/ue_aura_on(mob/M)
 //reducao de dano geral (funil damage_m: melee/efeitos). Registra o ultimo golpe pra explosao.
 proc/ue_aura_mitigate(mob/M, dmg)
 	if(!ue_aura_on(M) || dmg <= 0) return dmg
-	dmg *= max(1 - (UE_DR_BASE + M.ue_energy * UE_DR_PER_EN) / 100, 0.1)
+	var/f = ue_kit_factor(M)
+	dmg *= max(1 - (UE_DR_BASE + ue_eff_energy(M) * UE_DR_PER_EN) * f / 100, 0.1)
 	M.ue_last_hit = dmg
 	M.ue_real_gain(UE_REAL_PER_PROC * 0.25) //apanhar com a aura tambem ensina (fracao)
 	return dmg
@@ -186,13 +217,15 @@ proc/ue_aura_mitigate(mob/M, dmg)
 //colisao de ki: o ataque PERDE forca (ki devorado) + reducao de dano + penetracao da infusao
 proc/ue_blast_mitigate(mob/M, obj/attack/A, dmg)
 	if(dmg <= 0) return dmg
-	//HAKAI INFUSION do atirador: +5% de penetracao (mesmo contra alvos sem aura)
+	//HAKAI INFUSION do atirador: penetracao de defesa (mesmo contra alvos sem aura)
 	if(A && istype(A.proprietor, /mob))
 		var/mob/P = A.proprietor
-		if(P.ue_infuse_until > world.time) dmg *= UE_HKI_PEN_MULT
+		if(P.ue_infuse_until > world.time) dmg *= 1 + (UE_HKI_PEN_MULT - 1) * ue_kit_factor(P)
 	if(ue_aura_on(M))
-		dmg *= max(1 - (UE_KIEAT_BASE + M.ue_energy * UE_KIEAT_PER_EN) / 100, 0.1) //o ataque perde ki ao tocar a aura
-		dmg *= max(1 - (UE_DR_BASE + M.ue_energy * UE_DR_PER_EN) / 100, 0.1)       //e a reducao de dano geral
+		var/f = ue_kit_factor(M)
+		var/en = ue_eff_energy(M)
+		dmg *= max(1 - (UE_KIEAT_BASE + en * UE_KIEAT_PER_EN) * f / 100, 0.1) //o ataque perde ki ao tocar a aura
+		dmg *= max(1 - (UE_DR_BASE + en * UE_DR_PER_EN) * f / 100, 0.1)      //e a reducao de dano geral
 		M.ue_last_hit = dmg
 		M.ue_real_gain(UE_REAL_PER_PROC)
 		if(world.time >= M.ue_proc_msg_cd)
@@ -204,7 +237,7 @@ proc/ue_blast_mitigate(mob/M, obj/attack/A, dmg)
 //recuo no atacante MELEE (gancho no hitProc: M = vitima com aura, K = atacante, dmg = dano causado)
 proc/ue_melee_recoil(mob/M, mob/K, dmg)
 	if(!ue_aura_on(M) || !K || K == M || K.dead || dmg <= 0) return
-	var/recoil = dmg * (UE_RECOIL_BASE + M.ue_energy * UE_RECOIL_PER_EN) / 100
+	var/recoil = dmg * (UE_RECOIL_BASE + ue_eff_energy(M) * UE_RECOIL_PER_EN) * ue_kit_factor(M) / 100
 	if(recoil <= 0) return
 	damage_m(K, recoil, "torso", 0, 0)
 	M.ue_real_gain(UE_REAL_PER_PROC)
@@ -216,15 +249,16 @@ proc/ue_melee_recoil(mob/M, mob/K, dmg)
 proc/ue_infuse_deflect(obj/attack/A, deflectchance)
 	if(!A || !istype(A.proprietor, /mob)) return deflectchance
 	var/mob/P = A.proprietor
-	if(P.ue_infuse_until > world.time) return deflectchance * UE_HKI_DEFLECT_MULT
+	if(P.ue_infuse_until > world.time) return deflectchance * max(1 - (1 - UE_HKI_DEFLECT_MULT) * ue_kit_factor(P), 0) //GoD da Destruicao corta mais fundo; kit emprestado corta so 25% do corte
 	return deflectchance
 
 //o GOLPE FATAL negado (gancho no topo do Death): 1x por luta, estoura a aura e detona a explosao
 mob/proc/ue_deathsave_try()
 	if(!ue_active || dead || ue_deathsave_used) return 0 //so o TOGGLE segura a morte (a forma nao tem o seguro)
-	if(!ue_learned) return 0
+	if(!ue_has_kit(src)) return 0
 	ue_deathsave_used = 1
 	ue_active = 0 //a aura e forcosamente encerrada
+	removeOverlay(/obj/overlay/effects/ue_aura_pas)
 	for(var/datum/Body/B in body) //fica de pe por um fio (nada de cura de verdade)
 		if(B.lopped) continue
 		B.health = max(B.health, B.maxhealth * 0.05)
@@ -235,7 +269,7 @@ mob/proc/ue_deathsave_try()
 	return 1
 
 mob/proc/ue_destruction_explosion()
-	var/dmg = ue_last_hit * (UE_EXP_BASE + ue_energy * UE_EXP_PER_EN) / 100
+	var/dmg = ue_last_hit * (UE_EXP_BASE + ue_eff_energy(src) * UE_EXP_PER_EN) * ue_kit_factor(src) / 100
 	createShockwavemisc(loc, 3)
 	emit_Sound('scouterexplode.ogg')
 	flick('flashtrans.dmi', src)
@@ -251,9 +285,10 @@ mob/proc/ue_destruction_explosion()
 // UNBOUND EGO -- BP por membro ferido (recalculado no tick; powerlevel le ue_ego_mult)
 // ---------------------------------------------------------------------------
 mob/proc/ue_ego_update()
-	if(ue_energy_real < UE_UNLOCK_EGO || !ue_aura_on(src))
+	if(ue_eff_real(src) < UE_UNLOCK_EGO || !ue_aura_on(src))
 		ue_ego_mult = 1
 		return
+	var/f = ue_kit_factor(src)
 	var/mult = 0
 	var/parts = 0
 	var/peaks = 0
@@ -268,32 +303,35 @@ mob/proc/ue_ego_update()
 		mult += UE_EGO_ALL_BONUS / 100
 		if(!ue_restore_used)
 			ue_restore_used = 1
-			Ki = min(Ki + MaxKi * UE_EGO_RESTORE / 100, MaxKi)
-			stamina = min(stamina + maxstamina * UE_EGO_RESTORE / 100, maxstamina)
-			to_chat(src, "<font color=#f2b9cb><b>UNBOUND EGO no limite!</b> A dor vira poder puro -- [UE_EGO_RESTORE]% de Ki e Stamina restaurados!")
+			Ki = min(Ki + MaxKi * UE_EGO_RESTORE * f / 100, MaxKi)
+			stamina = min(stamina + maxstamina * UE_EGO_RESTORE * f / 100, maxstamina)
+			to_chat(src, "<font color=#f2b9cb><b>UNBOUND EGO no limite!</b> A dor vira poder puro -- Ki e Stamina restaurados!")
 			view(src) << output("<font color=#e07a9a>[src] sorri em meio aos ferimentos -- a aura de destruicao INCHA!</font>", "Chatpane.Chat")
 			chatcast(view(src), "<font color=#e07a9a>[src] sorri em meio aos ferimentos -- a aura de destruicao INCHA!</font>", "combat")
-	ue_ego_mult = 1 + mult
+	ue_ego_mult = 1 + mult * f
 
 // ---------------------------------------------------------------------------
 // TICK (GlobalStats, ~0.3s): dreno, recuperacao, crescimento, Unbound Ego
 // ---------------------------------------------------------------------------
 mob/proc/ue_tick()
-	if(!ue_learned) return
-	//1) uso drena a energia ATUAL
-	if(ue_form) ue_energy = max(ue_energy - UE_DRAIN_FORM * UE_TICKSECS, 0)
-	else if(ue_active) ue_energy = max(ue_energy - UE_DRAIN_ACTIVE * UE_TICKSECS, 0)
-	//2) energia REAL cresce com uso EM COMBATE
-	if((ue_active || ue_form) && (combatTag || IsInFight))
+	if(!ue_has_kit(src)) return
+	//1) uso drena a energia ATUAL (kit emprestado do GoD do Instinto: drena a PRECISAO do UI)
+	if(ue_learned)
+		if(ue_form) ue_energy = max(ue_energy - UE_DRAIN_FORM * UE_TICKSECS, 0)
+		else if(ue_active) ue_energy = max(ue_energy - UE_DRAIN_ACTIVE * UE_TICKSECS, 0)
+	else if(ue_active)
+		ui_prof = max(ui_prof - UE_DRAIN_ACTIVE * UE_TICKSECS, 0)
+	//2) energia REAL cresce com uso EM COMBATE (so quem trilha o path)
+	if(ue_learned && (ue_active || ue_form) && (combatTag || IsInFight))
 		ue_real_gain(UE_REAL_PER_SEC * UE_TICKSECS)
 	//3) recuperacao: NUNCA com tag de combate; devagar, so com tudo desligado
 	if(!combatTag && !IsInFight)
 		if(ue_deathsave_used) ue_deathsave_used = 0 //a luta acabou: o seguro re-arma
 		if(ue_restore_used) ue_restore_used = 0
-		if(!ue_active && !ue_form)
+		if(ue_learned && !ue_active && !ue_form)
 			if(ue_energy < ue_energy_real) ue_energy = min(ue_energy + UE_REGEN * UE_TICKSECS, ue_energy_real)
 			else if(ue_energy > ue_energy_real) ue_energy = max(ue_energy - UE_REGEN * UE_TICKSECS, ue_energy_real)
-	//4) formas: dreno de ki PERMANENTE
+	//4) formas: dreno de ki PERMANENTE (kit emprestado nao tem formas)
 	if(ue_form)
 		Ki -= MaxKi * ((ue_form == 2) ? UE_KI_DRAIN_U : UE_KI_DRAIN_D) / 100 * UE_TICKSECS
 		if(Ki <= 1)
@@ -314,19 +352,19 @@ obj/overlay/effects/ue_aura_pas //a aura da passiva ('god - grey.dmi' carmesim)
 mob/keyable/verb/Power_of_Destruction()
 	set category = "Skills"
 	set name = "Power of Destruction"
-	if(!usr.ue_learned) return
+	if(!ue_has_kit(usr)) return
 	if(usr.ue_form)
 		to_chat(usr, "<font color=#e07a9a>Transformado, a destruicao ja reveste seu corpo por completo.")
 		return
 	usr.ue_active = !usr.ue_active
 	if(usr.ue_active)
 		usr.updateOverlay(/obj/overlay/effects/ue_aura_pas)
-		to_chat(usr, "<font color=#e07a9a><b>Voce se reveste na AURA OF DESTRUCTION.</b> Energia atual: [round(usr.ue_energy, 1)]% (drena com o uso; desligue para preservar).")
+		to_chat(usr, "<font color=#e07a9a><b>Voce se reveste na AURA OF DESTRUCTION.</b> Energia atual: [round(ue_eff_energy(usr), 1)]% (drena com o uso; desligue para preservar).[usr.ue_learned ? "" : " <font color=#c060ff>(canalizada pelo titulo a [GOD_PATH_BORROW * 100]% de eficiencia)</font>"]")
 		to_chat(view(usr), "<font color=#e07a9a>Uma aura carmesim e faminta se acende em volta de [usr]...</font>")
 	else
 		usr.removeOverlay(/obj/overlay/effects/ue_aura_pas)
 		usr.ue_ego_mult = 1
-		to_chat(usr, "<font color=#e07a9a>Voce recolhe a aura, preservando a energia ([round(usr.ue_energy, 1)]%).")
+		to_chat(usr, "<font color=#e07a9a>Voce recolhe a aura, preservando a energia ([round(ue_eff_energy(usr), 1)]%).")
 
 // ---------------------------------------------------------------------------
 // FORMAS: Destroyer (60x) e Ultra Ego (66x)
@@ -387,12 +425,18 @@ mob/keyable/verb/Ultra_Ego_Form()
 	usr.ue_energy = (stage == 2) ? UE_ENERGY_U_START : UE_ENERGY_D_START //a forma RENOVA a energia
 	usr.startbuff(/obj/buff/UltraEgo, 'SSJIcon.dmi')
 
+//multiplicador da forma: o GoD que trilha a DESTRUICAO tem as formas amplificadas em 25%
+proc/ue_form_mult(mob/M, stage)
+	var/base = (stage == 2) ? UE_MULT_ULTRA : UE_MULT_DESTROYER
+	if(M && M.ue_learned && god_is_god(M)) base *= 1 + GOD_PATH_BOOST
+	return base
+
 obj/buff/UltraEgo
 	name = "Ultra Ego"
 	slot = sFORM
 	Buff()
 		..()
-		container.formsBuff = (container.ue_form == 2) ? UE_MULT_ULTRA : UE_MULT_DESTROYER
+		container.formsBuff = ue_form_mult(container, container.ue_form)
 		flick('flashtrans.dmi', container)
 		container.removeOverlay(/obj/overlay/effects/ue_aura_pas) //a aura da passiva da lugar a da forma
 		container.updateOverlay((container.ue_form == 2) ? /obj/overlay/effects/ue_aura_ultra : /obj/overlay/effects/ue_aura_destroyer)
@@ -407,7 +451,7 @@ obj/buff/UltraEgo
 		if(!container.ue_form)
 			DeBuff()
 		else
-			container.formsBuff = (container.ue_form == 2) ? UE_MULT_ULTRA : UE_MULT_DESTROYER //re-afirma o multiplicador
+			container.formsBuff = ue_form_mult(container, container.ue_form) //re-afirma o multiplicador
 			if(container.ssjBuff != 1 || container.transBuff != 1 || container.ui_form) //racial ou UI por cima: nao empilha
 				to_chat(container, "<font color=#e07a9a>A outra transformacao expulsa o Ultra Ego.")
 				DeBuff()
@@ -430,9 +474,9 @@ obj/buff/UltraEgo
 mob/keyable/verb/Hakai_Infusion()
 	set category = "Skills"
 	set name = "Hakai Infusion"
-	if(!usr.ue_learned) return
-	if(usr.ue_energy_real < UE_UNLOCK_HKI)
-		to_chat(usr, "Hakai Infusion exige [UE_UNLOCK_HKI]% de energia real (voce: [round(usr.ue_energy_real, 1)]%).")
+	if(!ue_has_kit(usr)) return
+	if(ue_eff_real(usr) < UE_UNLOCK_HKI)
+		to_chat(usr, "Hakai Infusion exige [UE_UNLOCK_HKI]% de energia real (voce: [round(ue_eff_real(usr), 1)]%).")
 		return
 	if(usr.dead || usr.KO || usr.med || usr.train) return
 	if(usr.ue_infuse_until > world.time)
@@ -463,10 +507,11 @@ proc/ue_clash_tick(datum/beamclash/C, t)
 	if(ainf == binf) return //ninguem (ou os dois): sem dreno liquido
 	var/mob/W = ainf ? A : B
 	var/mob/L = ainf ? B : A
-	var/dreno = L.MaxKi * UE_HKI_CLASH_KI
+	var/f = ue_kit_factor(W) //GoD da Destruicao devora 25% mais; kit emprestado devora a 25%
+	var/dreno = L.MaxKi * UE_HKI_CLASH_KI * f
 	L.Ki = max(L.Ki - dreno, 0)
 	W.Ki = min(W.Ki + dreno / 2, W.MaxKi) //metade do ki devorado alimenta o infundido
-	C.meter += (ainf ? 1 : -1) * UE_HKI_CLASH_PUSH
+	C.meter += (ainf ? 1 : -1) * UE_HKI_CLASH_PUSH * f
 	C.meter = min(max(C.meter, 0), 100)
 	to_chat(W, "<font color=#f2b9cb>Seu Hakai DEVORA o beam de [L.name]!")
 	to_chat(L, "<font color=#e07a9a><b>O beam infundido de [W.name] esta devorando o seu!</b> EMPURRE!")

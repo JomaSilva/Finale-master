@@ -200,8 +200,9 @@ mob/proc/ui_tab_stats()
 				h += ui_row("LIBERACAO", "[round(fd_release * 100)]%[fd_ki_locked ? " <span class='mut'>KI DESCONTROLADO!</span>" : ""]", "lo")
 	if(ui_learned) //ULTRA INSTINCT: precisao ATUAL (escala a esquiva) x maestria REAL (destrava habilidades)
 		h += ui_row("ULTRA INSTINTO", "[round(ui_prof, 1)]% precisao <span class='mut'>/ maestria [round(ui_prof_real, 1)]%[ui_form ? " &middot; [ui_form == 2 ? "Perfected" : "-Sign-"]" : ""][ui_active ? " &middot; ATIVO" : ""]</span>", (ui_form || ui_active) ? "hi" : "")
-	if(ue_learned) //ULTRA EGO: energia da destruicao ATUAL (escala os bonus) x REAL (destrava habilidades)
-		h += ui_row("PODER DA DESTRUICAO", "[round(ue_energy, 1)]% energia <span class='mut'>/ real [round(ue_energy_real, 1)]%[ue_form ? " &middot; [ue_form == 2 ? "Ultra Ego" : "Destroyer"]" : ""][ue_active ? " &middot; AURA" : ""][ue_ego_mult > 1 ? " &middot; ego +[round((ue_ego_mult - 1) * 100)]%" : ""][ue_infuse_until > world.time ? " &middot; HAKAI" : ""]</span>", (ue_form || ue_active) ? "hi" : "")
+	if(ue_kit_factor(src) > 0) //ULTRA EGO: energia da destruicao ATUAL (escala os bonus) x REAL (destrava); GoD do Instinto ve o kit EMPRESTADO
+		var/uef = ue_kit_factor(src)
+		h += ui_row("PODER DA DESTRUICAO", "[round(ue_eff_energy(src), 1)]% energia <span class='mut'>/ real [round(ue_eff_real(src), 1)]%[ue_form ? " &middot; [ue_form == 2 ? "Ultra Ego" : "Destroyer"]" : ""][ue_active ? " &middot; AURA" : ""][ue_ego_mult > 1 ? " &middot; ego +[round((ue_ego_mult - 1) * 100)]%" : ""][ue_infuse_until > world.time ? " &middot; HAKAI" : ""][uef > 1 ? " &middot; GoD +[round((uef - 1) * 100)]%" : ""][!ue_learned ? " &middot; canalizado [round(uef * 100)]%" : ""]</span>", (ue_form || ue_active) ? "hi" : "")
 	h += ui_sec("ATTRIBUTES")
 	var/list/atts = list(
 		"Physical Offense" = Rphysoff, "Physical Defense" = Rphysdef,
