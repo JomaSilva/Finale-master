@@ -166,12 +166,15 @@ mob/proc/Damage(var/mob/M,var/dmg,type)
 mob/proc/damage_mob(mob/M,dmg)
 	dmg = ArmorCalc(dmg, M.Esuperkiarmor, TRUE)
 	if(M.Esuperkiarmor) M.damage_armor(dmg)
+	dmg = ue_aura_mitigate(M, dmg) //ULTRA EGO: Aura of Destruction reduz o dano e memoriza o golpe (UltraEgo.dm)
+	ue_melee_recoil(M, src, dmg) //...e faz o atacante MELEE sofrer o recuo
 	M.DamageLimb(dmg,src.selectzone,src.murderToggle,src.penetration)
 
 proc/damage_m(mob/M,dmg,selectzone,murderToggle,penetration,armorscaler = TRUE)
 	dmg = ArmorCalc(dmg,M.Esuperkiarmor,armorscaler)
 	if(M.Esuperkiarmor) M.damage_armor(dmg)
 	if(M.god_temper_armed) M.god_temper_hit() //GOD'S TEMPER: 10 danos seguidos sem bloquear = surto (GodOfDestruction.dm; 1 if barato p/ todos)
+	dmg = ue_aura_mitigate(M, dmg) //ULTRA EGO: Aura of Destruction reduz o dano e memoriza o golpe (UltraEgo.dm)
 	M.DamageLimb(dmg,selectzone,murderToggle,penetration)
 
 

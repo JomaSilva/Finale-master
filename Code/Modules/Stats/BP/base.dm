@@ -80,7 +80,7 @@ mob/proc/powerlevel()
 //	kiBuff = kiBuff //all universal power modifiers
 	buffBuff = expandBuff * giantFormbuff * ArtifactsBuff * eyeBuff//buff chunk 1, gets capped (buffsBuff saiu: skills-toggle nao dao mais BP)
 	CHECK_TICK
-	formBuff = ssjBuff * transBuff * formsBuff * gateBuff * HellstarBuff//buff chunk 2 does not get capped
+	formBuff = ssjBuff * transBuff * formsBuff * gateBuff * HellstarBuff * max(ue_ego_mult, 1)//buff chunk 2 does not get capped (ue_ego_mult = Unbound Ego: BP por membro ferido -- UltraEgo.dm)
 	CHECK_TICK
 	deBuff = 1/max((weight*BPrestriction*splitformdeBuff),1) //anything in the divisor
 	statusBuff = (kiratio*hpratio*staminaratio) //Ki overcharge is now PURELY LINEAR: Ki% == multiplier (100%=1x, 200%=2x, 300%=3x...). Was max(kiratio, min(kiratio**powerMult,2)) which inflated the 100-200% band (150%->1.66x, 175%->2x) before going linear above 200%. (hpratio/staminaratio still modulate when hurt/tired; at full HP/stamina the Ki bonus == Ki% exactly.)

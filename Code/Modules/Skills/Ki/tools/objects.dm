@@ -331,6 +331,7 @@ obj/attack/blast
 						dmg = ArmorCalc(dmg,M.Esuperkiarmor,FALSE)
 						M.damage_armor(dmg)
 						dmg /= log(4,max(M.kidefenseskill,4))
+						dmg = ue_blast_mitigate(M, src, dmg) //ULTRA EGO: aura devora parte do ki + reducao de dano; Hakai Infusion do atirador penetra defesa (UltraEgo.dm)
 						var/deflectchance
 						if(!physdamage)
 							deflectchance=((M.Ekidef*max(M.expressedBP,1)*max(M.Ekiskill,M.Etechnique)*max(M.kidefenseskill/10,1))/(BP*mods*basedamage)) //kiskill does impact deflection
@@ -343,6 +344,7 @@ obj/attack/blast
 							dmg /= 2 * log(4,max(M.kidefenseskill,4))
 							deflectchance *= 2
 						if(M.KO||M.stagger) deflectchance=0
+						deflectchance = ue_infuse_deflect(src, deflectchance) //HAKAI INFUSION: ataque infundido e dificil de defletir (UltraEgo.dm)
 						if(paralysis)
 							M.paralyzed=1
 							if(!M.paralysistime) M.paralysistime=min(max(5,(M.Ekidef*max(M.Etechnique,M.Ekiskill)*BPModulus(BP,M.expressedBP))),10)

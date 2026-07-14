@@ -413,6 +413,7 @@ mob/keyable/verb/Ultra_Instinct_Form()
 	if(usr.Ki < usr.MaxKi * 0.2)
 		to_chat(usr, "Ki insuficiente -- o Ultra Instinto drena energia continuamente (minimo 20% do maximo).")
 		return
+	if(usr.ue_form) usr.ue_form_revert() //instinto e ego nao coexistem (UltraEgo.dm)
 	if(usr.ssj || usr.lssj || usr.ssjBuff != 1 || usr.transBuff != 1) //EXCLUSIVO: derruba a forma racial antes
 		to_chat(view(usr), "<font color=#cfd8ff>[usr] abandona a forma anterior -- a aura muda por completo...</font>")
 		usr.Revert()
@@ -450,7 +451,7 @@ obj/buff/UltraInstinct
 			DeBuff()
 		else
 			container.formsBuff = (container.ui_form == 2) ? UI_MULT_PERF : UI_MULT_SIGN //re-afirma o multiplicador
-			if(container.ssjBuff != 1 || container.transBuff != 1) //forma racial por cima: UI NAO empilha
+			if(container.ssjBuff != 1 || container.transBuff != 1 || container.ue_form) //forma racial ou Ultra Ego por cima: UI NAO empilha
 				to_chat(container, "<font color=#cfd8ff>A outra transformacao expulsa o estado de Ultra Instinto.")
 				DeBuff()
 		..()

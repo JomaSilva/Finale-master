@@ -467,6 +467,7 @@
 #include "Code\Modules\Skills\Skills Master\mobhandlers.dm"
 #include "Code\Modules\Skills\Skills Master\skill.dm"
 #include "Code\Modules\Skills\Skills Master\teachable.dm"
+#include "Code\Modules\Skills\UltraEgo.dm"
 #include "Code\Modules\Skills\UltraInstinct.dm"
 #include "Code\Modules\Sound\Ambiance.dm"
 #include "Code\Modules\Sound\Sound.dm"

@@ -320,6 +320,7 @@ mob/proc
 		god_login_check() //God of Destruction: re-arma os poderes do portador / limpa de ex-portadores (GodOfDestruction.dm)
 		conq_login_check() //Conquista: entrega recados de dominio (perdeu/defendeu) + valida o spawn-no-dominio (PlanetConquest.dm)
 		ui_login_check() //Ultra Instinct: Anjo recebe de nascenca + re-arma verbs/forma de quem aprendeu (UltraInstinct.dm)
+		ue_login_check() //Ultra Ego: God of Destruction recebe de nascenca + re-arma verbs/forma (UltraEgo.dm)
 		if(needs_manual_custom) //Handles logging into clones for the first time.
 			CustomizeFurther()
 			StatRace(Race)

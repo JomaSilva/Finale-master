@@ -90,6 +90,10 @@ proc/god_gain_title(mob/M, via)
 	god_task_next = world.realtime + GOD_TASK_INTERVAL
 	M.Rank_Verb_Assign()
 	M.god_apply_powers()
+	if(!M.ue_learned) //o GoD SEMPRE possui o Power of Destruction (Ultra Ego -- UltraEgo.dm)
+		M.ue_learned = 1
+		M.ue_give_verbs()
+		to_chat(M, "<font color=#e07a9a><b>O Power of Destruction desperta em voce.</b> (verbs na aba Skills)")
 	god_state_save()
 	bev_announce("[M.name] [via ? via : "foi coroado(a)"] GOD OF DESTRUCTION! Que os desequilibrados temam.")
 	to_chat(M, "<font color=#c060ff><b>Voce agora e um GOD OF DESTRUCTION.</b> Mantenha o equilibrio do universo: cumpra as tarefas (verb GoD Status) ou sera destituido. Voce nao envelhece e respira no vacuo enquanto portar o titulo.")
@@ -388,6 +392,9 @@ mob/keyable/verb/God_Fury()
 	set category = "Skills"
 	set name = "Fury"
 	if(!god_is_god(usr)) return
+	if(usr.ue_form || usr.ui_form) //Fury nao empilha com Ultra Ego/Instinct (todos escrevem formsBuff)
+		to_chat(usr, "<font color=#c060ff>Recolha a outra forma antes de despertar a Furia.")
+		return
 	if(usr.isBuffed(/obj/buff/GodFury)) usr.stopbuff(/obj/buff/GodFury)
 	else usr.startbuff(/obj/buff/GodFury, 'SSJIcon.dmi')
 

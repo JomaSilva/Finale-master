@@ -10,6 +10,9 @@ mob/proc/Death()
 	if(bio_ssj2_death_check()) //BIO-ANDROIDE: morrer com (forma perfeita + SSJ1 dominado + BP de SSJ2) DESPERTA o SSJ2 -- a morte e cancelada e ele se recompoe no lugar (DNALabs.dm)
 		isdying = 0
 		return
+	if(ue_deathsave_try()) //ULTRA EGO: a Aura of Destruction NEGA o golpe fatal (1x por luta) e detona a Destruction Explosion (UltraEgo.dm)
+		isdying = 0
+		return
 	var/mob/deathKiller = (combatTag || IsInFight) ? lastDamager : null //capture the killer NOW, before StopFightingStatus clears combat state (no stale lastDamager raging on a later environmental death)
 	Revert()
 	if(last_attkd_sig && IsInFight)

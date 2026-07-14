@@ -156,6 +156,7 @@ mob/proc/RemoveHair()
 	removeOverlay(/obj/overlay/hairs/uisign) //cabelos do Ultra Instinct (UltraInstinct.dm)
 	removeOverlay(/obj/overlay/hairs/uiperf)
 	removeOverlay(/obj/overlay/hairs/uisilver)
+	removeOverlay(/obj/overlay/hairs/uepurple) //cabelo do Ultra Ego (UltraEgo.dm)
 	removeOverlay(/obj/overlay/effects/menacing_aura) //limpa a aura ameacadora do Wrathful ao trocar/limpar o cabelo
 	return TRUE
 
@@ -164,6 +165,9 @@ mob/proc/AddHair()
 		return
 	if(ui_form) //ULTRA INSTINCT: cabelo da forma (Goku = cabelo UI proprio; demais: base no Sign, prateado no Perfected) -- UltraInstinct.dm
 		ui_apply_hair()
+		return
+	if(ue_form) //ULTRA EGO: o cabelo base tingido de ROXO (UltraEgo.dm)
+		ue_apply_hair()
 		return
 	if(!ssj&&!lssj)
 		updateOverlay(/obj/overlay/hairs/hair)

@@ -181,6 +181,7 @@ datum/beamclash
 			meter -= side_presses(B) * BCL_PUSH_PER_PRESS * advB
 			meter += (advA - advB) * BCL_DRIFT_PER_TICK //o mais forte empurra sozinho
 			meter = min(max(meter, 0), 100)
+			ue_clash_tick(src, t) //HAKAI INFUSION: o beam infundido DEVORA o rival a cada 5s (UltraEgo.dm)
 			//---- resolucao ----
 			if(meter >= 100)
 				resolve(A, B, "o poder de [A.name] engole a disputa")
