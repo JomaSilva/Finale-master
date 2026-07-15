@@ -78,6 +78,8 @@
 #define UE_HKI_CLASH_KI 0.05      //DISPUTA DE BEAMS: fracao do MaxKi drenada do rival a cada pulso de 5s
 #define UE_HKI_CLASH_PUSH 8       //...e pontos do medidor empurrados a favor do infundido
 #define UE_TICKSECS 0.3           //duracao aproximada de 1 ciclo do GlobalStats
+#define UE_DESTROYER_MUSIC_DS 2400 //janela (4min) do tema da PRIMEIRA Destroyer Form
+#define UE_ULTRA_MUSIC_DS 2400     //janela do tema do PRIMEIRO Ultra Ego (toca junto com a cinematica)
 //GOD_PATH_BOOST (0.25) e GOD_PATH_BORROW (0.25) moram no 1A Defines.dm: GodOfDestruction.dm (Ranks) compila antes deste arquivo
 // ============================ FIM DO CONFIG =================================
 
@@ -86,7 +88,10 @@ mob/var
 	ue_energy_real = 0  //Destruction Energy REAL 0-100 (persiste; destrava habilidades)
 	ue_energy = 0       //Destruction Energy ATUAL 0-100 (persiste; escala os bonus)
 	ue_form = 0         //0 = base | 1 = Destroyer | 2 = Ultra Ego (persiste no relog)
+	ue_ultra_cine = 0   //cinematica do PRIMEIRO Ultra Ego ja vista (persiste)
+	ue_destroyer_theme = 0 //tema da PRIMEIRA Destroyer Form ja tocado (persiste)
 mob/var/tmp
+	ue_transing = 0         //latch da cinematica de transformacao
 	ue_active = 0           //Aura of Destruction ligada
 	ue_ego_mult = 1         //multiplicador do Unbound Ego (lido pelo powerlevel; recalculado no tick)
 	ue_deathsave_used = 0   //death-save ja gasto NESTA luta (reseta quando a tag cai)
@@ -387,9 +392,101 @@ obj/overlay/hairs/uepurple //cabelo do Ultra Ego: o BASE do jogador tingido de r
 		..()
 
 //chamado pelo AddHair() quando ue_form esta ativo (HairObject.dm)
+//SO o ULTRA EGO pinta o cabelo de roxo -- a Destroyer Form mantem o cabelo base
+//(a maior diferenca visual entre as duas formas: cabelo + cinematica de ativacao)
 mob/proc/ue_apply_hair()
 	if(!hair) return //careca continua careca
-	updateOverlay(/obj/overlay/hairs/uepurple)
+	if(ue_form == 2) updateOverlay(/obj/overlay/hairs/uepurple)
+	else updateOverlay(/obj/overlay/hairs/hair)
+
+// ---------------------------------------------------------------------------
+// CINEMATICA DO PRIMEIRO ULTRA EGO: receita do despertar do UI, em ROXO --
+// aura grande purpura + o efeito 'UI Powerup.dmi' TINGIDO de roxo no corpo.
+// A Destroyer Form NAO tem isto (so o surto rapido): cabelo + cinematica sao
+// a diferenca visual entre as duas formas.
+// ---------------------------------------------------------------------------
+var/icon/ue_purple_aura_cache
+proc/ue_purple_aura_icon() //'Aurabigcombined.dmi' tintada de roxo (cache)
+	if(!ue_purple_aura_cache)
+		ue_purple_aura_cache = icon('Aurabigcombined.dmi')
+		ue_purple_aura_cache.Blend(rgb(165, 70, 255), ICON_MULTIPLY)
+	return ue_purple_aura_cache
+
+mob/proc/ue_grand_cinematic()
+	var/turf/Td
+	var/image/I
+	var/image/P
+	var/obj/A
+	var/cyc
+	var/q
+	var/amount
+	move = 0
+	dir = SOUTH
+	emit_TransformMusic(file("Sounds/Music/UE forms/Ultra ego/Dragon Ball Super Granolah Arc   Ultra Ego, Unbound   By Gladius.mp3"), UE_ULTRA_MUSIC_DS)
+	emit_Sound('rockmoving.wav')
+	to_chat(view(src), "<font color=#c98ae8>*O ar em volta de [src] PESA... a energia da destruicao vaza do corpo dele como calor de forja, e o chao comeca a rachar.*", "combat")
+	for(cyc = 1 to 12) //build (~12s): poeira + raios + tremores crescendo
+		for(q = 1 to 3)
+			Td = locate(x + rand(-8,8), y + rand(-8,8), z)
+			if(Td && !Td.density) createDustmisc(Td,2)
+		if(prob(50))
+			Td = locate(x + rand(-7,7), y + rand(-7,7), z)
+			if(Td && !Td.density) createDustmisc(Td,3)
+		if(prob(45))
+			Td = locate(x + rand(-8,8), y + rand(-8,8), z)
+			if(Td) createLightningmisc(Td, pick(2,4,5,9))
+		if(cyc % 4 == 0) spawn Quake()
+		sleep(10)
+	I = image(icon = ue_purple_aura_icon()) //surto (~10s): aura grande ROXA + UI Powerup roxo no corpo + feixes de chao
+	I.plane = 7
+	overlayList += I
+	P = image(icon = 'UI Powerup.dmi')
+	P.pixel_x = -44 //efeito de 120px de largura centralizado no tile de 32
+	P.plane = 7
+	P.color = rgb(180, 85, 255) //o MESMO efeito do UI, pintado de roxo
+	overlayList += P
+	overlaychanged = 1
+	emit_Sound('chargeaura.wav')
+	to_chat(view(src), "<font color=#c98ae8>*Uma coluna de luz PURPURA irrompe de [src] -- a propria destruicao tomando forma!*", "combat")
+	Quake()
+	spawn Quake()
+	amount = 8
+	while(amount)
+		A = new/obj
+		A.loc = locate(x,y,z)
+		A.icon = 'Electricgroundbeam2.dmi'
+		if(amount==8) spawn(rand(1,40)) walk(A,NORTH,2)
+		if(amount==7) spawn(rand(1,40)) walk(A,SOUTH,2)
+		if(amount==6) spawn(rand(1,40)) walk(A,EAST,2)
+		if(amount==5) spawn(rand(1,40)) walk(A,WEST,2)
+		if(amount==4) spawn(rand(1,40)) walk(A,NORTHWEST,2)
+		if(amount==3) spawn(rand(1,40)) walk(A,NORTHEAST,2)
+		if(amount==2) spawn(rand(1,40)) walk(A,SOUTHWEST,2)
+		if(amount==1) spawn(rand(1,40)) walk(A,SOUTHEAST,2)
+		spawn(50) del(A)
+		amount--
+	for(cyc = 1 to 10)
+		for(q = 1 to 4)
+			Td = locate(x + rand(-8,8), y + rand(-8,8), z)
+			if(Td && !Td.density) createDustmisc(Td, pick(2,2,2,3))
+		if(prob(50))
+			Td = locate(x + rand(-9,9), y + rand(-9,9), z)
+			if(Td) createLightningmisc(Td, pick(3,5,9))
+		if(cyc % 3 == 0) spawn Quake()
+		sleep(10)
+	to_chat(view(8), "<font size=[TextSize]><[SayColor]>[src]: HAAAAAAAAAH!!!") //climax: o EGO nao conhece silencio
+	createShockwavemisc(loc, 3)
+	for(q = 1 to 10)
+		Td = locate(x + rand(-6,6), y + rand(-6,6), z)
+		if(Td && !Td.density) createDustmisc(Td, pick(2,2,3))
+	emit_Sound('aura.wav')
+	overlayList -= I
+	overlayList -= P
+	overlaychanged = 1
+	to_chat(view(src), "<font color=#f2b9cb><b>*O cabelo de [src] queima em purpura -- o ULTRA EGO encara o mundo com um sorriso.*</b>", "combat")
+	createShockwavemisc(loc, 2)
+	createCrater(loc, 3)
+	move = 1
 
 mob/proc/ue_form_revert()
 	if(isBuffed(/obj/buff/UltraEgo)) stopbuff(/obj/buff/UltraEgo)
@@ -398,7 +495,7 @@ mob/proc/ue_form_revert()
 mob/keyable/verb/Ultra_Ego_Form()
 	set category = "Skills"
 	set name = "Ultra Ego Transform"
-	if(!usr.ue_learned) return
+	if(!usr.ue_learned || usr.ue_transing) return
 	if(usr.ue_form)
 		usr.ue_form_revert()
 		return
@@ -421,6 +518,15 @@ mob/keyable/verb/Ultra_Ego_Form()
 	if(usr.ssj || usr.lssj || usr.ssjBuff != 1 || usr.transBuff != 1) //EXCLUSIVO: derruba a forma racial antes
 		to_chat(view(usr), "<font color=#e07a9a>[usr] abandona a forma anterior -- a aura muda por completo...</font>")
 		usr.Revert()
+	if(stage == 2 && !usr.ue_ultra_cine) //o PRIMEIRO Ultra Ego: cinematica grande + tema (a Destroyer nao tem)
+		usr.ue_ultra_cine = 1
+		usr.ue_transing = 1
+		usr.ue_grand_cinematic()
+		usr.ue_transing = 0
+		if(!usr || usr.dead || usr.KO) return
+	if(stage == 1 && !usr.ue_destroyer_theme) //tema da PRIMEIRA Destroyer Form (uma unica vez na vida)
+		usr.ue_destroyer_theme = 1
+		usr.emit_TransformMusic(file("Sounds/Music/UE forms/Destroyer/Dragon Ball Z Dokkan Battle PHY God of Destruction Toppo Active Skill OST (High Quality).mp3"), UE_DESTROYER_MUSIC_DS)
 	usr.ue_form = stage
 	usr.ue_energy = (stage == 2) ? UE_ENERGY_U_START : UE_ENERGY_D_START //a forma RENOVA a energia
 	usr.startbuff(/obj/buff/UltraEgo, 'SSJIcon.dmi')

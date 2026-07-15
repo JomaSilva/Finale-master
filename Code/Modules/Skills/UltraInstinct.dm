@@ -61,6 +61,7 @@
 #define UI_GD_CD 600              //cooldown (1 min) apos a rajada OU a janela expirar
 #define UI_TICKSECS 0.3           //duracao aproximada de 1 ciclo do GlobalStats (sleep(3))
 #define UI_OMEN_MUSIC_DS 2400     //janela (4min) do tema do despertar: ducka musica de combate/rage pelo periodo
+#define UI_PERF_MUSIC_DS 2400     //janela do tema do PRIMEIRO Perfected Ultra Instinct
 // ============================ FIM DO CONFIG =================================
 
 mob/var
@@ -69,6 +70,7 @@ mob/var
 	ui_prof = 0        //precisao ATUAL 0-100 (persiste; drena com uso)
 	ui_form = 0        //0 = base | 1 = Sign | 2 = Perfected (persiste: relog mantem a forma)
 	ui_omen_cine = 0   //cinematica do DESPERTAR (1a vez no Sign) ja vista (persiste)
+	ui_perf_theme = 0  //tema do PRIMEIRO Perfected ja tocado (persiste)
 mob/var/tmp
 	ui_active = 0          //passiva (Autonomous Evasion) ligada
 	ui_evade_stacks = 0    //pilhas do bonus pos-esquiva vivas
@@ -431,6 +433,9 @@ mob/keyable/verb/Ultra_Instinct_Form()
 			return
 	usr.ui_form = stage
 	usr.ui_prof = (stage == 2) ? UI_PROF_PERF_START : UI_PROF_SIGN_START //a forma RENOVA a precisao
+	if(stage == 2 && !usr.ui_perf_theme) //tema do PRIMEIRO Perfected Ultra Instinct (uma unica vez na vida)
+		usr.ui_perf_theme = 1
+		usr.emit_TransformMusic(file("Sounds/Music/Ui forms/Perfect/Dragon Ball Super Moro Arc   Ultra Instinct Perfected! (Norihito Sumitomo)   By Gladius.mp3"), UI_PERF_MUSIC_DS)
 	usr.startbuff(/obj/buff/UltraInstinct, 'SSJIcon.dmi')
 
 obj/buff/UltraInstinct
