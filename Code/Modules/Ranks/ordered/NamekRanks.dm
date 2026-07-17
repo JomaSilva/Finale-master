@@ -64,6 +64,15 @@ mob/Rank/verb/Create_Dragon_Statue()
 	A.loc = locate(x,y,z)
 	A.Creator = src
 	A.CreatorSig = src.signature
+	//DESEJO SUPREMO opcional: o criador pode GRAVAR o Strongest in the Universe no set (compra na criacao)
+	if(zenni >= SW_WISH_PRICE)
+		switch(alert(src, "Gravar o desejo STRONGEST IN THE UNIVERSE nestas esferas por [FullNum(SW_WISH_PRICE)] zenni? Quem pedir troca TODO o proprio lifespan por 2x o maior BP do jogo -- e vive so mais 1 ano, sem revive (apenas reencarnacao).", "Desejo Supremo", "Gravar", "Nao"))
+			if("Gravar")
+				zenni -= SW_WISH_PRICE
+				A.HasStrongestWish = 1
+				to_chat(src, "<font color=#e8b64c><b>O desejo supremo foi gravado nas esferas deste set.</b> ([FullNum(SW_WISH_PRICE)] zenni)")
+	else
+		to_chat(src, "<font color=#888>Com [FullNum(SW_WISH_PRICE)] zenni voce poderia gravar o desejo supremo (Strongest in the Universe) na criacao do set.")
 
 
 /datum/skill/rank/Appoint_Elder

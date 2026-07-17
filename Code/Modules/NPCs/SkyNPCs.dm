@@ -160,7 +160,11 @@ mob/proc/enma_interact()
 	var/trainopt = "Go train with King Kai"
 	var/reincopt = "Reincarnate into a new life (reborn at 10% of your power)"
 	var/stayopt = "Stay a while"
-	var/choice = input(src, "What will you do?", "Enma Daioh") in list(revopt, trainopt, reincopt, stayopt)
+	var/list/enmaopts = list(revopt, trainopt, reincopt, stayopt)
+	if(aged_out) //morte de VELHICE: a opcao de voltar a vida nem aparece -- so reencarnar
+		enmaopts -= revopt
+		to_chat(src, "<font color=#d8a0ff><b>Enma Daioh</b>: \"Sua ampulheta virou pela ULTIMA vez -- morte por velhice nao tem retorno. So a reencarnacao resta a essa alma.\"</font>")
+	var/choice = input(src, "What will you do?", "Enma Daioh") in enmaopts
 	if(choice == revopt) enma_zeni_revive()
 	else if(choice == reincopt) enma_reincarnate()
 	else if(choice == trainopt)
@@ -179,6 +183,9 @@ mob/proc/enma_judge_to_hell()
 
 //----- revive pagando Zeni - metodo 2 (src = quem revive) -----
 mob/proc/enma_zeni_revive()
+	if(aged_out) //cinto e suspensorio: velhice nao compra passagem de volta
+		to_chat(src, "<font color=#d8a0ff><b>Enma Daioh</b>: \"Nem todo o zeni do universo compra mais um dia para quem ja viveu todos os seus.\"</font>")
+		return
 	var/cost = ZENI_REVIVE_COST * (hakai_mark ? GOD_HAKAI_REVIVE_MULT : 1) //apagado por HAKAI: o Enma cobra o dobro pra reconstruir a alma
 	if(zenni < cost)
 		to_chat(src, "<font color=#d8a0ff><b>Enma Daioh</b>: \"You can't afford the trip back! Return when you have [cost] Zeni.[hakai_mark ? " A God of Destruction erased you -- rebuilding THAT soul costs extra!" : ""]\"</font>")

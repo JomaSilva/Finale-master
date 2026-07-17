@@ -499,37 +499,46 @@ mob/keyable/verb/Ultra_Ego_Form()
 	if(usr.ue_form)
 		usr.ue_form_revert()
 		return
-	if(usr.dead || usr.KO || usr.med || usr.train) return
-	if(usr.ue_energy_real < UE_UNLOCK_DESTROYER)
-		to_chat(usr, "Sua energia REAL ([round(usr.ue_energy_real, 1)]%) ainda nao alcanca a Destroyer Form ([UE_UNLOCK_DESTROYER]%). Use a Aura of Destruction em combate para evoluir.")
-		return
 	var/stage = 1
-	if(usr.ue_energy_real >= UE_UNLOCK_ULTRA)
+	if(usr.ue_energy_real >= UE_UNLOCK_ULTRA) //com o Ultra Ego destravado o verb pergunta; o C duplo vai direto na melhor
 		var/c = input(usr, "Qual forma?", "Ultra Ego") as null|anything in list("Destroyer Form ([UE_MULT_DESTROYER]x)", "Ultra Ego ([UE_MULT_ULTRA]x)")
 		if(!c || usr.ue_form || usr.dead || usr.KO) return
 		if(findtext(c, "Ultra Ego")) stage = 2
-	if(usr.Ki < usr.MaxKi * 0.2)
-		to_chat(usr, "Ki insuficiente -- o Ultra Ego drena energia continuamente (minimo 20% do maximo).")
+	usr.ue_transform_to(stage)
+
+mob/proc/ue_quick_transform() //C DUPLO: direto na MELHOR forma destravada
+	ue_transform_to((ue_energy_real >= UE_UNLOCK_ULTRA) ? 2 : 1)
+
+//nucleo da transformacao (verb com menu e C duplo caem aqui)
+mob/proc/ue_transform_to(stage)
+	if(!ue_learned || ue_transing || ue_form) return
+	if(dead || KO || med || train) return
+	if(ue_energy_real < UE_UNLOCK_DESTROYER)
+		to_chat(src, "Sua energia REAL ([round(ue_energy_real, 1)]%) ainda nao alcanca a Destroyer Form ([UE_UNLOCK_DESTROYER]%). Use a Aura of Destruction em combate para evoluir.")
 		return
-	if(usr.isBuffed(/obj/buff/GodFury))
-		to_chat(usr, "<font color=#e07a9a>A Furia do Deus ja canaliza a destruicao -- recolha-a primeiro.")
+	if(stage == 2 && ue_energy_real < UE_UNLOCK_ULTRA) stage = 1
+	if(Ki < MaxKi * 0.2)
+		to_chat(src, "Ki insuficiente -- o Ultra Ego drena energia continuamente (minimo 20% do maximo).")
 		return
-	if(usr.ui_form) usr.ui_form_revert() //instinto e ego nao coexistem
-	if(usr.ssj || usr.lssj || usr.ssjBuff != 1 || usr.transBuff != 1) //EXCLUSIVO: derruba a forma racial antes
-		to_chat(view(usr), "<font color=#e07a9a>[usr] abandona a forma anterior -- a aura muda por completo...</font>")
-		usr.Revert()
-	if(stage == 2 && !usr.ue_ultra_cine) //o PRIMEIRO Ultra Ego: cinematica grande + tema (a Destroyer nao tem)
-		usr.ue_ultra_cine = 1
-		usr.ue_transing = 1
-		usr.ue_grand_cinematic()
-		usr.ue_transing = 0
-		if(!usr || usr.dead || usr.KO) return
-	if(stage == 1 && !usr.ue_destroyer_theme) //tema da PRIMEIRA Destroyer Form (uma unica vez na vida)
-		usr.ue_destroyer_theme = 1
-		usr.emit_TransformMusic(file("Sounds/Music/UE forms/Destroyer/Dragon Ball Z Dokkan Battle PHY God of Destruction Toppo Active Skill OST (High Quality).mp3"), UE_DESTROYER_MUSIC_DS)
-	usr.ue_form = stage
-	usr.ue_energy = (stage == 2) ? UE_ENERGY_U_START : UE_ENERGY_D_START //a forma RENOVA a energia
-	usr.startbuff(/obj/buff/UltraEgo, 'SSJIcon.dmi')
+	if(isBuffed(/obj/buff/GodFury))
+		to_chat(src, "<font color=#e07a9a>A Furia do Deus ja canaliza a destruicao -- recolha-a primeiro.")
+		return
+	if(ui_form) ui_form_revert() //instinto e ego nao coexistem
+	if(ssj || lssj || ssjBuff != 1 || transBuff != 1) //EXCLUSIVO: derruba a forma racial antes (SSJ Blue etc.)
+		to_chat(view(src), "<font color=#e07a9a>[src] abandona a forma anterior -- a aura muda por completo...</font>")
+		Revert()
+	if(stage == 2 && !ue_ultra_cine) //o PRIMEIRO Ultra Ego: cinematica grande + tema (a Destroyer nao tem)
+		ue_ultra_cine = 1
+		ue_transing = 1
+		ue_grand_cinematic()
+		ue_transing = 0
+		if(dead || KO) return
+	if(stage == 1 && !ue_destroyer_theme) //tema da PRIMEIRA Destroyer Form (uma unica vez na vida)
+		ue_destroyer_theme = 1
+		emit_TransformMusic(file("Sounds/Music/UE forms/Destroyer/Dragon Ball Z Dokkan Battle PHY God of Destruction Toppo Active Skill OST (High Quality).mp3"), UE_DESTROYER_MUSIC_DS)
+	ue_form = stage
+	ue_energy = (stage == 2) ? UE_ENERGY_U_START : UE_ENERGY_D_START //a forma RENOVA a energia
+	startbuff(/obj/buff/UltraEgo, 'SSJIcon.dmi')
 
 //multiplicador da forma: o GoD que trilha a DESTRUICAO tem as formas amplificadas em 25%
 proc/ue_form_mult(mob/M, stage)

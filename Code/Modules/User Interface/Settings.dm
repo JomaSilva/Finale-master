@@ -99,7 +99,6 @@ mob
 				SettingListing+="Aura and Blast Color"
 				SettingListing+="Blast Icon"
 				SettingListing+="Beam Icon"
-				SettingListing+="Get Rank?"
 				SettingListing+="Transformation Options"
 				SettingListing+="Muscle Icons"
 				if(usr.Race=="Saiyan"||usr.genome.race_percent("Saiyan") >= 50) SettingListing+="Tail Icon"
@@ -172,9 +171,6 @@ mob
 						goto choose
 					if("Beam Icon")
 						usr.Change_Beam_Icon()
-						goto choose
-					if("Get Rank?")
-						usr.GetRank()
 						goto choose
 					if("Download Save")
 						usr.Download_Save()
@@ -298,18 +294,6 @@ mob
 				Blast_Color()
 				EnergyCalibrate()
 			else usr<<"You have to stop powering up, down, shielding, or flying to do this."
-		GetRank()
-			set name ="Get Rank?"
-			set category ="Other"
-			set hidden=1
-			if(usr.GetRank)
-				usr.GetRank=0
-				usr<<"Get Rank has been turned off."
-				return
-			if(!usr.GetRank)
-				usr.GetRank=1
-				usr<<"Get Rank has been turned on."
-				return
 		Toggle_Transform_Option()
 			set name ="Toggle Transformation Option"
 			set category = "Other"

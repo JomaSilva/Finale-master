@@ -141,6 +141,9 @@ mob/proc/Death()
 	isdying = 0
 
 mob/proc/ReviveMe()
+	if(aged_out) //morte de VELHICE: nenhum meio traz de volta -- so a reencarnacao do Enma
+		to_chat(src, "<font color=#d8a0ff>Sua alma ja viveu o proprio tempo. So a REENCARNACAO resta.")
+		return
 	SpreadHeal(100,1,1)
 	hakai_mark = 0 //a marca do Hakai (revive 2x mais caro no Enma) morre junto com a volta a vida
 	pk_karma_taken = 0 //reviveu -> a proxima morte pode contabilizar karma de novo
@@ -158,6 +161,9 @@ mob/proc/ReviveMe()
 		SpreadHeal(100,1,1)
 
 proc/Revive(var/mob/M,deathMessage)
+	if(M && M.aged_out) //velhice nao volta: nem Enma, nem esferas, nem magia
+		to_chat(M, "<font color=#d8a0ff>Sua alma ja viveu o proprio tempo. So a REENCARNACAO resta.")
+		return
 	if(M.dead)
 		M.ReviveMe()
 		M.dead=0

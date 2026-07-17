@@ -121,6 +121,7 @@ mob/proc/Rank_Verb_Assign() //the //done checkmarks are to keep track of what ra
 		getTree(new /datum/skill/tree/RankTree)
 		Rank="Angel"
 	if(Admin) getTree(new /datum/skill/tree/RankTree)//done (obviously)
+	godtongue_check() //rank divino (atual ou recem-ganho) aprende a LINGUA DOS DEUSES -- e nunca esquece (WishTable.dm)
 proc/Save_Rank()
 	var/savefile/S=new("RANK")
 	S["DL"]<<Demon_Lord

@@ -112,6 +112,15 @@ mob/var
 mob/proc/AgeCheck(var/skipTimeText)
 	if(!skipTimeText) src<<checkthetimeidiot()
 	if(LastYear==Year||Year-LastYear==0) return
+	if(sw_doom_year && Year >= sw_doom_year && !dead) //STRONGEST IN THE UNIVERSE: o ano acabou -- o corpo cobra o preco (roda ANTES de qualquer guarda de nao-envelhecer)
+		sw_doom_year = 0
+		aged_out = 1 //conta como morte de velhice: sem revive, so reencarnacao
+		to_chat(view(src), "<font color=#e8b64c><b>O poder emprestado consome [src] por completo -- o prazo do desejo venceu.</b></font>")
+		buudead = "force"
+		Death()
+		buudead = 0
+		LastYear = Year
+		return
 	if(dead && !Planet in list("Heaven","Hell","Afterlife"))returning=1 //And finally, send them to the death checkpoint...
 	if(Class == "Awakened Evolution") //Half-Saiyan Awakened Evolution: potencial oculto se acumula mais rapido (identidade Mystic/Ultimate)
 		hiddenpotential += (BP)*UPMod*(max(Year-LastYear,0.1))*1.5
@@ -164,6 +173,7 @@ mob/proc/AgeCheck(var/skipTimeText)
 			hairchanges=0
 			AgeDiv=DeclineAge/Age
 			EnteredHBTC=0
+			aged_out=1 //morte de VELHICE: sem revive por NENHUM meio -- so a reencarnacao do Enma (WishTable.dm)
 			buudead="force"
 			Death()
 			buudead=0
@@ -172,9 +182,9 @@ mob/proc/AgeCheck(var/skipTimeText)
 			yemmas=0
 			majinized=0
 			mystified=0
-			//unlockPotential NAO reseta: o despertar do potencial e 1x POR PERSONAGEM, mesmo renascendo de velhice
-			Age=1
-			Body=1
+			//unlockPotential NAO reseta: o despertar do potencial e 1x POR PERSONAGEM
+			//Age=1/Body=1 REMOVIDOS: a velhice nao rejuvenesce mais -- a alma segue para a reencarnacao
+			to_chat(src, "<font color=#d8a0ff>Sua vida chegou ao fim natural. Nao ha retorno deste sono -- procure o Enma e REENCARNE numa nova vida.")
 mob/proc/GreyHair() if(hair&&Age>=DeclineAge)
 	spawn while(hairchanges<round(Age)-round(DeclineAge))
 		spawn for(var/obj/overlay/hairs/hair/A in overlayList)

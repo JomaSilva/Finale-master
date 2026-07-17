@@ -41,6 +41,7 @@ obj/DragonStatue
 	var/ActiveYear = 1.5 //When the balls will be active again. If you destroy the balls and recreate them, you could technically have shorter wishes.
 	var/tmp/mob/Creator = null //the creator of the balls.
 	var/CreatorSig = null //creator's sig.
+	var/HasStrongestWish = 0 //o criador COMPROU o desejo "Strongest in the Universe" pra este set (persiste na estatua)
 	var/title = "THE ETERNAL DRAGON"
 	var/inbetween = ", "
 	var/dragonname = "SHENRON"

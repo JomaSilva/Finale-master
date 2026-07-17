@@ -321,7 +321,7 @@
 #include "Code\Modules\Races\RaceStats\stattsujin.dm"
 #include "Code\Modules\Races\RaceStats\statyardrat.dm"
 #include "Code\Modules\Races\Transformation_Datum\Transformation_Datum.dm"
-#include "Code\Modules\Ranks\Autorank.dm"
+#include "Code\Modules\Ranks\RankQuests.dm"
 #include "Code\Modules\Ranks\GodOfDestruction.dm"
 #include "Code\Modules\Ranks\RankAssign.dm"
 #include "Code\Modules\Ranks\RankTree.dm"

@@ -62,6 +62,7 @@
 #define UI_TICKSECS 0.3           //duracao aproximada de 1 ciclo do GlobalStats (sleep(3))
 #define UI_OMEN_MUSIC_DS 2400     //janela (4min) do tema do despertar: ducka musica de combate/rage pelo periodo
 #define UI_PERF_MUSIC_DS 2400     //janela do tema do PRIMEIRO Perfected Ultra Instinct
+#define UI_C_TAP_TICKS 8          //janela (0.8s) do C DUPLO: com a disciplina ativa, C+C = transformacao do path
 // ============================ FIM DO CONFIG =================================
 
 mob/var
@@ -76,6 +77,7 @@ mob/var/tmp
 	ui_evade_stacks = 0    //pilhas do bonus pos-esquiva vivas
 	ui_evade_msg_cd = 0    //anti-spam das falas de esquiva de ki
 	ui_transing = 0        //latch da cinematica de transformacao
+	ui_c_last = 0          //timestamp do ultimo C (deteccao do C DUPLO dos paths)
 	ui_gd_window = 0       //ate quando vale o 2o cast do Godly Display
 	ui_gd_cd = 0           //cooldown do Godly Display
 	ui_gd_marked_until = 0 //ate quando ESTE mob esta marcado por um Godly Display
@@ -407,36 +409,65 @@ mob/keyable/verb/Ultra_Instinct_Form()
 	if(usr.ui_form)
 		usr.ui_form_revert()
 		return
-	if(usr.dead || usr.KO || usr.med || usr.train) return
-	if(usr.ui_prof_real < UI_UNLOCK_SIGN)
-		to_chat(usr, "Sua maestria ([round(usr.ui_prof_real, 1)]%) ainda nao alcanca o Ultra Instinct -Sign- ([UI_UNLOCK_SIGN]%). Use a Esquiva Autonoma em combate para evoluir.")
-		return
 	var/stage = 1
-	if(usr.ui_prof_real >= UI_UNLOCK_PERF)
+	if(usr.ui_prof_real >= UI_UNLOCK_PERF) //com o Perfected destravado o verb pergunta; o C duplo vai direto na melhor
 		var/c = input(usr, "Qual forma?", "Ultra Instinct") as null|anything in list("Ultra Instinct -Sign- ([UI_MULT_SIGN]x)", "Perfected Ultra Instinct ([UI_MULT_PERF]x)")
 		if(!c || usr.ui_form || usr.dead || usr.KO) return
 		if(findtext(c, "Perfected")) stage = 2
-	if(usr.Ki < usr.MaxKi * 0.2)
-		to_chat(usr, "Ki insuficiente -- o Ultra Instinto drena energia continuamente (minimo 20% do maximo).")
+	usr.ui_transform_to(stage)
+
+mob/proc/ui_quick_transform() //C DUPLO: direto na MELHOR forma destravada
+	ui_transform_to((ui_prof_real >= UI_UNLOCK_PERF) ? 2 : 1)
+
+//C DUPLO dos paths (gancho no UseKey/Hotkeys.dm): com o Ultra Instinct ou o Power of
+//Destruction ATIVO, apertar C duas vezes transforma no path -- nao importa a forma atual
+//(SSJ Blue etc.: o nucleo da transformacao ja derruba a forma racial). Ja transformado no
+//path, o C duplo REVERTE. Retorna 1 = consome a tecla (o C nao chega no grid de hotkeys).
+proc/ui_ue_ckey_try(mob/M)
+	if(!M || M.dead) return 0
+	var/wants_ui = (M.ui_active && M.ui_learned) || M.ui_form
+	var/wants_ue = (M.ue_active && M.ue_learned) || M.ue_form
+	if(!wants_ui && !wants_ue) return 0 //disciplina desligada: o C segue pro grid normal
+	if(world.time - M.ui_c_last <= UI_C_TAP_TICKS)
+		M.ui_c_last = 0
+		if(M.ui_form) spawn M.ui_form_revert()
+		else if(M.ue_form) spawn M.ue_form_revert()
+		else if(wants_ui) spawn M.ui_quick_transform()
+		else spawn M.ue_quick_transform()
+	else
+		M.ui_c_last = world.time
+		if(!M.ui_form && !M.ue_form) to_chat(M, "<font color=#cfd8ff><small>C de novo para liberar a forma...</small>")
+	return 1
+
+//nucleo da transformacao (verb com menu e C duplo caem aqui)
+mob/proc/ui_transform_to(stage)
+	if(!ui_learned || ui_transing || ui_form) return
+	if(dead || KO || med || train) return
+	if(ui_prof_real < UI_UNLOCK_SIGN)
+		to_chat(src, "Sua maestria ([round(ui_prof_real, 1)]%) ainda nao alcanca o Ultra Instinct -Sign- ([UI_UNLOCK_SIGN]%). Use a Esquiva Autonoma em combate para evoluir.")
 		return
-	if(usr.ue_form) usr.ue_form_revert() //instinto e ego nao coexistem (UltraEgo.dm)
-	if(usr.ssj || usr.lssj || usr.ssjBuff != 1 || usr.transBuff != 1) //EXCLUSIVO: derruba a forma racial antes
-		to_chat(view(usr), "<font color=#cfd8ff>[usr] abandona a forma anterior -- a aura muda por completo...</font>")
-		usr.Revert()
-	if(!usr.ui_omen_cine) //o DESPERTAR: cinematica grande + tema do Omen, uma unica vez na vida
-		usr.ui_omen_cine = 1
-		usr.ui_transing = 1
-		usr.ui_grand_cinematic()
-		usr.ui_transing = 0
-		if(!usr || usr.dead || usr.KO) //caiu no meio do despertar: limpa as fagulhas da cinematica
-			if(usr) usr.removeOverlay(/obj/overlay/effects/ui_dots)
+	if(stage == 2 && ui_prof_real < UI_UNLOCK_PERF) stage = 1
+	if(Ki < MaxKi * 0.2)
+		to_chat(src, "Ki insuficiente -- o Ultra Instinto drena energia continuamente (minimo 20% do maximo).")
+		return
+	if(ue_form) ue_form_revert() //instinto e ego nao coexistem (UltraEgo.dm)
+	if(ssj || lssj || ssjBuff != 1 || transBuff != 1) //EXCLUSIVO: derruba a forma racial antes (SSJ Blue etc.)
+		to_chat(view(src), "<font color=#cfd8ff>[src] abandona a forma anterior -- a aura muda por completo...</font>")
+		Revert()
+	if(!ui_omen_cine) //o DESPERTAR: cinematica grande + tema do Omen, uma unica vez na vida
+		ui_omen_cine = 1
+		ui_transing = 1
+		ui_grand_cinematic()
+		ui_transing = 0
+		if(dead || KO) //caiu no meio do despertar: limpa as fagulhas da cinematica
+			removeOverlay(/obj/overlay/effects/ui_dots)
 			return
-	usr.ui_form = stage
-	usr.ui_prof = (stage == 2) ? UI_PROF_PERF_START : UI_PROF_SIGN_START //a forma RENOVA a precisao
-	if(stage == 2 && !usr.ui_perf_theme) //tema do PRIMEIRO Perfected Ultra Instinct (uma unica vez na vida)
-		usr.ui_perf_theme = 1
-		usr.emit_TransformMusic(file("Sounds/Music/Ui forms/Perfect/Dragon Ball Super Moro Arc   Ultra Instinct Perfected! (Norihito Sumitomo)   By Gladius.mp3"), UI_PERF_MUSIC_DS)
-	usr.startbuff(/obj/buff/UltraInstinct, 'SSJIcon.dmi')
+	ui_form = stage
+	ui_prof = (stage == 2) ? UI_PROF_PERF_START : UI_PROF_SIGN_START //a forma RENOVA a precisao
+	if(stage == 2 && !ui_perf_theme) //tema do PRIMEIRO Perfected Ultra Instinct (uma unica vez na vida)
+		ui_perf_theme = 1
+		emit_TransformMusic(file("Sounds/Music/Ui forms/Perfect/Dragon Ball Super Moro Arc   Ultra Instinct Perfected! (Norihito Sumitomo)   By Gladius.mp3"), UI_PERF_MUSIC_DS)
+	startbuff(/obj/buff/UltraInstinct, 'SSJIcon.dmi')
 
 obj/buff/UltraInstinct
 	name = "Ultra Instinct"

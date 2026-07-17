@@ -4,6 +4,57 @@
 //Add the needed code.
 //If you need a wish to cancel because of null values, etc, put in 'break' to immediately exit the while() statement, ending the wish proc and letting the user choose again.
 //Keep in mind wishes are just the pure energy of Ki being flexibly used by the Dragon.
+
+// ============================================================================
+// LINGUA DOS DEUSES + desejo STRONGEST IN THE UNIVERSE + morte de VELHICE
+//  - godtongue: so quem e (ou JA FOI) de rank divino -- ou tem sangue divino
+//    (raca Kai/Demigod) -- fala com o Super Shenron. NUNCA se esquece.
+//  - Strongest in the Universe: troca TODO o lifespan por poder puro -- BP
+//    base = SW_STRONGEST_MULT x o maior BP do jogo (players E NPCs), e o
+//    personagem vive so mais SW_STRONGEST_YEARS ano(s).
+//  - aged_out: morte de VELHICE (natural ou pelo preco do desejo) nao tem
+//    revive por NENHUM meio -- apenas a reencarnacao do Enma.
+// ============================================================================
+#define SW_STRONGEST_MULT 2     //BP final = maior BP base do jogo x isto
+#define SW_STRONGEST_YEARS 1    //anos de vida restantes apos o desejo
+#define SW_WISH_PRICE 2000000   //zenni pro CRIADOR gravar o desejo no proprio set (Create Dragon Statue)
+
+mob/var
+	godtongue = 0    //ja compreende a lingua dos deuses (rank divino atual ou passado; persiste)
+	aged_out = 0     //morreu de VELHICE: revive bloqueado -- so reencarnacao (persiste)
+	sw_doom_year = 0 //ano em que o preco do Strongest in the Universe sera cobrado (0 = sem divida; persiste)
+
+//esta com um rank divino AGORA?
+proc/divine_rank_now(mob/M)
+	if(!M || !M.signature) return 0
+	if(Earth_Guardian == M.signature || Assistant_Guardian == M.signature) return 1
+	if(North_Kai == M.signature || South_Kai == M.signature || East_Kai == M.signature || West_Kai == M.signature) return 1
+	if(Grand_Kai == M.signature || Supreme_Kai == M.signature || King_Yemma == M.signature) return 1
+	if(Angel_Rank == M.signature || God_Of_Destruction == M.signature) return 1
+	return 0
+
+//aprende (e nunca esquece) a lingua dos deuses: rank divino atual/passado ou sangue divino
+mob/proc/godtongue_check(quiet)
+	if(godtongue) return 1
+	if(divine_rank_now(src) || Race == "Kai" || Parent_Race == "Kai" || Race == "Demigod" || Parent_Race == "Demigod")
+		godtongue = 1
+		if(!quiet && client) to_chat(src, "<font color=#e8b64c><b>Voce compreende a LINGUA DOS DEUSES.</b> O que se aprende do divino jamais se esquece.")
+		return 1
+	return 0
+
+//o desejo supremo: troca TODO o lifespan por poder puro (1 ano de vida, dobro do maior BP do jogo)
+proc/sw_strongest_wish(mob/T)
+	if(!T) return
+	var/best = 0
+	for(var/mob/M in mob_list) //players E NPCs (bosses etc.) presentes
+		if(M && M.BP > best) best = M.BP
+	best = max(best, TopBP) //e o teto historico dos players
+	T.BP = best * SW_STRONGEST_MULT
+	T.sw_doom_year = Year + SW_STRONGEST_YEARS
+	T.powerlevel()
+	to_chat(world, "<font color=#e8b64c><b>[T] trocou a propria VIDA por poder absoluto -- o ser mais forte do universo caminha entre nos... por um ano.</b></font>", "announce")
+	to_chat(T, "<font color=#e8b64c><b>O poder absoluto queima nas suas veias.</b> Seu corpo tem [SW_STRONGEST_YEARS] ano(s) antes de cobrar o preco -- e dessa morte NAO ha retorno, apenas reencarnacao.")
+	WriteToLog("rplog","[T] recebeu o Strongest in the Universe (BP [T.BP])   ([time2text(world.realtime,"Day DD hh:mm")])")
 obj/DB
 	proc/GenerateWishList(var/mob/usr)
 		var/wishscount = Wishs - WishCount
@@ -37,6 +88,8 @@ obj/DB
 				WishList+="Kill Somebody"
 			if(TrueWishPower>=10)
 				WishList+="Immortality"
+			var/obj/DragonStatue/HSW = HomeStatue //desejo supremo COMPRADO pelo criador na criacao do set
+			if(HSW && HSW.HasStrongestWish) WishList+="Strongest in the Universe"
 			var/chosenwish = input("Make your wish.", "", text) in WishList
 			switch(chosenwish)
 				if("Nothing (Waste Wish)")
@@ -68,6 +121,13 @@ proc/Wish(var/wish,mob/originator,E_G,TrueWishPower)
 	var/text = "Yes"
 	var/wishpower = 1
 	switch(wish)
+		if("Strongest in the Universe")
+			if(E_G==originator.key) //mesma regra do Power: as esferas nao amplificam o proprio criador
+				to_chat(view(originator), "[originator]'s wish fails because they are the creator.")
+				to_chat(originator, "As esferas usam o SEU poder -- ele nao pode amplificar a si mesmo.")
+				return list(wishpower,TRUE)
+			to_chat(view(originator), "<font color=#e8b64c>[originator] deseja ser O MAIS FORTE DO UNIVERSO!</font>")
+			sw_strongest_wish(originator)
 		if("Power")
 			to_chat(view(originator), "[originator] wishes for power!")
 			if(E_G!=originator.key)
@@ -85,6 +145,7 @@ proc/Wish(var/wish,mob/originator,E_G,TrueWishPower)
 			var/list/deadlist = list()
 			for(var/mob/M)
 				if(M.dead)
+					if(M.aged_out) continue //morte de VELHICE: nem o dragao traz de volta -- so reencarnacao
 					deadlist+=M
 					continue
 			if(deadlist.len>=1)
@@ -107,6 +168,7 @@ proc/Wish(var/wish,mob/originator,E_G,TrueWishPower)
 				if("Yes") summon=1
 			for(var/mob/M)
 				if(M.dead)
+					if(M.aged_out) continue //morte de VELHICE fica de fora ate do Revive-All
 					M.ReviveMe()
 					M.overlayList-='Halo.dmi'
 					M.overlaychanged=1

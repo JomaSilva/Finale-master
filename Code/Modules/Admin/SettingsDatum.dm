@@ -47,7 +47,6 @@ proc/Save_Settings()
 	P["GlobalBPBoost"]<<GlobalBPBoost
 	P["TransformedBPBoost"]<<TransformedBPBoost
 	P["GotoSpawnpoint"]<<GotoSpawnpoint
-	P["AutorankOn"]<<AutorankOn
 	P["WipeRanks"]<<WipeRanks
 	P["AutoReviveOn"]<<AutoReviveOn
 	P["npcspawnson"]<<npcspawnson
@@ -106,7 +105,6 @@ proc/Load_Settings()
 		var/savefile/P=new("PersistantSettings")
 		P["Maximum_Addresses_Allowed"]>>Maximum_Addresses_Allowed
 		P["GotoSpawnpoint"]>>GotoSpawnpoint
-		P["AutorankOn"]>>AutorankOn
 		P["force_rarest_class"]>>force_rarest_class
 		if(!force_rarest_class) force_rarest_class = list()
 		P["WipeRanks"]>>WipeRanks
@@ -299,7 +297,6 @@ var
 	canmajin=1
 	cangray=1
 	canhermano=1
-	AutorankOn=1
 	WipeRanks
 	AutoReviveOn=1
 	npcspawnson=1

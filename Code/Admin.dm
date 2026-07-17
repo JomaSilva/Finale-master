@@ -150,13 +150,6 @@ mob/Admin3/verb/Wipe_Ranks()
 	set name="Wipe ranks"
 	set category="Admin"
 	WipeRank()
-mob/Admin3/verb/Additional_Rank()
-	set name="Give all a additonal rank"
-	set category="Admin"
-	for(var/mob/M) if(M.GotRank)
-		M.GotRank = 0
-		M.GettingRank=0
-
 var/buildable=1
 mob/Admin2/verb/Delete_Items()
 	set category = "Admin"

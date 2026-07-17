@@ -119,6 +119,8 @@ client/verb/UseKey(key="" as text)
 		if(M.beamclash && lowertext(key) == "space") //BEAMCLASH: ESPACO durante a disputa = empurrao (BeamClash.dm)
 			M.bcl_press()
 			return
+		if(lowertext(key) == "c" && ui_ue_ckey_try(M)) //C DUPLO com Ultra Instinct/Power of Destruction ATIVO = transformacao do path (UltraInstinct.dm)
+			return
 		if(key in M.Keys) for(var/obj/hotkey/H in M.Hotkeys)
 			if(H.key==key)
 				H.ispressed = 1

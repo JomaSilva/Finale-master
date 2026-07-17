@@ -41,6 +41,9 @@
 #define SDB_MAX_DIST 8      // raio maximo do espalhamento
 #define SDB_HINT_RANGE 2    // o Nav acusa "sinal dourado" a ate isto de distancia (Chebyshev)
 #define SDB_WISH_ZENNI 5000000 // desejo de riqueza
+#define SDB_CLAIM_TICKS 100    // canal (10s) pra reivindicar uma esfera SEM dono
+#define SDB_CONTEST_TICKS 3000 // disputa (5 min): tempo que o ladrao precisa segurar a esfera de outro dono
+#define SDB_CONTEST_RANGE 6    // raio (tiles) que o disputante precisa manter da esfera durante a disputa
 
 var
 	pspace_seed = 0                    // seed da galaxia (persistida no savefile "Galaxy")
@@ -48,7 +51,10 @@ var
 	list/pspace_planets = list()       // nome -> /datum/pspace_planet (lookup de gravidade/pouso)
 	list/pspace_sector_zs = list()     // z's alocados pra setores (pool)
 	list/pspace_surface_zs = list()    // z's alocados pra superficies (pool)
-	list/pspace_superdb = null         // 7 entradas list(num, sx, sy, x, y, held) -- persistem no "Galaxy"
+	list/pspace_superdb = null         // 7 entradas list(num, sx, sy, x, y, held_legado, owner_sig, owner_name) -- persistem no "Galaxy"
+	sdb_benef_sig = null               // TRANSFERENCIA: quem ENTREGOU as 7 esferas (o pedido pessoal do dragao vai PRA ELE) -- persiste no "Galaxy"
+	sdb_benef_name = ""
+	list/sdb_contest = list()          // esferas em DISPUTA agora ("num" -> 1); estado vivo, reboot limpa
 	pspace_booted = 0
 	pspace_world_ready = 0             // 0 = startup gerando os planetas: o lobby BLOQUEIA load/new ate ficar 1
 	pspace_startup_progress = ""       // "3/7" -- mostrado na mensagem de espera do lobby
@@ -109,6 +115,8 @@ proc/pspace_boot()
 		S["sectors"] >> secdata
 		S["planets"] >> pladata
 		S["superdb"] >> pspace_superdb
+		S["sdb_benef_sig"] >> sdb_benef_sig
+		S["sdb_benef_name"] >> sdb_benef_name
 		var/list/slp = null
 		S["sleepers"] >> slp
 		if(islist(slp)) pspace_sleepers = slp
@@ -118,6 +126,10 @@ proc/pspace_boot()
 		S["seed"] << pspace_seed
 	if(!islist(pspace_superdb) || !pspace_superdb.len) //galaxia nova: espalha as 7 Super Dragon Balls
 		pspace_sdb_scatter()
+	else //MIGRACAO: registros antigos de 6 campos (sem claim) ganham dono vazio
+		for(var/list/E in pspace_superdb)
+			if(E.len < 7) E += null
+			if(E.len < 8) E += ""
 	//o setor central (0,0) e o espaco original
 	var/datum/space_sector/home = new
 	home.sx = 0
@@ -171,6 +183,8 @@ proc/pspace_save()
 	S["sectors"] << secdata
 	S["planets"] << pladata
 	S["superdb"] << pspace_superdb
+	S["sdb_benef_sig"] << sdb_benef_sig
+	S["sdb_benef_name"] << sdb_benef_name
 	S["sleepers"] << pspace_sleepers
 
 // ---------------------------------------------------------------------------
@@ -1393,25 +1407,77 @@ proc/pspace_nav_header(z)
 	return h
 
 // ---------------------------------------------------------------------------
-// SUPER DRAGON BALLS: 7 esferas gigantes espalhadas em setores aleatorios.
-// A POSICAO vive no registro (persistido no "Galaxy"); o obj so existe quando o
-// setor esta carregado. Coletar marca held; com as 7 no inventario, o portador
-// invoca SUPER SHENRON (1 desejo) e elas se espalham de novo.
+// SUPER DRAGON BALLS: 7 esferas do tamanho de PLANETOIDES espalhadas pela
+// galaxia -- grandes demais pra carregar: voce REIVINDICA (claim) cada uma.
+//  - Sem dono: canal de 10s ao lado dela = sua (anuncio mundial).
+//  - De OUTRO dono: DISPUTA -- o dono e avisado (na hora ou no login) e o
+//    ladrao precisa SEGURAR a esfera por 5 min (morrer/KO/sair = fracassa).
+//  - Com as 7, invoque SUPER SHENRON ao lado de qualquer uma -- mas so quem
+//    fala a LINGUA DOS DEUSES (rank divino atual/passado ou sangue divino;
+//    godtongue, WishTable.dm). Sem a lingua? TRANSFIRA as 7 pra quem fale:
+//    o pedido PESSOAL (riqueza/poder) vai pro DOADOR (beneficiario).
+//  - Desejos: riqueza, reviver, e STRONGEST IN THE UNIVERSE (a vida por 2x
+//    o maior BP do jogo -- 1 ano de prazo, sem revive).
 // ---------------------------------------------------------------------------
-proc/pspace_sdb_scatter() //posicoes NOVAS aleatorias (nao-deterministico de proposito)
+proc/pspace_sdb_scatter() //posicoes NOVAS aleatorias + claims e transferencia LIMPOS
 	pspace_superdb = list()
+	sdb_benef_sig = null
+	sdb_benef_name = ""
 	for(var/n = 1 to 7)
 		var/sx = 0
 		var/sy = 0
 		while(abs(sx) + abs(sy) < SDB_MIN_DIST)
 			sx = rand(-SDB_MAX_DIST, SDB_MAX_DIST)
 			sy = rand(-SDB_MAX_DIST, SDB_MAX_DIST)
-		pspace_superdb += list(list(n, sx, sy, rand(20, PSPACE_SIZE - 20), rand(20, PSPACE_SIZE - 20), 0))
+		pspace_superdb += list(list(n, sx, sy, rand(20, PSPACE_SIZE - 20), rand(20, PSPACE_SIZE - 20), 0, null, ""))
 	//setor da esfera ja carregado agora (re-espalhamento pos-desejo): poe o obj na hora
 	for(var/list/E in pspace_superdb)
 		var/datum/space_sector/S = pspace_sectors["[E[2]],[E[3]]"]
 		if(S && S.z)
 			S.spawned += pspace_sdb_spawn(E, S.z)
+
+//re-espalha SO a posicao de UMA esfera (migracao do inventario antigo), mantendo o dono
+proc/pspace_sdb_relocate(list/E)
+	var/sx = 0
+	var/sy = 0
+	while(abs(sx) + abs(sy) < SDB_MIN_DIST)
+		sx = rand(-SDB_MAX_DIST, SDB_MAX_DIST)
+		sy = rand(-SDB_MAX_DIST, SDB_MAX_DIST)
+	E[2] = sx
+	E[3] = sy
+	E[4] = rand(20, PSPACE_SIZE - 20)
+	E[5] = rand(20, PSPACE_SIZE - 20)
+	E[6] = 0
+	var/datum/space_sector/S = pspace_sectors["[sx],[sy]"]
+	if(S && S.z)
+		S.spawned += pspace_sdb_spawn(E, S.z)
+
+proc/sdb_owned_count(sig)
+	var/n = 0
+	if(!islist(pspace_superdb) || isnull(sig)) return 0
+	for(var/list/E in pspace_superdb)
+		if(E.len >= 7 && E[7] == sig) n++
+	return n
+
+//MIGRACAO do sistema antigo (esferas no inventario -> claim) + lingua dos deuses (cadeia do Login)
+mob/proc/sdb_login_check()
+	godtongue_check() //rank divino atual (ou sangue divino) aprende a lingua -- e nunca esquece
+	var/changed = 0
+	var/list/velhas = list() //coleta ANTES de deletar (del muta o contents em plena iteracao)
+	for(var/obj/items/SuperDragonBall/B in contents) velhas += B
+	if(velhas.len) pspace_boot()
+	for(var/obj/items/SuperDragonBall/B in velhas)
+		var/list/E = pspace_sdb_entry(B.sdb_num)
+		if(E)
+			E[7] = signature
+			E[8] = name
+			pspace_sdb_relocate(E)
+			changed = 1
+		del B
+	if(changed)
+		InvenSet()
+		to_chat(src, "<font color=#e8b64c><b>Suas Super Dragon Balls voltaram ao espaco</b> -- grandes demais pra carregar. Elas agora sao SUAS por claim (radar dourado no Nav); outros podem tentar toma-las.")
+		pspace_save()
 
 proc/pspace_sdb_spawn(list/E, z)
 	var/obj/items/SuperDragonBall/B = new(locate(E[4], E[5], z))
@@ -1430,62 +1496,193 @@ obj/items/SuperDragonBall
 	icon = 'SuperDragonball.dmi'
 	icon_state = "1"
 	name = "Super Dragon Ball"
-	desc = "Uma esfera do dragao GIGANTE, do tamanho de um pequeno planetoide. Dizem que as sete invocam um dragao capaz de qualquer coisa."
+	desc = "Uma esfera do dragao do tamanho de um PLANETOIDE -- impossivel de carregar. Reivindique-a (claim) para torna-la sua."
 	pixel_x = -16 //64x64 centrado no tile
 	pixel_y = -16
 	density = 0
-	SaveItem = 0 //a posicao no mundo vive no registro da galaxia; no inventario salva com o dono
+	SaveItem = 0 //a posicao vive no registro da galaxia; o obj so existe com o setor carregado
 	var/sdb_num = 1
-	Click()
-		if(!usr || !usr.client) return
-		if(!loc || ismob(loc)) return //ja esta com alguem
-		if(get_dist(usr, src) > 1)
+	Click() //REIVINDICAR: sem dono = canal de 10s; com dono = DISPUTA de 5 min (o dono e avisado)
+		if(!usr || !usr.client || usr.dead || usr.KO) return
+		if(!loc) return
+		if(get_dist(usr, src) > 2)
 			to_chat(usr, "Chegue mais perto da esfera.")
 			return
 		var/list/E = pspace_sdb_entry(sdb_num)
-		if(E) E[6] = 1 //held: o registro para de spawnar/apontar esta esfera
-		loc = usr
-		usr.InvenSet()
-		to_chat(world, "<font color=#e8b64c><b>[usr] encontrou a Super Dragon Ball de [sdb_num] estrela\s nas profundezas da galaxia!</b></font>", "announce")
-		pspace_save()
-	verb/Invocar_Super_Shenron()
-		set category = null
-		set src in usr
-		var/mob/U = usr
-		var/list/have = list()
-		for(var/obj/items/SuperDragonBall/B in U.contents)
-			have["[B.sdb_num]"] = B
-		if(have.len < 7)
-			to_chat(U, "<font color=#e8b64c>Voce sente o poder da esfera... mas so tem [have.len] de 7. O dragao exige todas.</font>")
+		if(!E || E.len < 8) return
+		if(E[7] == usr.signature)
+			to_chat(usr, "<font color=#e8b64c>A Super Dragon Ball de [sdb_num] estrela\s ja e SUA. ([sdb_owned_count(usr.signature)]/7) Com as 7, use Invocar Super Shenron ao lado de qualquer uma.</font>")
 			return
-		var/wish = input(U, "SUPER SHENRON atende UM desejo.", "Super Shenron") as null|anything in list("Riqueza colossal ([FullNum(SDB_WISH_ZENNI)] zenni)", "Reviver um guerreiro caido", "Cancelar")
+		if(sdb_contest["[sdb_num]"])
+			to_chat(usr, "Esta esfera ja esta em DISPUTA.")
+			return
+		if(isnull(E[7]) || E[7] == "")
+			spawn sdb_claim_channel(usr)
+		else
+			spawn sdb_contest_channel(usr, E)
+
+	proc/sdb_claim_channel(mob/M) //esfera SEM dono: canal curto colado nela
+		if(sdb_contest["[sdb_num]"]) return
+		sdb_contest["[sdb_num]"] = 1
+		to_chat(view(src), "<font color=#e8b64c>[M] poe as maos na Super Dragon Ball de [sdb_num] estrela\s, reivindicando-a...</font>")
+		var/ok = 1
+		for(var/i = 1 to round(SDB_CLAIM_TICKS / 10))
+			sleep(10)
+			if(!M || M.dead || M.KO || !src || !loc || get_dist(M, src) > SDB_CONTEST_RANGE)
+				ok = 0
+				break
+		sdb_contest -= "[sdb_num]"
+		if(!ok)
+			if(M) to_chat(M, "A reivindicacao falhou.")
+			return
+		var/list/E = pspace_sdb_entry(sdb_num)
+		if(!E || (E[7] && E[7] != "")) return
+		E[7] = M.signature
+		E[8] = M.name
+		pspace_save()
+		to_chat(world, "<font color=#e8b64c><b>[M] REIVINDICOU a Super Dragon Ball de [sdb_num] estrela\s! ([sdb_owned_count(M.signature)]/7)</b></font>", "announce")
+
+	proc/sdb_contest_channel(mob/M, list/E) //esfera de OUTRO dono: disputa longa, dono avisado
+		if(sdb_contest["[sdb_num]"]) return
+		sdb_contest["[sdb_num]"] = 1
+		var/oldsig = E[7]
+		var/oldname = E[8]
+		to_chat(world, "<font color=#e8b64c><b>[M] tenta TOMAR a Super Dragon Ball de [sdb_num] estrela\s de [oldname]!</b> A disputa leva [round(SDB_CONTEST_TICKS / 600)] minutos.</font>", "announce")
+		conq_notify_owner(oldsig, "<font color=red><b>[M.name] esta tomando sua Super Dragon Ball de [sdb_num] estrela\s -- setor ([E[2]],[E[3]]), em ([E[4]],[E[5]])! Voce tem [round(SDB_CONTEST_TICKS / 600)] minutos para DEFENDE-LA.</b></font>")
+		var/ok = 1
+		var/t = 0
+		while(t < SDB_CONTEST_TICKS)
+			sleep(10)
+			t += 10
+			if(!M || M.dead || M.KO || !src || !loc || get_dist(M, src) > SDB_CONTEST_RANGE)
+				ok = 0
+				break
+			if(E[7] != oldsig) //dono mudou no meio (admin/reset): disputa sem objeto
+				ok = 0
+				break
+			if(t % 600 == 0 && M.client) to_chat(M, "<font color=#e8b64c>Segurando a esfera... [round((SDB_CONTEST_TICKS - t) / 600)] min restando.</font>")
+		sdb_contest -= "[sdb_num]"
+		if(!ok)
+			to_chat(world, "<font color=#e8b64c>A tentativa de tomar a esfera de [sdb_num] estrela\s FRACASSOU -- [oldname] mantem o claim.</font>", "announce")
+			conq_notify_owner(oldsig, "<font color=yellow>Sua Super Dragon Ball de [sdb_num] estrela\s esta SEGURA.</font>")
+			return
+		E[7] = M.signature
+		E[8] = M.name
+		if(sdb_benef_sig) //um claim tomado A FORCA quebra a transferencia pendente
+			sdb_benef_sig = null
+			sdb_benef_name = ""
+		pspace_save()
+		to_chat(world, "<font color=#e8b64c><b>[M] TOMOU a Super Dragon Ball de [sdb_num] estrela\s de [oldname]! ([sdb_owned_count(M.signature)]/7)</b></font>", "announce")
+		conq_notify_owner(oldsig, "<font color=red><b>Voce PERDEU a Super Dragon Ball de [sdb_num] estrela\s para [M.name].</b></font>")
+
+	verb/Invocar_Super_Shenron() //ao lado de qualquer esfera SUA, com as 7 reivindicadas + a lingua dos deuses
+		set category = null
+		set src in oview(2)
+		var/mob/U = usr
+		if(!U.client || U.dead || U.KO) return
+		var/owned = sdb_owned_count(U.signature)
+		if(owned < 7)
+			to_chat(U, "<font color=#e8b64c>Voce sente o poder da esfera... mas reivindicou [owned] de 7. O dragao exige TODAS.</font>")
+			return
+		if(!U.godtongue_check())
+			to_chat(U, "<font color=#e8b64c>Voce grita para os ceus... e NADA acontece. So a LINGUA DOS DEUSES desperta o Super Shenron -- ranks divinos (atuais ou passados) a conhecem. Ou TRANSFIRA as esferas pra alguem que fale (verb Transferir Super Esferas).</font>")
+			return
+		//TRANSFERENCIA: o pedido pessoal vai pro DOADOR (beneficiario), nao pro porta-voz
+		var/mob/benef = null
+		if(sdb_benef_sig && sdb_benef_sig != U.signature)
+			for(var/mob/P in player_list)
+				if(P.client && P.signature == sdb_benef_sig)
+					benef = P
+					break
+		var/wish = input(U, "SUPER SHENRON atende UM desejo[benef ? " -- em nome de [benef.name]" : ""].", "Super Shenron") as null|anything in list("Riqueza colossal ([FullNum(SDB_WISH_ZENNI)] zenni)", "Reviver um guerreiro caido", "Strongest in the Universe (a VIDA por poder)", "Cancelar")
 		if(!wish || wish == "Cancelar") return
+		if(sdb_benef_sig && sdb_benef_sig != U.signature && !benef && wish != "Reviver um guerreiro caido")
+			to_chat(U, "<font color=#e8b64c>O beneficiario ([sdb_benef_name]) precisa estar ONLINE para receber o pedido.</font>")
+			return
+		var/mob/alvo = benef ? benef : U
 		if(wish == "Reviver um guerreiro caido")
 			var/list/deads = list()
-			for(var/mob/M in player_list)
-				if(M.client && M.dead) deads += M
+			for(var/mob/M2 in player_list)
+				if(M2.client && M2.dead && !M2.aged_out) deads += M2 //morte de VELHICE nem o Super Shenron reverte
 			if(!deads.len)
-				to_chat(U, "Nenhum guerreiro caido (online) para reviver.")
+				to_chat(U, "Nenhum guerreiro caido (online) que possa voltar.")
 				return
 			var/mob/T = input(U, "Reviver quem?", "Super Shenron") as null|anything in deads
 			if(!T || !T.dead) return
-			to_chat(world, "<font color=#e8b64c><b>O ceu de TODA a galaxia escurece... [U] invocou SUPER SHENRON!</b></font>", "announce")
-			U.emit_Sound('thunderclap.wav')
+			sdb_announce_summon(U)
 			Revive(T, 1)
 			T.loc = locate(U.x + 1, U.y, U.z)
 			to_chat(world, "<font color=#e8b64c><b>SUPER SHENRON trouxe [T] de volta a vida!</b></font>", "announce")
+		else if(wish == "Strongest in the Universe (a VIDA por poder)")
+			var/conf = alert(alvo, "Trocar TODO o seu lifespan por poder absoluto? Voce vivera SO MAIS 1 ANO -- com o DOBRO do maior BP do jogo -- e dessa morte nao ha revive, apenas reencarnacao.", "Super Shenron", "ACEITO O PRECO", "Recusar")
+			if(conf != "ACEITO O PRECO")
+				to_chat(U, "O desejo foi recusado[benef ? " por [alvo.name]" : ""].")
+				return
+			sdb_announce_summon(U)
+			sw_strongest_wish(alvo)
 		else
-			to_chat(world, "<font color=#e8b64c><b>O ceu de TODA a galaxia escurece... [U] invocou SUPER SHENRON!</b></font>", "announce")
-			U.emit_Sound('thunderclap.wav')
-			U.zenni += SDB_WISH_ZENNI
-			to_chat(world, "<font color=#e8b64c><b>SUPER SHENRON concedeu riqueza colossal a [U]!</b></font>", "announce")
-		//consome as 7 e re-espalha pela galaxia
-		for(var/k in have)
-			var/obj/B = have[k]
-			del B
-		pspace_sdb_scatter()
+			sdb_announce_summon(U)
+			alvo.zenni += SDB_WISH_ZENNI
+			to_chat(world, "<font color=#e8b64c><b>SUPER SHENRON concedeu riqueza colossal a [alvo]!</b></font>", "announce")
+		pspace_sdb_scatter() //consome os claims (e a transferencia) e re-espalha
 		pspace_save()
 		to_chat(world, "<font color=#e8b64c>O desejo foi realizado... e as Super Dragon Balls, drenadas, se espalharam novamente pela galaxia.</font>", "announce")
+
+proc/sdb_announce_summon(mob/U)
+	to_chat(world, "<font color=#e8b64c><b>O ceu de TODA a galaxia escurece... [U] invocou SUPER SHENRON na lingua dos deuses!</b></font>", "announce")
+	if(U) U.emit_Sound('thunderclap.wav')
+
+//TRANSFERIR a guarda das 7 pra quem fala a lingua (o pedido pessoal beneficia o DOADOR)
+mob/verb/Transferir_Super_Esferas()
+	set name = "Transferir Super Esferas"
+	set category = "Other"
+	if(!usr.client || usr.dead) return
+	if(sdb_owned_count(usr.signature) < 7)
+		to_chat(usr, "Voce precisa das 7 Super Dragon Balls reivindicadas para transferir a guarda. ([sdb_owned_count(usr.signature)]/7)")
+		return
+	var/list/cands = list()
+	for(var/mob/P in oview(1, usr))
+		if(P.client && !P.dead) cands += P
+	if(!cands.len)
+		to_chat(usr, "Chame o guardiao escolhido para o seu lado (adjacente).")
+		return
+	var/mob/R = input(usr, "Transferir o claim das 7 esferas pra quem? O pedido PESSOAL do dragao vira pra VOCE (beneficiario).", "Super Esferas") as null|anything in cands
+	if(!R || !R.client || get_dist(usr, R) > 1) return
+	if(!R.godtongue_check(1)) to_chat(usr, "<font color=#e8b64c>AVISO: [R.name] tambem NAO fala a lingua dos deuses -- ele(a) nao conseguira invocar o dragao.</font>")
+	switch(alert(R, "[usr.name] quer confiar as 7 SUPER DRAGON BALLS a voce, para invocar o dragao EM NOME DELE(A) -- o pedido pessoal beneficia [usr.name]. Aceitar a guarda?", "Super Esferas", "Aceitar", "Recusar"))
+		if("Recusar")
+			to_chat(usr, "[R] recusou a guarda das esferas.")
+			return
+	if(sdb_owned_count(usr.signature) < 7) return //re-checa apos o dialogo
+	for(var/list/E in pspace_superdb)
+		if(E.len >= 8 && E[7] == usr.signature)
+			E[7] = R.signature
+			E[8] = R.name
+	sdb_benef_sig = usr.signature
+	sdb_benef_name = usr.name
+	pspace_save()
+	to_chat(world, "<font color=#e8b64c><b>[usr] confiou as 7 Super Dragon Balls a [R]!</b></font>", "announce")
+	to_chat(R, "<font color=#e8b64c>Voce carrega a guarda das 7. Invoque o SUPER SHENRON ao lado de qualquer uma -- o pedido pessoal ira para [usr.name].</font>")
+
+//placar publico das esferas (quem tem quantas -- sem revelar ONDE estao)
+mob/verb/Super_Esferas_Status()
+	set name = "Super Esferas"
+	set category = "Other"
+	pspace_boot()
+	var/list/tally = list()
+	var/livres = 0
+	if(islist(pspace_superdb))
+		for(var/list/E in pspace_superdb)
+			if(E.len >= 8 && E[7] && E[8])
+				if(tally[E[8]]) tally[E[8]]++
+				else tally[E[8]] = 1
+			else livres++
+	to_chat(usr, "<b>--- SUPER DRAGON BALLS ---</b>")
+	for(var/nm in tally)
+		to_chat(usr, "<font color=#e8b64c>[nm]: [tally[nm]] esfera\s</font>")
+	to_chat(usr, "Sem dono: [livres]")
+	to_chat(usr, "Suas: [sdb_owned_count(usr.signature)]/7[usr.godtongue ? " -- voce FALA a lingua dos deuses" : " -- voce NAO fala a lingua dos deuses (ranks divinos falam; ou transfira a guarda)"]")
+	if(sdb_benef_sig) to_chat(usr, "Guarda transferida: o pedido pessoal ira para [sdb_benef_name].")
 
 //visao de admin: seed, pools, setores descobertos e seus planetas
 mob/Admin3/verb/Galaxy_Status()
@@ -1501,7 +1698,7 @@ mob/Admin3/verb/Galaxy_Status()
 		to_chat(usr, "[S.name] ([S.sx],[S.sy]) [S.z ? "carregado z[S.z]" : "descarregado"] -- [pl ? pl : "sem planetas"]")
 	if(islist(pspace_superdb))
 		for(var/list/E in pspace_superdb)
-			to_chat(usr, "<font color=#e8b64c>SDB [E[1]] -- [E[6] ? "COLETADA" : "setor ([E[2]],[E[3]]) em ([E[4]],[E[5]])"]</font>")
+			to_chat(usr, "<font color=#e8b64c>SDB [E[1]] -- [E[6] ? "LIMBO do sistema antigo (dono nao relogou)" : "setor ([E[2]],[E[3]]) em ([E[4]],[E[5]])"][E.len >= 8 && E[7] ? " -- CLAIM de [E[8]]" : " -- sem dono"]</font>")
 
 //recupera esferas perdidas (portador sumiu etc.): apaga TODAS e re-espalha
 mob/Admin3/verb/Galaxy_SuperDB_Reset()
