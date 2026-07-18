@@ -592,7 +592,7 @@ mob/proc/stepped_mastery_mult(mastery, list/tiers) //maestria em DEGRAUS por %: 
 
 mob/proc/ssj1_mult() return stepped_mastery_mult(ssj1mastery, list(ssj1base, 4, 6))      //SSJ1: base ->(66%) 4x ->(100%) 6x
 mob/proc/ssj2_mult() return stepped_mastery_mult(ssj2mastery, list(ssj2base, 6, 8, 10))  //SSJ2: base ->(50%) 6x ->(75%) 8x ->(100%) 10x
-mob/proc/ssj3_mult() return stepped_mastery_mult(ssj3mastery, list(ssj3base, 20))        //SSJ3: base ->(100%) 20x
+mob/proc/ssj3_mult() return ssj3base //SSJ3: multiplicador FIXO (16 normal / 2 nerfado) -- a maestria NAO sobe o poder, so alivia um pouco o dreno (ver ssj3drain)
 
 mob/proc/recompute_saiyan_form_mults() //sincroniza ssjmult/ssj2mult/ssj3mult e os drenos com a maestria % atual (usados no gating fora da forma e no switch de dreno do buff)
 	if(FutureLineage || Class == "Legendary" || Class == "Legendary Primal Saiyan" || canSSJ) return //essas linhagens NAO usam a escada padrao; canSSJ (bypass) fica com o nerf fixo sem maestria
@@ -606,7 +606,7 @@ mob/proc/recompute_saiyan_form_mults() //sincroniza ssjmult/ssj2mult/ssj3mult e 
 	ssj3mult = ssj3_mult()
 	ssjdrain = stepped_mastery_mult(ssj1mastery, list(0.025, 0.015, 0)) //dreno em degraus, zera no 100% (forma sustentavel quando dominada)
 	ssj2drain = stepped_mastery_mult(ssj2mastery, list(0.040, 0.030, 0.020, 0))
-	ssj3drain = stepped_mastery_mult(ssj3mastery, list(0.075, 0))
+	ssj3drain = stepped_mastery_mult(ssj3mastery, list(0.075, 0.065, 0.055)) //SSJ3 NUNCA fica sustentavel: a maestria so alivia (66% -> 0.065, 100% -> 0.055) e mesmo dominado segue o PIOR dreno de todas as formas SSJ (USSJ 0.048, SSJ2 cru 0.040)
 
 mob/proc/future_ssj_mult() //Future SSJ: cada 10% de maestria = +2x em degraus (0-9% = 2x ... 90%+ = 20x)
 	return min(2 + round(futuressjmastery / 10) * 2, 20)
