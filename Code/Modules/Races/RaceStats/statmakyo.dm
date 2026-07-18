@@ -34,7 +34,6 @@ mob/proc/statmakyo()
 		"Train Mod" = 1.1, //How fast you train.
 		"Ki Regeneration" = 1,//self explanitory, just really a mod.
 		"Anger" = 1.5, //anger stat, this * 100 = final anger.
-		"Zenkai" = 0.6, //zenkai, the hax stat.
 		"Space Breath" = 1,//misc stat misc stat, either 0 or 1. limited to only 0 or 1. only does things at 0 and 1. 0 means they die in space.
 		"Starting BP" = 50,//starting BP
 		"Tech Modifier" = 1)//how naturally good you are at technology

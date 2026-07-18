@@ -13,6 +13,19 @@ mob/proc/statnamek()
 		snamekat/=100
 		snamekat*=rand(95,105)
 
+//REWORK 2026-07-18: Namekuseijin deixou de respirar no vacuo. O valor mora no genoma
+//(misc_stats["Space Breath"]) e ja foi ASSADO no mob var spacebreather dos personagens
+//existentes -- este fix de login corrige os dois. Preserva fontes NAO-raciais:
+//modulo Rebreather de cyborg (se presente, mantem 1) e o God of Destruction
+//(god_login_check roda DEPOIS na cadeia e re-aplica spacebreather=1 ao portador).
+mob/proc/namek_space_login_fix()
+	if(Race != "Namekian") return
+	if(genome && genome.misc_stats["Space Breath"])
+		genome.misc_stats["Space Breath"] = 0
+	if(spacebreather && !(locate(/obj/Modules/Rebreather_Module) in src))
+		spacebreather = 0
+		unassignverb(/mob/keyable/verb/Space_Flight) //o voo espacial gratis das racas de vacuo (flying.dm) sai junto
+
 /datum/genetics/proto/Namekian
 	name = "Namekian" //Name of race.
 	base_icon = 'White Male.dmi' //doesn't really do anything right now, as icons are controlled by other things.
@@ -44,8 +57,7 @@ mob/proc/statnamek()
 		"Train Mod" = 1, //How fast you train.
 		"Ki Regeneration" = 1.8,//self explanitory, just really a mod.
 		"Anger" = 1.2, //anger stat, this * 100 = final anger.
-		"Zenkai" = 0.5, //zenkai, the hax stat.
-		"Space Breath" = 1,//misc stat misc stat, either 0 or 1. limited to only 0 or 1. only does things at 0 and 1. 0 means they die in space.
+		"Space Breath" = 0,//REWORK 2026-07-18: Namekuseijin NAO respira no vacuo (era 1; personagens antigos sao corrigidos no login via namek_space_login_fix)
 		"Starting BP" = 30,//starting BP
 		"Tech Modifier" = 2)//how naturally good you are at technology
 		//gravity mastered is a product of your home planet's gravity. nothing more, nothing less.

@@ -17,10 +17,10 @@ datum/genetics/proc/build_stats() //time to take the original stats of the racia
 		var/list/nM = ancestor.m_stats.Copy()
 		var/list/nMc = ancestor.misc_stats.Copy()
 		for(var/a in nM)
-			if(!a in list("Energy Level","Battle Power","Skillpoint Mod","Lifespan","Regeneration","Potential","Zenkai","Tech Modifier"))
+			if(!a in list("Energy Level","Battle Power","Skillpoint Mod","Lifespan","Regeneration","Potential","Tech Modifier"))
 				m_stats[a] += nM[a]
 		for(var/a in nMc)
-			if(!a in list("Energy Level","Battle Power","Skillpoint Mod","Lifespan","Regeneration","Potential","Zenkai","Tech Modifier"))
+			if(!a in list("Energy Level","Battle Power","Skillpoint Mod","Lifespan","Regeneration","Potential","Tech Modifier"))
 				misc_stats[a] += nMc[a]
 		reapply_stats(TRUE) 
 		return

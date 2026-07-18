@@ -89,7 +89,6 @@
 		"Breed Type" = 1, //1 for manual, 0 for eggu. 2 for both, 3 for sterile
 		"Ki Regeneration" = 1,//self explanitory, just really a mod.
 		"Anger" = 1, //anger stat, this * 100 = final anger.
-		"Zenkai" = 1, //zenkai, the hax stat.
 		"Zanzoken Mod" = 1, //Zanzoken modifier- how fast u zanzo
 		"Gravity Mod" = 1, //How fast you adjust and train in gravity.
 		"Med Mod" = 1, //How fast you train in meditation.
@@ -101,13 +100,11 @@
 		//gravity mastered is a product of your home planet's gravity. nothing more, nothing less.
 	
 	class_stats = list("Omega" = list(
-			"Zenkai" = 0.5,
 			"Anger" = 2 //and so on, recognizing that the comma and tab/spacing seperates racial stats.
 		),
 		"Weak" = list(
 			"Physical Offense" = 0.8,// These do not multiply, in fact they actually SET stat.
 			"Physical Defense" = 0.8,
-			"Zenkai" = 3
 		),
 		"None" = list(null)) //and keep a "None" or default Class class if you don't want any of the three classes applied.
 	)//ending brackets for momma list

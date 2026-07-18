@@ -52,7 +52,6 @@ mob
 		OffenseMod=1
 		DefenseMod=1
 		GravMod=1
-		ZenkaiMod=1
 		Zenkai=1.2 //The going multiplication rate for Zenkai.
 		MedMod=1
 		TrainMod=1

@@ -35,7 +35,6 @@ mob/proc/statkanassa()
 		"Train Mod" = 1, //How fast you train.
 		"Ki Regeneration" = 2,//self explanitory, just really a mod.
 		"Anger" = 1.7, //anger stat, this * 100 = final anger.
-		"Zenkai" = 1, //zenkai, the hax stat.
 		"Space Breath" = 0,//misc stat misc stat, either 0 or 1. limited to only 0 or 1. only does things at 0 and 1. 0 means they die in space.
 		"Starting BP" = 50,//starting BP
 		"Tech Modifier" = 2)//how naturally good you are at technology

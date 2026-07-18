@@ -527,7 +527,7 @@ mob/proc/ssj4_form_mult() //multiplicador atual do tier SSJ4 conforme a forma e 
 		if(5) . = ssj4fpmult + (ssj4fpmaxmult - ssj4fpmult) * ssj4fpmastery / 100
 		if(6) . = ssj4fplbmult
 		else . = 1
-	if(Class == "Legendary Primal Saiyan" && ssj == 4) . *= 1.5 //Primal lendario: SSJ4 base reforcado
+	//(Legendary Primal NAO passa por aqui: ssj_effective_mult desvia pro legprimal_form_mult, que ja tem o LSSJ4 22-44x proprio)
 
 mob/proc/LSSj3_Primal() //Primal Legendary: Legendary Super Saiyan 3 (ssj=3.5, acima do LSSJ2; animacao verde propria)
 	if(Class != "Legendary Primal Saiyan") return

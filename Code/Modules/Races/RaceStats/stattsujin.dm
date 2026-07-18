@@ -45,7 +45,6 @@ mob/proc/stattsujin()
 		"Train Mod" = 1, //How fast you train.
 		"Ki Regeneration" = 2,//self explanitory, just really a mod.
 		"Anger" = 1.4, //anger stat, this * 100 = final anger.
-		"Zenkai" = 3, //zenkai, the hax stat.
 		"Space Breath" = 1,//misc stat misc stat, either 0 or 1. limited to only 0 or 1. only does things at 0 and 1. 0 means they die in space.
 		"Starting BP" = 1,//starting BP
 		"Tech Modifier" = 7)//how naturally good you are at technology

@@ -56,8 +56,7 @@ mob/var
 			savant.legendaryAngerBonus = 100 //agora a skill concede +1x de raiva
 			savant.angerMod = 1 //limpa o angerMod=500/2000 antigo (master.dm ja reseta, mas garantimos)
 			//NAO mexo em canRSSJ aqui: a skill nova nao remove mais a 1a forma, entao o Wrathful volta a sair naturalmente (ver caveat sobre saves antigos)
-			if(savant.genome) //reverte EXATAMENTE as penalidades/bonus de genome da versao antiga
-				savant.genome.sub_to_stat("Zenkai",5)
+			if(savant.genome) //reverte EXATAMENTE as penalidades/bonus de genome da versao antiga (o stat "Zenkai" antigo morreu -- nada a reverter dele)
 				savant.genome.sub_to_stat("Spar Mod",2)
 				savant.genome.add_to_stat("Train Mod",0.1)
 				savant.genome.add_to_stat("Med Mod",0.1)
@@ -66,7 +65,6 @@ mob/var
 				savant.genome.add_to_stat("Energy Level",0.5)
 				savant.genome.add_to_stat("Battle Power",2)
 				if(has_post_ascension) //tambem reverte o bonus pos-ascension, se havia disparado
-					savant.genome.sub_to_stat("Zenkai",5)
 					savant.genome.sub_to_stat("Spar Mod",3)
 			has_post_ascension = 0
 			to_chat(savant, "Your Legendary Anger settles into its true form: the old drawbacks are gone, and your rage now adds a flat +1x to your power cap.")
@@ -199,7 +197,7 @@ mob/var
 			if(gains_boost_buffer > 10*level)
 				gains_boost_buffer-=10*level
 				exp+=savant.SparMod ** level
-				savant.Attack_Gain(level+savant.ZenkaiMod/10)
+				savant.Attack_Gain(level+2) //bonus fixo (o stat racial "Zenkai" morreu 2026-07-18; equivale ao antigo ~20/10)
 
 	after_learn()
 		to_chat(savant, "Your power begins to throbs every time your fists matches another...")

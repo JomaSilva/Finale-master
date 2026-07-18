@@ -68,7 +68,7 @@ mob/proc/statsaiyan()
 					invoker.savant.ssjmod= initial(invoker.savant.ssjmod) *1
 					invoker.savant.legendary=1
 					invoker.savant.Omult=8
-				if("Legendary Primal Saiyan") //Primal lendario: usa a escada SSJ normal (NAO e LSSJ), porem com Oozaru Dourado mais forte e SSJ4 reforcado
+				if("Legendary Primal Saiyan") //Primal lendario: escada LENDARIA propria via legprimal_form_mult (C-Type 3x, LSSJ 6-9x, LSSJ2 9-12x, LSSJ3 18x, LSSJ4 22-44x, 4FP 34-52x, LB 60x + Form Rising) e Legendary Great Ape 20x no lugar do Golden
 					invoker.savant.ssjat= initial(invoker.savant.ssjat) *rand(9,11)/10
 					invoker.savant.ssj2at= initial(invoker.savant.ssj2at) *rand(9,12)/10
 					invoker.savant.Omult=10
@@ -115,7 +115,6 @@ mob/proc/statsaiyan()
 		"Train Mod" = 1, //How fast you train.
 		"Ki Regeneration" = 1,//self explanitory, just really a mod.
 		"Anger" = 1.5, //anger stat, this * 100 = final anger.
-		"Zenkai" = 20, //zenkai, the hax stat.
 		"Space Breath" = 0,//misc stat misc stat, either 0 or 1. limited to only 0 or 1. only does things at 0 and 1. 0 means they die in space.
 		"Starting BP" = 100,//starting BP
 		"Tech Modifier" = 1)//how naturally good you are at technology
@@ -136,7 +135,6 @@ mob/proc/statsaiyan()
 			"Zanzoken Mod" = 1.5,
 			"Gravity Mod" = 8,
 			"Ki Regeneration" = 1.5,
-			"Zenkai" = 25,
 			"Train Mod" = 1.5,
 			"Starting BP" = 10
 		),
@@ -168,7 +166,6 @@ mob/proc/statsaiyan()
 			"Energy Level" = 1.4,
 			"Tech Modifier" = 2,
 			"Ki Regeneration" = 1.1,
-			"Zenkai" = 20,
 			"Starting BP" = 1000,
 			"Potential" = 2.5
 		),
@@ -187,7 +184,6 @@ mob/proc/statsaiyan()
 			"Ki Regeneration" = 1,
 			"Starting BP" = 10000,
 			"Potential" = 2,
-			"Zenkai" = 15,
 			"Spar Mod" = 4,
 			"Anger" = 2
 		),
@@ -196,7 +192,6 @@ mob/proc/statsaiyan()
 			"Physical Defense" = 1.2,
 			"Speed" = 1.7,
 			"Battle Power" = 1.7,
-			"Zenkai" = 18,
 			"Starting BP" = 150
 		),
 		"Legendary Primal Saiyan" = list(
@@ -209,7 +204,6 @@ mob/proc/statsaiyan()
 			"Speed" = 1.1,
 			"Battle Power" = 3.2,
 			"Potential" = 2,
-			"Zenkai" = 15,
 			"Spar Mod" = 4,
 			"Anger" = 2,
 			"Starting BP" = 12000
@@ -228,7 +222,6 @@ mob/proc/statsaiyan()
 			"Battle Power" = 1.5,
 			"Energy Level" = 1.3,
 			"Potential" = 3,
-			"Zenkai" = 14,
 			"Starting BP" = 80
 		),
 		"Future Lineage" = list( //Future Gohan: single-form combat lineage; raw physical power + BP + Zenkai to offset a limited transformation line
@@ -243,7 +236,6 @@ mob/proc/statsaiyan()
 			"Battle Power" = 2,
 			"Energy Level" = 1.3,
 			"Potential" = 2.5,
-			"Zenkai" = 24,
 			"Spar Mod" = 4,
 			"Train Mod" = 1.4,
 			"Anger" = 1.7,
@@ -264,7 +256,6 @@ mob/proc/statsaiyan()
 			"Energy Level" = 1.4,
 			"Med Mod" = 3,
 			"Potential" = 5,
-			"Zenkai" = 12,
 			"Starting BP" = 70
 		)
 	)

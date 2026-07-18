@@ -55,7 +55,7 @@
 /datum/skill/heran/Heran_Power
 	skilltype = "Heran Form"
 	name = "Heran Power"
-	desc = "From your own Zenkai, supercharge your energy during a fight for an explosive increase in power!"
+	desc = "Supercharge your energy during a fight for an explosive increase in power!"
 	skillcost = 1
 	can_forget = FALSE
 	common_sense = FALSE
@@ -76,7 +76,7 @@
 			if(ki_boost_buffer > 10*level)
 				ki_boost_buffer-=10*level
 				exp+=savant.SparMod ** level
-				savant.Attack_Gain(level+savant.ZenkaiMod/40)
+				savant.Attack_Gain(level+0.05) //bonus fixo (o stat racial "Zenkai" morreu 2026-07-18; equivale ao antigo ~2/40)
 				savant.Ki += 10 * savant.BaseDrain
 
 	after_learn()

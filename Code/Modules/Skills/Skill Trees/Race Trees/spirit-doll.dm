@@ -40,17 +40,17 @@
 /datum/skill/spiritdoll/Play
 	skilltype = "Physical"
 	name = "Play Hard"
-	desc = "As your body stresses, it grows stronger. The effects of battle damage returns to you in strength by tens of times. Can't have Doll Regeneration at the same time."
+	desc = "As your body stresses, it grows stronger. Punishment hardens the doll's frame. P.Def+. Can't have Doll Regeneration at the same time."
 	can_forget = TRUE
 	common_sense = FALSE
 	skillcost = 1
 	tier = 1
 	maxlevel = 1
 	after_learn()
-		to_chat(savant, "Your zenkai increases.")
-		savant.genome.add_to_stat("Zenkai",3)
+		to_chat(savant, "Your body hardens with every beating.") //o stat "Zenkai" morreu (2026-07-18); a skill agora endurece o corpo de verdade
+		savant.physdefMod += 0.05
 		savant.pitted = 2
 	before_forget()
-		to_chat(savant, "Your zenkai returns to normal.")
-		savant.genome.sub_to_stat("Zenkai",3)
+		to_chat(savant, "Your body softens back to normal.")
+		savant.physdefMod -= 0.05
 		savant.pitted = 0

@@ -95,7 +95,7 @@ obj/attack/blast/Acid_spit
 /datum/skill/arlian/Supa
 	skilltype = "Physical"
 	name = "Super Bug"
-	desc = "Bug life is hard. Your body reflects and grows to accomadate this, increasing stamina and regeneration rates, along with a bit of durability. P.Def+, Zenkai+, Regen+, Will++"
+	desc = "Bug life is hard. Your body reflects and grows to accomadate this, increasing stamina and regeneration rates, along with a bit of durability. P.Def+, Regen+, Will++"
 	can_forget = TRUE
 	common_sense = FALSE
 	skillcost = 1
@@ -104,7 +104,6 @@ obj/attack/blast/Acid_spit
 	after_learn()
 		to_chat(savant, "Your body's durability increases.")
 		savant.physdefMod += 0.03
-		savant.genome.add_to_stat("Zenkai",1)
 		savant.kiregenMod += 0.1
 		savant.HPregenbuff += 0.1
 		savant.willpowerMod += 0.3
@@ -112,7 +111,6 @@ obj/attack/blast/Acid_spit
 	before_forget()
 		to_chat(savant, "Your body's durability returns to normal.")
 		savant.physdefMod -= 0.03
-		savant.genome.sub_to_stat("Zenkai",1)
 		savant.kiregenMod -= 0.1
 		savant.HPregenbuff -= 0.1
 		savant.willpowerMod -= 0.3

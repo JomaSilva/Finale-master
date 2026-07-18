@@ -48,7 +48,6 @@ Depending on their abilities, (specifically 3 combination race biodroids) they c
 		"Train Mod" = 1.2, //How fast you train.
 		"Ki Regeneration" = 1.5,//self explanitory, just really a mod.
 		"Anger" = 1.25, //anger stat, this * 100 = final anger.
-		"Zenkai" = 2, //zenkai, the hax stat.
 		"Space Breath" = 1,//misc stat misc stat, either 0 or 1. limited to only 0 or 1. only does things at 0 and 1. 0 means they die in space.
 		"Starting BP" = 75,//starting BP
 		"Tech Modifier" = 5)//how naturally good you are at technology
@@ -71,7 +70,6 @@ Depending on their abilities, (specifically 3 combination race biodroids) they c
 			"Energy Level" = 1.6,
 			"Potential" = 1.5,
 			"Regeneration" = 70,
-			"Zenkai" = 1,
 			"Spar Mod" = 1.5,
 			"Med Mod" = 1.6,
 			"Ki Regeneration" = 1.4

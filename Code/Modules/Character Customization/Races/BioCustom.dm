@@ -4,7 +4,7 @@ mob/proc/BioCustomization()
 	else if(Class == "Majin-Type")
 		cell2 = 1
 		cell3 = 1
-		RaceDescription={"This Bio-Android is a majin type bio-android. Majin bio-androids comes with less Zenkai, higher Regen, regular Cell absorb, only one super form, and a higher than normal BP mod."}
+		RaceDescription={"This Bio-Android is a majin type bio-android. Majin bio-androids come with higher Regen, regular Cell absorb, only one super form, and a higher than normal BP mod."}
 		newrgb=0
 		alert("Choose a body color. This is the body color of your super form.")
 		var/rgbsuccess

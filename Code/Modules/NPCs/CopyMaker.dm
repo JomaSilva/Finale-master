@@ -128,7 +128,6 @@ mob/proc/AssignDupeVars(var/mob/A) //We have to manually add everything that is 
 	A.physoffMod=physoffMod
 	A.Created = 1
 	A.kiregenMod=kiregenMod
-	A.ZenkaiMod=ZenkaiMod
 	A.TrainMod=TrainMod
 	A.MedMod=MedMod
 	A.SparMod=SparMod

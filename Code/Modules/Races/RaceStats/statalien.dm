@@ -39,7 +39,7 @@ mob/proc/AlienCustomization()
 				if(modified_list[20]==0) addchoiceslist.Add("Breed Type")
 			if(statboosts>=2)
 				if(modified_list[11]<4) addchoiceslist.Add("BP mod")
-				if(modified_list[12]<8) addchoiceslist.Add("Zenkai")
+				//slot 12 era o "Zenkai" (stat MORTO 2026-07-18: o Zenkai real e o surto na derrota, sem stat racial) -- indice reservado por saves antigos
 				if(modified_list[13]<3) addchoiceslist.Add("Death Regen")
 				if(modified_list[14]<3) addchoiceslist.Add("Lifespan")
 				if(modified_list[15]<3) addchoiceslist.Add("Misc. Mods")
@@ -83,9 +83,6 @@ mob/proc/AlienCustomization()
 				if("BP mod")
 					statboosts-=2
 					modified_list[11]++
-				if("Zenkai")
-					statboosts-=2
-					modified_list[12]++
 				if("Death Regen")
 					statboosts-=2
 					modified_list[13]++
@@ -131,7 +128,6 @@ mob/proc/AlienCustomization()
 				if(modified_list[20]==1) addchoiceslist.Add("Breed Type")
 			if(statboosts<=8)
 				if(modified_list[11]>0) addchoiceslist.Add("BP mod")
-				if(modified_list[12]>0) addchoiceslist.Add("Zenkai")
 				if(modified_list[13]>0) addchoiceslist.Add("Death Regen")
 				if(modified_list[14]>0) addchoiceslist.Add("Lifespan")
 				if(modified_list[15]>0) addchoiceslist.Add("Misc. Mods")
@@ -175,9 +171,6 @@ mob/proc/AlienCustomization()
 				if("BP mod")
 					statboosts+=2
 					modified_list[11]--
-				if("Zenkai")
-					statboosts+=2
-					modified_list[12]--
 				if("Death Regen")
 					statboosts+=2
 					modified_list[13]--
@@ -232,7 +225,6 @@ mob/proc/AlienCustomization()
 		genome_proto.misc_stats["Train Mod"] = (modified_list[15]*0.25)+1
 		genome_proto.misc_stats["Ki Regeneration"] = 1 + modified_list[9]*0.2
 		genome_proto.misc_stats["Anger"] = 1.5 + modified_list[16] * 0.5
-		genome_proto.misc_stats["Zenkai"] = 1 + modified_list[12]
 		genome_proto.misc_stats["Space Breath"] = modified_list[19]
 		genome_proto.misc_stats["Starting BP"] = 1 + modified_list[11]*20
 		genome_proto.misc_stats["Tech Modifier"] = 3 + modified_list[3]
@@ -275,7 +267,6 @@ mob/proc/AlienCustomization()
 		"Train Mod" = 1, //How fast you train.
 		"Ki Regeneration" = 1,//self explanitory, just really a mod.
 		"Anger" = 1, //anger stat, this * 100 = final anger.
-		"Zenkai" = 1, //zenkai, the hax stat.
 		"Space Breath" = 1,//misc stat misc stat, either 0 or 1. limited to only 0 or 1. only does things at 0 and 1. 0 means they die in space.
 		"Starting BP" = 25,//starting BP
 		"Tech Modifier" = 1)//how naturally good you are at technology

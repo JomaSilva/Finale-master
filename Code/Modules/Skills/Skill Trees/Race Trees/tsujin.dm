@@ -135,7 +135,7 @@ mob/var/pitted = 0
 /datum/skill/tsujin/Guru_Of_Determination
 	skilltype = "Physical"
 	name = "Guru of Determination"
-	desc = "Tsujins are weak, but they're pretty smart. This is a generalization of the race. Whether or not you've fulfilled this stereotype, the racial identity of Tsujins are not a innate feature. They are a product of a instinctual understanding of their own weakness... and their determination to change it. (All stats +, Willpower Mod ++++, Skillpoint Mod +, Zenkai +, Hidden Potential Mod +++)"
+	desc = "Tsujins are weak, but they're pretty smart. This is a generalization of the race. Whether or not you've fulfilled this stereotype, the racial identity of Tsujins are not a innate feature. They are a product of a instinctual understanding of their own weakness... and their determination to change it. (All stats +, Willpower Mod ++++, Skillpoint Mod +, Hidden Potential Mod +++)"
 	can_forget = TRUE
 	common_sense = FALSE
 	skillcost = 1

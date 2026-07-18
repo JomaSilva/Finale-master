@@ -118,7 +118,6 @@ datum/genetics
 			"Train Mod" = 1, //How fast you train.
 			"Ki Regeneration" = 1,//self explanitory, just really a mod.
 			"Anger" = 1, //anger stat, this * 100 = final anger.
-			"Zenkai" = 1, //zenkai, the hax stat.
 			"Space Breath" = 1,//misc stat misc stat, either 0 or 1. limited to only 0 or 1. only does things at 0 and 1.
 			"Starting BP" = 1,//starting BP seed. several types.
 			"Tech Modifier" = 1,//how naturally good you are at technology
@@ -197,7 +196,6 @@ datum/genetics
 				if("bred") assign_breed()
 				if("krgn") assign_ki_regen()
 				if("angr") assign_Anger()
-				if("znki") assign_Zenkai()
 				if("trmd") assign_TrainMod()
 				if("spmd") assign_SparMod()
 				if("mdmd") assign_MedMod()
@@ -214,7 +212,6 @@ datum/genetics
 					assign_breed()
 					assign_ki_regen()
 					assign_Anger()
-					assign_Zenkai()
 					assign_TrainMod()
 					assign_SparMod()
 					assign_MedMod()
@@ -292,8 +289,7 @@ datum/genetics
 		assign_Anger()
 			savant.baseAnger = 100 * misc_stats["Anger"]
 
-		assign_Zenkai()
-			savant.ZenkaiMod = misc_stats["Zenkai"]
+		//assign_Zenkai REMOVIDO (2026-07-18): o stat racial "Zenkai" morreu -- o Zenkai real e so o surto na derrota (gain_zenkai, 10% do BP do inimigo, gate por DNA Saiyajin)
 		assign_MedMod()
 			savant.MedMod = misc_stats["Med Mod"]
 		assign_SparMod()
@@ -322,7 +318,6 @@ datum/genetics
 				if("Breed Type") return misc_stats["Breed Type"]
 				if("Ki Regeneration") return misc_stats["Ki Regeneration"]
 				if("Anger") return misc_stats["Anger"]
-				if("Zenkai") return misc_stats["Zenkai"]
 				if("Space Breath") return misc_stats["Space Breath"]
 				if("Starting BP") return misc_stats["Starting BP"]
 				if("Tech Modifier") return misc_stats["Tech Modifier"]
@@ -509,13 +504,11 @@ datum/genetics
 				if("ptnl") redo_potential()
 				if("rgen") redo_regen()
 				//if("tail") redo_tail()
-				if("znki") redo_Zenkai()
 				if("tech") redo_Tech_Modifier()
 				if(null)
 					redo_life()
 					redo_potential()
 					redo_regen()
-					redo_Zenkai()
 					redo_Tech_Modifier()
 					//redo_tail()
 					assign_breed()
@@ -561,10 +554,6 @@ datum/genetics
 			if(savant.DeathRegen >= 1)
 				savant.canheallopped = 1
 
-		redo_Zenkai()
-			var/o_l = list()
-			o_l  =old_stats[2]
-			savant.ZenkaiMod = (savant.ZenkaiMod - o_l["Zenkai"]) + misc_stats["Zenkai"]
 		redo_Tech_Modifier()
 			var/o_l = list()
 			o_l  =old_stats[2]

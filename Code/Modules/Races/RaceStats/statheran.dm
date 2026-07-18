@@ -69,7 +69,6 @@ mob/proc/statheran()
 		"Train Mod" = 1.8, //How fast you train.
 		"Ki Regeneration" = 0.7,//self explanitory, just really a mod.
 		"Anger" = 1.3, //anger stat, this * 100 = final anger.
-		"Zenkai" = 6, //zenkai, the hax stat.
 		"Space Breath" = 0,//misc stat misc stat, either 0 or 1. limited to only 0 or 1. only does things at 0 and 1. 0 means they die in space.
 		"Starting BP" = 150,//starting BP
 		"Tech Modifier" = 2.5)//how naturally good you are at technology
@@ -91,7 +90,6 @@ mob/proc/statheran()
 			"Zanzoken Mod" = 1,
 			"Gravity Mod" = 3,
 			"Ki Regeneration" = 0.9,
-			"Zenkai" = 5,
 			"Train Mod" = 2,
 			"Med Mod" = 2,
 			"Spar Mod" = 3,
@@ -115,7 +113,6 @@ mob/proc/statheran()
 			"Starting BP" = 500,
 			"Gravity Mod" = 9,
 			"Potential" = 1,
-			"Zenkai" = 9,
 			"Train Mod" = 1,
 			"Med Mod" = 1,
 			"Spar Mod" = 2,

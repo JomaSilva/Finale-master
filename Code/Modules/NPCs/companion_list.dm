@@ -235,7 +235,6 @@ mob/npc/pet
 		techmod = 6
 		kiregenMod=1
 		GravMod=1
-		ZenkaiMod=1
 		movespeed=1
 		f_keep_dist = 2
 		New()
@@ -267,7 +266,6 @@ mob/npc/pet
 		techmod = 3
 		kiregenMod=1
 		GravMod=1
-		ZenkaiMod=1
 		movespeed=1
 		f_keep_dist = 2
 
@@ -287,6 +285,5 @@ mob/npc/pet
 		techmod = 7
 		kiregenMod=2
 		GravMod=2
-		ZenkaiMod=2
 		movespeed=1
 		f_keep_dist = 2
