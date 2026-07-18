@@ -158,6 +158,15 @@ mob/var
 						if((savant.ssj3at*2.2)<=savant.expressedBP)
 							savant.ssj3able=1
 							to_chat(savant, "<font color=#ffcc00>A new limit shatters within you - Super Saiyan 3 is within reach!</font>")
+			//BEAST (Prodigial): a raiva profunda funde o Mistico ao ki divino maduro -- despertar UNICO
+			//(depois vira toggle, verb Beast). Mesmo processo dos despertares de SSJ1/SSJ2 acima.
+			if(savant.Class == "Prodigial" && !savant.hasbeast && savant.godki && savant.godki.awakened && savant.godki.usage \
+			   && savant.godki.mastery >= GODKI_ROYALE_PCT && savant.HasSkill(/datum/skill/kai/Mystic) && !savant.transing)
+				if(savant.Emotion == "Very Angry")
+					savant.hasbeast = 1
+					savant.assignverb(/mob/keyable/verb/Beast)
+					to_chat(savant, "<font color=#b9a6ff><b>A raiva rasga o fundo do seu potencial -- algo BESTIAL desperta!</b></font>")
+					spawn savant.BeastUp()
 
 
 

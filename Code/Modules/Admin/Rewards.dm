@@ -65,7 +65,7 @@ mob/Admin1/verb
 					B.health = B.maxhealth
 				spawn(10) M.Ki=M.MaxKi
 				spawn(10) M.stamina=M.maxstamina
-				if(M.godki && M.godki.tier)
+				if(M.godki && M.godki.awakened)
 					M.gain_godki(M.godki.max_energy)
 			if("SSJ")
 				WriteToLog("admin","[usr]([key]) made [M.name]([M.key]) Super Saiyan at [time2text(world.realtime,"Day DD hh:mm")]")

@@ -55,7 +55,7 @@ mob/proc/bp_milestone_check_ascension()
 //recalcula o multiplicador a partir dos marcos legitimos restantes
 mob/proc/bp_milestone_login_fix()
 	if(!islist(bp_milestones_done)) return
-	if(("godki" in bp_milestones_done) && (!godki || godki.tier < 1))
+	if(("godki" in bp_milestones_done) && (!godki || !godki.awakened))
 		bp_milestones_done -= "godki"
 		var/m = 1
 		for(var/tag in bp_milestones_done)

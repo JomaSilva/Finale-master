@@ -55,8 +55,8 @@ obj/buff/MaxPower/Loop()
 				container.ssjBuff=container.heran_form_mult()
 				container.trueKiMod = container.ssj2energymod
 				container.Ki *= container.trueKiMod
-	if(container.godki && container.trans_min_val)
-		if(container.godki.usage && container.trans_min_val < container.ssj)
+	if(container.godki && container.godki.usage) //teto da maestria (ritual: cap 10 = livre)
+		if(container.trans_min_val < container.ssj)
 			container.Revert()
 	..()
 obj/buff/MaxPower/DeBuff()

@@ -268,8 +268,8 @@ obj/buff/SuperSaiyan/Loop()
 				container.MaxKi *= container.trueKiMod
 		if(_oldTKM) //keep the SAME Ki% across the form change (up OR down) by scaling Ki with the MaxKi/trueKiMod change
 			container.Ki = container.Ki * container.trueKiMod / _oldTKM
-	if(container.godki && container.trans_min_val)
-		if(container.godki.usage && container.trans_min_val < container.ssj)
+	if(container.godki && container.godki.usage) //teto da maestria: SSJ acima do permitido derruba a forma (fecha ate o Blue-por-raiva abaixo dos 33%; ritual tem cap 10 = livre)
+		if(container.trans_min_val < container.ssj)
 			container.Revert()
 	..()
 obj/buff/SuperSaiyan/Delevel()
@@ -304,6 +304,7 @@ obj/buff/SuperSaiyan/DeBuff()
 
 mob/proc/SSj()
 	if(!transing)
+		if(Class == "Prodigial" && godki && godki.usage) return //Prodigial NAO tem Blue: o caminho divino dele e o Mistico/Beast (catch-all de TODAS as portas)
 		if(cantSustainForm(ssjdrain)) return //sem Ki pra sustentar: nao vira SSJ1
 		Revert()
 		transing=1
@@ -373,6 +374,7 @@ mob/proc/remove_ussj_body()
 
 mob/proc/Ultra_SSj()
 	if(!transing)
+		if(Class == "Prodigial" && godki && godki.usage) return //Prodigial nao acessa o Royale (catch-all)
 		if(ssj>=2) return
 		if(cantSustainForm(ultrassjdrain)) return
 		transing=1
@@ -406,6 +408,7 @@ mob/proc/Ultra_SSj()
 mob/proc/SSj2()
 	if(!transing)
 		if(FutureLineage) return //Future Lineage: forma unica (SSJ1 em estagios), nao acessa SSJ2
+		if(Class == "Prodigial" && godki && godki.usage) return //Prodigial nao empilha SSJ no God Ki (catch-all)
 		if(bio_lab_born && !bio_ssj2_by_death) //BIO de laboratorio: o SSJ2 dele SO desperta morrendo com os 3 requisitos (DNALabs.dm) -- nenhuma via de raiva/arvore vale
 			hasssj2 = 0 //desfaz qualquer hasssj2 concedido por engano pelas vias saiyajin (era o pulo direto pro 8x)
 			to_chat(src, "<font color=#ffd24a>O Super Saiyajin 2 nao responde... seu nucleo bio exige um gatilho mais extremo que a raiva.</font>")

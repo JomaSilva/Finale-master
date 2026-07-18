@@ -1594,7 +1594,10 @@ obj/items/SuperDragonBall
 				if(P.client && P.signature == sdb_benef_sig)
 					benef = P
 					break
-		var/wish = input(U, "SUPER SHENRON atende UM desejo[benef ? " -- em nome de [benef.name]" : ""].", "Super Shenron") as null|anything in list("Riqueza colossal ([FullNum(SDB_WISH_ZENNI)] zenni)", "Reviver um guerreiro caido", "Strongest in the Universe (a VIDA por poder)", "Cancelar")
+		var/list/wmenu = list("Riqueza colossal ([FullNum(SDB_WISH_ZENNI)] zenni)", "Reviver um guerreiro caido", "Strongest in the Universe (a VIDA por poder)")
+		if(kai_body_wish_ok(U) && !sdb_benef_sig) wmenu += "Corpo de um Saiyajin (Zero Mortals)" //o desejo do Zamasu: privilegio proprio do Kaioshin (nao vai pra beneficiario)
+		wmenu += "Cancelar"
+		var/wish = input(U, "SUPER SHENRON atende UM desejo[benef ? " -- em nome de [benef.name]" : ""].", "Super Shenron") as null|anything in wmenu
 		if(!wish || wish == "Cancelar") return
 		if(sdb_benef_sig && sdb_benef_sig != U.signature && !benef && wish != "Reviver um guerreiro caido")
 			to_chat(U, "<font color=#e8b64c>O beneficiario ([sdb_benef_name]) precisa estar ONLINE para receber o pedido.</font>")
@@ -1613,6 +1616,18 @@ obj/items/SuperDragonBall
 			Revive(T, 1)
 			T.loc = locate(U.x + 1, U.y, U.z)
 			to_chat(world, "<font color=#e8b64c><b>SUPER SHENRON trouxe [T] de volta a vida!</b></font>", "announce")
+		else if(wish == "Corpo de um Saiyajin (Zero Mortals)")
+			var/list/saiyans = list()
+			for(var/mob/S in player_list)
+				if(!S.client || S.dead || S == U) continue
+				if(S.Race == "Saiyan" || S.Race == "Legendary Saiyan" || S.Parent_Race == "Saiyan") saiyans += S
+			if(!saiyans.len)
+				to_chat(U, "Nenhum Saiyajin (online) digno de fornecer o molde.")
+				return
+			var/mob/molde = input(U, "O corpo de QUAL Saiyajin voce deseja vestir?", "Zero Mortals") as null|anything in saiyans
+			if(!molde || !molde.client) return
+			sdb_announce_summon(U)
+			kai_take_saiyan_body(U, molde)
 		else if(wish == "Strongest in the Universe (a VIDA por poder)")
 			var/conf = alert(alvo, "Trocar TODO o seu lifespan por poder absoluto? Voce vivera SO MAIS 1 ANO -- com o DOBRO do maior BP do jogo -- e dessa morte nao ha revive, apenas reencarnacao.", "Super Shenron", "ACEITO O PRECO", "Recusar")
 			if(conf != "ACEITO O PRECO")

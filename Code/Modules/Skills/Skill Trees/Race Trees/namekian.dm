@@ -11,12 +11,20 @@
 	//a regeneracao Namekuseijin agora e a Namekian_Regeneration (ativa, 70% do Ki), dada DE GRACA a raca toda
 	constituentskills = list(new/datum/skill/general/Hardened_Body,new/datum/skill/general/LankyLegs,new/datum/skill/general/Willed,\
 	new/datum/skill/namek/bigform,new/datum/skill/demon/soulabsorb,new/datum/skill/general/materialization,\
-	new/datum/skill/namek/fusion,new/datum/skill/namek/SuperNamek,new/datum/skill/namek/Stretchy_Arms)
+	new/datum/skill/namek/fusion,new/datum/skill/namek/SuperNamek,new/datum/skill/namek/Stretchy_Arms,\
+	new/datum/skill/rank/MakeDragonballs)
 mob/var/hassoulabsorb=1
 /datum/skill/tree/namek/effector()
 	if(savant.hassoulabsorb&&savant.Race=="Namekian"&&savant.Class!="Dragon clan")
 		disableskill(/datum/skill/demon/soulabsorb)
 		savant.hassoulabsorb = 0
+	//CLA DO DRAGAO: a criacao das esferas so aparece pra compra quando ha ONDE usa-la
+	//(Guardiao da Terra ou dono de um planeta conquistado). Perdeu o posto/planeta = some
+	//da loja; quem JA comprou mantem o conhecimento (o proprio verb trava o local da estatua).
+	if(savant.Class == "Dragon clan" && savant.signature && (savant.signature == Earth_Guardian || conq_owns_any(savant.signature)))
+		enableskill(/datum/skill/rank/MakeDragonballs)
+	else
+		disableskill(/datum/skill/rank/MakeDragonballs)
 	..()
 /datum/skill/namek/SuperNamek
 	skilltype = "Form"
@@ -29,6 +37,76 @@ mob/var/hassoulabsorb=1
 	after_learn()
 		savant.snamek=1
 		to_chat(savant, "Power up past two million and let the sparks fly, baby!")
+
+// ============================================================================
+// CRIACAO DAS ESFERAS DO DRAGAO -- o segredo do CLA DO DRAGAO (rework 2026-07-18)
+// A skill saiu dos ranks Namekian Elder/Grand Elder e virou compra da arvore
+// racial Namek: so um Namekuseijin do Cla do Dragao que tenha ONDE usa-la
+// (Guardiao da Terra ou dono de um planeta conquistado) ve a skill na loja --
+// gate vivo no effector() da arvore, logo acima. A ESTATUA em si so pode ser
+// erguida na Terra (sendo o Guardiao) ou num planeta dominado (bandeira de
+// conquista) -- gate no proprio verb, que tambem cobre instancias da skill
+// herdadas de saves antigos dos ranks Elder.
+// (typepath /datum/skill/rank/ MANTIDO por compatibilidade com savefiles que
+// ja possuem a skill aprendida pelo sistema antigo -- nao renomear)
+// ============================================================================
+/datum/skill/rank/MakeDragonballs
+	skilltype = "Misc"
+	name = "Make Dragon Statue"
+	desc = "O segredo mais profundo do Cla do Dragao: moldar uma Estatua do Dragao e dar vida a um set de Esferas. A estatua so pode ser erguida na Terra (sendo o Guardiao da Terra) ou num planeta que voce dominou."
+	can_forget = FALSE //conhecimento de uma vida (e o treeshrink nao pode devolver a skill sozinho quando o gate fecha)
+	common_sense = FALSE
+	teacher = FALSE //nao se ensina: ou o cla sabe, ou nao sabe
+	tier = 2 //custa 2 Milestones (regra da casa: skillcost = tier)
+	enabled = 0 //destravada pelo effector da arvore racial (Cla do Dragao + Guardiao/dono de planeta)
+	compatible_races = list("Namekian")
+	compatible_classes = list("Dragon clan")
+
+/datum/skill/rank/MakeDragonballs/after_learn()
+	assignverb(/mob/Rank/verb/Create_Dragon_Statue)
+	to_chat(savant, "You can make dragon statues!")
+/datum/skill/rank/MakeDragonballs/before_forget()
+	unassignverb(/mob/Rank/verb/Create_Dragon_Statue)
+	to_chat(savant, "You've forgotten how to make dragon statues!")
+/datum/skill/rank/MakeDragonballs/login(var/mob/logger)
+	..()
+	assignverb(/mob/Rank/verb/Create_Dragon_Statue)
+
+mob/Rank/verb/Create_Dragon_Statue()
+	set category="Other"
+	set name="Create Dragon Statue"
+	//gate 1: so o Cla do Dragao carrega o segredo (a compra ja filtra, mas o verb pode ter vindo de save antigo dos ranks Elder)
+	if(!(Race == "Namekian" || Parent_Race == "Namekian") || Class != "Dragon clan")
+		to_chat(src, "<font color=yellow>Apenas Namekuseijins do Cla do Dragao carregam o segredo da criacao das Esferas do Dragao.")
+		return
+	//gate 2: SOMENTE na Terra sendo o Guardiao, ou num planeta que voce conquistou
+	var/area/getarea = GetArea()
+	var/pl = getarea ? getarea.Planet : null
+	if(!pl)
+		to_chat(src, "<font color=yellow>Nao ha um mundo aqui para ancorar um set de esferas.")
+		return
+	if(pl == "Earth")
+		if(!signature || Earth_Guardian != signature)
+			to_chat(src, "<font color=yellow>Somente o Guardiao da Terra pode erguer uma Estatua do Dragao na Terra.")
+			return
+	else if(!signature || conq_owner_sig(pl) != signature)
+		to_chat(src, "<font color=yellow>Voce so pode erguer uma Estatua do Dragao num planeta que dominou (bandeira de conquista) -- ou na Terra, se for o Guardiao.")
+		return
+	var/obj/DragonStatue/A = new
+	A.Ballplanet = pl
+	A.WishPower = BP
+	A.loc = locate(x,y,z)
+	A.Creator = src
+	A.CreatorSig = src.signature
+	//DESEJO SUPREMO opcional: o criador pode GRAVAR o Strongest in the Universe no set (compra na criacao)
+	if(zenni >= SW_WISH_PRICE)
+		switch(alert(src, "Gravar o desejo STRONGEST IN THE UNIVERSE nestas esferas por [FullNum(SW_WISH_PRICE)] zenni? Quem pedir troca TODO o proprio lifespan por 2x o maior BP do jogo -- e vive so mais 1 ano, sem revive (apenas reencarnacao).", "Desejo Supremo", "Gravar", "Nao"))
+			if("Gravar")
+				zenni -= SW_WISH_PRICE
+				A.HasStrongestWish = 1
+				to_chat(src, "<font color=#e8b64c><b>O desejo supremo foi gravado nas esferas deste set.</b> ([FullNum(SW_WISH_PRICE)] zenni)")
+	else
+		to_chat(src, "<font color=#888>Com [FullNum(SW_WISH_PRICE)] zenni voce poderia gravar o desejo supremo (Strongest in the Universe) na criacao do set.")
 
 /datum/skill/namek/fusion
 	skilltype = "Form"

@@ -53,6 +53,7 @@ mob/proc/GlobalStats()
 		else combatTime = max(combatTime - 2, 0) //decai 2x mais rapido fora de combate
 		if(combatTag && client && !battle_music_on) start_battle_music() //start the local battle-music playlist whenever the combat tag is up (incl. on being hit/blasted); the loop self-stops when the tag clears
 		CheckGodki()
+		godki_mastery_tick() //MAESTRIA de God Ki: cresce MUITO devagar com o God Ki ligado (2x em combate) -- godki.dm
 		accrue_friendship()
 		CheckSSj3Learn()
 		CheckDemonEvolve()

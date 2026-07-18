@@ -98,12 +98,12 @@ obj/Rift
 		Ticker()
 			var/mob/M = locate(/mob) in loc
 			if(M && trenegy >= 1)
-				if(M.med && M.godki && M.godki.tier == 0)
+				if(M.med && M.godki && !M.godki.awakened)
 					trenegy--
 					M.godki.usage = 1
 					if(M.Ekiskill >= 5) M.gain_godki(2)
 					if(M.kiratio > 1) M.gain_godki(1)
-				else if(M.godki && M.godki.tier != 0)
+				else if(M.godki && M.godki.awakened)
 					if(prob(50))
 						trenegy--
 						M.train_godki(1)

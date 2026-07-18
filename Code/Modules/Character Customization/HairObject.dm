@@ -26,7 +26,7 @@ obj/overlay/hairs
 			alpha = 1
 		else alpha = 255
 		if(container.godki)
-			if(container.godki?.usage==1 && !gdkid)
+			if(container.godki?.usage==1 && !gdkid && container.Class != "Prodigial") //Prodigial nao tem SSG/Blue: cabelo NATURAL mesmo em God Ki (o dele muda so no Beast)
 				gdkid = 1
 				gdki_me()
 				icon -= rgb(prev_color[1],prev_color[2],prev_color[3])
@@ -38,7 +38,7 @@ obj/overlay/hairs
 		..()
 	EffectStart()
 		. = ..()
-		if(container.godki?.usage==1 && !gdkid)
+		if(container.godki?.usage==1 && !gdkid && container.Class != "Prodigial") //Prodigial: idem acima
 			gdkid = 1
 			gdki_me()
 			icon -= rgb(prev_color[1],prev_color[2],prev_color[3])
@@ -60,12 +60,12 @@ obj/overlay/hairs
 		//	..()
 
 		gdki_me()
-			if(container.godki.tier == godki_cap)
+			if(Angel_Rank == container.signature) //cabelo branco-prata dos ANJOS: pelo RANK (os tiers de God Ki morreram)
 				added_color[1] += 245
 				added_color[2] += 245
 				added_color[3] += 245
 				prevgdki=3
-			else if(container.godki.tier == godki_cap - 1)
+			else if(God_Of_Destruction == container.signature) //cabelo purpura dos DEUSES DA DESTRUICAO: pelo RANK
 				added_color[1] += 163
 				added_color[3] += 136
 				prevgdki=2
@@ -157,6 +157,7 @@ mob/proc/RemoveHair()
 	removeOverlay(/obj/overlay/hairs/uiperf)
 	removeOverlay(/obj/overlay/hairs/uisilver)
 	removeOverlay(/obj/overlay/hairs/uepurple) //cabelo do Ultra Ego (UltraEgo.dm)
+	removeOverlay(/obj/overlay/hairs/beastwhite) //cabelo do Beast Prodigial (Mystic.dm)
 	removeOverlay(/obj/overlay/effects/menacing_aura) //limpa a aura ameacadora do Wrathful ao trocar/limpar o cabelo
 	return TRUE
 
@@ -168,6 +169,9 @@ mob/proc/AddHair()
 		return
 	if(ue_form) //ULTRA EGO: o cabelo base tingido de ROXO (UltraEgo.dm)
 		ue_apply_hair()
+		return
+	if(beast_form) //BEAST (Prodigial): o cabelo SSJ2 do jogador em branco-gelo (Mystic.dm)
+		beast_apply_hair()
 		return
 	if(!ssj&&!lssj)
 		updateOverlay(/obj/overlay/hairs/hair)

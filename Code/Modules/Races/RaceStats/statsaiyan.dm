@@ -155,6 +155,23 @@ mob/proc/statsaiyan()
 			"Starting BP" = 1000,
 			"Potential" = 2.5
 		),
+		"Kaio" = list( //NAO NASCE: so pelo desejo do corpo Saiyajin (Kaioshin Golden Apple -- estilo Goku Black, WishTable.dm)
+			//dois diferenciais de um Saiyajin comum: Zenkai SEM aposentadoria (combatgains.dm) e Rose no lugar do Blue (godki_mod > 1)
+			"Physical Offense" = 1.3,
+			"Physical Defense" = 1,
+			"Technique" = 1.2,
+			"Ki Offense" = 2,
+			"Ki Defense" = 1.5,
+			"Speed" = 1.8,
+			"Skillpoint Mod" = 1.1,
+			"Battle Power" = 1.8,
+			"Energy Level" = 1.4,
+			"Tech Modifier" = 2,
+			"Ki Regeneration" = 1.1,
+			"Zenkai" = 20,
+			"Starting BP" = 1000,
+			"Potential" = 2.5
+		),
 		"Legendary" = list(
 			"Physical Offense" = 1.5,
 			"Physical Defense" = 2.2,
@@ -232,7 +249,7 @@ mob/proc/statsaiyan()
 			"Anger" = 1.7,
 			"Starting BP" = 120
 		),
-		"Awakened Evolution" = list( //Mystic/Ultimate: huge hidden potential; big Potential + Ascension + Skillpoint identity (Unlock Potential payoff is a LATER phase)
+		"Prodigial" = list( //ex-"Awakened Evolution" (rename 2026-07-18): o prodigio Mystic/Ultimate -- huge hidden potential; caminho divino proprio (Mistico+God Ki -> Beast, sem SSG/Blue)
 			"Physical Offense" = 1.2,
 			"Physical Defense" = 1,
 			"Ki Offense" = 1.6,

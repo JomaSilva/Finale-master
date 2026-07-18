@@ -31,6 +31,18 @@
 //---- PATHS DO GOD OF DESTRUCTION (compartilhado: GodOfDestruction.dm + UltraEgo.dm -- ordem de include) ----
 #define GOD_PATH_BOOST 0.25       //GoD que trilha a DESTRUICAO: todos os beneficios do Power of Destruction x (1 + isto)
 #define GOD_PATH_BORROW 0.25      //GoD que trilha o INSTINTO: ganha o kit da destruicao (sem formas) a esta eficiencia, movido pela precisao do UI
+//---- MAESTRIA DE GOD KI (rework 2026-07-18: os TIERS morreram -- a progressao divina e uma maestria 0-100% MUITO lenta)
+//---- (compartilhado: godki.dm/godkiattain.dm [Stats/Godki] + supersaiyan.dm/kaioken.dm/UltraInstinct.dm/UltraEgo.dm [Skills] + RankQuests.dm [Ranks] -- ordem de include) ----
+#define GODKI_MASTERY_TICK 0.00052   //ganho de maestria por ciclo de GlobalStats (~0.3s) com God Ki LIGADO: 100 / (16h x 3600s / 0.3) -> ~16 HORAS de uso pra 100%
+#define GODKI_MASTERY_COMBAT_MULT 2  //em combate (combatTag) o ganho dobra (~8h de luta divina)
+#define GODKI_BLUE_PCT 33            //maestria pro SSJ Blue (e pro Mistico 32x do Prodigial; antigo tier 2)
+#define GODKI_ROYALE_PCT 50          //maestria pro Super Saiyan Royale (USSJ Blue, SO Elite/Kaio), pro Kaioken-no-Blue (Normal/Low-Class) e pro Beast do Prodigial (antigo tier 3)
+#define GODKI_UIUE_LEARN_PCT 70      //maestria minima pra APRENDER Ultra Instinct ou Power of Destruction (corpo pronto pros segredos dos Anjos/Deuses)
+#define GODKI_KAIDEMON_START_PCT 33  //sangue divino (Kai/Demon) ja desperta com esta maestria (espelho do antigo tier 2 inicial)
+#define GODKI_KAIOKEN_CAP 20         //teto do Kaioken empilhado no Blue (Normal/Low-Class com maestria 50%+)
+#define GODKI_POINTS_PER_MILESTONE 37 //pontos de especializacao de God Ki ganhos a cada marco de maestria (33/50/70/100 -- paridade com os 37/tier antigos)
+#define GODKI_ENERGY_BASE 100        //pool de energia divina na maestria 0
+#define GODKI_ENERGY_PER_PCT 3       //pool extra por 1% de maestria (100% -> 100+300 = 400, paridade com o antigo tier 4)
 //---- REPUTACAO PLANETARIA (limiares compartilhados: PlanetConquest.dm + PlanetReputation.dm -- ordem de include) ----
 #define REP_VILLAIN -30 //daqui pra baixo o povo fofoca/alerta sobre o player -- e um dono nesta faixa e TIRANO (tomar o planeta dele = libertacao)
 #define REP_HERO     50 //daqui pra cima o povo fofoca sobre o heroi -- e aceita a reivindicacao PACIFICA do planeta

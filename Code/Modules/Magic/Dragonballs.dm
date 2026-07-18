@@ -367,7 +367,7 @@ obj/DB
 // -- e o traz pro local do pedido.
 // ============================================================================
 #define ETERNAL_DB_PLANET "Namek"       // onde a estatua vive e as esferas se espalham
-#define ETERNAL_DB_WISHES 1             // pedidos por uso
+#define ETERNAL_DB_WISHES 3             // pedidos por uso (Porunga concede 3 desejos, como na lore)
 #define ETERNAL_DB_OFFTIME 0.1          // 0.1 de Year = 1 MES in-game entre usos
 #define ETERNAL_DB_WISHPOWER 2000000    // "forca" do dragao (BP expresso necessario p/ mata-lo e potencia dos pedidos)
 
@@ -404,6 +404,7 @@ obj/DragonStatue/Eternal
 			sleep(600) //a cada ~1 min
 			CompletelyInert = 0 //ninguem "mata" o set eterno permanentemente
 			WishPower = ETERNAL_DB_WISHPOWER
+			Wishs = ETERNAL_DB_WISHES //cura estatuas salvas com o valor antigo (o SaveItem persiste Wishs=1 de antes do rework)
 			var/count = 0
 			for(var/obj/DB/A in obj_list)
 				if(A.BallID == BallID) count++
@@ -417,14 +418,36 @@ obj/DragonStatue/Eternal
 					A.CompletelyInert = 0
 					if(A.ActiveYear > Year + ETERNAL_DB_OFFTIME) A.ActiveYear = Year + ETERNAL_DB_OFFTIME
 
+//um turf que REALMENTE esteja em Namek: planet_spawn_turf tem fallback generico de z
+//(e o set eterno NUNCA pode nascer fora de Namek -- na Terra so existem esferas se o
+//Guardiao, Namekuseijin do Cla do Dragao, erguer a propria estatua)
+proc/eternal_db_namek_turf()
+	for(var/tries = 1 to 8)
+		var/turf/T = planet_spawn_turf(ETERNAL_DB_PLANET)
+		if(!T) continue
+		var/area/A = T.loc
+		if(istype(A) && A.Planet == ETERNAL_DB_PLANET) return T
+	return null
+
 proc/Build_Eternal_Dragonballs()
 	set waitfor = 0
 	if(eternal_db_built) return
 	eternal_db_built = 1
 	while(worldloading) sleep(1)
-	for(var/obj/DragonStatue/Eternal/S in obj_list) return //o ItemSave ja trouxe a estatua de volta do save
-	var/turf/T = planet_spawn_turf(ETERNAL_DB_PLANET)
-	if(!T) return
+	for(var/obj/DragonStatue/Eternal/S in obj_list) //o ItemSave ja trouxe a estatua de volta do save
+		var/turf/ST = S.loc
+		var/area/SA = istype(ST) ? ST.loc : null
+		if(!istype(SA) || SA.Planet != ETERNAL_DB_PLANET) //save antigo deixou a estatua FORA de Namek (ex.: Terra) -- leva ela pra casa
+			var/turf/home = eternal_db_namek_turf()
+			if(home)
+				S.loc = home
+				to_chat(world, "<font color=#e0a030>A Estatua Ancestral do Dragao retornou ao seu lugar de origem, em Namek.</font>", "announce")
+		return
+	var/turf/T = eternal_db_namek_turf()
+	if(!T) //Namek indisponivel agora (destruido?) -- tenta de novo mais tarde, nunca nasce no planeta errado
+		eternal_db_built = 0
+		spawn(6000) Build_Eternal_Dragonballs()
+		return
 	var/obj/DragonStatue/Eternal/S = new(T)
 	S.RecreateBalls()
 	to_chat(world, "<font color=#e0a030>Lendas correm o universo: as Esferas do Dragao repousam em algum lugar de Namek...</font>", "announce")

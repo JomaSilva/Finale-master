@@ -48,7 +48,7 @@ mob/proc/class_hint()
 			msg = "You are of the new mixed generation, balanced, carrying the best of two worlds."
 		if("Future Lineage")
 			msg = "You carry the lineage of a grim future: raw physical might bound to a single, focused form."
-		if("Awakened Evolution")
+		if("Prodigial")
 			msg = "An immense hidden potential sleeps within you, waiting for the moment it is unlocked."
 		//--- Kai ---
 		if("Golden Apple")

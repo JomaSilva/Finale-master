@@ -174,12 +174,12 @@ obj/overlay/auras/EffectLoop()
 				if(container.icer_vars["Form 6 Aura"] && container.isBuffed(/obj/buff/Golden_Form)) icon = container.icer_vars["Form 6 Aura"]
 				else if(isnull(container.csgkaura))
 					var/list/added_color = list(0,0,0)
-					if(container.godki.tier == godki_cap)
+					if(Angel_Rank == container.signature) //aura branca: RANK de Anjo (os tiers de God Ki morreram)
 						icon = 'god - grey.dmi'
 						added_color[1] += 245
 						added_color[2] += 245
 						added_color[3] += 245
-					else if(container.godki.tier == godki_cap - 1)
+					else if(God_Of_Destruction == container.signature) //aura purpura: RANK de Deus da Destruicao
 						icon = 'god - grey.dmi'
 						added_color[1] += 163
 						added_color[3] += 136

@@ -453,6 +453,8 @@ mob/proc/ui_tab_forms()
 		if(godki && godki.adjust_me) gtm *= godki.transform_adjust
 		if(round(gtm, 0.01) != 1)      h += ui_row("God Ki (GT mode)", "[round(gtm, 0.01)]x", "")
 	else
+		if(godki && godki.awakened)
+			h += ui_row("God Ki (maestria)", "[round(godki.mastery, 0.1)]%", "")
 		if(godki && godki.usage)
 			var/gfm = god_form_mult()
 			var/gkmult = gfm ? gfm / max(ssjBuff, 1) : godki.godki_mult

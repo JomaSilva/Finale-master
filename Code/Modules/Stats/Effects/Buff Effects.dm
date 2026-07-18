@@ -80,10 +80,10 @@ effect
 			tick_delay = 5
 			Added(mob/target,time=world.time)
 				..()
-				target.godki.tier+=1
+				target.godki.mastery += GODKI_BLUE_PCT //empurrao TEMPORARIO de maestria (o antigo +1 tier); sem clamp de proposito -- o Removed desfaz simetrico
 			Removed(mob/target,time=world.time)
 				..()
-				target.godki.tier-=1
+				target.godki.mastery -= GODKI_BLUE_PCT
 /*for(var/a in Effects) Do something like this for magnitudes.
 	spawn usr.AddEffect(Effects[a])
 	sleep(1)

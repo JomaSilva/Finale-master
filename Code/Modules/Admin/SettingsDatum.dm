@@ -87,8 +87,6 @@ proc/Save_Settings()
 	P["server_desc"] << server_desc
 	P["godki_at"] << godki_at
 	P["godki_ssj_cap"] << godki_ssj_cap
-	P["max_godki_tier"] << max_godki_tier
-	P["godki_cap"] << godki_cap
 	P["gt_mode"] << gt_mode
 	P["client_save_list"] << client_save_list
 	P["GlobalEXPRate"] << gexprate
@@ -156,8 +154,6 @@ proc/Load_Settings()
 		P["LifeskillCap"] >> lifeskillcap
 		P["godki_at"] >> godki_at
 		P["godki_ssj_cap"] >> godki_ssj_cap
-		P["max_godki_tier"] >> max_godki_tier
-		P["godki_cap"] >> godki_cap
 		P["gt_mode"] >> gt_mode
 		P["original_genome_list"] >> original_genome_list
 		if(isnull(GlobalLibrary)) GlobalLibrary=new/list()

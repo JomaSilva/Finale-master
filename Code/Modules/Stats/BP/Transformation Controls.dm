@@ -9,12 +9,12 @@ mob/proc/Transformations_Activate()
 	if(usr.Race=="Heran"||usr.Parent_Race=="Heran")
 		if(!usr.ssj&&!usr.hasssj&&usr.BP>=usr.ssjat&&usr.Emotion=="Very Angry")
 			if(usr.godki && usr.godki.usage)
-				if(usr.godki.tier < 2) return //SSJ Blue requires God Ki tier 2
+				if(usr.godki.mastery < GODKI_BLUE_PCT) return //forma Blue exige maestria de God Ki 33%+
 			hasssj = 1
 			usr.Max_Power()
 		if(!usr.ssj&&usr.hasssj&&usr.BP>=usr.ssjat)
 			if(usr.godki && usr.godki.usage)
-				if(usr.godki.tier < 2) return //SSJ Blue requires God Ki tier 2
+				if(usr.godki.mastery < GODKI_BLUE_PCT) return //forma Blue exige maestria de God Ki 33%+
 			usr.Max_Power()
 		if(usr.ssj==1&&usr.BP>=usr.ssj2at/6)
 			if(usr.hasssj2&&usr.BP>=usr.ssj2at/6)
@@ -57,13 +57,18 @@ mob/proc/Transformations_Activate()
 				if(usr.ssj==1&&usr.BP>=usr.ultrassjat/6)
 					if(usr.hasussj&&usr.ultrassjenabled)
 						if(usr.godki && usr.godki.usage)
-							if(usr.godki.tier < 3) return //SSJ Blue Evolution requires God Ki tier 3
+							//SUPER SAIYAN ROYALE (USSJ em God Ki): maestria 50%+ E sangue de elite (Elite/Kaio)
+							if(usr.godki.mastery < GODKI_ROYALE_PCT) return
+							if(!(usr.Class == "Elite" || usr.Class == "Kaio"))
+								to_chat(usr, "<font color=#66aaff>O Super Saiyan Royale e um privilegio do sangue de elite -- seu caminho aos 50% e o Kaioken por cima do Blue.")
+								return
 						usr.Ultra_SSj()
 				//SUPER Saiyan 1
 				if(usr.ssj==0&&usr.BP>=usr.ssjat)
 					if(usr.hasssj&&usr.BP>=usr.ssjat)
 						if(usr.godki && usr.godki.usage)
-							if(usr.godki.tier < 2) return //SSJ Blue requires God Ki tier 2
+							if(usr.Class == "Prodigial") return //Prodigial nao tem Blue: o God Ki dele flui pelo Mistico/Beast
+							if(usr.godki.mastery < GODKI_BLUE_PCT) return //SSJ Blue exige maestria de God Ki 33%+
 						usr.ExpandRevert()
 						usr.SSj()
 		if((usr.Class=="Legendary"))//We don't need to stick usr.Parent_Race=="Saiyan" here, because its already nested lel.
@@ -81,7 +86,7 @@ mob/proc/Transformations_Activate()
 				if((usr.lssj==1 || !canRSSJ)&&usr.BP>=usr.unrestssjat)
 					if(usr.hasssj)
 						if(usr.godki && usr.godki.usage)
-							if(usr.godki.tier < 2) return //SSJ Blue requires God Ki tier 2
+							if(usr.godki.mastery < GODKI_BLUE_PCT) return //forma Blue exige maestria de God Ki 33%+
 						usr.Unrestrained_SSj()
 				// restrained SSJ (Wrathful) = forma de ENTRADA estilo SSJ1: mesmo req de BP do SSJ1 (ssjat)
 				if(usr.lssj==0 && canRSSJ)

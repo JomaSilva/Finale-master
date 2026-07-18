@@ -33,7 +33,7 @@ mob/proc/gain_zenkai(enemyBP) //enemyBP = the foe's EFFECTIVE power (expressedBP
 	if(dead) return
 	if(mind_z && z == mind_z) return //dentro da DIMENSAO MENTAL nada e real: ferimento mental nao gera Zenkai
 	if(!has_zenkai()) return //Saiyan DNA only
-	if(BP >= zenkai_bp_ceiling()) //APOSENTADO: alcancou ~o BP pessoal do SSJ3 -- o corpo nao arranca mais forca das derrotas (todas as racas/classes com Zenkai)
+	if(BP >= zenkai_bp_ceiling() && Class != "Kaio") //APOSENTADO: alcancou ~o BP pessoal do SSJ3 -- o corpo nao arranca mais forca das derrotas. EXCECAO: a classe Kaio (corpo do desejo divino) tem Zenkai SEM limite (WishTable.dm)
 		if(client && world.realtime >= zenkaiWarn)
 			zenkaiWarn = world.realtime + 600
 			to_chat(src, "<font color=#b07a38>Your body no longer surges back from defeat -- it has grown past what a Zenkai can teach it.</font>", "combat")

@@ -6,7 +6,7 @@ datum/skill/tree/Rank/Earth
 	tier=1
 	constituentskills = list(new/datum/skill/rank/Keep_Body,new/datum/skill/rank/Dead,\
 		new/datum/skill/general/splitform,new/datum/skill/general/kikoho,\
-		new/datum/skill/rank/Fusion_Dance,new/datum/skill/rank/Kamehameha,new/datum/skill/rank/MakeDragonballs,\
+		new/datum/skill/rank/Fusion_Dance,new/datum/skill/rank/Kamehameha,\
 		new/datum/skill/rank/Permission,new/datum/skill/rank/Grow_Senzu,new/datum/skill/rank/Taxes,new/datum/skill/flying/CraneFly,\
 		new/datum/skill/style/KameStyle,new/datum/skill/style/CraneStyle, new/datum/skill/rank/Mafuba,new/datum/skill/rank/DeadZone,\
 		new/datum/skill/rank/SuperiorSeal,new/datum/skill/ki/Heal,new/datum/skill/Telepathy,new/datum/skill/rank/Dodompa)//earth-based rank skills
@@ -15,10 +15,10 @@ datum/skill/tree/Rank/Earth
 
 datum/skill/tree/Rank/Earth/growbranches()
 	if(savant.Rank!="Earth Guardian") disableskill(/datum/skill/Telepathy)
+	disableskill(/datum/skill/rank/MakeDragonballs) //LEGADO: o rank Guardiao nao ganha mais a skill de graca -- o Guardiao (Namekuseijin do Cla do Dragao) COMPRA na arvore racial
 	switch(savant.Rank)
 		if("Earth Guardian")
 			enableskill(/datum/skill/style/GodStyle)
-			enableskill(/datum/skill/rank/MakeDragonballs)
 			enableskill(/datum/skill/rank/Permission)
 			enableskill(/datum/skill/rank/Keep_Body)
 			enableskill(/datum/skill/rank/Dead)

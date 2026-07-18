@@ -20,6 +20,7 @@ mob/proc/Revert(var/DontRevertSSJ)
 		stopbuff(/obj/buff/Wrathful_State)
 		stopbuff(/obj/buff/UltraInstinct) //Ultra Instinct: reverter tambem derruba a forma (morte/base -- UltraInstinct.dm)
 		stopbuff(/obj/buff/UltraEgo) //Ultra Ego: idem (UltraEgo.dm)
+		stopbuff(/obj/buff/BeastForm) //Beast do Prodigial: idem (Mystic.dm)
 		ssjBuff = 1
 		ssj=0
 		lssj=0

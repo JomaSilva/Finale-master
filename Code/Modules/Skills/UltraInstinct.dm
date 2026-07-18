@@ -124,9 +124,9 @@ mob/keyable/verb/Ensinar_Ultra_Instinct()
 		to_chat(T2, "<font color=#cfd8ff>[S] ja trilha o caminho do ULTRA EGO -- os dois paths nao coexistem num mesmo corpo.")
 		to_chat(S, "<font color=#cfd8ff>Seu corpo ja pertence a Destruicao. O Instinto jamais o aceitara.")
 		return
-	if(!S.godki || S.godki.tier < 1) //corpo mortal nao suporta o instinto dos anjos
-		to_chat(T2, "<font color=#cfd8ff>[S] ainda nao sente o Ki Divino -- o corpo mortal nao suporta o instinto dos anjos (God Ki tier 1+).")
-		to_chat(S, "<font color=#cfd8ff>Voce ainda nao esta pronto para o Ultra Instinto: desperte o Ki Divino primeiro.")
+	if(!S.godki || !S.godki.awakened || S.godki.mastery < GODKI_UIUE_LEARN_PCT) //corpo mortal nao suporta o instinto dos anjos: maestria de God Ki 70%+
+		to_chat(T2, "<font color=#cfd8ff>O corpo de [S] ainda nao suporta o instinto dos anjos -- exige maestria de God Ki [GODKI_UIUE_LEARN_PCT]%+.")
+		to_chat(S, "<font color=#cfd8ff>Voce ainda nao esta pronto para o Ultra Instinto: domine o Ki Divino ate [GODKI_UIUE_LEARN_PCT]% de maestria primeiro.")
 		return
 	switch(alert(S, "[T2.name] se oferece para te ensinar o ULTRA INSTINTO -- a tecnica dos Anjos. Aceitar o treinamento?", "Ultra Instinct", "Aceitar", "Recusar"))
 		if("Recusar")

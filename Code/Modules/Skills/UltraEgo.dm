@@ -142,9 +142,9 @@ mob/keyable/verb/Ensinar_Power_of_Destruction()
 		to_chat(T2, "<font color=#e07a9a>[S] ja trilha o caminho do ULTRA INSTINCT -- os dois paths nao coexistem num mesmo corpo.")
 		to_chat(S, "<font color=#e07a9a>Seu corpo ja pertence ao Instinto. O Ego jamais o aceitara.")
 		return
-	if(!S.godki || S.godki.tier < 1) //a energia da destruicao consome corpos mortais
-		to_chat(T2, "<font color=#e07a9a>[S] ainda nao sente o Ki Divino -- a energia da destruicao consumiria um corpo mortal (God Ki tier 1+).")
-		to_chat(S, "<font color=#e07a9a>Voce ainda nao esta pronto para o Power of Destruction: desperte o Ki Divino primeiro.")
+	if(!S.godki || !S.godki.awakened || S.godki.mastery < GODKI_UIUE_LEARN_PCT) //a energia da destruicao consome corpos mortais: maestria de God Ki 70%+
+		to_chat(T2, "<font color=#e07a9a>O corpo de [S] ainda nao suporta a energia da destruicao -- exige maestria de God Ki [GODKI_UIUE_LEARN_PCT]%+.")
+		to_chat(S, "<font color=#e07a9a>Voce ainda nao esta pronto para o Power of Destruction: domine o Ki Divino ate [GODKI_UIUE_LEARN_PCT]% de maestria primeiro.")
 		return
 	switch(alert(S, "[T2.name] se oferece para te ensinar o POWER OF DESTRUCTION -- a tecnica dos Deuses da Destruicao. Aceitar o treinamento?", "Ultra Ego", "Aceitar", "Recusar"))
 		if("Recusar")

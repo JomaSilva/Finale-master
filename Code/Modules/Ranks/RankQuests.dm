@@ -143,6 +143,7 @@ proc/rq_requirements(key, mob/M)
 			if(M.karma > 0) return "karma 0 ou menos (a escola do Grou nao forma santos)"
 			if(M.BP < 1000000) return "1M de BP base"
 		if("guardian")
+			if(!(M.Race == "Namekian" || M.Parent_Race == "Namekian") || M.Class != "Dragon clan") return "ser um Namekuseijin do Cla do Dragao (a tradicao de Kami)"
 			if(M.karma < 50) return "karma 50+"
 			if(planet_rep_get("Earth", M) < REP_HERO) return "ser HEROI do povo da Terra (reputacao [REP_HERO]+)"
 		if("korin")
@@ -153,14 +154,14 @@ proc/rq_requirements(key, mob/M)
 			if(M.karma < 25) return "karma 25+"
 			if(planet_rep_get("Namek", M) < 15) return "ser Amigavel com o povo de Namek (reputacao 15+)"
 		if("nkai","skai","ekai","wkai")
-			if(!kai_blood && (!M.godki || M.godki.tier < 1)) return "God Ki tier 1+ (ou sangue Kai)"
+			if(!kai_blood && (!M.godki || !M.godki.awakened)) return "despertar o God Ki (ou sangue Kai)"
 			if(M.karma < 50) return "karma 50+"
 		if("grandkai")
 			var/s = M.signature
 			if(!(North_Kai==s||South_Kai==s||East_Kai==s||West_Kai==s)) return "ser um dos 4 Kaios cardeais (a escada dos deuses)"
 		if("kaioshin")
 			var/s = M.signature
-			if(Grand_Kai != s && !(kai_blood && M.godki && M.godki.tier >= 2)) return "ser o Grand Kai (ou sangue Kai com God Ki tier 2+)"
+			if(Grand_Kai != s && !(kai_blood && M.godki && M.godki.mastery >= GODKI_BLUE_PCT)) return "ser o Grand Kai (ou sangue Kai com maestria de God Ki [GODKI_BLUE_PCT]%+)"
 			if(M.karma < 75) return "karma 75+"
 		if("yemma")
 			if(M.karma < 50) return "karma 50+"

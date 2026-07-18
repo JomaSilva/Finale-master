@@ -42,6 +42,62 @@ mob/proc/godtongue_check(quiet)
 		return 1
 	return 0
 
+// ============================================================================
+// CORPO SAIYAJIN (o desejo do Zamasu): um KAI da classe GOLDEN APPLE que seja o
+// KAIOSHIN pode desejar o corpo de um jogador Saiyajin -- ganha o cabelo, o
+// corpo (icone) e o poder de luta dele, virando Saiyajin de corpo e raca.
+// Skills/nome/rank NAO mudam. A classe do novo corpo e "KAIO", com DOIS
+// diferenciais de um Saiyajin comum: Zenkai SEM aposentadoria (combatgains.dm)
+// e Rose no lugar do Blue (godki_mod > 1 e a "variavel do Rose").
+// ============================================================================
+#define KB_ROSE_GODKI_MOD 1.5 //godki_mod do corpo roubado: > 1 = todos os visuais Blue viram ROSE
+
+proc/kai_body_wish_ok(mob/M)
+	return (M && M.Race == "Kai" && M.Class == "Golden Apple" && M.signature && Supreme_Kai == M.signature)
+
+proc/kai_take_saiyan_body(mob/K, mob/T)
+	if(!K || !T) return
+	var/newicon = T.oicon ? T.oicon : T.icon //corpo BASE do alvo (o icon atual pode estar transformado)
+	to_chat(world, "<font color=#e07adf><b>O ceu range... [K] vestiu a carne de um mortal: o corpo de [T] agora e DELE.</b></font>", "announce")
+	K.Race = "Saiyan"
+	K.Parent_Race = "Saiyan"
+	K.SaiyanLineage = (T.SaiyanLineage && T.SaiyanLineage != "") ? T.SaiyanLineage : "Saiyan" //herda a linhagem do corpo (Primal continua Primal)
+	K.Class = "Kaio"
+	K.genome = null //genoma NOVO de Saiyajin (statsaiyan cria com a classe explicita "Kaio" -- sem re-roll)
+	K.StatRace("Saiyan", 1)
+	K.race_genome_post_init()
+	K.icon = newicon
+	K.oicon = newicon
+	K.gender = T.gender
+	K.pgender = T.pgender
+	//cabelo do alvo (estilo + cores; o reverse map do selecthair reconstroi os icones SSJ)
+	K.hairred = T.hairred
+	K.hairgreen = T.hairgreen
+	K.hairblue = T.hairblue
+	if(T.hairtypeSaved)
+		K.hair = T.hairtypeSaved
+		K.selecthair()
+	else //alvo sem nome de estilo salvo: copia os icones direto
+		K.hair = T.hair
+		K.ssjhair = T.ssjhair
+		K.ussjhair = T.ussjhair
+		K.ssj2hair = T.ssj2hair
+		K.ssj3hair = T.ssj3hair
+	K.RemoveHair()
+	K.AddHair()
+	//poder de luta do alvo + o toque divino corrompido
+	K.BP = T.BP
+	K.godki_mod = max(K.godki_mod, KB_ROSE_GODKI_MOD) //Blue NUNCA: o ki divino dele tinge de ROSE
+	K.Age = min(K.Age, 25) //o corpo novo nasce no AUGE: um Kai de seculos num corpo Saiyajin (vida ~120) morreria de velhice na hora
+	K.Body = min(K.Body, 25)
+	K.age_table_apply() //expectativa de vida re-derivada pela nova raca
+	K.statify()
+	K.Ki = K.MaxKi
+	K.powerlevel()
+	to_chat(K, "<font color=#e07adf><b>O corpo de [T] e seu.</b> Voce e um Saiyajin de classe KAIO: o Zenkai do seu corpo NAO conhece aposentadoria, e o ki divino tinge suas formas de ROSE.")
+	to_chat(T, "<font color=#e07adf>Um arrepio percorre sua espinha... [K] agora veste um corpo IGUAL ao seu.")
+	WriteToLog("rplog","[K] tomou o corpo de [T] (desejo do Kaioshin)   ([time2text(world.realtime,"Day DD hh:mm")])")
+
 //o desejo supremo: troca TODO o lifespan por poder puro (1 ano de vida, dobro do maior BP do jogo)
 proc/sw_strongest_wish(mob/T)
 	if(!T) return
@@ -90,6 +146,7 @@ obj/DB
 				WishList+="Immortality"
 			var/obj/DragonStatue/HSW = HomeStatue //desejo supremo COMPRADO pelo criador na criacao do set
 			if(HSW && HSW.HasStrongestWish) WishList+="Strongest in the Universe"
+			if(kai_body_wish_ok(usr)) WishList+="Saiyan Body" //o desejo do Zamasu: so Kaioshin da classe Golden Apple
 			var/chosenwish = input("Make your wish.", "", text) in WishList
 			switch(chosenwish)
 				if("Nothing (Waste Wish)")
@@ -121,6 +178,23 @@ proc/Wish(var/wish,mob/originator,E_G,TrueWishPower)
 	var/text = "Yes"
 	var/wishpower = 1
 	switch(wish)
+		if("Saiyan Body")
+			if(!kai_body_wish_ok(originator))
+				to_chat(originator, "O dragao nao reconhece em voce o direito divino a este desejo.")
+				return list(wishpower,TRUE)
+			var/list/saiyans = list()
+			for(var/mob/S in player_list)
+				if(!S.client || S.dead || S == originator) continue
+				if(S.Race == "Saiyan" || S.Race == "Legendary Saiyan" || S.Parent_Race == "Saiyan") saiyans += S
+			if(!saiyans.len)
+				to_chat(originator, "Nenhum Saiyajin (online) digno de fornecer o molde.")
+				return list(wishpower,TRUE)
+			var/mob/molde = input(originator,"O corpo de QUAL Saiyajin voce deseja vestir?","Zero Mortals") as null|anything in saiyans
+			if(!molde || !molde.client)
+				to_chat(view(originator), "[originator] cancels [originator]'s wish.")
+				return list(wishpower,TRUE)
+			to_chat(view(originator), "<font color=#e07adf>[originator] deseja o CORPO de um Saiyajin!</font>")
+			kai_take_saiyan_body(originator, molde)
 		if("Strongest in the Universe")
 			if(E_G==originator.key) //mesma regra do Power: as esferas nao amplificam o proprio criador
 				to_chat(view(originator), "[originator]'s wish fails because they are the creator.")

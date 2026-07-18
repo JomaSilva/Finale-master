@@ -1,5 +1,5 @@
 //config: pagamento de BP do Unlock Potential (Guru / Rank)
-#define UP_BASE_PCT   0.25 //fracao do BP base ganha POR PONTO de Potential (UPMod) da raca -- Saiyan(3)=+75%, Majin(1)=+25%, Awakened Evolution(5, x1.8)=+225%
+#define UP_BASE_PCT   0.25 //fracao do BP base ganha POR PONTO de Potential (UPMod) da raca -- Saiyan(3)=+75%, Majin(1)=+25%, Prodigial(5, x1.8)=+225%
 #define UP_HIDDEN_PCT 0.5  //fracao do potencial oculto ACUMULADO (idade/treino) convertida em BP na hora (veteranos ganham mais)
 
 mob/var/unlockPotential
@@ -25,7 +25,7 @@ mob/proc/UnlockPotential(rUPMod)
 		unlockPotential=1
 		bp_milestone_reach("potential") //MARCO universal: Unlock Potential do Guru
 		var/awaken_mult = 1
-		if(Class == "Awakened Evolution") awaken_mult = 1.8 //Half-Saiyan Awakened Evolution: payoff muito maior ao liberar o potencial
+		if(Class == "Prodigial") awaken_mult = 1.8 //Half-Saiyan Prodigial (ex-Awakened Evolution): payoff muito maior ao liberar o potencial
 		//pagamento GARANTIDO: a formula antiga era toda proporcional ao hiddenpotential, que num
 		//personagem jovem e ~BP/25 (piso do Train.dm) -> o unlock dava ~+2% de BP, invisivel
 		var/gained_base = capcheck(BP * UP_BASE_PCT * max(UPMod, 1) * awaken_mult)

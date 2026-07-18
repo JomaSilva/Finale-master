@@ -85,6 +85,13 @@ proc/conq_owner_name(pl)
 	var/list/R = conq_data[pl]
 	return islist(R) ? R["name"] : null
 
+proc/conq_owns_any(sig) //este signature domina ALGUM planeta? (gate de compra da criacao de esferas do Cla do Dragao)
+	if(!sig) return 0
+	for(var/pl in conq_data)
+		var/list/R = conq_data[pl]
+		if(islist(R) && R["sig"] == sig) return 1
+	return 0
+
 proc/conq_owner_tag(pl) //sufixo pro Nav/listagens
 	if(!pl) return ""
 	var/list/R = conq_data[pl]

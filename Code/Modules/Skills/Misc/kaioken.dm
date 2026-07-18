@@ -135,6 +135,16 @@ mob/proc/SetKaioken()
 		if(src.powerMod>1)
 			to_chat(src, "You must revert any power up buffs before using Kaioken.")
 			return
+		//KAIOKEN NO BLUE (rework God Ki 2026-07-18): dentro de uma forma divina COM SSJ empilhado (Blue),
+		//so Normal/Low-Class com maestria 50%+ aguentam o Kaioken por cima -- e no maximo x20 (estilo Goku no ToP).
+		//Elite/Kaio nao precisam (o caminho deles aos 50% e o Royale). God Ki cru/SSG sem SSJ segue a regra antiga.
+		if(godki && godki.usage && (ssj || lssj))
+			if(!(Class == "Normal" || Class == "Low-Class") || godki.mastery < GODKI_ROYALE_PCT)
+				to_chat(src, "<font color=red>Seu corpo nao aguenta o Kaioken por cima do ki divino transformado.")
+				return
+			if(src.kaioamount > GODKI_KAIOKEN_CAP)
+				src.kaioamount = GODKI_KAIOKEN_CAP
+				to_chat(src, "<font color=#ff6666>Sobre o Blue, o Kaioken vai ate x[GODKI_KAIOKEN_CAP] -- alem disso o corpo se despedaca.")
 		if(src.kaioamount<2) src.kaioamount=2 //Kaioken is natively a x2 boost. Further multipliers don't affect this. x20 for instance is just a x20 multiplier.
 		src.kaioamount=round(src.kaioamount)
 		if(src.kaioamount>100) src.kaioamount = 100
@@ -168,6 +178,13 @@ mob/proc/SetKaioken()
 		container.KaioPcnt=container.KaiokenMult(container.kaioamount) //tier -> multiplicador real (ver KaiokenMult)
 	Loop()
 		if(container.KaioPcnt != 1)
+			//transformou em Blue DEPOIS de ligar o Kaioken: aplica as mesmas regras do SetKaioken (classe/maestria/teto x20)
+			if(container.godki && container.godki.usage && (container.ssj || container.lssj))
+				if(!(container.Class == "Normal" || container.Class == "Low-Class") || container.godki.mastery < GODKI_ROYALE_PCT)
+					to_chat(container, "<font color=red>O ki divino transformado expulsa o Kaioken do seu corpo!")
+					container.KaiokenRevert()
+					return
+				if(container.kaioamount > GODKI_KAIOKEN_CAP) container.kaioamount = GODKI_KAIOKEN_CAP
 			if(container.KO) container.KaiokenRevert()
 			else if(container.Ki>(100/container.KiMod)&&!container.KO)
 				container.Ki-=0.05*(container.kaioamount/container.KaiokenMastery)*container.BaseDrain

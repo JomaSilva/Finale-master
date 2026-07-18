@@ -419,6 +419,7 @@ mob/proc/selecthair()
 
 
 mob/proc/SetHair(var/icon/Hair1,var/icon/SSJhair1,var/icon/USSJhair1,var/icon/SSJ2hair,var/icon/SSJ3hair)
+	beast_hair_cache = null //trocou de estilo: o cabelo branco do Beast e reconstruido do SSJ2 novo (Mystic.dm)
 	if(Hair1 == null)
 		hair=null
 		ssjhair=null

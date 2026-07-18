@@ -144,8 +144,8 @@ mob/proc/Leech(var/mob/M)
 		if(M.client)
 			if(M.GravMastered>GravMastered&&!M.BP_Unleechable&&GravMastered<gravitycap)
 				GravMastered+=(M.GravMastered-GravMastered)*(1-(GravMastered/M.GravMastered))*0.05*GlobalGravGain
-			if(M.godki && godki && M.godki.tier >= godki.tier)
-				train_godki(M.godki.tier)
+			if(M.godki && godki && M.godki.awakened && M.godki.mastery >= godki.mastery)
+				train_godki(1 + round(M.godki.mastery / GODKI_BLUE_PCT)) //aprende observando um deus igual ou mais maduro (paridade com o antigo 1+tier)
 
 mob/proc/Damage(var/mob/M,var/dmg,type)
 	var/punchrandomsnd

@@ -61,8 +61,8 @@ obj/buff/Alien_Trans/Loop()
 				container.trueKiMod = container.ssjenergymod
 				container.Ki *= container.trueKiMod
 				container.updateOverlay(/obj/overlay/effects/electrictyeffects/spc)
-	if(container.godki && container.trans_min_val)
-		if(container.godki.usage && container.trans_min_val < container.ssj)
+	if(container.godki && container.godki.usage) //teto da maestria (ritual: cap 10 = livre)
+		if(container.trans_min_val < container.ssj)
 			container.Revert()
 	..()
 obj/buff/Alien_Trans/DeBuff()

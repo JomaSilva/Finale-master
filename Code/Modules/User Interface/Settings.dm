@@ -200,10 +200,10 @@ mob
 			set category="Other"
 			set hidden=1
 			if(ssj3able)
-				var/Choice=alert("Turn the very long SSJ3 cutscene on? It's the Majin Buu version you're toggling.","","Yes","No")
+				var/Choice=alert("Ligar a cinematica longa da primeira SSJ3? (o discurso pro Babidi: SSJ1 -> SSJ2 -> SSJ3 ao som do tema)","","Yes","No")
 				switch(Choice)
 					if("Yes")
-						ssj3firsttime=2
+						ssj3firsttime=1
 					if("No")
 						ssj3firsttime=0
 		SeeTelepathy()

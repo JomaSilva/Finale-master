@@ -31,7 +31,7 @@
 #define GOD_DUEL_GRACE 6048000    // carencia de 7 dias reais apos ganhar o titulo
 #define GOD_DUEL_POSTPONE_MAX 2   // adiamentos permitidos por janela semanal
 #define GOD_DUEL_WEEK 6048000     // janela semanal dos adiamentos (7 dias reais)
-#define GOD_DUEL_MIN_GODKI 1      // tier de God Ki minimo do desafiante
+// (o gate do desafiante e ter o God Ki DESPERTO -- os tiers de God Ki morreram no rework de maestria 2026-07-18)
 #define GOD_DUEL_TIMEOUT 6000     // duracao maxima do duelo (10 min); estourou = o Deus retem o titulo
 #define GOD_TASK_INTERVAL 1728000 // tarefa nova a cada 2 dias reais
 #define GOD_TASK_DEADLINE 1728000 // prazo real para cumprir a tarefa
@@ -431,8 +431,8 @@ mob/verb/Desafiar_God_of_Destruction()
 		to_chat(usr, "Voce E o God of Destruction.")
 		return
 	if(usr.dead || usr.KO) return
-	if(!usr.godki || usr.godki.tier < GOD_DUEL_MIN_GODKI)
-		to_chat(usr, "<font color=#c060ff>So quem domina God Ki (tier [GOD_DUEL_MIN_GODKI]+) pode desafiar um Deus.")
+	if(!usr.godki || !usr.godki.awakened)
+		to_chat(usr, "<font color=#c060ff>So quem despertou o God Ki pode desafiar um Deus.")
 		return
 	if(god_duel_busy)
 		to_chat(usr, "Um duelo pelo titulo ja esta acontecendo.")
@@ -538,7 +538,7 @@ mob/verb/GoD_Status()
 		var/iv = (god_duel_last + GOD_DUEL_INTERVAL) - world.realtime
 		if(gr > 0) txt += "Carencia de desafios: [god_time_left(god_title_since + GOD_DUEL_GRACE)]<br>"
 		else if(iv > 0) txt += "Proximo desafio possivel em: [god_time_left(god_duel_last + GOD_DUEL_INTERVAL)]<br>"
-		else txt += "<b>O trono ACEITA desafios agora</b> (God Ki tier [GOD_DUEL_MIN_GODKI]+).<br>"
+		else txt += "<b>O trono ACEITA desafios agora</b> (exige God Ki desperto).<br>"
 	to_chat(usr, txt)
 
 proc/god_task_loop()

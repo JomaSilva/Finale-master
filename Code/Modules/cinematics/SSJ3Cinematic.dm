@@ -1,7 +1,11 @@
 //Cinematics folder is there to put long ass sequences into. ONE CINEMATIC PER .DM NO FUCKING EXCEPTIONS. ONE FUCKING CINEMATIC ALONE IS ENOUGH TO TAKE UP 700+ LINES.
 //This does not neccessarily mean SSJ transformations, but if yours is long enough, consider making a cinematic file here.
 mob/proc/SSJ3Cinematic()
-	if((ssj3firsttime&&hair=='Hair_Goku.dmi'&&Race=="Saiyan")||(ssj3firsttime==2)) //ssj3firsttime is a variable manipulated by the player thru the settings menu.
+	//UMA cinematica so (pedido do dono): a versao Majin Buu -- o discurso do Goku pro Babidi
+	//passando por SSJ1 -> SSJ2 -> SSJ3 ao som do ssj3theme.ogg. A versao alternativa de
+	//gritos ('BF - Super Saiyan 3 Transformation.mp3') foi DELETADA. Vale pra QUALQUER
+	//cabelo/raca; ssj3firsttime = 0 (toggle nos Settings) pula a cena.
+	if(ssj3firsttime)
 		move=0
 		//Flashy stuff
 		sleep(10)
@@ -131,83 +135,6 @@ mob/proc/SSJ3Cinematic()
 				M.Quake()
 		sleep(100)
 		spawn for(var/mob/M in player_list)
-			if(M.Planet == src.Planet)
-				M.Quake()
-		overlayList-=I3
-		overlaychanged=1
-	else if(ssj3firsttime)
-		emit_Sound('rockmoving.wav')
-		move=0
-		//Flashy stuff
-		emit_TransformMusic('BF - Super Saiyan 3 Transformation.mp3', 568) //SSJ3 transformation theme (~57s)
-		to_chat(view(8), "<font size=[TextSize]><[SayColor]>[src]: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA!!!")
-		sleep(30)
-		to_chat(view(6), "<font color=yellow>*A great wave of power emanates from [src] as a yellow aura bursts around them!*")
-		to_chat(view(8), "<font size=[TextSize]><[SayColor]>[src]: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA!!!")
-		to_chat(view(6), "<font color=yellow>*[src] screams as [src] releases a unbelievable amount of energy!*")
-		spawn for(var/mob/M in view(src))
-			M.Quake()
-		for(var/turf/T in view(24,src))
-			if(prob(20)) createDustmisc(T,2)
-			if(prob(1)) createDustmisc(T,3)
-			if(prob(1)) createLightningmisc(T,9)
-			if(prob(1)) createLightningmisc(T,5)
-		for(var/mob/M in view(src))
-			M.Quake()
-		var/image/I=image(icon='Aurabigtop.dmi')
-		I.pixel_y+=32
-		overlayList+=I
-		overlayList+='Aurabigbottom.dmi'
-		overlaychanged=1
-		sleep(240)
-		spawn for(var/mob/M in view(src))
-			M.Quake()
-		sleep(100)
-		spawn for(var/mob/M in view(src))
-			M.Quake()
-		sleep(100)
-		spawn for(var/mob/M in view(src))
-			M.Quake()
-		to_chat(view(6), "<font color=yellow>*[src]'s voice grows very hoarse!*")
-		to_chat(view(8), "<font size=[TextSize]><[SayColor]>[src]: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA!!!!")
-		spawn SSj2GroundGrind()
-		sleep(100)
-		spawn for(var/mob/M in view(src))
-			M.Quake()
-		sleep(100)
-		spawn for(var/mob/M in view(src))
-			M.Quake()
-		to_chat(view(8), "<font size=[TextSize]><[SayColor]>[src]: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA!!!")
-		sleep(100)
-		spawn for(var/mob/M in view(src))
-			M.Quake()
-		sleep(150)
-		spawn for(var/mob/M in view(src))
-			M.Quake()
-		spawn(100) overlays-=I
-		overlaychanged=1
-		spawn(100) overlays-='Aurabigbottom.dmi'
-		overlaychanged=1
-		var/image/I3 = image(icon=('ss3transformaurafinal.dmi'))
-		I3.pixel_x-=49
-		overlayList-=I3
-		overlayList+=I3
-		overlaychanged=1
-		to_chat(view(8), "<font size=[TextSize]><[SayColor]>[src]: AAAAAAAAAAAAAAAAAHHHHHHHHHHHHHHH!!!!")
-		to_chat(view(6), "<font color=yellow>*[src] is shaking the entire planet!!!*")
-		for(var/mob/M in player_list)
-			if(M.Planet == src.Planet)
-				M.Quake()
-		sleep(150)
-		to_chat(view(8), "<font size=[TextSize]><[SayColor]>[src]: AAAAAAAAAAAAAAAAAAHHHHHHHHHHHHHHHHHHHH!!!!")
-		to_chat(view(6), "<font color=yellow>*[src] is causing earthquakes everywhere!!!*")
-		for(var/mob/M in player_list)
-			if(M.Planet == src.Planet)
-				M.Quake()
-		sleep(150)
-		to_chat(view(8), "<font size=[TextSize]><[SayColor]>[src]: AAAAAAAAAAAAAAAAAAAAAHHHHHHHHHHHHHHHHHHHHHHHH!!!!")
-		to_chat(view(6), "<font color=yellow>*The ocean itself is curling away from [src]'s immense power!!!*")
-		for(var/mob/M in player_list)
 			if(M.Planet == src.Planet)
 				M.Quake()
 		overlayList-=I3

@@ -315,6 +315,7 @@ mob/proc
 		outfit_login_check() //Guarda-roupa: re-veste as pecas cosmeticas (overlays morrem no logout)
 		bp_milestone_login_fix() //Marcos: re-sela o "godki" x5 dado por engano na criacao do datum-conteiner (LinearGain.dm)
 		bred_race_login_fix() //Cria de casal nascida "None/None" (bug do majority_genome/Class_Spread): re-deriva raca+classe do genoma (Mating.dm)
+		prodigial_login_fix() //Half-Saiyan "Awakened Evolution" renomeada pra "Prodigial" (2026-07-18): converte Class + ancoras do genoma (stathalfbreed.dm)
 		age_table_login_fix() //Peak age/lifespan pela TABELA por raca (Aging.dm): sincroniza personagens antigos
 		ssj4_gate_login_fix() //SSJ4 subiu de ~200M pra casa dos 10/20B de BP base: re-sorteia o gate salvo dos chars antigos
 		god_login_check() //God of Destruction: re-arma os poderes do portador / limpa de ex-portadores (GodOfDestruction.dm)

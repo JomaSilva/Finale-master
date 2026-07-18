@@ -50,6 +50,16 @@ mob/proc/stathalfbreed() //halfbreeds should no longer exist but w/e
 
 
 
+//RENAME 2026-07-18: a linhagem Half-Saiyan "Awakened Evolution" virou "Prodigial".
+//Converte saves antigos no login: a Class do mob E as ancoras do genoma (this_class/old_class --
+//o class_stats agora so conhece a chave nova; sem isto o build_stats de chars antigos quebraria).
+mob/proc/prodigial_login_fix()
+	if(Class == "Awakened Evolution") Class = "Prodigial"
+	if(genome)
+		if(genome.this_class == "Awakened Evolution") genome.this_class = "Prodigial"
+		if(genome.old_class == "Awakened Evolution") genome.old_class = "Prodigial"
+	if(hasbeast) assignverb(/mob/keyable/verb/Beast) //re-arma o toggle do Beast (verbs nao persistem no save)
+
 mob/proc/statquarter()
 	RaceDescription="Quarter Saiyans are the offspring of Half-Saiyans and another race. Typically has the stats of the non-Half-Saiyan race, with some Saiyan traits."
 	if(!genome)
@@ -59,7 +69,7 @@ mob/proc/statquarter()
 mob/proc/stathalf()
 	RaceDescription="Half Saiyans are the product of cross breeding between a Saiyan and a Human. Ascension is generally the same, and with a lot of help may reach SSJ4. Half-Saiyans do also refer to Saiyans and non-Human hybrids but as an actual race it's solely Human-Saiyan hybrids."
 	if(Class == "None") //let players pick a Half-Saiyan lineage; bred/admin classes already set are respected
-		if(client) Class = input(src,"Choose your lineage.","Class") in list("New Generation","Future Lineage","Awakened Evolution")
+		if(client) Class = input(src,"Choose your lineage.","Class") in list("New Generation","Future Lineage","Prodigial")
 		if(!Class || Class == "None") Class = "New Generation" //dummy SEM client (catalogo/NPC): input() dava "bad client" (80x no log)
 	if(Class == "Future Lineage") FutureLineage = 1 //convenience flag for the LATER Future Super Saiyan 10-stage phase (transforms NOT wired here)
 	if(!genome)

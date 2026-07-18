@@ -4,27 +4,26 @@ datum/skill/tree/Rank/Namek
 	maxtier = 1
 	allowedtier = 1
 	tier=1
-	constituentskills = list(new/datum/skill/rank/MakeDragonballs,new/datum/skill/rank/Appoint_Elder,\
+	constituentskills = list(new/datum/skill/rank/Appoint_Elder,\
 	new/datum/skill/rank/Keep_Body,new/datum/skill/rank/Dead,new/datum/skill/rank/Unlock_Potential,\
 	new/datum/skill/style/NamekStyle,new/datum/skill/ki/Heal,new/datum/skill/Telepathy)//namekian based ranks
-/*							with Namek's culture, all Elders are capable of the same things- it's the maintaining of the planet's Dragonballs that makes a
-											Grand Elder a Grand Elder.
+/*							with Namek's culture, all Elders are capable of the same things. A criacao das Esferas do Dragao NAO e mais dos ranks:
+											ela e o segredo do CLA DO DRAGAO (arvore racial Namek, ver namekian.dm).
 */
 datum/skill/tree/Rank/Namek/growbranches()
 	if(savant.Rank!="Namekian Elder") disableskill(/datum/skill/Telepathy)
+	disableskill(/datum/skill/rank/MakeDragonballs) //LEGADO: a skill saiu dos ranks Elder (agora e do Cla do Dragao) -- desliga instancias que sobraram em arvores salvas
 	switch(savant.Rank)
 		if("Namekian Elder")
 			enableskill(/datum/skill/style/NamekStyle)
 			enableskill(/datum/skill/rank/Makkankosappo)
 			enableskill(/datum/skill/Enkumei)
-			enableskill(/datum/skill/rank/MakeDragonballs)
 			enableskill(/datum/skill/rank/Unlock_Potential)
 			enableskill(/datum/skill/Telepathy)
 			enableskill(/datum/skill/ki/Heal)
 		if("Namekian Grand Elder")
 			enableskill(/datum/skill/Enkumei)
 			enableskill(/datum/skill/style/NamekStyle)
-			enableskill(/datum/skill/rank/MakeDragonballs)
 			enableskill(/datum/skill/rank/Appoint_Elder)
 			enableskill(/datum/skill/rank/Unlock_Potential)
 			enableskill(/datum/skill/rank/Keep_Body)
@@ -32,48 +31,6 @@ datum/skill/tree/Rank/Namek/growbranches()
 			enableskill(/datum/skill/ki/Heal)
 	savant.LastRank=savant.Rank
 	..()
-
-/datum/skill/rank/MakeDragonballs
-	skilltype = "Misc"
-	name = "Make Dragon Statue"
-	desc = "Make a statue of a mystical dragon. Upon doing so, you, as its creator, will be able to make a set of Dragonballs."
-	can_forget = TRUE
-	common_sense = TRUE
-	teacher=TRUE
-	tier = 1
-	skillcost=0
-	enabled=0
-
-/datum/skill/rank/MakeDragonballs/after_learn()
-	assignverb(/mob/Rank/verb/Create_Dragon_Statue)
-	to_chat(savant, "You can make dragon statues!")
-/datum/skill/rank/MakeDragonballs/before_forget()
-	unassignverb(/mob/Rank/verb/Create_Dragon_Statue)
-	to_chat(savant, "You've forgotten how to make dragon statues!")
-/datum/skill/rank/MakeDragonballs/login(var/mob/logger)
-	..()
-	assignverb(/mob/Rank/verb/Create_Dragon_Statue)
-
-mob/Rank/verb/Create_Dragon_Statue()
-	set category="Other"
-	set name="Create Dragon Statue"
-	var/obj/DragonStatue/A = new
-	var/area/getarea = GetArea()
-	A.Ballplanet = getarea.Planet
-	A.WishPower = BP
-	A.loc = locate(x,y,z)
-	A.Creator = src
-	A.CreatorSig = src.signature
-	//DESEJO SUPREMO opcional: o criador pode GRAVAR o Strongest in the Universe no set (compra na criacao)
-	if(zenni >= SW_WISH_PRICE)
-		switch(alert(src, "Gravar o desejo STRONGEST IN THE UNIVERSE nestas esferas por [FullNum(SW_WISH_PRICE)] zenni? Quem pedir troca TODO o proprio lifespan por 2x o maior BP do jogo -- e vive so mais 1 ano, sem revive (apenas reencarnacao).", "Desejo Supremo", "Gravar", "Nao"))
-			if("Gravar")
-				zenni -= SW_WISH_PRICE
-				A.HasStrongestWish = 1
-				to_chat(src, "<font color=#e8b64c><b>O desejo supremo foi gravado nas esferas deste set.</b> ([FullNum(SW_WISH_PRICE)] zenni)")
-	else
-		to_chat(src, "<font color=#888>Com [FullNum(SW_WISH_PRICE)] zenni voce poderia gravar o desejo supremo (Strongest in the Universe) na criacao do set.")
-
 
 /datum/skill/rank/Appoint_Elder
 	skilltype = "Misc"
