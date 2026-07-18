@@ -122,15 +122,10 @@ mob/proc/Grav()
 	//So a variavel Planetgrav -> SEM efeito visual; conduz treino/slow/BP igual a qualquer planeta. Sobrescreve o Afterlife=1.
 	if(z == 6 && x >= 29 && x <= 49 && y >= 273 && y <= 350)
 		Planetgrav = 10
-	regionalGains = 1
-	if(in_Dungeon && BP < relBPmax)
-		regionalGains = 1.5
-		dungeonGains = 2.5
-	else dungeonGains = 1
-	if(Planet=="Makyo Star" && BP < relBPmax)
-		regionalGains = 2.5
-	if(Planet=="God Realm" && BP < relBPmax)
-		regionalGains = 3
+	//CATCH-UP REGIONAL REMOVIDO (2026-07-18): os bonus de "abaixo do teto pessoal" (God Realm 3x /
+	//Makyo 2.5x / masmorra 1.5x+2.5x em luta) eram do sistema antigo de relBPmax -- o gate BP<relBPmax
+	//virou sempre-verdadeiro e o catch-up tinha virado multiplicador permanente. O ganho e LINEAR:
+	//so milestones, gravidade e peso o modificam. O valor do God Realm e a propria gravidade 500x.
 
 	//kaioshin/demon buffs
 	if(Race=="Kai" && Planet == "Heaven") transBuff = 1.25
@@ -153,8 +148,6 @@ mob/proc/Grav()
 
 
 
-mob/var/tmp
-	dungeonGains=1
 
 //Returns the gravity multiplier of a named planet, mirroring the switch in Grav() above.
 //Used at character creation so a new char starts acclimated (GravMastered) to their spawn planet and isn't crushed/frozen.

@@ -62,7 +62,6 @@ mob/var
 		being_supressed = 0//based off of equalizer fields.
 		tgains = 1 //ADD OR SUBTRACT THIS. Temporarily manipulates player gains.
 		Egains = 1 //expressed gains mult. Seems we have one too many things affecting gains, mind as well keep them here.
-		regionalGains = 1 //gains affected by region, must always remain a tmp variable, currently only used in Gravity.dm for the makyo star.
 		TMagAdd = 0
 		breakpowerloop //for power control
 		ispoweringdown //for power control
@@ -158,7 +157,7 @@ mob/proc/powerlevel()
 	relgains = max(min(relgains,10),0.1)
 	if(0) //server-average catch-up removed
 		relgains *= 2
-	Egains = HBTCMod * regionalGains * trainmult * relgains * bgains * tgains * tailgain
+	Egains = HBTCMod * trainmult * relgains * bgains * tgains * tailgain //regionalGains (catch-up de God Realm/Makyo/masmorra) morreu 2026-07-18
 	if(isHV && BoostActive && BoostMult) Egains *= BoostMult
 
 	if(!IsCooldownRunning&&!CooldownRunning&&CooldownAmount)

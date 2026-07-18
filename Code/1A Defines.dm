@@ -3,7 +3,7 @@
 #define DNL_BIO_LARVA_RESTRICT 100 //LARVA de bio-androide expressa no maximo 1/isto do BP base (100 = 1%, estilo zeni-revive-debuff x0.01). Mora AQUI pois base.dm (teto duro no powerlevel) e DNALabs.dm usam -- e o DreamMaker re-ordena includes.
 #define DAY_REAL_MINUTES 20 //quantos minutos REAIS dura 1 dia in-game (relogio em WorldClock.dm; a Sala do Tempo em TimeChamber.dm depende disto -- mora AQUI pq o DreamMaker re-ordena os includes alfabeticamente e defines sao sensiveis a ordem)
 //---- ESMAGAMENTO POR GRAVIDADE (acima da maestria; Gravity.dm + movement handler.dm) ----
-#define GRAVCRUSH_SLOW      1    //peso do slow multiplicativo no andar: 2x da maestria ~ metade da velocidade, 4x ~ 1/4, 10x ~ 1/10
+#define GRAVCRUSH_SLOW      1    //peso do slow multiplicativo no andar (so vale na faixa 1x-4x: 2x da maestria ~ metade, 3x ~ 1/3; de 4x pra cima gravParalysis TRAVA o andar)
 #define GRAVCRUSH_DMG_BASE  0.5  //dano/seg (SpreadDamage em TODOS os membros) escalando QUADRATICO com o excesso (estilo Kaioken alto)
 #define GRAVCRUSH_DMG_CAP   3    //teto de dano/seg: esmagado desmaia rapido mas morre DEVAGAR (da tempo de alguem resgatar)
 #define GRAVCRUSH_EXPLODE_R 4    //razao gravidade/maestria a partir da qual o corpo em farrapos EXPLODE (gib, estilo Kaioken x100)

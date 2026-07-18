@@ -225,7 +225,7 @@ mob/proc/commonAttackProcs(var/mob/M,testactspeed,barrage)
 			//fight_gain_mult: lutar com alguem mais forte multiplica os ganhos (1.2x forte = 1.2x, teto 2x)
 			if(npc_sparring&&attackingNPC)
 				Attack_Gain(1/2 * 5 * fight_gain_mult(M))
-				Attack_Gain(dungeonGains * 5 * fight_gain_mult(M))
+				Attack_Gain(5 * fight_gain_mult(M)) //dungeonGains (catch-up de masmorra) morreu 2026-07-18
 			else Attack_Gain(2 * 5 * fight_gain_mult(M))
 		else if(!attackingNPC)
 			M.Attack_Gain(1/4 * M.fight_gain_mult(src)) //era (M.BP / BP) SEM teto: contra um oponente muito mais forte os ganhos explodiam (e contra mais fraco, sumiam)
