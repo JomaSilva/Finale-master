@@ -324,6 +324,8 @@ mob/proc
 		ui_login_check() //Ultra Instinct: Anjo recebe de nascenca + re-arma verbs/forma de quem aprendeu (UltraInstinct.dm)
 		ue_login_check() //Ultra Ego: God of Destruction recebe de nascenca + re-arma verbs/forma (UltraEgo.dm)
 		sdb_login_check() //Super Esferas: migra esferas do inventario antigo pra CLAIM + aprende a lingua dos deuses (ProceduralSpace.dm)
+		ksap_login_check() //Aprendiz de Kaioshin: caduca se o mestre caiu do trono / se o aprendiz virou cargo real (KaioshinApprentice.dm -- ANTES do Rank_Verb_Assign, que so SETA e nunca limpa)
+		mst_login_check() //Mestre e Alunos: re-registra a aba e atualiza o nome exibido (MasterStudent.dm)
 		if(needs_manual_custom) //Handles logging into clones for the first time.
 			CustomizeFurther()
 			StatRace(Race)

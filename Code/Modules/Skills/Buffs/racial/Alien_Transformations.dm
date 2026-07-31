@@ -49,6 +49,7 @@ obj/buff/Alien_Trans/Loop()
 					to_chat(container, "You are too tired to sustain your form.")
 				container.stamina -= trans_drain*max(0.001,container.ayyform2drain)/2 //max statement ensures you won't be hitting exactly zero if drain changes mid drain.
 	if(lastForm!=container.ssj)
+		container.mst_note_form() //testemunhas por perto registram a forma vista (MasterStudent.dm)
 		lastForm=container.ssj
 		switch(container.ssj)
 			if(1)

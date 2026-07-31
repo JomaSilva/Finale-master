@@ -896,6 +896,17 @@ mob/Topic(href, list/href_list)
 	if(href_list["wardrobeclose"])
 		src << browse(null, "window=wardrobe")
 		return
+	if(href_list["mstdrop"]) //aba Alunos: o MESTRE dispensa um aluno (MasterStudent.dm)
+		var/asig = href_list["mstdrop"]
+		if(signature && mst_list[asig] == signature)
+			mst_unbind(asig, "[name] encerrou seu discipulado.")
+		mst_ui_refresh()
+		return
+	if(href_list["mstleave"]) //aba Alunos: o ALUNO abandona o mestre
+		if(signature && mst_list[signature])
+			mst_unbind(signature, "Voce deixou de ser aluno de [mst_name_of(mst_list[signature])].")
+		mst_ui_refresh()
+		return
 	if(href_list["statsTab"])
 		statsUItab = href_list["statsTab"]
 		last_stats_html = "" //force re-render on tab change

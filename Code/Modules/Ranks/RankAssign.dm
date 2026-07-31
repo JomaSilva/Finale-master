@@ -22,6 +22,10 @@ mob/proc/CheckRank()
 	if(King_Yemma==signature) King_Yemma=null
 	if(God_Of_Destruction==signature) God_Of_Destruction=null
 	if(Angel_Rank==signature) Angel_Rank=null
+	if(signature in ksap_list) //personagem novo nao herda o aprendizado de uma signature reciclada
+		ksap_list -= signature
+		Save_Rank() //grava JA: o savefile RANK so e lido no boot, e um reboot ressuscitaria o vinculo
+	mst_purge_sig(signature) //idem para o discipulado mestre-aluno (MasterStudent.dm)
 proc/WipeRank()
 	if(Turtle!=null) Turtle=null
 	if(Crane!=null) Crane=null
@@ -46,8 +50,17 @@ proc/WipeRank()
 	if(King_Yemma!=null) King_Yemma=null
 	if(God_Of_Destruction!=null) God_Of_Destruction=null
 	if(Angel_Rank!=null) Angel_Rank=null
+	if(ksap_list.len) ksap_list.Cut() //wipe que apaga o mestre tem que apagar os aprendizes junto
 mob/proc/Rank_Verb_Assign() //the //done checkmarks are to keep track of what ranks are fully converted over to the skills system
 	if(!signiture || !signature) return
+	//APRENDIZ DE KAIOSHIN (KaioshinApprentice.dm): primeiro da cadeia -- a lista abaixo e de ifs sem
+	//else, entao qualquer CARGO REAL sobrescreve o titulo. O rq_any_rank cobre ainda os cargos que
+	//NAO tem ramo aqui (Frost Demon Lord, Makyo King, Arlian), que senao ficariam exibindo "aprendiz".
+	//A guarda de duplicata da RankTree os ramos legados nao tem: sem ela cada login empilha uma no save.
+	if((signature in ksap_list) && !rq_any_rank(src))
+		if(!(locate(/datum/skill/tree/RankTree) in possessed_trees))
+			getTree(new /datum/skill/tree/RankTree)
+		Rank="Kaioshin Apprentice"
 	if(Crane==signature) //done
 		getTree(new /datum/skill/tree/RankTree)
 		Rank="Crane"
@@ -153,6 +166,7 @@ proc/Save_Rank()
 	S["Arlian"]<<Arlian
 	S["GODR"]<<God_Of_Destruction
 	S["ANGR"]<<Angel_Rank
+	S["KSAP"]<<ksap_list
 	S["RankList"]<<RankList
 proc/Load_Rank()
 	if(fexists("RANK"))
@@ -186,6 +200,8 @@ proc/Load_Rank()
 		S["Arlian"]>>Arlian
 		S["GODR"]>>God_Of_Destruction
 		S["ANGR"]>>Angel_Rank
+		S["KSAP"]>>ksap_list
+		if(isnull(ksap_list)) ksap_list=new/list() //save antigo nao tem a chave: lista vazia, zero aprendizes
 		S["RankList"]>>RankList
 		if(isnull(RankList)) RankList=new/list()
 	god_state_load() //estado do God of Destruction (tarefas/duelo) + liga o loop de tarefas (GodOfDestruction.dm)
@@ -287,6 +303,18 @@ Crane Hermit: [RankList[Crane]]<br>
 Geti Star King/Queen: [RankList[Geti]]<br>
 Captain/King of Pirates: [RankList[capt]]<br>
 Mutany Leader: [RankList[mutany]]<br><br><br>
+</body><html>"}
+	if(ksap_list.len) //patronato do Kaioshin: varios donos, entao vai em bloco proprio (KaioshinApprentice.dm)
+		Ranks+={"<html>
+<head><title>Ranks</head></title><body>
+<center><body bgcolor="#000000"><font size=2><font color="#e8b64c"><b><i>
+*Aprendizes de Kaioshin*<br>
+</body><html>"}
+		for(var/ksig in ksap_list)
+			Ranks+={"<html>
+<head><title>Ranks</head></title><body>
+<center><body bgcolor="#000000"><font size=2><font color="#e8b64c"><b><i>
+[RankList[ksig]] (mestre: [RankList[ksap_list[ksig]]])<br>
 </body><html>"}
 	if(conq_data.len) //dominios planetarios da conquista (PlanetConquest.dm)
 		Ranks+={"<html>

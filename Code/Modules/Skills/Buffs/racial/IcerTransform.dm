@@ -78,17 +78,19 @@ mob/proc/fd_stable_gate()
 // ---------------------------------------------------------------------------
 // TRANSFORMAR (tecla C 2x) / REVERTER
 // ---------------------------------------------------------------------------
-mob/proc/Frost_Demon_Forms()
+//assisted=1 -> despertar guiado por um MESTRE: os limiares valem pela metade (MasterStudent.dm)
+mob/proc/Frost_Demon_Forms(assisted = 0)
 	if(!fd_is_frost()) return
 	if(fd_transing) return
 	if(isBuffed(/obj/buff/Golden_Form)) return //Golden por cima: reverta o Golden primeiro
 	if(!fd_form) fd_login_check()
 	var/next = fd_form + 1
 	if(next > 7) return
-	if(next == 6 && BP < FD_FORM6_AT)
+	var/mst_desc = (assisted || next <= fd_assist_form) ? MST_HALF : 1 //desconto do mestre: vale na 1a vez E nas reentradas ate a forma ja alcancada com ele
+	if(next == 6 && BP < FD_FORM6_AT * mst_desc)
 		to_chat(src, "<font color=#88ccff>Seu corpo ainda nao esta pronto para evoluir alem da forma base.")
 		return
-	if(next == 7 && BP < FD_FORM7_AT)
+	if(next == 7 && BP < FD_FORM7_AT * mst_desc)
 		to_chat(src, "<font color=#88ccff>A sua evolucao final ainda esta alem do seu alcance.")
 		return
 	fd_transing = 1
@@ -104,6 +106,7 @@ mob/proc/Frost_Demon_Forms()
 			fd_burst_fx()
 		to_chat(src, "<font color=#ff6655><b>Este poder e demais para segurar por muito tempo!</b> (maestria da base: [round(fd_base_mastery)]%)")
 	fd_form = next
+	mst_note_form() //testemunhas por perto registram a forma vista (MasterStudent.dm)
 	fd_unstable_since = 0 //o motor no icer.dm re-arma o relogio da forma nova
 	emit_Sound('1aura.wav')
 	icer_poll_icon()

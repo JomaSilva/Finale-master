@@ -127,9 +127,11 @@ datum/skill/ki/Heal/effector(var/mob/logger)
 			for(var/mob/M in view(1,savant))
 				if(M == savant.Healtarget && M.HP<=100)
 					M.SpreadHeal(0.2*savant.Ekiskill)
-					if(prob(1) && prob(1) && M.has_Tail()) if(!usr.Tail) usr.Tail_Grow()
+					if(prob(1) && prob(1) && M.has_Tail()) if(!savant.Tail) savant.Tail_Grow()
 		else if(savant.Healtarget)
-			to_chat(usr, "You stop healing [savant.Healtarget].")
+			//usr e NULO em contexto de engine (este effector roda no spawn while(savant) do datum):
+			//com usr aqui, todo alvo que saia de alcance soltava runtime no DEBUG.log
+			to_chat(savant, "You stop healing [savant.Healtarget].")
 			savant.Healtarget=null
 /datum/skill/ki/Heal/login()
 	..()
@@ -140,7 +142,8 @@ datum/skill/ki/Heal/effector(var/mob/logger)
 /datum/skill/ki/Heal/before_forget()
 	to_chat(savant, "You lose your ability to heal others' wounds.")
 	unassignverb(/mob/keyable/verb/Heal)
-	savant.haszanzo=0
+	//(o antigo savant.haszanzo=0 daqui era copia-e-cola do Afterimage: esquecer a CURA desligava o
+	// Zanzoken do jogador. Passou a doer quando o fim do aprendizado do Kaioshin virou automatico.)
 
 
 /mob/keyable/verb/Heal()

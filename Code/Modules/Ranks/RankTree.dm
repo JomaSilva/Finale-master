@@ -69,7 +69,9 @@ mob/proc/RankTreeAssign(var/N)
 			getTree(new /datum/skill/tree/Rank/Earth)
 		if(3)
 			getTree(new /datum/skill/tree/Rank/Space)
-//4 was Alien trees. No real need but can be easily added in by copy-pasting code n shit.
+		if(4) //Aprendiz de Kaioshin (era o slot vago das Alien trees) -- KaioshinApprentice.dm
+			if(!(locate(/datum/skill/tree/Rank/KaioshinApprentice) in possessed_trees))
+				getTree(new /datum/skill/tree/Rank/KaioshinApprentice)
 		if(5)
 			getTree(new /datum/skill/tree/Rank/Namek)
 datum/skill/tree/RankTree/growbranches()
@@ -121,6 +123,8 @@ datum/skill/tree/RankTree/growbranches()
 				savant.RankTreeAssign(3)
 			if("Mutany Leader")
 				savant.RankTreeAssign(3)
+			if("Kaioshin Apprentice")
+				savant.RankTreeAssign(4)
 	..()
 	return
 

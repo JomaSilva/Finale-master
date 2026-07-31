@@ -13,6 +13,13 @@
 #define WEIGHT_GAIN_MAX 8       //teto do multiplicador de ganhos do peso (razao 1 = 2x, razao 2 = 4x, razao 4 = 8x)
 #define WEIGHT_ITEM_CAP_MULT 2  //teto do UPGRADE dos pesos = weight_cap_hw x isto (2x o limite do corpo = razao 2.0 = ganhos 4x no maximo)
 #define TECH_BENCH_ZENI 250000  //custo em zenni da Research Bench construida pela aba Tech (HtmlUI.dm)
+//---- MESTRE E ALUNOS (MasterStudent.dm + combatgains.dm -- defines AQUI pela ordem de include) ----
+#define MST_RANGE 4            //distancia (tiles) para o convite continuar valido depois da caixa de dialogo
+#define MST_BP_RATIO 3         //o mestre precisa de no minimo isto vezes o BP BASE do aluno para toma-lo
+#define MST_GAIN_CAP 3         //teto do multiplicador de ganhos treinando/lutando com o PROPRIO mestre (o geral e 2x)
+#define MST_GAIN_FLOOR 1.2     //diferenca minima de poder para o bonus do mestre valer
+#define MST_HALF 0.5           //quanto do requisito pessoal sobra no despertar assistido (0.5 = metade)
+#define MST_WITNESS_RANGE 8    //raio (tiles) em que se registra ter VISTO alguem usar uma forma
 //---- FROST DEMON REWORK (IcerTransform.dm + icer.dm + ascensioncontrols.dm + base.dm -- defines AQUI pela ordem de include) ----
 #define FD_FORM6_MULT 10          //1a evolucao (forma 6)
 #define FD_FORM7_MULT 20          //evolucao final (forma 7): x FD_ASC_CAP = 56x (paridade com o topo das outras racas)

@@ -284,7 +284,7 @@ mob/Admin3/verb/Give(mob/M in world)
 					M:verbs += varVerb*/
 		if("Rank")
 			switch(input("Give Rank", "", text) in list ("Earth Guardian","Geti Star King","Arlian King","Earth Assistant Guardian"\
-			,"Namekian Elder","North Elder","South Elder","East Elder","West Elder","King Yemma",\
+			,"Namekian Elder","North Elder","South Elder","East Elder","West Elder","King Yemma","Kaioshin Apprentice","Kaioshin Apprentice (revogar)",\
 			"Grand Kai","Supreme Kai","God of Destruction","Angel","King of Vegeta","President","North Kai","South Kai",\
 			"East Kai","West Kai","Demon Lord","Frost Demon Lord","Turtle","Crane","King Of Mayko","King Of Acronia", "Arconian Guardian", "Saibamen Rouge Leader","Captain/King of Pirates","Mutany Leader","None",))
 				if("God of Destruction") god_gain_title(M, "foi coroado(a) pelo proprio Zeno como") //fluxo completo: poderes+tarefas+carencia (GodOfDestruction.dm)
@@ -296,6 +296,10 @@ mob/Admin3/verb/Give(mob/M in world)
 						to_chat(M, "<font color=#eef2ff><b>Como Anjo, o Ultra Instinto e parte de voce.</b> (verbs na aba Skills)")
 					else if(M.ue_learned)
 						to_chat(usr, "AVISO: [M] ja trilha o ULTRA EGO -- o rank foi dado, mas o Ultra Instinto NAO (paths exclusivos).")
+				if("Kaioshin Apprentice") //patronato: precisa de um Kaioshin no trono para amarrar o vinculo (KaioshinApprentice.dm)
+					if(!Supreme_Kai) to_chat(usr, "AVISO: nao ha Kaioshin no trono -- de o rank Supreme Kai a alguem antes de nomear aprendizes.")
+					else if(ksap_grant(M, Supreme_Kai)) to_chat(usr, "[M] agora e Aprendiz de Kaioshin.")
+				if("Kaioshin Apprentice (revogar)") ksap_revoke(M.signature, "decisao administrativa", M)
 				if("Frost Demon Lord") Frost_Demon_Lord=M.signature
 				if("Demon Lord") Demon_Lord=M.signature
 				if("Earth Guardian") Earth_Guardian=M.signature

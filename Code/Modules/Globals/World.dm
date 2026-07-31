@@ -81,6 +81,7 @@ proc/Initialize()
 	sleep(1)
 	to_chat(world, "Loaded Admin Excuses")
 	Load_Rank()
+	mst_load() //vinculos mestre-aluno (MasterStudent.dm): o savefile "MASTER" so e lido AQUI
 	sleep(1)
 	to_chat(world, "Loaded Skill Hoarders")
 	Init_Masteries()

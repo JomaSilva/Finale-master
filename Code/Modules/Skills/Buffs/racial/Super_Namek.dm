@@ -36,6 +36,7 @@ obj/buff/snamek/Loop()
 				container.stamina -= trans_drain*max(0.001,container.snamekdrain) //max statement ensures you won't be hitting exactly zero if drain changes mid drain.
 			else container.Revert()
 	if(lastForm!=container.snamek)
+		container.mst_note_form() //testemunhas por perto registram a forma vista (MasterStudent.dm)
 		lastForm=container.snamek
 		switch(container.snamek)
 			if(1)

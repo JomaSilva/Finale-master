@@ -78,15 +78,26 @@ mob/proc/zenkai_message(gained, maxed)
 // Lutar contra um oponente X vezes mais forte multiplica os GANHOS normais de
 // spar/luta por X (proporcional ao gap de poder EXPRESSO), com TETO de 2x:
 //   oponente 1.2x mais forte -> 1.2x de ganhos;  2x ou mais -> 2x (teto).
+// (o piso REAL e 1.0x, nao 1.2x: 1.05x mais forte ja rende 1.05x. O piso de 1.2x
+//  existe SO no ramo do mestre, abaixo.)
 // Oponente igual ou mais fraco = 1x (nunca reduz abaixo do normal).
 // ============================================================================
 var/fight_gain_cap = 2 //teto do multiplicador de ganhos por gap de poder
+var/master_gain_cap = MST_GAIN_CAP //teto contra o PROPRIO mestre (MasterStudent.dm)
 
 mob/proc/fight_gain_mult(mob/M)
 	if(!M || M == src) return 1
+	//TREINAR COM O MESTRE (MasterStudent.dm): teto maior e escala pela razao dos BPs
+	//BASE -- o expressedBP e distorcido por forma, raiva, supressao, Ki% e KO, e o
+	//"mestre 3x mais forte = 3x de ganho" so e estavel comparando o poder de verdade.
 	var/mine = max(expressedBP, 1)
 	var/theirs = max(M.expressedBP, 1)
-	return min(max(theirs / mine, 1), fight_gain_cap)
+	var/geral = min(max(theirs / mine, 1), fight_gain_cap)
+	if(mst_is_my_master(M))
+		var/r = max(M.BP, 1) / max(BP, 1)
+		var/bonus = (r < MST_GAIN_FLOOR) ? 1 : min(r, master_gain_cap) //LINEAR ate o teto
+		return max(geral, bonus) //o MAIOR dos dois: ter mestre nunca pode PIORAR o ganho
+	return geral
 
 mob/proc/Add_Anger(mult)
 	if(!mult)

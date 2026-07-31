@@ -222,7 +222,7 @@ mob/proc/commonAttackProcs(var/mob/M,testactspeed,barrage)
 		if(M.target == src) M.dir = get_dir(M,src)
 	if(!minuteshot)
 		if(!defendingNPC)
-			//fight_gain_mult: lutar com alguem mais forte multiplica os ganhos (1.2x forte = 1.2x, teto 2x)
+			//fight_gain_mult: lutar com alguem mais forte multiplica os ganhos (teto 2x -- contra o PROPRIO mestre o teto vira MST_GAIN_CAP, ver combatgains.dm)
 			if(npc_sparring&&attackingNPC)
 				Attack_Gain(1/2 * 5 * fight_gain_mult(M))
 				Attack_Gain(5 * fight_gain_mult(M)) //dungeonGains (catch-up de masmorra) morreu 2026-07-18

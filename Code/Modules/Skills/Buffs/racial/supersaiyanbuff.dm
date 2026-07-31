@@ -196,6 +196,7 @@ obj/buff/SuperSaiyan/Loop()
 			else if(container.ssj == 3) container.legp_m3 = min(100, container.legp_m3 + 0.0116)
 		if(container.ssj) container.ssjBuff = container.ssj_effective_mult() //mantem o ssjBuff vivo: reflete a maestria atual + aplica o piso (forma anterior +2x)
 	if(lastForm!=container.ssj)
+		container.mst_note_form() //testemunhas por perto registram a forma vista (MasterStudent.dm)
 		var/_oldTKM = container.trueKiMod //keep Ki% on EVERY form change: remember the old form's ki multiplier before it is reset
 		lastForm=container.ssj
 		container.remove_ussj_body() //changed form: drop the USSJ muscular body back to the saved base icon (no-op if not swapped)

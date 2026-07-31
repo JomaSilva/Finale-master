@@ -8,13 +8,15 @@ datum/skill/tree/Rank/Otherworld
 	new/datum/skill/rank/Keep_Body,new/datum/skill/rank/Dead,new/datum/skill/rank/Unlock_Potential,\
 	new/datum/skill/general/observe,new/datum/skill/kai/Mystic,new/datum/skill/demon/Majin,new/datum/skill/rank/Reincarnate,\
 	new/datum/skill/rank/BusterBarrage,new/datum/skill/general/selfdestruct,new/datum/skill/style/GodStyle,\
-	new/datum/skill/rank/SpiritBomb,new/datum/skill/ki/Heal,new/datum/skill/rank/KaiPermission,new/datum/skill/style/DemonStyle,new/datum/skill/Telepathy)//kai/demon/mystical rank skills
+	new/datum/skill/rank/SpiritBomb,new/datum/skill/ki/Heal,new/datum/skill/rank/KaiPermission,new/datum/skill/style/DemonStyle,new/datum/skill/Telepathy,\
+	new/datum/skill/rank/Kaioshin_Apprenticeship)//kai/demon/mystical rank skills
 
 datum/skill/tree/Rank/Otherworld/growbranches()
 	savant.LastRank=savant.Rank
 	if(savant.Rank!="West Kai") disableskill(/datum/skill/rank/BusterBarrage)
 	if(savant.Rank!="East Kai") disableskill(/datum/skill/general/selfdestruct)
 	if(savant.Rank!="North Kai") disableskill(/datum/skill/kaioken)
+	if(savant.Rank!="Supreme Kai") disableskill(/datum/skill/rank/Kaioshin_Apprenticeship) //ex-Kaioshin nao toma mais discipulos
 	switch(savant.Rank)
 		if("Demon Lord")//like the grand kai
 			enableskill(/datum/skill/style/DemonStyle)
@@ -57,6 +59,7 @@ datum/skill/tree/Rank/Otherworld/growbranches()
 			enableskill(/datum/skill/rank/KaiPermission)
 			enableskill(/datum/skill/rank/Ritual_of_Might)
 			enableskill(/datum/skill/ki/Heal)
+			enableskill(/datum/skill/rank/Kaioshin_Apprenticeship) //toma discipulos (KaioshinApprentice.dm)
 		if("West Kai")
 			enableskill(/datum/skill/style/GodStyle)
 			enableskill(/datum/skill/rank/Keep_Body)

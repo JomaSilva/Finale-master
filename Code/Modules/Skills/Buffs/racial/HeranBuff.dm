@@ -42,6 +42,7 @@ obj/buff/MaxPower/Loop()
 			container.ssj2drain = container.stepped_mastery_mult(container.heran2mastery, list(0.040, 0.025, 0.012, 0))
 			container.ssjBuff = container.heran_form_mult()
 	if(lastForm!=container.ssj)
+		container.mst_note_form() //testemunhas por perto registram a forma vista (MasterStudent.dm)
 		lastForm=container.ssj
 		container.RemoveHair()
 		switch(container.ssj)

@@ -68,6 +68,7 @@ obj/buff/LSSJ/Loop()
 				if(3) container.lssj3mastery = min(100, container.lssj3mastery + 0.0116)
 			container.ssjBuff = container.lssj_form_mult()
 	if(container.lssj!=lastForm)
+		container.mst_note_form() //testemunhas por perto registram a forma vista (MasterStudent.dm)
 		lastForm=container.lssj
 		for(var/obj/overlay/hairs/ssj/X in container.overlayList)
 			container.removeOverlay(X)
@@ -435,8 +436,8 @@ mob/proc/LSSj()
 		emit_Sound('chargeaura.wav')
 		createShockwavemisc(loc,2)
 		createCrater(loc,5)
-		animate(usr,time=7,color=rgb(46, 245, 72))
-		usr.color = null
+		animate(src,time=7,color=rgb(46, 245, 72)) //usr e NULO em contexto de engine (o despertar assistido chama esta proc fora de verb)
+		src.color = null
 		Quake()
 		spawn Quake()
 		sleep(50)
