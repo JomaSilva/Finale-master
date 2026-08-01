@@ -16,11 +16,12 @@ mob/var
 	ssjBaseCaptured=0 //flag: ja capturei as bases por-raca/nerf
 	ultrassjenabled=0
 	ultrassjat=750000000 //750mil for ultassj.
-	ultrassjmult=3
+	ultrassjmult=3 //so sobrevive para as racas NERFADAS/canSSJ (1.45): o grade normal deriva de ssj1base
 	ultrassjdrain=0.050
-	ultrassjspeed=1.5
-	ultrassjstrength=1.5
-	hasultrassj
+	ssj_grade_active=0 //grade em que o jogador ESTA agora (0/2/3). NAO-tmp: ssj e salvo, o grade tem que acompanhar
+	ssj_grade_seen=0   //bitmask dos grades cuja cinematica de primeira vez ja rodou
+	ssjGradesMigrated=0 //flag 1x da migracao do USSJ comprado para os GRADES
+	ssj_grade_sel=0    //grade SELECIONADO no toggle (0 = nenhum -- default, senao o SSJ2 fica trancado)
 	firsttime=0
 	ssj1_music_played=0 //first-transformation theme flags; persist in saves so each plays only once ever (like ssj3firsttime)
 	ssj2_music_played=0
@@ -165,20 +166,10 @@ obj/buff/SuperSaiyan/Loop()
 		if(container.Class != "Legendary Primal Saiyan" && !container.FutureLineage && (!container.canSSJ || container.bio_lab_born)) //SSJ1/2/3 padrao: a maestria (%) cresce na forma. O BIO de laboratorio (canSSJ=1) PRECISA ganhar maestria: dominar o SSJ1 (100%) e requisito do despertar do SSJ2 dele
 			switch(container.ssj)
 				if(1)
-					if(container.ssj1mastery < 100)
-						container.ssj1mastery = min(100, container.ssj1mastery + 0.0174) //~2h de uso continuo (forma mais facil)
-						container.recompute_saiyan_form_mults()
-						if(container.ssj1mastery >= 50 && container.ssj1mastery - 0.0174 < 50) //cruzou 50%: libera a COMPRA do USSJ na arvore de skills
-							container.testunlocks()
-						if(container.ssj1mastery >= 100 && !container.ismssj) //100%: Super Saiyajin completamente dominado (substitui o antigo nivel 3 / skill mssj)
-							container.ismssj = 1
-							container.ssjmod = 2
-							container.unrestssjmult += 5
-							container.lssjmult += 10
-							container.restssjmult += 5
-							container.ssj2mod = 10
-							to_chat(container, "You've mastered Super Saiyan completely!")
-							container.testunlocks()
+					container.ssj1_mastery_tick(0.0174) //~2h de uso continuo (forma mais facil)
+				if(1.5)
+					container.ssj1_mastery_tick(0.0174 * SSJ_GRADE_MASTERY_RATE) //dentro de um GRADE a maestria do SSJ1 rende METADE:
+					                                                             //sem isto o jogador viveria no grade (3x/4x) e nunca chegaria aos 100%/6x
 				if(2)
 					if(container.ssj2mastery < 100)
 						container.ssj2mastery = min(100, container.ssj2mastery + 0.0116) //~3h
@@ -274,12 +265,15 @@ obj/buff/SuperSaiyan/Loop()
 			container.Revert()
 	..()
 obj/buff/SuperSaiyan/Delevel()
-	if(container.ssj == 1.5) container.ssj = 1
+	if(container.ssj == 1.5)
+		container.ssj = 1
+		container.ssj_grade_active = 0 //saiu do grade: nao deixa grade fantasma pra proxima entrada
 	else if(container.ssj == 3.5) container.ssj = 3
 	else container.ssj--
 	if(container.ssj < 1) DeBuff()
 obj/buff/SuperSaiyan/DeBuff()
 	container.ssjBuff = 1
+	container.ssj_grade_active = 0
 	var/_oldTKM = container.trueKiMod //keep Ki% when fully reverting to base
 	container.MaxKi = container.MaxKi / container.trueKiMod
 	container.trueKiMod = 1
@@ -373,30 +367,39 @@ mob/proc/remove_ussj_body()
 	icon = ussj_saved_icon
 	ussj_saved_icon = null
 
-mob/proc/Ultra_SSj()
+//GRADES DO SSJ1 (o antigo Ultra Super Saiyan). O typepath e o estado ssj=1.5 foram MANTIDOS de
+//proposito: 1.5 e valor semantico em dois motores fora daqui (godki_ssj_cap do Super Saiyan Royale
+//e o teto trans_min_val do Loop), alem de carregar cabelo, aura, eletricidade, corpo musculoso,
+//dreno proprio e o Delevel 1.5->1 sem nenhuma linha extra.
+mob/proc/Ultra_SSj(grade = 0)
 	if(!transing)
 		if(Class == "Prodigial" && godki && godki.usage) return //Prodigial nao acessa o Royale (catch-all)
 		if(ssj>=2) return
-		if(cantSustainForm(ultrassjdrain)) return
+		if(!grade) //sem grade explicito (dispatcher/DirectSSJ): resolve pelo seletor e clampa no desbloqueado
+			grade = ssj_grade_sel ? ssj_grade_sel : ssj_grade_unlocked()
+			if(!grade) grade = 2
+			if(ssj_grade_unlocked()) grade = min(grade, ssj_grade_unlocked())
+		if(godki && godki.usage) grade = 2 //SUPER SAIYAN ROYALE: o caminho divino so tem o Grade 2
+		if(cantSustainForm((grade >= 3) ? SSJ_GRADE3_DRAIN : SSJ_GRADE2_DRAIN)) return //testa ANTES de commitar o grade
+		ssj_grade_active = grade
+		recompute_saiyan_form_mults() //acerta o ultrassjdrain do grade escolhido
 		transing=1
 		attackable=0
 		var/ssjcolor = "yellow"
 		if(godki?.usage) ssjcolor = "blue"
 		var/ussjcolor = "gold"
 		if(godki?.usage) ussjcolor = "royal blue"
-		if(ultrassjdrain>=0.049)
-			ultrassjdrain=0.048
+		if(!(ssj_grade_seen & (1 << grade))) //bits DISJUNTOS: com a mascara crua, 2 & 3 = 2 e o Grade 3 nunca estreava
+			ssj_grade_seen |= (1 << grade)
 			UltraSSJCinematic()
-		if(!hasussj)
-			ultrassjat/=2
-		hasussj=1
+		hasussj=1 //legado: varias telas/gates antigos ainda leem esta flag
 		to_chat(view(src), "<font color=[ssjcolor]>*[src] begins to power up beyond their Super Saiyan power*")
 		emit_Sound('chargeaura.wav')
 		spawn Quake()
 		sleep(1000*ultrassjdrain)
 		spawn Quake()
 		emit_Sound('aura.wav')
-		to_chat(view(src), "<font color=[ssjcolor]>*[src]'s Super Saiyan power becomes a more spikey [ussjcolor]!*")
+		to_chat(view(src), "<font color=[ssjcolor]>*[src]'s Super Saiyan power becomes a more spikey [ussjcolor]!* (Grade [grade])")
 		ssj=1.5
 		bp_milestone_reach("ussj") //MARCO: Ultra SSJ
 		if(godki && godki.usage) bp_milestone_reach("blue") //MARCO: Blue Evolution (USSJ em God Ki)
@@ -433,6 +436,9 @@ mob/proc/SSj2()
 		var/ssjcolor = "yellow"
 		if(godki?.usage) ssjcolor = "blue"
 		ultrassjenabled=0
+		if(ssj_grade_sel) //o SSJ2 desliga os grades: limpa o seletor junto, senao o toggle passa a mentir
+			ssj_grade_sel = 0
+			to_chat(src, "<font color=yellow>Seu seletor de SSJ Grade foi zerado -- o SSJ2 nao empilha com os grades.")
 		if(ssj2drain>=0.036&&firsttime==1&&!bio_lab_born) //bio: a cinematica do SSJ2 dele e a do despertar por morte (curta, em DNALabs.dm), nao a saiyajin
 			Super_Saiyan_Stats()
 			SSJ2Cinematic()
@@ -591,12 +597,108 @@ mob/proc/stepped_mastery_mult(mastery, list/tiers) //maestria em DEGRAUS por %: 
 			idx = k
 	return tiers[idx]
 
-mob/proc/ssj1_mult() return stepped_mastery_mult(ssj1mastery, list(ssj1base, 4, 6))      //SSJ1: base ->(66%) 4x ->(100%) 6x
+mob/proc/ssj1_mult() return stepped_mastery_mult(ssj1mastery, list(ssj1base, 6))         //SSJ1: base (2x) ate 99% -> 6x SO aos 100% (o degrau de 4x virou os GRADES)
+
+//---- GRADES DO SSJ1 -------------------------------------------------------------
+//Nao se compram com Marco: bastam SSJ_GRADE2_PCT / SSJ_GRADE3_PCT de maestria no SSJ1.
+//Aos 100% o proprio SSJ1 vira 6x e os dois grades ficam obsoletos -- e a ideia.
+//usa a ESCADA SAIYAJIN padrao? O Heran monta a escada dele por CIMA do ssjmult (HeranBuff.dm),
+//entao mexer nos multiplicadores dele pelo motor do SSJ destroi o Max Power dominado.
+mob/proc/ssj_ladder_user()
+	if(Race == "Heran" || Parent_Race == "Heran") return 0
+	if(Class == "Legendary" || Class == "Legendary Primal Saiyan" || FutureLineage) return 0
+	if(canSSJ) return 0 //bypass (Baby/Reibi) e bio de laboratorio: escada nerfada fixa, sem grades e sem migracao
+	if(Race == "Saiyan" || Parent_Race == "Saiyan") return 1
+	if(genome && genome.race_percent("Saiyan") >= 25) return 1
+	return 0
+
+mob/proc/ssj_grade_unlocked() //0 = nenhum; 2 ou 3 = MAIOR grade liberado
+	if(!ssj_ladder_user()) return 0
+	if(canSSJ) return 0 //bypass (Baby/Reibi) e bio de laboratorio: ficam com o nerf fixo, sem grades
+	if(ssj1mastery >= SSJ_GRADE3_PCT) return 3
+	if(ssj1mastery >= SSJ_GRADE2_PCT) return 2
+	return 0
+
+//Derivado do ssj1base (2 normal / 1.35 diluido) e NAO cravado em 3/4: as racas nerfadas
+//teriam um grade mais forte que o proprio SSJ1 delas e o nerf de sangue sumiria.
+mob/proc/ssj_grade_mult(g)
+	if(!g) return 0
+	if(canSSJ) return ultrassjmult //bypass mantem o 1.45 fixo de sempre
+	return ssj1base * ((g >= 3) ? SSJ_GRADE3_FACTOR : SSJ_GRADE2_FACTOR)
+
+//multiplicador do grade em que o jogador ESTA (com fallback: 3 portas de entrada e saves
+//legados podem deixar ssj=1.5 sem grade, e ai o BP colapsaria pra 0)
+mob/proc/ssj_grade_active_mult()
+	var/g = ssj_grade_active
+	if(!g) g = ssj_grade_unlocked()
+	if(!g) g = 2
+	return ssj_grade_mult(g)
+
+//SSJ2 efetivo: piso = MAIOR entre o SSJ1 e o grade DESBLOQUEADO, +2x
+mob/proc/ssj2_effective_mult()
+	var/m1 = canSSJ ? ssjmult : ssj1_mult()
+	var/m2 = canSSJ ? ssj2mult : ssj2_mult()
+	return max(m2, max(m1, ssj_grade_mult(ssj_grade_unlocked())) + 2)
+
+//teto usado pelos GATES de BP (nao pelo poder): quem passava aos 66% pelo 4x do SSJ1
+//continua passando pelo grade equivalente, senao o rework tranca portas que ja estavam abertas
+mob/proc/ssj1_gate_mult()
+	if(canSSJ) return ssjmult
+	return max(ssj1_mult(), ssj_grade_mult(ssj_grade_unlocked()))
+
+//LOGIN-FIX dos GRADES: aposenta a skill comprada (devolvendo os Marcos), herda quem ja tinha o
+//USSJ, re-arma o verb (ele vinha do login() da skill morta) e normaliza saves sujos.
+mob/proc/ssj_grade_login_check()
+	if(!ssj_ladder_user()) return //Heran/Legendary/Future/nao-Saiyajin: o recompute la embaixo destruiria a escada deles
+	if(!ssjGradesMigrated)
+		for(var/datum/skill/tree/T in possessed_trees) //devolve os Marcos gastos na skill aposentada
+			for(var/datum/skill/S in T.investedskills)
+				if(S.type != /datum/skill/forms/ussj) continue
+				T.invested -= S.skillcost
+				T.investedskills -= S
+				break
+		for(var/datum/skill/S in learned_skills)
+			if(S.type != /datum/skill/forms/ussj) continue
+			S.logout() //para o "spawn while(savant)" da skill antes de descartar -- senao sobra loop orfao pinando o mob
+			S.savant = src //o logout() ACABOU de zerar o savant e o forget() escreve em savant.skillpoints: sem isto e runtime que derruba o OnLogin inteiro. O del() de dentro do forget mata o loop na mesma passada, sem sleep no meio
+			S.forget() //forget() PURO: o forget(1) roda o bloco forcado E cai no can_forget de novo (reembolso duplo)
+			break
+		if(hasussj && ssj1mastery < SSJ_GRADE2_PCT) ssj1mastery = SSJ_GRADE2_PCT //quem ja tinha o USSJ nao perde a forma
+		ssjGradesMigrated = 1 //LATCHA so no FIM: se algo estourar no meio, o proximo login tenta de novo (latchar antes perdia a heranca do USSJ pra sempre)
+	if(ssj == 1.5 && !ssj_grade_active) //o clearbuffs do logout zera o grade mas deixa ssj=1.5: volta no grade ESCOLHIDO
+		ssj_grade_active = ssj_grade_sel ? ssj_grade_sel : max(ssj_grade_unlocked(), 2)
+	if(godki && godki.usage && ssj_grade_active > 2) ssj_grade_active = 2 //o Royale so tem Grade 2 (relog/Ritual/Rift nao passam pelo verb God Ki)
+	if(ssj_grade_sel > ssj_grade_unlocked()) ssj_grade_sel = ssj_grade_unlocked()
+	ultrassjenabled = (ssj_grade_sel != 0)
+	if(ssj_grade_unlocked()) assignverb(/mob/keyable/verb/Toggle_USSJ) //verbs nao sobrevivem ao logout
+	else unassignverb(/mob/keyable/verb/Toggle_USSJ)
+	recompute_saiyan_form_mults()
+
+//tick da maestria do SSJ1 (chamado pelo Loop: taxa cheia no SSJ1, metade dentro de um grade)
+mob/proc/ssj1_mastery_tick(rate)
+	if(ssj1mastery >= 100) return
+	var/antes = ssj1mastery
+	ssj1mastery = min(100, ssj1mastery + rate)
+	recompute_saiyan_form_mults()
+	if(ssj1mastery >= SSJ_GRADE2_PCT && antes < SSJ_GRADE2_PCT)
+		assignverb(/mob/keyable/verb/Toggle_USSJ)
+		to_chat(src, "<font color=yellow><b>SSJ GRADE 2 liberado!</b> Escolha o grade em <i>Toggle SSJ Grades</i> (aba Other) e transforme a partir do Super Saiyajin.")
+	if(ssj1mastery >= SSJ_GRADE3_PCT && antes < SSJ_GRADE3_PCT)
+		to_chat(src, "<font color=yellow><b>SSJ GRADE 3 liberado!</b> Mais poder bruto que o Grade 2 -- e um dreno bem pior.")
+	if(ssj1mastery >= 100 && !ismssj) //100%: Super Saiyajin completamente dominado
+		ismssj = 1
+		ssjmod = 2
+		unrestssjmult += 5
+		lssjmult += 10
+		restssjmult += 5
+		ssj2mod = 10
+		to_chat(src, "You've mastered Super Saiyan completely! O SSJ1 agora vale 6x -- os grades ficaram para tras.")
+		testunlocks()
 mob/proc/ssj2_mult() return stepped_mastery_mult(ssj2mastery, list(ssj2base, 6, 8, 10))  //SSJ2: base ->(50%) 6x ->(75%) 8x ->(100%) 10x
 mob/proc/ssj3_mult() return ssj3base //SSJ3: multiplicador FIXO (16 normal / 2 nerfado) -- a maestria NAO sobe o poder, so alivia um pouco o dreno (ver ssj3drain)
 
 mob/proc/recompute_saiyan_form_mults() //sincroniza ssjmult/ssj2mult/ssj3mult e os drenos com a maestria % atual (usados no gating fora da forma e no switch de dreno do buff)
-	if(FutureLineage || Class == "Legendary" || Class == "Legendary Primal Saiyan" || canSSJ) return //essas linhagens NAO usam a escada padrao; canSSJ (bypass) fica com o nerf fixo sem maestria
+	if(!ssj_ladder_user()) return //Heran/Legendary/Primal/Future/canSSJ tem escada PROPRIA montada por cima do ssjmult -- reescrever aqui a destroi
 	if(!ssjBaseCaptured) //captura 1x a base por-raca/nerf antes de qualquer sobrescrita (valores nerfados 1.35/1.75/2 ficam abaixo das bases normais 2/4/16)
 		ssjBaseCaptured = 1
 		if(ssjmult < 2) ssj1base = ssjmult
@@ -606,6 +708,8 @@ mob/proc/recompute_saiyan_form_mults() //sincroniza ssjmult/ssj2mult/ssj3mult e 
 	ssj2mult = ssj2_mult()
 	ssj3mult = ssj3_mult()
 	ssjdrain = stepped_mastery_mult(ssj1mastery, list(0.025, 0.015, 0)) //dreno em degraus, zera no 100% (forma sustentavel quando dominada)
+	var/gr = ssj_grade_active ? ssj_grade_active : ssj_grade_sel //dreno do grade: NUNCA zera (forma de forca bruta)
+	if(gr) ultrassjdrain = (gr >= 3) ? SSJ_GRADE3_DRAIN : SSJ_GRADE2_DRAIN
 	ssj2drain = stepped_mastery_mult(ssj2mastery, list(0.040, 0.030, 0.020, 0))
 	ssj3drain = stepped_mastery_mult(ssj3mastery, list(0.075, 0.065, 0.055)) //SSJ3 NUNCA fica sustentavel: a maestria so alivia (66% -> 0.065, 100% -> 0.055) e mesmo dominado segue o PIOR dreno de todas as formas SSJ (USSJ 0.048, SSJ2 cru 0.040)
 
@@ -618,13 +722,12 @@ mob/proc/ssj_effective_mult() //multiplicador EFETIVO do SSJ com piso: nunca cai
 	if(Class == "Legendary Primal Saiyan") //Primal Legendary usa o ladder proprio (Imagem 24)
 		return legprimal_form_mult()
 	var/m1 = canSSJ ? ssjmult : ssj1_mult() //canSSJ (bypass): usa o valor nerfado fixo (sem maestria); demais usam o degrau pela %
-	var/m2 = canSSJ ? ssj2mult : ssj2_mult()
 	var/m3 = canSSJ ? ssj3mult : ssj3_mult()
 	switch(ssj)
 		if(1) . = m1
-		if(1.5) . = ultrassjmult //USSJ: valor fixo 3x entre SSJ1 e SSJ2, SEM piso. SSJ1 masterizado (6x) supera (canon: Full Power > Ultra SSJ). So um boost de forca inicial.
-		if(2) . = max(m2, m1 + 2)
-		if(3) . = max(m3, m2 + 2)
+		if(1.5) . = ssj_grade_active_mult() //GRADE 2/3: sem piso -- o SSJ1 dominado (6x) supera os dois de proposito
+		if(2) . = ssj2_effective_mult() //piso = max(SSJ1, maior grade DESBLOQUEADO) + 2x
+		if(3) . = max(m3, ssj2_effective_mult() + 2) //usa o SSJ2 EFETIVO: com o piso novo, o cru deixaria o SSJ3 nerfado mais fraco que o SSJ2
 		if(4) . = max(ssj4_form_mult(), m3 + 2)
 		if(5) . = max(ssj4_form_mult(), ssj4maxmult + 2)
 		if(6) . = max(ssj4_form_mult(), ssj4fpmaxmult + 2)

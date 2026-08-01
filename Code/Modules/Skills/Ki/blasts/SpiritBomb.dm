@@ -178,3 +178,51 @@ obj/proc/spin()
 				A.Burnout(1000)
 				usr.beamisrunning = 0
 		else to_chat(usr, "You need 90% Energy to do this.")
+// ============================================================================
+// APOSENTADA: a Genkidama nova (carga sobre a cabeca + esfera rolante) foi
+// descartada -- a Spirit Bomb ACIMA voltou a ser a tecnica unica, tanto do rank
+// de Kaio do Norte quanto do que o Sr. Kaioh ensina. O typepath sobrevive INERTE
+// (sem verb, sem effector, fora de arvore) porque o savefile de quem a aprendeu
+// guarda o datum: sem o tipo, o personagem nao carrega.
+// ============================================================================
+/datum/skill/ki/Genkidama
+	skilltype = "Ki"
+	name = "Genkidama (aposentada)"
+	desc = "Tecnica antiga: deu lugar a Spirit Bomb."
+	can_forget = TRUE
+	common_sense = FALSE
+	enabled = 0
+
+//Roda em TODO login: troca a Genkidama aposentada pela Spirit Bomb e, como rede de
+//seguranca, devolve a tecnica a quem OCUPA o cargo de Kaio do Norte e ficou sem ela
+//(a migracao anterior tirava a Spirit Bomb antes de dar a Genkidama, e um runtime no
+//meio do caminho deixava o portador sem nenhuma das duas).
+mob/var/sb_kai_restored = 0 //resgate do Kaio do Norte JA foi feito (persiste: sem o latch, esquecer a skill e relogar cunhava 1 Marco por login)
+
+mob/proc/sb_restore_check()
+	if(!signature) return
+	var/tinha = 0
+	for(var/obj/hotkey/H in Hotkeys) //hotkey SALVO apontando pro verb da Genkidama deletada: a tecla ficaria morta e o card mentindo
+		if(H && H.id == "Genkidama") del(H)
+	for(var/datum/skill/tree/T in possessed_trees) //devolve o Marco gasto na skill morta
+		for(var/datum/skill/S in T.investedskills)
+			if(S.type != /datum/skill/ki/Genkidama) continue
+			T.invested -= S.skillcost
+			T.investedskills -= S
+			break
+	for(var/datum/skill/S in learned_skills)
+		if(S.type != /datum/skill/ki/Genkidama) continue
+		tinha = 1
+		S.logout() //para o "spawn while(savant)" antes de descartar -- senao sobra loop orfao
+		S.savant = src //o logout() ACABOU de zerar o savant e o forget() escreve em savant.skillpoints: sem isto e runtime que derruba o OnLogin inteiro
+		S.forget() //forget() PURO: o forget(1) roda o bloco forcado E cai no can_forget de novo (reembolso duplo)
+		break
+	//quem PORTA o cargo de Kaio do Norte tem direito a tecnica, tendo perdido como perdeu --
+	//mas UMA vez so: a copia entra fora da arvore (sem Marco cobrado), entao repetir todo
+	//login deixaria "esquecer na arvore + relogar" cunhando 1 Marco por vez.
+	if(!tinha)
+		if(North_Kai != signature || sb_kai_restored) return
+		sb_kai_restored = 1
+	if(HasSkill(/datum/skill/rank/SpiritBomb)) return
+	learnSkill(new/datum/skill/rank/SpiritBomb, 0)
+	to_chat(src, "<font color=#66ccff>A <b>SPIRIT BOMB</b> e sua de novo -- a mesma tecnica do Sr. Kaioh e do Kaio do Norte.</font>")

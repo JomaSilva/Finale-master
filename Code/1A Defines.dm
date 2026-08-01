@@ -13,6 +13,14 @@
 #define WEIGHT_GAIN_MAX 8       //teto do multiplicador de ganhos do peso (razao 1 = 2x, razao 2 = 4x, razao 4 = 8x)
 #define WEIGHT_ITEM_CAP_MULT 2  //teto do UPGRADE dos pesos = weight_cap_hw x isto (2x o limite do corpo = razao 2.0 = ganhos 4x no maximo)
 #define TECH_BENCH_ZENI 250000  //custo em zenni da Research Bench construida pela aba Tech (HtmlUI.dm)
+//---- GRADES DO SUPER SAIYAJIN (o antigo USSJ virou Grade 2/3 -- supersaiyanbuff.dm + supersaiyan.dm + Transformation Controls.dm) ----
+#define SSJ_GRADE2_PCT 50        //maestria do SSJ1 que libera o Grade 2
+#define SSJ_GRADE3_PCT 70        //maestria do SSJ1 que libera o Grade 3
+#define SSJ_GRADE2_FACTOR 1.5    //x ssj1base: 2 x 1.5 = 3x (nerfado 1.35 x 1.5 = 2.025x)
+#define SSJ_GRADE3_FACTOR 2      //x ssj1base: 2 x 2 = 4x
+#define SSJ_GRADE2_DRAIN 0.040   //dreno do Grade 2 (o SSJ2 cru tambem e 0.040)
+#define SSJ_GRADE3_DRAIN 0.055   //Grade 3 custa mais caro que qualquer SSJ (empata com o SSJ3 dominado)
+#define SSJ_GRADE_MASTERY_RATE 0.5 //fracao da maestria do SSJ1 ganha DENTRO de um grade (forcar musculo atrasa o dominio)
 //---- MESTRE E ALUNOS (MasterStudent.dm + combatgains.dm -- defines AQUI pela ordem de include) ----
 #define MST_RANGE 4            //distancia (tiles) para o convite continuar valido depois da caixa de dialogo
 #define MST_BP_RATIO 3         //o mestre precisa de no minimo isto vezes o BP BASE do aluno para toma-lo

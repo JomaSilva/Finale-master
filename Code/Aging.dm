@@ -101,7 +101,6 @@ mob/proc/age_table_login_fix() //personagens criados antes da tabela sincronizam
 mob/var
 	biologicallyimmortal=0
 	AgeDiv=1
-	Halfie_Year=0
 	taxpayment=0
 	BirthYear=0
 	Has_Breed=0

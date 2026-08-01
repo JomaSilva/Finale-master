@@ -313,9 +313,12 @@ mob/proc
 			if(hasssj)
 				shown = 1
 				stat("Super Saiyan","Mastery [round(ssj1mastery)]% - power x[round(canSSJ ? ssjmult : ssj1_mult())]")
-			if(hasussj)
+			if(ssj_grade_unlocked() >= 2)
 				shown = 1
-				stat("Ultra Super Saiyan","Unlocked - power x[ultrassjmult]")
+				stat("SSJ Grade 2","Unlocked - power x[ssj_grade_mult(2)]")
+			if(ssj_grade_unlocked() >= 3)
+				shown = 1
+				stat("SSJ Grade 3","Unlocked - power x[ssj_grade_mult(3)]")
 			if(ismssj)
 				shown = 1
 				stat("Mastered Super Saiyan","Fully mastered")

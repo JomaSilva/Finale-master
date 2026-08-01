@@ -10,10 +10,17 @@ mob/verb/Training_Session()
 		if("New Session")
 			usr.startingbp=usr.BP
 			usr.insession=1
-			to_chat(usr, "Session started!")
+			to_chat(usr, "Sessao de treino iniciada.")
 		if("View Session")
 			if(!usr.insession)
-				to_chat(usr, "You need to start a session first!")
+				to_chat(usr, "Comece uma sessao primeiro.")
 				return
-			var/sessionbp=usr.BP-usr.startingbp
-			to_chat(usr, "So far, you have gained [sessionbp] battle power!")
+			var/ganho = usr.BP - usr.startingbp
+			//sem SCOUTER ninguem le o proprio BP em numero (mesma regra do painel de Stats):
+			//o relatorio da a DIFERENCA em porcentagem, que nao entrega o valor absoluto
+			if(usr.scouteron)
+				to_chat(usr, "<font color=yellow>Nesta sessao voce ganhou <b>[FullNum(round(ganho))]</b> de poder base ([FullNum(round(usr.startingbp))] -> [FullNum(round(usr.BP))]).")
+			else if(usr.startingbp > 0)
+				to_chat(usr, "<font color=yellow>Voce esta cerca de <b>[round((ganho / usr.startingbp) * 100, 0.1)]% mais forte</b> do que quando comecou esta sessao.")
+			else
+				to_chat(usr, "<font color=yellow>Voce sente que evoluiu nesta sessao, mas nao tem como medir o quanto.")

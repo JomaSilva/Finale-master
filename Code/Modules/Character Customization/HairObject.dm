@@ -116,7 +116,10 @@ obj/overlay/hairs
 				EffectStart()
 mob/proc/Hair(var/forcechoose)
 	hair=null
-	if(forcechoose|Race=="Saiyan"|Race=="Meta"|Race=="Ogre"|Race=="Genie"|Race=="Heran"|Race=="Spirit Doll"|Race=="Cyborg"|Race=="Kanassa-Jin"|Race=="Demigod"|Race=="Makyo"|Race=="Kai" | Race=="Demon" | Race=="Tsujin" | Race=="Android" | Race=="Human" | Race=="Alien"|Race=="Yardrat"|Race=="Arlian"|Race=="Gray")
+	//Half-Saiyan e Legendary Saiyan usam os MESMOS corpos humanos que Saiyajin/Humano
+	//(creation_gender_icon), mas faltavam nesta lista -- quem nascia assim pulava o passo
+	//inteiro do cabelo e ficava careca sem nunca ver a janela.
+	if(forcechoose|Race=="Saiyan"|Race=="Half-Saiyan"|Race=="Legendary Saiyan"|Race=="Meta"|Race=="Ogre"|Race=="Genie"|Race=="Heran"|Race=="Spirit Doll"|Race=="Cyborg"|Race=="Kanassa-Jin"|Race=="Demigod"|Race=="Makyo"|Race=="Kai" | Race=="Demon" | Race=="Tsujin" | Race=="Android" | Race=="Human" | Race=="Alien"|Race=="Yardrat"|Race=="Arlian"|Race=="Gray")
 		alert("Choose a hair color. Saiyan hair created from here will always be black.")
 		var/rgbsuccess
 		rgbsuccess=input("Choose a color.","Color",0) as color

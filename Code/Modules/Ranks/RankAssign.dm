@@ -51,6 +51,14 @@ proc/WipeRank()
 	if(God_Of_Destruction!=null) God_Of_Destruction=null
 	if(Angel_Rank!=null) Angel_Rank=null
 	if(ksap_list.len) ksap_list.Cut() //wipe que apaga o mestre tem que apagar os aprendizes junto
+//RankTree UMA VEZ SO. O acquire() (trees.dm) empurra a arvore no possessed_trees sem
+//checar duplicata, e o Rank_Verb_Assign roda em TODO login -- cada entrada empilhava mais
+//uma copia no save (com effector proprio e as skills compraveis de novo). A ascensao de
+//cargo (RankQuests.dm) faria o mesmo a cada degrau.
+mob/proc/ensure_rank_tree()
+	if(locate(/datum/skill/tree/RankTree) in possessed_trees) return
+	getTree(new /datum/skill/tree/RankTree)
+
 mob/proc/Rank_Verb_Assign() //the //done checkmarks are to keep track of what ranks are fully converted over to the skills system
 	if(!signiture || !signature) return
 	//APRENDIZ DE KAIOSHIN (KaioshinApprentice.dm): primeiro da cadeia -- a lista abaixo e de ifs sem
@@ -58,82 +66,81 @@ mob/proc/Rank_Verb_Assign() //the //done checkmarks are to keep track of what ra
 	//NAO tem ramo aqui (Frost Demon Lord, Makyo King, Arlian), que senao ficariam exibindo "aprendiz".
 	//A guarda de duplicata da RankTree os ramos legados nao tem: sem ela cada login empilha uma no save.
 	if((signature in ksap_list) && !rq_any_rank(src))
-		if(!(locate(/datum/skill/tree/RankTree) in possessed_trees))
-			getTree(new /datum/skill/tree/RankTree)
+		ensure_rank_tree()
 		Rank="Kaioshin Apprentice"
 	if(Crane==signature) //done
-		getTree(new /datum/skill/tree/RankTree)
+		ensure_rank_tree()
 		Rank="Crane"
 	if(Turtle==signature) //done
 		Rank="Turtle"
-		getTree(new /datum/skill/tree/RankTree)
+		ensure_rank_tree()
 	if(Saibamen_Rouge_Leader==signature) //done
-		getTree(new /datum/skill/tree/RankTree)
+		ensure_rank_tree()
 		Rank="Saibamen Rouge Leader"
 	if(Demon_Lord==signature)//done
-		getTree(new /datum/skill/tree/RankTree)
+		ensure_rank_tree()
 		Rank="Demon Lord"
 	if(Grand_Kai==signature)//done
-		getTree(new /datum/skill/tree/RankTree)
+		ensure_rank_tree()
 		Rank="Grand Kai"
 	if(Supreme_Kai==signature)//done
-		getTree(new /datum/skill/tree/RankTree)
+		ensure_rank_tree()
 		Rank="Supreme Kai"
 	if(capt==signature)//done
-		getTree(new /datum/skill/tree/RankTree)
+		ensure_rank_tree()
 		Rank="Captain/King of Pirates"
 	if(King_of_Vegeta==signature)//done
-		getTree(new /datum/skill/tree/RankTree)
+		ensure_rank_tree()
 		Rank="King of Vegeta"
 	if(North_Elder==signature|South_Elder==signature|West_Elder==signature|East_Elder==signature) //done
 		Rank="Namekian Elder"
-		getTree(new /datum/skill/tree/RankTree)
+		ensure_rank_tree()
 	if(Assistant_Guardian==signature)//done
-		getTree(new /datum/skill/tree/RankTree)
+		ensure_rank_tree()
 		Rank="Earth Assistant Guardian"
 	if(Earth_Guardian==signature)//done
-		getTree(new /datum/skill/tree/RankTree)
+		ensure_rank_tree()
 		Rank="Earth Guardian"
 	if(Namekian_Elder==signature)//done
-		getTree(new /datum/skill/tree/RankTree)
+		ensure_rank_tree()
 		Rank="Namekian Grand Elder"
 	if(President==signature)//done
-		getTree(new /datum/skill/tree/RankTree)
+		ensure_rank_tree()
 		Rank="President"
 	if(King_Of_Acronia==signature)//done
-		getTree(new /datum/skill/tree/RankTree)
+		ensure_rank_tree()
 		Rank="King Of Acronia"
 	if(Arconian_Guardian==signature)//done
-		getTree(new /datum/skill/tree/RankTree)
+		ensure_rank_tree()
 		Rank="Arconian Guardian"
 	if(Geti==signature)//done
-		getTree(new /datum/skill/tree/RankTree)
+		ensure_rank_tree()
 		Rank="Geti Star King"
 	if(mutany==signature)//done
-		getTree(new /datum/skill/tree/RankTree)
+		ensure_rank_tree()
 		Rank="Mutany Leader"
 	if(East_Kai==signature)//done
-		getTree(new /datum/skill/tree/RankTree)
+		ensure_rank_tree()
 		Rank="East Kai"
 	if(King_Yemma==signature)//done
-		getTree(new /datum/skill/tree/RankTree)
+		ensure_rank_tree()
 		Rank="King Yemma"
 	if(West_Kai==signature)//done
-		getTree(new /datum/skill/tree/RankTree)
+		ensure_rank_tree()
 		Rank="West Kai"
 	if(South_Kai==signature)//done
-		getTree(new /datum/skill/tree/RankTree)
+		ensure_rank_tree()
 		Rank="South Kai"
 	if(North_Kai==signature)//done
-		getTree(new /datum/skill/tree/RankTree)
+		ensure_rank_tree()
 		Rank="North Kai"
 	if(God_Of_Destruction==signature) //rank NOVO (2026-07-11): por enquanto so titulo, sem poderes (a detalhar)
-		getTree(new /datum/skill/tree/RankTree)
+		ensure_rank_tree()
 		Rank="God of Destruction"
 	if(Angel_Rank==signature) //rank NOVO (2026-07-11): por enquanto so titulo, sem poderes (a detalhar)
-		getTree(new /datum/skill/tree/RankTree)
+		ensure_rank_tree()
 		Rank="Angel"
-	if(Admin) getTree(new /datum/skill/tree/RankTree)//done (obviously)
+	if(Admin) ensure_rank_tree()//done (obviously)
 	godtongue_check() //rank divino (atual ou recem-ganho) aprende a LINGUA DOS DEUSES -- e nunca esquece (WishTable.dm)
 proc/Save_Rank()
 	var/savefile/S=new("RANK")
@@ -232,7 +239,7 @@ var
 
 	God_Of_Destruction //rank NOVO: Deus da Destruicao (sem poderes ainda -- a detalhar)
 	Angel_Rank //rank NOVO: Anjo (sem poderes ainda -- a detalhar). "Angel_Rank" pq ha um turf chamado Angel (Turfs.dm)
-	North_Kai //Can teach Kaioken and Spirit Bomb.
+	North_Kai //Can teach Kaioken and Spirit Bomb (a mesma do Sr. Kaioh -- SpiritBomb.dm).
 	South_Kai //Can teach Body Expansion. (x2 physoff, x1.2 End, /1.2 Spd, -2% Stam per second.)
 	East_Kai //Can teach Ki Burst. (x2 Ki Power, -2% Stam per second.)
 	West_Kai //Can teach Self Destruction.
@@ -304,12 +311,20 @@ Geti Star King/Queen: [RankList[Geti]]<br>
 Captain/King of Pirates: [RankList[capt]]<br>
 Mutany Leader: [RankList[mutany]]<br><br><br>
 </body><html>"}
-	if(ksap_list.len) //patronato do Kaioshin: varios donos, entao vai em bloco proprio (KaioshinApprentice.dm)
-		Ranks+={"<html>
+	//patronato do Kaioshin: rank de VARIOS donos, entao vai em bloco proprio (KaioshinApprentice.dm).
+	//O cabecalho aparece SEMPRE, mesmo vazio, para o rank existir na lista do jogo.
+	Ranks+={"<html>
 <head><title>Ranks</head></title><body>
 <center><body bgcolor="#000000"><font size=2><font color="#e8b64c"><b><i>
 *Aprendizes de Kaioshin*<br>
 </body><html>"}
+	if(!ksap_list.len)
+		Ranks+={"<html>
+<head><title>Ranks</head></title><body>
+<center><body bgcolor="#000000"><font size=2><font color="#888888"><b><i>
+(nenhum)<br>
+</body><html>"}
+	else
 		for(var/ksig in ksap_list)
 			Ranks+={"<html>
 <head><title>Ranks</head></title><body>

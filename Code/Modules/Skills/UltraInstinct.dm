@@ -162,14 +162,14 @@ mob/proc/ui_real_gain(amount)
 // ESQUIVA AUTONOMA -- o nucleo. Chamada pelos ganchos de melee (hitProc) e de
 // ki (colisao de blast). Retorna 1 = o ataque foi evitado.
 // ---------------------------------------------------------------------------
-proc/ui_try_evade(mob/M, kind)
+proc/ui_try_evade(mob/M, kind, guard = 1) //guard: a guarda do alvo AGUENTOU este golpe? (o melee passa o block_ok do BlockLimbs.dm; a rajada omite = 1 = comportamento de sempre)
 	if(!M || !M.ui_learned) return 0
 	if(M.KO || M.dead) return 0
 	if(!M.ui_active && !M.ui_form) return 0 //passiva desligada e fora de forma: nada
 	if(M.med || M.train) return 0
-	if(M.blocking) return 0 //quem BLOQUEIA se comprometeu com a guarda -- o corpo nao desvia
+	if(M.blocking && guard) return 0 //so quem bloqueia DE VERDADE se comprometeu; guarda que CEDEU (membro quebrado) nao aparou nada, entao o corpo volta a desviar
 	//ACCELERATED BATTLE: sem ela, carregar um ataque de ki te deixa exposto
-	if((M.charging || M.beaming || M.genki_charging) && M.ui_prof_real < UI_UNLOCK_ACCEL) return 0
+	if((M.charging || M.beaming) && M.ui_prof_real < UI_UNLOCK_ACCEL) return 0
 	var/chance = M.ui_prof * (kind == "blast" ? UI_EVADE_BLAST_PCT : UI_EVADE_MELEE_PCT)
 	if(!prob(chance)) return 0
 	M.ui_evade_stack()

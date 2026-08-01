@@ -17,16 +17,28 @@
 //     Kaioshin, Yemma): SERVICO -- acumule pontos com visitantes qualificados
 //     por perto (vivos TREINANDO pros mestres; almas MORTAS pros ranks do
 //     Outro Mundo), contados pelo proprio motor a cada minuto.
-//  Cumprir: paga zenni (+karma pros benevolentes) e abate 1 falha antiga.
-//  3 falhas = DESTITUIDO (cargo vago pra quem reivindicar).
+//  Cumprir: paga zenni (+karma pros benevolentes), abate 1 falha antiga e soma
+//  RENOME. 3 falhas = DESTITUIDO (cargo vago pra quem reivindicar).
+//
+//  ASCENSAO (o "uma alma, um trono" nao e um beco sem saida): quem JA carrega um
+//  cargo tambem usa o "Reivindicar Rank", mas a lista vem filtrada -- so aparecem
+//  os cargos que exigem o ATUAL como pre-requisito (a escada dos Kaios: 4 Kaios ->
+//  Grand Kai -> Kaioshin). O pedagio e o RENOME: RQ_PROMO_QUESTS tarefas cumpridas
+//  no cargo de agora. Subir vaga o degrau de baixo e zera a ficha (novo cargo,
+//  novos deveres). A prova do Espirito do Cargo continua valendo.
 //
 //  Estado persiste no savefile "RankQuests" (flat). Avisos offline reusam o
 //  correio da conquista (conq_notify_owner -> entregue no login).
 // ============================================================================
 
 // ============================== CONFIG ======================================
-#define RQ_TASK_INTERVAL 1728000  //ds reais (2 dias) entre tarefas de um rank
-#define RQ_TASK_DEADLINE 1728000  //prazo (2 dias reais) pra cumprir
+//O relogio do jogo corre em DAY_REAL_MINUTES minutos reais por dia (1A Defines.dm):
+//com 20, 3 dias in-game = 72h in-game = ~60 min reais. Os prazos seguem o relogio DO
+//JOGO, nao o calendario do jogador -- mexer no DAY_REAL_MINUTES arrasta as quests junto.
+#define RQ_TASK_DAYS 3            //dias IN-GAME de prazo (e de intervalo entre tarefas)
+#define RQ_TASK_INTERVAL (RQ_TASK_DAYS * DAY_REAL_MINUTES MINUTES) //espera ate a proxima tarefa
+#define RQ_TASK_DEADLINE (RQ_TASK_DAYS * DAY_REAL_MINUTES MINUTES) //prazo pra cumprir
+#define RQ_INGAME_DAY (DAY_REAL_MINUTES MINUTES) //ds REAIS de 1 dia in-game (conversao dos textos)
 #define RQ_TASK_RETRY 6000        //re-tentativa (10 min) quando nao ha alvo elegivel
 #define RQ_FAILS_MAX 3            //falhas ate a DESTITUICAO
 #define RQ_REWARD_ZENNI 100000    //pagamento por tarefa cumprida
@@ -38,6 +50,7 @@
 #define RQ_CLAIM_CD 18000         //ticks (30 min) de cooldown apos FALHAR uma prova
 #define RQ_PRESIDENT_CAMPAIGN 250000 //zenni da campanha (cobrado ao VENCER a prova)
 #define RQ_PRESIDENT_FUND 150000  //verba que o President deposita no cofre da Terra por tarefa
+#define RQ_PROMO_QUESTS 3         //tarefas cumpridas no cargo ATUAL para liberar a ascensao
 // ============================ FIM DO CONFIG =================================
 
 var/list/rq_state = list()     //"key" -> assoc: task/target_sig/tname/planet/deadline/next/fails/prog/goal
@@ -131,6 +144,63 @@ proc/rq_any_rank(mob/M)
 	return 0
 
 // ---------------------------------------------------------------------------
+// ASCENSAO: a escada de cargos + o RENOME que a destranca
+// ---------------------------------------------------------------------------
+//tempo em ds REAIS -> texto no relogio DO JOGO (com o equivalente real entre parenteses)
+proc/rq_tempo_txt(ds)
+	if(ds < 0) ds = 0
+	return "[round(ds / RQ_INGAME_DAY * 24)]h in-game (~[round(ds / 600)] min reais)"
+
+proc/rq_my_key(mob/M) //qual cargo COM DEVERES esta alma carrega ("" = nenhum)
+	if(!M || !M.signature) return ""
+	for(var/key in RQ_ALL)
+		if(rq_get_sig(key) == M.signature) return key
+	return ""
+
+//cargos que tem ESTE cargo como pre-requisito. Espelha o rq_requirements: mexer
+//aqui sem mexer la (ou vice-versa) cria degrau que aparece mas nunca deixa subir.
+proc/rq_promo_targets(key)
+	var/list/alvos = list()
+	switch(key)
+		//os 4 Kaios cardeais: Grand Kai e o degrau natural, e o Kaioshin aceita o
+		//atalho de sangue Kai + maestria de God Ki (o rq_requirements julga isso).
+		if("nkai","skai","ekai","wkai") alvos = list("grandkai","kaioshin")
+		if("grandkai") alvos = list("kaioshin")
+	var/list/ret = list()
+	for(var/k in alvos)
+		if(k in RQ_CLAIMABLE) ret += k //so o que se toma por prova (kov/GoD/Anjo tem caminho proprio)
+	return ret
+
+proc/rq_renown(key) //tarefas cumpridas NO CARGO ATUAL (zera a cada troca de cargo)
+	var/list/st = rq_state[key]
+	if(!islist(st)) return 0
+	return st["done"] || 0
+
+proc/rq_promo_ready(key)
+	return rq_renown(key) >= RQ_PROMO_QUESTS
+
+//ha degrau acima VAGO agora? (renome nao adianta com o trono ocupado)
+//Com M, so conta o degrau que ELE consegue tomar: sem esse filtro o Kaioshin e DEGRAU
+//FANTASMA pro Kaio cardeal SEM sangue Kai (o requisito dele e ser Grand Kai ou ter
+//sangue Kai + maestria) -- o trono vago que ele nunca tomaria queimava o aviso e fazia
+//o "ascensao liberada" mentir. Sem M (dono offline) sobra so a vacancia mesmo.
+proc/rq_promo_open(key, mob/M)
+	for(var/alvo in rq_promo_targets(key))
+		if(rq_get_sig(alvo)) continue //ocupado
+		if(M && rq_requirements(alvo, M)) continue //vago, mas fora do alcance dele
+		return 1
+	return 0
+
+proc/rq_promo_txt(key) //nomes dos degraus acima, para o texto
+	var/list/nomes = list()
+	for(var/k in rq_promo_targets(key)) nomes += rq_display(k)
+	return jointext(nomes, " ou ")
+
+proc/rq_renown_txt(key) //linha de renome, ciente de haver ou nao degrau acima
+	if(!rq_promo_targets(key).len) return "Renome: [rq_renown(key)] tarefas cumpridas neste cargo."
+	return "Renome: [min(rq_renown(key), RQ_PROMO_QUESTS)]/[RQ_PROMO_QUESTS] para a ascensao."
+
+// ---------------------------------------------------------------------------
 // REQUISITOS por rank: null = apto; senao texto do que falta
 // ---------------------------------------------------------------------------
 proc/rq_requirements(key, mob/M)
@@ -206,23 +276,40 @@ mob/verb/Reivindicar_Rank()
 	if(world.time < usr.rq_claim_cd)
 		to_chat(usr, "O espirito do cargo ainda zomba da sua ultima derrota ([round((usr.rq_claim_cd - world.time) / 600)] min).")
 		return
-	if(rq_any_rank(usr))
+	//JA TEM CARGO? entao isto vira ASCENSAO: so os degraus acima, e so com renome.
+	//(rq_my_key so enxerga os cargos COM DEVERES -- GoD/Anjo/Rei Pirata e cia
+	// nao tem escada nem quest, entao pra eles continua valendo "um trono so".)
+	var/mykey = rq_my_key(usr)
+	if(!mykey && rq_any_rank(usr))
 		to_chat(usr, "Voce ja carrega um cargo -- uma alma, um trono.")
 		return
+	var/list/pool = RQ_CLAIMABLE
+	if(mykey)
+		pool = rq_promo_targets(mykey)
+		if(!pool.len)
+			to_chat(usr, "<font color=#e8b64c>[rq_display(mykey)] e o fim da sua escada -- nenhum cargo exige este como pre-requisito. Uma alma, um trono.")
+			return
+		if(!rq_promo_ready(mykey))
+			to_chat(usr, "<font color=#e8b64c>Ainda falta RENOME para almejar algo maior: <b>[rq_renown(mykey)]/[RQ_PROMO_QUESTS]</b> tarefas cumpridas como [rq_display(mykey)]. Sirva ao cargo primeiro. (verb <b>Meu Rank</b>)")
+			return
 	//lista os VAGOS, marcando o que falta em cada um
 	var/list/menu = list()
-	for(var/key in RQ_CLAIMABLE)
+	for(var/key in pool)
 		if(rq_get_sig(key)) continue //ocupado
 		if(usr.dead && !(key in RQ_SKY)) continue //morto so reivindica cargos do Outro Mundo
 		var/falta = rq_requirements(key, usr)
 		menu["[rq_display(key)][falta ? " (FALTA: [falta])" : " -- APTO"]"] = key
 	if(!menu.len)
-		to_chat(usr, "Nenhum cargo vago ao seu alcance agora[usr.dead ? " (morto, so os cargos do Outro Mundo aparecem)" : ""].")
+		if(mykey) to_chat(usr, "Nenhum cargo acima de [rq_display(mykey)] esta vago agora.")
+		else to_chat(usr, "Nenhum cargo vago ao seu alcance agora[usr.dead ? " (morto, so os cargos do Outro Mundo aparecem)" : ""].")
 		return
-	var/pick = input(usr, "Cargos VAGOS (a prova invoca o Espirito do Cargo, ~15% acima do seu poder):", "Reivindicar Rank") as null|anything in menu
+	var/pick = input(usr, mykey ? "ASCENSAO -- cargos acima de [rq_display(mykey)] (a prova invoca o Espirito do Cargo, ~15% acima do seu poder):" : "Cargos VAGOS (a prova invoca o Espirito do Cargo, ~15% acima do seu poder):", "Reivindicar Rank") as null|anything in menu
 	if(!pick) return
 	var/key = menu[pick]
 	if(rq_get_sig(key)) return //ocupado no meio tempo
+	if(rq_my_key(usr) != mykey || (mykey && (!(key in rq_promo_targets(mykey)) || !rq_promo_ready(mykey))))
+		to_chat(usr, "<font color=#e8b64c>Seu cargo mudou enquanto a janela estava aberta -- a ascensao foi cancelada.")
+		return
 	var/falta = rq_requirements(key, usr)
 	if(falta)
 		to_chat(usr, "<font color=#e8b64c>Ainda nao: [falta].")
@@ -231,10 +318,13 @@ mob/verb/Reivindicar_Rank()
 		to_chat(usr, "Outra alma ja enfrenta o espirito deste cargo AGORA.")
 		return
 	if(usr.dead && !(key in RQ_SKY)) return
-	switch(alert(usr, "O ESPIRITO DE [uppertext(rq_display(key))] sera invocado para testa-lo (~15% acima do seu poder expresso). Vencer = o cargo e seu. Perder = 30 min de vergonha. Enfrentar?", "Prova do Cargo", "Enfrentar", "Recuar"))
+	switch(alert(usr, "O ESPIRITO DE [uppertext(rq_display(key))] sera invocado para testa-lo (~15% acima do seu poder expresso). Vencer = o cargo e seu[mykey ? ", e o posto de [rq_display(mykey)] fica VAGO (seu renome recomeca do zero)" : ""]. Perder = 30 min de vergonha. Enfrentar?", "Prova do Cargo", "Enfrentar", "Recuar"))
 		if("Recuar") return
 	if(rq_trial_busy[key] || rq_get_sig(key) || usr.rq_claiming) return
-	spawn rq_trial_run(usr, key)
+	if(rq_my_key(usr) != mykey || (mykey && (!(key in rq_promo_targets(mykey)) || !rq_promo_ready(mykey)))) //idem: o alert tambem bloqueia
+		to_chat(usr, "<font color=#e8b64c>Seu cargo mudou enquanto a janela estava aberta -- a ascensao foi cancelada.")
+		return
+	spawn rq_trial_run(usr, key, mykey) //mykey vai junto: o degrau tem que continuar de pe no FIM da prova
 
 proc/rq_trial_turf(mob/M) //turf andavel ao lado do desafiante
 	for(var/tries = 1 to 20)
@@ -242,7 +332,7 @@ proc/rq_trial_turf(mob/M) //turf andavel ao lado do desafiante
 		if(T && !T.density && T != M.loc) return T
 	return M.loc
 
-proc/rq_trial_run(mob/M, key)
+proc/rq_trial_run(mob/M, key, mykey = "")
 	if(!M || rq_trial_busy[key]) return
 	rq_trial_busy[key] = 1
 	M.rq_claiming = 1
@@ -282,19 +372,36 @@ proc/rq_trial_run(mob/M, key)
 			to_chat(M, "<font color=#e8b64c>O espirito se desfaz em risos... voce NAO estava a altura do cargo. (novamente em [round(RQ_CLAIM_CD / 600)] min)")
 		return
 	if(rq_get_sig(key)) return //alguem levou no meio tempo (nao deveria: trava)
+	//a prova leva ate 5 min e o rq_loop anda junto: quem foi DESTITUIDO (3a falha) ou
+	//perdeu o degrau/renome durante a luta NAO ascende -- senao a punicao do sistema
+	//viraria promocao. So o caminho da ASCENSAO revalida: no claim comum nao da pra
+	//re-checar requisito, porque MATAR o Espirito paga karma (Enemy/mobDeath) e isso
+	//derrubaria justamente Crane/Demon Lord/Makyo, que exigem karma BAIXO.
+	if(mykey)
+		if(rq_my_key(M) != mykey || !(key in rq_promo_targets(mykey)) || !rq_promo_ready(mykey))
+			to_chat(M, "<font color=red><b>O Espirito de [rq_display(key)] caiu, mas o manto se desfaz nas suas maos:</b> voce perdeu o posto de [rq_display(mykey)] (ou o renome dele) durante a prova. A ascensao pertence a quem AINDA carrega o degrau de baixo.")
+			return
+		//ATENCAO: este re-teste so e seguro enquanto TODO alvo do rq_promo_targets tiver
+		//requisito que nao PIORA na luta (hoje: grandkai = so assinatura; kaioshin = karma
+		//75+ e maestria, que so SOBEM). Alvo que peca karma BAIXO ou zenni quebra aqui --
+		//matar o Espirito paga karma. Se a escada crescer nessa direcao, tire este bloco:
+		//o rq_my_key + rq_promo_targets acima ja cobrem o que da pra perder na prova.
+		var/falta_fim = rq_requirements(key, M)
+		if(falta_fim)
+			to_chat(M, "<font color=red><b>O Espirito de [rq_display(key)] caiu, mas o manto se recusa:</b> [falta_fim]. (algo mudou durante a prova)")
+			return
 	rq_grant(key, M)
 
 proc/rq_grant(key, mob/M)
-	//ESCADA DOS KAIOS: subir vaga o degrau de baixo
+	//ASCENSAO: subir VAGA o degrau de baixo, seja ele qual for (a escada dos Kaios
+	//e o caso classico, mas a regra vale pra qualquer par ligado no rq_promo_targets).
 	var/s = M.signature
-	if(key == "grandkai")
-		for(var/ck in list("nkai","skai","ekai","wkai"))
-			if(rq_get_sig(ck) == s)
-				rq_set_sig(ck, null)
-				bev_announce("O posto de [rq_display(ck)] esta VAGO -- [M.name] ascendeu na hierarquia divina!")
-	if(key == "kaioshin" && Grand_Kai == s)
-		rq_set_sig("grandkai", null)
-		bev_announce("O trono de Grand Kai esta VAGO -- [M.name] ascendeu a Kaioshin!")
+	for(var/velho in RQ_ALL)
+		if(velho == key || rq_get_sig(velho) != s) continue
+		if(!(key in rq_promo_targets(velho))) continue //so vaga o DEGRAU DE BAIXO: cargo de outra familia (o trono de Vegeta se toma matando o Rei, fora deste verb) fica com o dono
+		rq_set_sig(velho, null)
+		rq_state -= velho //ficha do posto antigo morre junto: o proximo dono comeca limpo
+		bev_announce("O posto de [rq_display(velho)] esta VAGO -- [M.name] ascendeu a [rq_display(key)]!")
 	if(key == "president") M.zenni -= RQ_PRESIDENT_CAMPAIGN //a campanha cobra ao VENCER
 	rq_set_sig(key, s)
 	RankList[s] = M.name
@@ -304,6 +411,8 @@ proc/rq_grant(key, mob/M)
 	rq_save()
 	bev_announce("[M.name] venceu o Espirito do Cargo e agora e [uppertext(rq_display(key))]!")
 	to_chat(M, "<font color=#e8b64c><b>O manto de [rq_display(key)] e seu.</b> O cargo cobra deveres: acompanhe pelo verb <b>Meu Rank</b>. [RQ_FAILS_MAX] falhas = destituicao.")
+	if(rq_promo_targets(key).len)
+		to_chat(M, "<font color=#e8b64c>Ha degrau acima deste cargo ([rq_promo_txt(key)]): cumpra <b>[RQ_PROMO_QUESTS]</b> tarefas para ganhar renome e o <b>Reivindicar Rank</b> se abre de novo.")
 
 // ---------------------------------------------------------------------------
 // MOTOR DE QUESTS (ticker de 60s; estado persistido em "RankQuests")
@@ -318,6 +427,38 @@ proc/rq_load()
 	var/list/d
 	S["state"] >> d
 	if(islist(d)) rq_state = d
+	rq_boot_forgive() //o prazo mora em world.realtime: perdoa o tempo de servidor DESLIGADO
+
+//world.realtime e relogio de PAREDE -- anda com o servidor fora do ar. Com o prazo curto
+//(RQ_TASK_DAYS dias in-game = ~1h real), qualquer manutencao/wipe/queda maior que isso
+//deixava TODA tarefa em voo vencida no primeiro tick pos-boot: falha de graca e anuncio
+//global por cargo, empilhando rumo a destituicao sem ninguem ter jogado. Prazo que vence
+//com o mundo DE PE nao passa por aqui -- continua caindo normal no rq_loop.
+proc/rq_boot_forgive()
+	var/mexeu = 0
+	for(var/key in RQ_ALL)
+		var/list/st = rq_state[key]
+		if(!islist(st)) continue
+		if(rq_clamp_window(st)) mexeu = 1
+		if(!st["task"]) continue
+		if(st["deadline"] > world.realtime + 600) continue //ainda sobra prazo: nao mexe
+		st["deadline"] = world.realtime + RQ_TASK_DEADLINE
+		mexeu = 1
+	if(mexeu) rq_save()
+
+//A ficha guarda INSTANTES ABSOLUTOS (world.realtime), entao encurtar os knobs nao encurta
+//sozinho a janela ja gravada: quem estava esperando o intervalo VELHO (48h reais) continuava
+//com "a proxima chega em ~2735 min". Este teto corta qualquer janela maior que a de hoje --
+//vale pra migracao antiga e pra qualquer ajuste futuro de RQ_TASK_DAYS. Devolve 1 se mexeu.
+proc/rq_clamp_window(list/st)
+	. = 0
+	if(!islist(st)) return
+	if(st["next"] > world.realtime + RQ_TASK_INTERVAL)
+		st["next"] = world.realtime + RQ_TASK_INTERVAL
+		. = 1
+	if(st["task"] && st["deadline"] > world.realtime + RQ_TASK_DEADLINE)
+		st["deadline"] = world.realtime + RQ_TASK_DEADLINE
+		. = 1
 
 proc/RankQuests_Init()
 	set waitfor = 0
@@ -391,7 +532,7 @@ proc/rq_assign(key, list/st)
 	st["prog"] = 0
 	st["deadline"] = world.realtime + RQ_TASK_DEADLINE
 	rq_save()
-	conq_notify_owner(sig, "<font color=#e8b64c><b>[rq_display(key)]:</b> nova tarefa -- [rq_task_desc(st)]. Prazo: [round(RQ_TASK_DEADLINE / 36000)]h. (verb Meu Rank)</font>")
+	conq_notify_owner(sig, "<font color=#e8b64c><b>[rq_display(key)]:</b> nova tarefa -- [rq_task_desc(st)]. Prazo: [rq_tempo_txt(RQ_TASK_DEADLINE)]. (verb Meu Rank)</font>")
 
 proc/rq_check_done(key, list/st)
 	switch(st["task"])
@@ -433,16 +574,31 @@ proc/rq_service_tick(key, list/st) //pontos por visitantes qualificados perto do
 proc/rq_complete(key, list/st)
 	var/sig = rq_get_sig(key)
 	st["fails"] = max((st["fails"] || 0) - 1, 0)
+	st["done"] = (st["done"] || 0) + 1 //RENOME: e isto que abre a ascensao
 	st["task"] = ""
 	st["next"] = world.realtime + RQ_TASK_INTERVAL
-	rq_save()
 	var/mob/H = rq_holder_mob(sig)
+	//renome batendo a marca: a escada se abre. O latch CAI enquanto nao houver degrau
+	//VAGO E ALCANCAVEL -- senao o unico aviso da tenencia seria gasto num trono que ele
+	//nunca poderia tomar, e nada avisaria quando o degrau certo vagasse. Decidido ANTES
+	//do rq_save para uma gravacao so cobrir fails/done/task/next + latch.
+	var/avisar = 0
+	if(rq_promo_targets(key).len && st["done"] >= RQ_PROMO_QUESTS)
+		if(!rq_promo_open(key, H)) st["promo_warned"] = 0
+		else if(!st["promo_warned"])
+			st["promo_warned"] = 1
+			avisar = 1
+	rq_save()
 	if(H)
 		H.zenni += RQ_REWARD_ZENNI
 		if(!(key in RQ_EVIL)) H.karma = min(H.karma + RQ_REWARD_KARMA, 100)
-		to_chat(H, "<font color=#e8b64c><b>Tarefa de [rq_display(key)] CUMPRIDA!</b> +[FullNum(RQ_REWARD_ZENNI)] zenni. Falhas: [st["fails"]]/[RQ_FAILS_MAX].")
+		to_chat(H, "<font color=#e8b64c><b>Tarefa de [rq_display(key)] CUMPRIDA!</b> +[FullNum(RQ_REWARD_ZENNI)] zenni. Falhas: [st["fails"]]/[RQ_FAILS_MAX]. [rq_renown_txt(key)]")
 	else conq_notify_owner(sig, "<font color=#e8b64c><b>Tarefa de [rq_display(key)] CUMPRIDA!</b> A recompensa aguarda seu retorno... (paga na proxima tarefa cumprida online)")
 	to_chat(world, "<font color=#e8b64c>[rq_display(key)] cumpriu seu dever para com o universo.</font>", "announce")
+	if(avisar)
+		var/aviso = "<font color=#e8b64c><b>Seu renome como [rq_display(key)] correu o universo.</b> O caminho para [rq_promo_txt(key)] esta aberto -- use o verb <b>Reivindicar Rank</b> para enfrentar o Espirito do proximo cargo.</font>"
+		if(H) to_chat(H, aviso)
+		else conq_notify_owner(sig, aviso)
 
 proc/rq_fail(key, list/st)
 	var/sig = rq_get_sig(key)
@@ -481,9 +637,18 @@ proc/rq_loop()
 				continue
 			var/list/st = rq_state[key]
 			if(!islist(st))
-				st = list("task" = "", "next" = world.realtime + RQ_TASK_INTERVAL, "fails" = 0, "prog" = 0, "goal" = 0, "planet" = "", "target_sig" = null, "tname" = "", "deadline" = 0)
+				st = list("task" = "", "next" = world.realtime + RQ_TASK_INTERVAL, "fails" = 0, "done" = 0, "prog" = 0, "goal" = 0, "planet" = "", "target_sig" = null, "tname" = "", "deadline" = 0)
 				rq_state[key] = st
 				rq_save()
+			if(rq_clamp_window(st)) rq_save() //ficha gravada com o intervalo VELHO (48h reais) se conserta sozinha aqui, sem esperar reboot
+			//PORTADOR OFFLINE: relogio CONGELADO. 11 dos 17 cargos so pontuam com ele no ar
+			//(o rq_service_tick sai na hora sem o mob), entao correr prazo na ausencia era
+			//3 falhas em ~4h reais e o cargo perdido dormindo. Nada e atribuido nem cobrado
+			//enquanto ele nao volta, e o prazo renasce inteiro quando ele voltar.
+			if(!rq_holder_mob(sig))
+				st["next"] = world.realtime + 600
+				if(st["task"]) st["deadline"] = world.realtime + RQ_TASK_DEADLINE
+				continue
 			if(!st["task"])
 				if(world.realtime >= st["next"]) rq_assign(key, st)
 				continue
@@ -499,22 +664,25 @@ proc/rq_loop()
 mob/verb/Meu_Rank()
 	set name = "Meu Rank"
 	set category = "Other"
-	var/mykey = ""
-	for(var/key in RQ_ALL)
-		if(rq_get_sig(key) == usr.signature)
-			mykey = key
-			break
+	var/mykey = rq_my_key(usr)
 	if(!mykey)
 		to_chat(usr, "Voce nao carrega nenhum cargo com deveres. (Reivindicar Rank mostra os vagos.)")
 		return
 	var/list/st = rq_state[mykey]
 	to_chat(usr, "<b>--- [rq_display(mykey)] ---</b>")
+	to_chat(usr, "[rq_renown_txt(mykey)]")
+	if(rq_promo_targets(mykey).len)
+		if(!rq_promo_ready(mykey)) to_chat(usr, "Degrau acima: [rq_promo_txt(mykey)] (faltam [RQ_PROMO_QUESTS - rq_renown(mykey)] tarefas de renome).")
+		else if(rq_promo_open(mykey, usr)) to_chat(usr, "<font color=#e8b64c>ASCENSAO LIBERADA: [rq_promo_txt(mykey)] -- use o verb <b>Reivindicar Rank</b>.")
+		else if(rq_promo_open(mykey)) to_chat(usr, "<font color=#e8b64c>Ha degrau VAGO acima ([rq_promo_txt(mykey)]), mas voce ainda nao preenche o que ele exige -- o <b>Reivindicar Rank</b> mostra o que falta.")
+		else to_chat(usr, "<font color=#e8b64c>Renome suficiente, mas [rq_promo_txt(mykey)] segue OCUPADO -- o trono precisa vagar.")
+	else to_chat(usr, "Este e o fim da sua escada -- nenhum cargo exige [rq_display(mykey)] como pre-requisito.")
 	if(!islist(st) || !st["task"])
-		to_chat(usr, "Sem tarefa no momento. A proxima chega [islist(st) && st["next"] ? "em ~[max(round((st["next"] - world.realtime) / 36000), 0)]h" : "em breve"].")
+		to_chat(usr, "Sem tarefa no momento. A proxima chega [islist(st) && st["next"] ? "em ~[rq_tempo_txt(st["next"] - world.realtime)]" : "em breve"].")
 		if(islist(st)) to_chat(usr, "Falhas: [st["fails"] || 0]/[RQ_FAILS_MAX].")
 		return
 	to_chat(usr, "Tarefa: [rq_task_desc(st)]")
-	to_chat(usr, "Prazo: [max(round((st["deadline"] - world.realtime) / 36000), 0)]h [max(round(((st["deadline"] - world.realtime) % 36000) / 600), 0)]min | Falhas: [st["fails"] || 0]/[RQ_FAILS_MAX]")
+	to_chat(usr, "Prazo restante: [rq_tempo_txt(st["deadline"] - world.realtime)] | Falhas: [st["fails"] || 0]/[RQ_FAILS_MAX]")
 	if(st["task"] == "verba") //o President deposita por aqui
 		switch(alert(usr, "Depositar [FullNum(RQ_PRESIDENT_FUND)] zenni no cofre da Terra agora?", "Verba", "Depositar", "Agora nao"))
 			if("Depositar")

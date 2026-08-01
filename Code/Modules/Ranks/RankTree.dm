@@ -61,19 +61,28 @@ datum/skill/tree/RankTree
 */
 mob/var/Rank //all encompassing verb. Used to see if you have a rank.
 mob/var/LastRank //to make sure it doesn't keep applying itself and stops itself at the condition.
+//GUARDA DE DUPLICATA em TODOS os slots: o acquire() (trees.dm) empurra a arvore no
+//possessed_trees sem checar nada, e varios cargos caem no MESMO slot (os 4 Kaios, o
+//Grand Kai e o Kaioshin sao todos Otherworld). Sem a guarda, cada ascensao/troca de
+//cargo empilhava outra copia da arvore -- com effector proprio no login e as skills
+//sendo oferecidas (e compraveis) duas vezes.
 mob/proc/RankTreeAssign(var/N)
 	switch(N)
 		if(1)
-			getTree(new /datum/skill/tree/Rank/Otherworld)
+			if(!(locate(/datum/skill/tree/Rank/Otherworld) in possessed_trees))
+				getTree(new /datum/skill/tree/Rank/Otherworld)
 		if(2)
-			getTree(new /datum/skill/tree/Rank/Earth)
+			if(!(locate(/datum/skill/tree/Rank/Earth) in possessed_trees))
+				getTree(new /datum/skill/tree/Rank/Earth)
 		if(3)
-			getTree(new /datum/skill/tree/Rank/Space)
+			if(!(locate(/datum/skill/tree/Rank/Space) in possessed_trees))
+				getTree(new /datum/skill/tree/Rank/Space)
 		if(4) //Aprendiz de Kaioshin (era o slot vago das Alien trees) -- KaioshinApprentice.dm
 			if(!(locate(/datum/skill/tree/Rank/KaioshinApprentice) in possessed_trees))
 				getTree(new /datum/skill/tree/Rank/KaioshinApprentice)
 		if(5)
-			getTree(new /datum/skill/tree/Rank/Namek)
+			if(!(locate(/datum/skill/tree/Rank/Namek) in possessed_trees))
+				getTree(new /datum/skill/tree/Rank/Namek)
 datum/skill/tree/RankTree/growbranches()
 	if(savant.Rank!=savant.LastRank&&!assignedRank)
 		assignedRank = 1

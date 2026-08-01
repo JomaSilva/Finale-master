@@ -74,6 +74,9 @@ mob/verb/holdblock()
 	set instant = 1
 	set hidden = 1
 	//if(IsInFight)
+	if(!block_limbs_ok()) //BlockLimbs.dm: sem braco nem perna inteiros nao ha o que erguer
+		block_warn_raise("<font color=purple><b>Seus membros estao quebrados demais para erguer a guarda!</b></font>")
+		return
 	var/image/I= image('Attack strength indicator concept.dmi',src,"Block",MOB_LAYER+1)
 	overlays += I
 	blocking = 1
@@ -176,11 +179,17 @@ mob/proc/Fight()
 
 mob/proc/hitProc(var/mob/M,dmg,var/iscrit,var/customFlavor,var/forcehit,type)
 	var/hit = 2
+	//BlockLimbs.dm: a guarda so vale se sobrar braco/perna INTEIRO e o sorteio de falha
+	//passar. Guarda que cede deixa de APARAR, mas NAO devolve o teste de pontaria: quem
+	//se comprometeu com o bloqueio nao esta desviando, entao come o golpe inteiro. (Com
+	//block_ok no teste de pontaria, membro quebrado virava esquiva de graca contra
+	//atacante fraco e QUEBRAR os proprios bracos passava a proteger -- o inverso do pedido.)
+	var/block_ok = M.block_holds()
 	var/bhit = (Etechnique/M.Espeed)*BPModulus(expressedBP,M.expressedBP)*100-M.deflection+accuracy//two perfectly matched players will hit 100% of the time
 	if(armsLost) bhit *= max(1 - armsLost * 0.25, 0.1) //braco(s) decepado(s): -25% de chance de acerto por braco
 	if(iscrit) hit = 3
 	if(forcehit) hit = 2
-	if(!prob(bhit) && !M.blocking) hit = 0
+	if(!prob(bhit) && !M.blocking) hit = 0 //blocking CRU de proposito: quem ergue a guarda nao desvia, mesmo com ela cedendo
 	if(M.dodging)
 		M.dodging = 0
 		var/kireq = 0.05*M.MaxKi / M.Etechnique
@@ -188,7 +197,7 @@ mob/proc/hitProc(var/mob/M,dmg,var/iscrit,var/customFlavor,var/forcehit,type)
 		if(M.Ki >kireq)
 			M.Ki-=kireq
 			hit = 4
-	if(M.blocking)
+	if(block_ok)
 		hit = 0
 		if(dashing)
 			hit = 3
@@ -200,7 +209,7 @@ mob/proc/hitProc(var/mob/M,dmg,var/iscrit,var/customFlavor,var/forcehit,type)
 		M.countering--
 		hit = 1
 	if(M.KO) hit = 2 //a knocked-out target is completely exposed: no dodge, no block, no counter -- every hit lands clean
-	if((hit == 2 || hit == 3) && !forcehit && ui_try_evade(M, "melee")) hit = 0 //ULTRA INSTINCT: Esquiva Autonoma -- o corpo desvia sozinho, ate de crits (UltraInstinct.dm)
+	if((hit == 2 || hit == 3) && !forcehit && ui_try_evade(M, "melee", block_ok)) hit = 0 //ULTRA INSTINCT: Esquiva Autonoma -- o corpo desvia sozinho, ate de crits (UltraInstinct.dm); guarda que CEDEU nao aparou nada, entao nao impede a esquiva
 	Attack_MasteryGain(1 + type)
 	switch(hit)
 		if(3)//crit
@@ -258,9 +267,12 @@ mob/proc/hitProc(var/mob/M,dmg,var/iscrit,var/customFlavor,var/forcehit,type)
 			stunCount = min(60 * type,50)
 			to_chat(src, "[M] stunned you!")
 		if(0)//dodge
-			if(M.blocking)
+			if(block_ok)
+				//quem APARA leva o dano: o golpe aparado nao chega na zona mirada (nem na cabeca)
+				var/datum/Body/apara = M.block_pick_limb()
 				M.GenerateAttackFlavorText("Dodge",src,"blocks")
-				Damage(M,dmg/(3 * max((M.block * M.blockmod) - (penetration/2), 0.1) * max(1,round( log(1.3,Etechnique) ))),type) //max 0.1: block*blockmod - pen/2 podia dar 0 -> Division by zero (48x no log)
+				Damage(M,dmg/(3 * max((M.block * M.blockmod) - (penetration/2), 0.1) * max(1,round( log(1.3,Etechnique) ))),type,apara) //max 0.1: block*blockmod - pen/2 podia dar 0 -> Division by zero (48x no log)
+				M.block_check_broken(apara)
 			else
 				M.GenerateAttackFlavorText("Dodge",src)
 			if(M.riposteon&&prob(M.tactics))
@@ -271,7 +283,7 @@ mob/proc/hitProc(var/mob/M,dmg,var/iscrit,var/customFlavor,var/forcehit,type)
 			createShockwavemisc(M.loc,1)
 			emit_Sound('meleeflash.wav')
 			emit_Sound(punchrandomsnd)
-			if(!M.blocking) flick('Zanzoken.dmi',M)
+			if(!block_ok) flick('Zanzoken.dmi',M) //guarda que cedeu e esquiva de verdade: mostra o Zanzoken
 			combo_count = 0
 			stagger+=1
 			spawn(3) stagger-=1

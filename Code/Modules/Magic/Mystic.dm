@@ -36,7 +36,7 @@ obj/overlay/effects/MysticEffect
 			container.updateOverlay(/obj/overlay/hairs/hair)
 		container.updateOverlay(/obj/overlay/effects/MysticEffect)
 		if(container.hasssj)
-			container.MysticMod = container.ssjmult
+			container.MysticMod = container.ssj1_gate_mult() //MAIOR entre SSJ1 e grade: o ssjmult cru perdeu o degrau de 4x com o rework dos grades
 		if(container.hasssj2)
 			container.MysticMod = 1.1*container.ssj2mult
 		container.MysticPcnt=container.MysticMod

@@ -416,9 +416,24 @@ mob/proc/ui_tab_scan()
 	return jointext(h, "")
 
 // ---- FORMS & MASTERY -------------------------------------------------------
+//uma linha da escada de GRADES do SSJ1: bloqueado (com o alvo de maestria), liberado, selecionado ou ATIVO
+mob/proc/ui_grade_row(g)
+	var/pct = (g >= 3) ? SSJ_GRADE3_PCT : SSJ_GRADE2_PCT
+	if(ssj1mastery < pct)
+		return ui_row("SSJ Grade [g]", "bloqueado <span class='mut'>(precisa [pct]% de maestria no SSJ1)</span>", "lo")
+	var/estado = "liberado"
+	var/classe = ""
+	if(ssj == 1.5 && ssj_grade_active == g)
+		estado = "ATIVO"
+		classe = "hi"
+	else if(ssj_grade_sel == g)
+		estado = "selecionado"
+		classe = "av"
+	return ui_row("SSJ Grade [g]", "[estado] <span class='mut'>(x[ssj_grade_mult(g)][g >= 3 ? " -- sem God Ki" : ""])</span>", classe)
+
 mob/proc/ui_tab_forms()
 	var/list/h = list()
-	if((Class == "Legendary" && (lssj1mastery || lssj2mastery || lssj3mastery)) || (FutureLineage && hasssj) || ssj1mastery || ssj2mastery || ssj3mastery || ssj4mastery || ssj4fpmastery || KaiokenMastery > 1) //maestria de formas (0-100%); ao 50% a transformacao vira instantanea
+	if((Class == "Legendary" && (lssj1mastery || lssj2mastery || lssj3mastery)) || (FutureLineage && hasssj) || (hasssj && ssj_ladder_user()) || ssj1mastery || ssj2mastery || ssj3mastery || ssj4mastery || ssj4fpmastery || KaiokenMastery > 1) //maestria de formas (0-100%); o hasssj so abre a secao pra ESCADA SAIYAJIN (Heran/Legendary/canSSJ tambem cravam hasssj e ficariam com o cabecalho VAZIO)
 		h += ui_sec("FORM MASTERY")
 		if(Class == "Legendary")
 			//so lista a forma que o jogador JA USOU (maestria > 0): o Legendary via a lista inteira zerada sem nunca ter transformado (a maestria comeca a subir no 1o uso da forma)
@@ -427,8 +442,12 @@ mob/proc/ui_tab_forms()
 			if(lssj3mastery) h += ui_row("Super Saiyan Full Power", "[round(lssj3mastery)]%", "")
 		else
 			if(FutureLineage && hasssj) h += ui_row("Future Super Saiyan", "[round(futuressjmastery)]% <span class='mut'>(x[future_ssj_mult()], +2x a cada 10%)</span>", "")
-			if(ssj1mastery) h += ui_row("Super Saiyan", "[round(ssj1mastery)]%", "")
-			if(ssj2mastery) h += ui_row("Super Saiyan 2", "[round(ssj2mastery)]%", "")
+			if(ssj1mastery) h += ui_row("Super Saiyan", "[round(ssj1mastery)]% <span class='mut'>(x[ssj1_mult()][ssj1mastery >= 100 ? " -- dominado" : " -- vira x6 aos 100%"])</span>", "")
+			//GRADES DO SSJ1: nao se compram, abrem pela maestria (supersaiyanbuff.dm)
+			if(hasssj && ssj_ladder_user()) //precisa TER o SSJ1 (a secao tambem abre por Kaio-Ken/SSJ4, e ai os grades apareciam pra quem nem virou SSJ ainda); Heran/canSSJ/bio nunca veem
+				h += ui_grade_row(2)
+				h += ui_grade_row(3)
+			if(ssj2mastery) h += ui_row("Super Saiyan 2", "[round(ssj2mastery)]% <span class='mut'>(x[ssj2_effective_mult()])</span>", "")
 			if(ssj3mastery) h += ui_row("Super Saiyan 3", "[round(ssj3mastery)]%", "")
 		if(ssj4mastery) h += ui_row("Super Saiyan 4", "[round(ssj4mastery)]%", "")
 		if(ssj4fpmastery) h += ui_row("SSJ4 Full Power", "[round(ssj4fpmastery)]%", "")

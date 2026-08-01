@@ -280,7 +280,7 @@ mob/proc/creation_summary()
 // TELA DE PLANETA + RACA (substitui a janela nativa race_pick_act)
 // ============================================================================
 //racas disponiveis por planeta (mesma tabela do initialize_race_window antigo)
-//mob proc: Halfie_Year (e possiveis toggles can*) sao vars de mob
+//mob proc: os toggles can* (cansai, canhuman...) sao vars de mob
 mob/proc/creation_races_for(planet)
 	var/list/A = list()
 	if(android_creator_list && android_creator_list.len) A += "Android"
@@ -298,7 +298,11 @@ mob/proc/creation_races_for(planet)
 			if(canbio) A += "Bio-Android"
 		if("Vegeta")
 			if(cansai) A += "Saiyan"
-			if(Halfie_Year >= 1 && cansai) A += "Half-Saiyan"
+			//Half-Saiyan NAO se escolhe na criacao: ele so nasce de um Saiyajin com um
+			//Humano (caminho "Nascer de Gravidez/Ovo"). A regra antiga liberava a raca
+			//quando havia 2 adultos online -- e contava Humano OU Saiyajin, entao dois
+			//Humanos ja destravavam, e o meio-Saiyajin criado assim nem passava pelo
+			//passo de cabelo (Hair() nunca listou essa raca).
 			if(canintel) A += "Tsujin"
 			if(cansaib) A += "Saibamen"
 			if(canheran) A += "Heran"
@@ -322,10 +326,6 @@ mob/proc/creation_races_for(planet)
 	return A
 
 mob/proc/html_race_pick()
-	//contagem de meio-saiyajins liberados (regra herdada da janela antiga)
-	for(var/mob/M) if(M.client)
-		if(M.Race == "Human" && M.Age >= 16 && M.SAge >= 16) Halfie_Year += 0.5
-		if(M.Race == "Saiyan" && M.Age >= 16 && M.SAge >= 16) Halfie_Year += 0.5
 	//catalogo de /obj/race (nome -> icone/descricao)
 	var/list/rIcon = list()
 	var/list/rDesc = list()

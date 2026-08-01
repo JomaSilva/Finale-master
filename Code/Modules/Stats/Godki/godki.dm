@@ -208,6 +208,10 @@ mob/keyable/verb
 				createShockwavemisc(loc,2)
 				for(var/obj/overlay/B in src.overlayList)B.EffectLoop()
 				godki.refresh() //recalcula o teto de SSJ permitido pela MAESTRIA (trans_min_val)
+				if(ssj == 1.5 && ssj_grade_active > 2 && trans_min_val >= 1.5) //so avisa quem REALMENTE sustenta o 1.5 divino
+					ssj_grade_active = 2
+					recompute_saiyan_form_mults()
+					to_chat(src, "<font color=#66aaff>O ki divino nao aceita o Grade 3: seu corpo recua para o Grade 2 (Super Saiyan Royale).")
 				if(ssj > trans_min_val || (lssj && lssj-1 > trans_min_val))
 					Revert()
 			else

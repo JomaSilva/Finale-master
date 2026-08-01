@@ -247,11 +247,10 @@ obj/attack/blast
 						var/opp = get_opposite_dir(src)
 						for(var/obj/attack/blast/R in range(1, src))
 							if(R == src || R.in_beamclash || !R.loc) continue
-							if(!R.WaveAttack && !R.is_genkidama) continue
+							if(!R.WaveAttack) continue
 							if(R.proprietor == proprietor || !ismob(R.proprietor)) continue
-							if(!R.is_genkidama)
-								if(R.icon_state != "head" && R.icon_state != "") continue //so a PONTA do beam inimigo (corpo/tail quem corta e o Crossed)
-								if(R.dir != opp && R.dir != turn(opp,45) && R.dir != turn(opp,-45)) continue //vindo CONTRA nos (paralelo no mesmo sentido = aliados atirando juntos)
+							if(R.icon_state != "head" && R.icon_state != "") continue //so a PONTA do beam inimigo (corpo/tail quem corta e o Crossed)
+							if(R.dir != opp && R.dir != turn(opp,45) && R.dir != turn(opp,-45)) continue //vindo CONTRA nos (paralelo no mesmo sentido = aliados atirando juntos)
 							if(bcl_try_start(src, R)) break
 				else
 					obj_list-=src
@@ -507,7 +506,7 @@ obj/attack/blast
 						var/obj/attack/R=M//typecasting so the compiler knows the blast/beam has these variables
 						//BEAMCLASH: beam vs beam (ou vs GENKIDAMA) -> disputa interativa de ESPACO
 						//(BeamClash.dm); se nao der pra disputar, cai na resolucao automatica antiga abaixo
-						if((WaveAttack || is_genkidama) && (R.WaveAttack || R.is_genkidama) && !in_beamclash && !R.in_beamclash && bcl_try_start(src, R))
+						if(WaveAttack && R.WaveAttack && !in_beamclash && !R.in_beamclash && bcl_try_start(src, R))
 							return 1
 						var/sfirsttime=0
 						strugglestart

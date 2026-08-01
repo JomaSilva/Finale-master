@@ -319,6 +319,7 @@ mob/proc
 		namek_space_login_fix() //Namekuseijin NAO respira mais no vacuo (2026-07-18): zera genoma+spacebreather de chars antigos, preservando Rebreather/GoD (statnamek.dm)
 		age_table_login_fix() //Peak age/lifespan pela TABELA por raca (Aging.dm): sincroniza personagens antigos
 		ssj4_gate_login_fix() //SSJ4 subiu de ~200M pra casa dos 10/20B de BP base: re-sorteia o gate salvo dos chars antigos
+		ssj_grade_login_check() //USSJ virou GRADES do SSJ1 (2026-08-01): devolve os Marcos da skill, herda quem tinha, re-arma o verb (supersaiyanbuff.dm)
 		god_login_check() //God of Destruction: re-arma os poderes do portador / limpa de ex-portadores (GodOfDestruction.dm)
 		conq_login_check() //Conquista: entrega recados de dominio (perdeu/defendeu) + valida o spawn-no-dominio (PlanetConquest.dm)
 		ui_login_check() //Ultra Instinct: Anjo recebe de nascenca + re-arma verbs/forma de quem aprendeu (UltraInstinct.dm)
@@ -326,6 +327,7 @@ mob/proc
 		sdb_login_check() //Super Esferas: migra esferas do inventario antigo pra CLAIM + aprende a lingua dos deuses (ProceduralSpace.dm)
 		ksap_login_check() //Aprendiz de Kaioshin: caduca se o mestre caiu do trono / se o aprendiz virou cargo real (KaioshinApprentice.dm -- ANTES do Rank_Verb_Assign, que so SETA e nunca limpa)
 		mst_login_check() //Mestre e Alunos: re-registra a aba e atualiza o nome exibido (MasterStudent.dm)
+		sb_restore_check() //Genkidama aposentada -> Spirit Bomb, e devolve a tecnica ao Kaio do Norte que ficou sem (SpiritBomb.dm)
 		if(needs_manual_custom) //Handles logging into clones for the first time.
 			CustomizeFurther()
 			StatRace(Race)

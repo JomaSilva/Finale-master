@@ -202,8 +202,10 @@ mob
 		var/_uif = ui_form //Ultra Instinct: mesmo tratamento (o clearbuffs zeraria a forma via DeBuff)
 		var/_uef = ue_form //Ultra Ego: idem
 		var/_bst = beast_form //Beast do Prodigial: idem (Mystic.dm)
+		var/_gra = ssj_grade_active //grade do SSJ1: o clearbuffs zeraria e o save gravaria ssj=1.5 sem grade
 		clearbuffs()
 		ssj = _ssj
+		ssj_grade_active = _gra
 		lssj = _lssj
 		ui_form = _uif
 		ue_form = _uef

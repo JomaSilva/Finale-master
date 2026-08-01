@@ -23,6 +23,7 @@ mob/proc/Revert(var/DontRevertSSJ)
 		stopbuff(/obj/buff/BeastForm) //Beast do Prodigial: idem (Mystic.dm)
 		ssjBuff = 1
 		ssj=0
+		ssj_grade_active=0 //grade do SSJ1 cai junto (supersaiyanbuff.dm)
 		lssj=0
 		trans=0
 	if(DontRevertSSJ == 2)

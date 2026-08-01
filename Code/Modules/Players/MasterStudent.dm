@@ -3,8 +3,10 @@
 //   * Verb "Convidar Aluno" (aba Learning): de frente para outro jogador, com
 //     no minimo MST_BP_RATIO vezes o BP BASE dele, voce o convida. Um aluno tem
 //     UM mestre; um mestre tem ate MST_MAX_STUDENTS alunos.
-//   * Aba "Alunos": quem e seu mestre, quem sao seus alunos, e os botoes de
-//     dispensar / abandonar (molde da aba Known People).
+//   * Aba propria com os botoes de dispensar / abandonar (molde da aba Known
+//     People). Ela troca de NOME conforme o papel: "Alunos" para quem guia e
+//     "Mestre" para quem so e guiado. O poder do outro aparece como DIFERENCA
+//     relativa -- numero de BP so com SCOUTER (de qualquer um dos dois lados).
 //   * TREINAR COM O MESTRE RENDE MAIS: o bonus por lutar com alguem mais forte
 //     (fight_gain_mult, combatgains.dm) tem teto 2x no geral; contra o proprio
 //     mestre o teto sobe para MST_GAIN_CAP e a escala e LINEAR pela razao dos
@@ -98,8 +100,8 @@ proc/mst_bind(mob/mestre, mob/aluno)
 	mst_names[aluno.signature] = aluno.name
 	mst_names[mestre.signature] = mestre.name
 	mst_save() //o savefile so e LIDO no boot: grava agora ou um reboot engole o vinculo
-	aluno.mst_tab_on()
-	mestre.mst_tab_on()
+	aluno.mst_tab_sync()
+	mestre.mst_tab_sync()
 	return 1
 
 proc/mst_unbind(aluno_sig, reason)
@@ -139,14 +141,31 @@ mob/proc/mst_login_check()
 	if(!signature) return
 	if(mst_list[signature] || mst_count(signature))
 		mst_names[signature] = name //nome pode ter mudado desde o ultimo login
-		mst_tab_on()
+	mst_tab_sync() //sempre: tambem TIRA a aba de quem perdeu o vinculo enquanto estava fora
 
-mob/proc/mst_tab_on()
+//A aba troca de NOME conforme o papel: "Alunos" para quem guia, "Mestre" para quem
+//so e guiado. Como o motor nao tem unregister_html_tab (e html_skill_tabs persiste no
+//save), a troca e feita na mao aqui -- inclusive tirando a aba morta e desgrudando o
+//statsUItab dela, senao o painel abriria numa aba que nao existe mais.
+//Quem e mestre E aluno ao mesmo tempo fica com "Alunos": esse painel ja mostra as duas
+//secoes, entao nada se perde.
+mob/proc/mst_tab_sync()
 	if(!client) return
-	register_html_tab("Alunos")
+	if(!islist(html_skill_tabs)) html_skill_tabs = list()
+	var/quero = null
+	if(signature)
+		if(mst_count(signature)) quero = "Alunos"
+		else if(mst_list[signature]) quero = "Mestre"
+	for(var/t in list("Alunos","Mestre"))
+		if(t == quero) continue
+		if(t in html_skill_tabs)
+			html_skill_tabs -= t
+			if(statsUItab == t) statsUItab = quero ? quero : "Stats"
+	if(quero) html_skill_tabs |= quero
 
 mob/proc/mst_ui_refresh()
 	if(!client) return
+	mst_tab_sync() //o papel pode ter mudado (virou aluno, deixou de ser mestre): a aba troca de nome
 	last_stats_html = "" //o painel so redesenha quando a STRING muda
 	RefreshStatsUI()
 
@@ -260,7 +279,7 @@ mob/proc/mst_form_known(tag)
 mob/proc/mst_form_stance(tag)
 	switch(tag)
 		if("ssj","heran1")   return (ssj == 0)
-		if("ssj2","heran2")  return (ssj == 1)
+		if("ssj2","heran2")  return (ssj == 1 || ssj == 1.5) //um grade do SSJ1 tambem e "degrau anterior" do SSJ2
 		if("ssj3")           return (ssj == 2)
 		if("lssj1")          return (lssj == 0)
 		if("frost6","frost7") return 1 //o proprio Frost_Demon_Forms cuida do degrau
@@ -546,27 +565,49 @@ mob/proc/mst_awaken_fail(mob/T2, raiva, semki)
 // ---------------------------------------------------------------------------
 // ABA "Alunos"
 // ---------------------------------------------------------------------------
-mob/proc/ui_tab_alunos()
+//LEITURA DE PODER: sem SCOUTER (de nenhum dos dois lados) ninguem ve numero de BP --
+//so a DIFERENCA relativa, que e o que o olho treinado percebe. Mesma regra do painel
+//de Stats, onde o proprio BP aparece como "???" sem scouter.
+mob/proc/mst_gap_txt(mob/M)
+	if(!M) return "poder desconhecido"
+	var/txt
+	var/r = max(M.BP, 1) / max(BP, 1)
+	if(r >= 1) txt = "cerca de [round(r,0.1)]x o seu poder"
+	else       txt = "cerca de [round(1/max(r,0.0001),0.1)]x mais fraco que voce"
+	if(scouteron || M.scouteron) txt += " ([FullNum(round(M.BP))] de poder base)"
+	return txt
+
+//bloco "MEU MESTRE" (reusado pelas duas abas)
+mob/proc/mst_ui_bloco_mestre()
 	var/list/h = list()
 	h += ui_sec("MEU MESTRE")
 	var/msig = signature ? mst_list[signature] : null
-	if(msig)
-		var/mob/M = mst_mob_of(msig)
-		var/estado = M ? "presente" : "ausente"
-		var/razao = M ? "[round(max(M.BP,1)/max(BP,1),0.1)]x seu poder" : "-"
-		h += "<div class='row'><span class='k'>[html_encode(mst_name_of(msig))]<br><span class='mut'>[estado] &middot; [razao]</span></span>"
-		h += "<span class='v'><a class='ibtn' href='byond://?src=\ref[src];mstleave=1'>Abandonar</a></span></div>"
-		h += "<div class='row'><span class='mut'>Trocar golpes com seu mestre rende ate [MST_GAIN_CAP]x de poder por golpe seu (a partir de [MST_GAIN_FLOOR]x de diferenca de poder base, subindo com a distancia entre voces).</span></div>"
-	else
+	if(!msig)
 		h += "<div class='row'><span class='mut'>Voce nao tem mestre. Fique de frente para alguem [MST_BP_RATIO]x mais forte e peca para ele te convidar.</span></div>"
+		return jointext(h, "")
+	var/mob/M = mst_mob_of(msig)
+	var/sub = M ? "presente &middot; [mst_gap_txt(M)]" : "ausente"
+	h += "<div class='row'><span class='k'>[html_encode(mst_name_of(msig))]<br><span class='mut'>[sub]</span></span>"
+	h += "<span class='v'><a class='ibtn' href='byond://?src=\ref[src];mstleave=1'>Abandonar</a></span></div>"
+	h += "<div class='row'><span class='mut'>Trocar golpes com seu mestre rende ate [MST_GAIN_CAP]x de poder por golpe seu (a partir de [MST_GAIN_FLOOR]x de diferenca de poder, subindo com a distancia entre voces).</span></div>"
+	return jointext(h, "")
+
+//aba de quem GUIA (mostra tambem o proprio mestre, se tiver: nada se perde)
+mob/proc/ui_tab_alunos()
+	var/list/h = list()
+	h += mst_ui_bloco_mestre()
 	h += ui_sec("MEUS ALUNOS")
 	var/achou = 0
 	for(var/asig in mst_list)
 		if(mst_list[asig] != signature) continue
 		achou++
 		var/mob/A = mst_mob_of(asig)
-		var/sub = A ? "presente &middot; [FullNum(round(A.BP))] de poder base" : "ausente"
+		var/sub = A ? "presente &middot; [mst_gap_txt(A)]" : "ausente"
 		h += "<div class='row'><span class='k'>[html_encode(mst_name_of(asig))]<br><span class='mut'>[sub]</span></span>"
 		h += "<span class='v'><a class='ibtn' href='byond://?src=\ref[src];mstdrop=[asig]'>Dispensar</a></span></div>"
 	if(!achou) h += "<div class='row'><span class='mut'>Voce ainda nao tem alunos. Use <b>Convidar Aluno</b> na aba Learning, de frente para o jogador.</span></div>"
 	return jointext(h, "")
+
+//aba de quem e SO aluno
+mob/proc/ui_tab_mestre()
+	return mst_ui_bloco_mestre()

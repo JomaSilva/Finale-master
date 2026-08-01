@@ -147,7 +147,9 @@ mob/proc/Leech(var/mob/M)
 			if(M.godki && godki && M.godki.awakened && M.godki.mastery >= godki.mastery)
 				train_godki(1 + round(M.godki.mastery / GODKI_BLUE_PCT)) //aprende observando um deus igual ou mais maduro (paridade com o antigo 1+tier)
 
-mob/proc/Damage(var/mob/M,var/dmg,type)
+//blocklimb (BlockLimbs.dm): quando o golpe foi APARADO, o dano vai TODO pro braco/perna
+//que aparou -- a zona mirada deixa de valer (bloqueio com o braco nao acerta a cabeca).
+mob/proc/Damage(var/mob/M,var/dmg,type,datum/Body/blocklimb)
 	var/punchrandomsnd
 	var/ntp = min(3,type + min(1,combo_count))
 	switch(ntp)
@@ -161,13 +163,16 @@ mob/proc/Damage(var/mob/M,var/dmg,type)
 	o_emit_Sound('meleeflash.wav')
 	emit_Sound_to(punchrandomsnd,M)
 	emit_Sound_to(punchrandomsnd,usr)
-	damage_mob(M,dmg)
+	damage_mob(M,dmg,blocklimb)
 
-mob/proc/damage_mob(mob/M,dmg)
+mob/proc/damage_mob(mob/M,dmg,datum/Body/blocklimb)
 	dmg = ArmorCalc(dmg, M.Esuperkiarmor, TRUE)
 	if(M.Esuperkiarmor) M.damage_armor(dmg)
 	dmg = ue_aura_mitigate(M, dmg) //ULTRA EGO: Aura of Destruction reduz o dano e memoriza o golpe (UltraEgo.dm)
 	ue_melee_recoil(M, src, dmg) //...e faz o atacante MELEE sofrer o recuo
+	if(blocklimb && !blocklimb.lopped) //golpe APARADO: entra todo no membro que aparou, sem passar pelo sorteio de zona
+		blocklimb.DamageMe(dmg, src.murderToggle ? 0 : 1, src.penetration) //mesmo mapeamento do DamageLimb: murderToggle 0 = nao-letal
+		return
 	M.DamageLimb(dmg,src.selectzone,src.murderToggle,src.penetration)
 
 proc/damage_m(mob/M,dmg,selectzone,murderToggle,penetration,armorscaler = TRUE)

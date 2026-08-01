@@ -210,8 +210,8 @@ mob/proc/kingkai_interact()
 		learnSkill(new/datum/skill/kaioken, 1)
 		to_chat(src, "<font color=#ff6666><b>King Kai</b> adjusts his glasses: \"A pure heart AND real power... very well! I shall teach you my ultimate technique: the <b>KAIO-KEN</b>! Use it wisely - your own body pays the price!\"</font>")
 		return
-	if(karma >= KAI_GENKI_KARMA && !HasSkill(/datum/skill/ki/Genkidama))
-		learnSkill(new/datum/skill/ki/Genkidama, 0)
+	if(karma >= KAI_GENKI_KARMA && !HasSkill(/datum/skill/rank/SpiritBomb))
+		learnSkill(new/datum/skill/rank/SpiritBomb, 0)
 		to_chat(src, "<font color=#66ccff><b>King Kai</b> smiles solemnly: \"Your heart shines without a single shadow... You are worthy of the <b>GENKIDAMA</b> - the Spirit Bomb! Raise your hands and borrow the energy of every living thing!\"</font>")
 		return
 	if(!dead)
@@ -221,7 +221,7 @@ mob/proc/kingkai_interact()
 	//dica dos requisitos pros que ainda nao qualificam
 	if(!HasSkill(/datum/skill/kaioken))
 		to_chat(src, "<font color=#76ff7a><b>King Kai</b>: \"Keep that heart of yours CLEAN (karma [karma]/[KAI_KAIOKEN_KARMA]) and grow strong (BP [FullNum(round(BP))]/[FullNum(KAI_KAIOKEN_BP)]), and maybe I'll teach you a little something...\"</font>")
-	else if(!HasSkill(/datum/skill/ki/Genkidama))
+	else if(!HasSkill(/datum/skill/rank/SpiritBomb))
 		to_chat(src, "<font color=#76ff7a><b>King Kai</b>: \"A FLAWLESS heart (karma [karma]/[KAI_GENKI_KARMA]) may yet learn my greatest secret...\"</font>")
 
 //----- checagem periodica (chamada no loop de Stats; src = player conectado) -----

@@ -54,8 +54,6 @@ mob/var
 				_S.logout() //para o loop "spawn while(savant)" da skill (savant=null) antes de descartar -- evita loop orfao pinando o mob
 				savant.learned_skills -= _S
 				del(_S)
-			if(savant.hasussj && !savant.HasSkill(/datum/skill/forms/ussj)) //legado: quem ganhou USSJ pelo auto-unlock antigo (sem a skill) vira dono da skill -> o verbo Toggle_USSJ volta a ser restaurado todo login
-				savant.learnSkill(new/datum/skill/forms/ussj, 0)
 		savant.recompute_saiyan_form_mults()
 		if(prob(5) && savant.ssj && !savant.transing && !savant.isBuffed(/obj/buff/SuperSaiyan) && !savant.isBuffed(/obj/buff/Werewolf))
 			savant.ssj = 0
@@ -118,31 +116,34 @@ mob/var
 						if((savant.ssjat*2.2)<=savant.BP || prob(savant.SSJInspired))
 							savant.SSj()
 							savant.hasssj=1
-			if(!savant.FutureLineage&&!savant.hasssj2&&savant.ssj&&savant.BP>=((savant.ssj2at/savant.ssjmult)*0.3))
+			//GATES: usam ssj1_gate_mult() (o MAIOR entre o SSJ1 e o grade desbloqueado) e nao o ssjmult cru.
+			//Com o SSJ1 preso em 2x ate 99%, o ssjmult sozinho DOBRARIA o custo destas portas para quem ja
+			//tinha 66%+ de maestria -- o rework trancaria portas que ja estavam abertas.
+			if(!savant.FutureLineage&&!savant.hasssj2&&savant.ssj&&savant.BP>=((savant.ssj2at/savant.ssj1_gate_mult())*0.3))
 				if(savant.ssj2at<=savant.expressedBP)
 					switch(savant.Emotion)
 						if("Very Angry")
 							savant.hasssj2=1
 							savant.SSj2()
 						if("Angry")
-							if((savant.ssj2at*1.2/savant.ssjmult)<=savant.BP || prob((savant.SSJInspired - 25) * 1.25))
+							if((savant.ssj2at*1.2/savant.ssj1_gate_mult())<=savant.BP || prob((savant.SSJInspired - 25) * 1.25))
 								savant.hasssj2=1
 								savant.SSj2()
 						if("Annoyed")
-							if((savant.ssj2at*2.2/savant.ssjmult)<=savant.BP || prob((savant.SSJInspired - 25) * 1.25))
+							if((savant.ssj2at*2.2/savant.ssj1_gate_mult())<=savant.BP || prob((savant.SSJInspired - 25) * 1.25))
 								savant.hasssj2=1
 								savant.SSj2()
-				else if((savant.ssj2at/1.3)<=savant.expressedBP&&savant.BP>=((savant.ssj2at/savant.ssjmult)*0.7))
+				else if((savant.ssj2at/1.3)<=savant.expressedBP&&savant.BP>=((savant.ssj2at/savant.ssj1_gate_mult())*0.7))
 					switch(savant.Emotion)
 						if("Very Angry")
 							savant.hasssj2=1
 							savant.SSj2()
 						if("Angry")
-							if(((savant.ssj2at/1.3)*1.1/savant.ssjmult)<=savant.BP || prob((savant.SSJInspired - 25) * 1.25))
+							if(((savant.ssj2at/1.3)*1.1/savant.ssj1_gate_mult())<=savant.BP || prob((savant.SSJInspired - 25) * 1.25))
 								savant.hasssj2=1
 								savant.SSj2()
 						if("Annoyed")
-							if(((savant.ssj2at/1.3)*2.2/savant.ssjmult)<=savant.BP || prob((savant.SSJInspired - 25) * 1.25))
+							if(((savant.ssj2at/1.3)*2.2/savant.ssj1_gate_mult())<=savant.BP || prob((savant.SSJInspired - 25) * 1.25))
 								savant.hasssj2=1
 								savant.SSj2()
 			if(!savant.FutureLineage && !savant.ssj3able && savant.hasssj2 && savant.ssj && savant.expressedBP>=savant.ssj3at) //SSJ3 por raiva + BP (NAO exige masterizar o SSJ2)
@@ -176,7 +177,7 @@ mob/var
 	maxtier =6
 	tier=2
 	enabled=0
-	constituentskills = list(new/datum/skill/forms/ssj/DirectSSJ,new/datum/skill/forms/ussj,new/datum/skill/forms/ssj4fplb)
+	constituentskills = list(new/datum/skill/forms/ssj/DirectSSJ,new/datum/skill/forms/ssj4fplb)//a ussj saiu: os GRADES vem da maestria, sem Marco
 	can_refund = FALSE
 	allowedtier=6
 
@@ -188,8 +189,7 @@ mob/var/ismssj
 			enableskill(/datum/skill/forms/ssj4fplb)
 		if(savant.ismssj) //maestria completa (natural) libera a Transformacao Direta para compra
 			enableskill(/datum/skill/forms/ssj/DirectSSJ)
-		if(savant.ssj1mastery >= 50) //USSJ vira COMPRAVEL ao atingir 50% de maestria no SSJ1
-			enableskill(/datum/skill/forms/ussj)
+		disableskill(/datum/skill/forms/ussj) //LEGADO: o USSJ virou os GRADES do SSJ1 (liberados pela maestria, sem compra)
 
 /datum/skill/forms/ssj
 	skilltype = "Super Saiyan Form"
@@ -248,10 +248,12 @@ mob/keyable
 					switch(SSJchoice)
 						if(1) if(usr.hasssj&&usr.expressedBP>=usr.ssjat)
 							ssj = 1
-						if(1.5) if((usr.expressedBP*usr.ssjmult)>=usr.ultrassjat)
+						if(1.5) if((usr.expressedBP*usr.ssj1_gate_mult())>=usr.ultrassjat)
 							ssj = 1.5
+							usr.ssj_grade_active = usr.ssj_grade_sel ? usr.ssj_grade_sel : max(usr.ssj_grade_unlocked(), 2) //senao entra em 1.5 sem grade
+							usr.recompute_saiyan_form_mults()
 						if(2)
-							if((usr.expressedBP*usr.ssjmult)>=usr.ssj2at&&!usr.ultrassjenabled)
+							if((usr.expressedBP*usr.ssj1_gate_mult())>=usr.ssj2at&&!usr.ultrassjenabled)
 								if(usr.hasssj2)
 									usr.ssj = 2
 						if(3)
@@ -268,12 +270,12 @@ mob/keyable
 						if(usr.hasssj&&usr.expressedBP>=usr.ssjat)
 							usr.SSj()
 					if(1.5)
-						if((usr.expressedBP*usr.ssjmult)>=usr.ultrassjat)
+						if((usr.expressedBP*usr.ssj1_gate_mult())>=usr.ultrassjat)
 							if(usr.hasussj&&usr.ultrassjenabled)
 								usr.startbuff(/obj/buff/SuperSaiyan,'SSJIcon.dmi')
 								usr.Ultra_SSj()
 					if(2)
-						if((usr.expressedBP*usr.ssjmult)>=usr.ssj2at&&!usr.ultrassjenabled)
+						if((usr.expressedBP*usr.ssj1_gate_mult())>=usr.ssj2at&&!usr.ultrassjenabled)
 							if(usr.hasssj2)
 								usr.startbuff(/obj/buff/SuperSaiyan,'SSJIcon.dmi')
 								usr.SSj2()
@@ -307,21 +309,30 @@ mob/keyable
 							usr.goingssj4=1
 							if(usr.hasssj4&&!usr.Apeshit&&BP>=rawssj4at) usr.SSj4()
 							spawn(10) usr.goingssj4=0
+		//SELETOR DE GRADE do SSJ1 (o antigo Toggle USSJ). O TYPEPATH e mantido de proposito:
+		//os /obj/hotkey salvos guardam o caminho do verb, e renomear deixaria orfao no save de
+		//quem bindou uma tecla. So o rotulo muda.
 		Toggle_USSJ()
 			set category = "Other"
-			var/isenabledussj
-			if(usr.ultrassjenabled)
-				isenabledussj="is disabled"
-				usr.ultrassjenabled=0
-			else if(usr.BP>=usr.ssj2at*0.5/usr.ssjmult)
-				isenabledussj="is enabled"
-				usr.ultrassjenabled=1
-			else
-				to_chat(usr, "You do not meet the requirements for USSJ, you need [usr.ssj2at*0.5/usr.ssjmult] BP")
-				isenabledussj="is disabled"
-				usr.ultrassjenabled=0
-			to_chat(usr, "USSJ [isenabledussj]")
-mob/var/activatedUSSJ
+			set name = "Toggle SSJ Grades"
+			var/max_g = usr.ssj_grade_unlocked()
+			if(!max_g)
+				to_chat(usr, "<font color=yellow>Voce ainda nao domina o Super Saiyajin o bastante. O Grade 2 abre com [SSJ_GRADE2_PCT]% de maestria no SSJ1 (voce tem [round(usr.ssj1mastery,0.1)]%).")
+				return
+			//SEM muro de BP aqui: o pedagio dos grades e a MAESTRIA. O antigo ssj2at*0.5/mult dava
+			//exatamente ssj2at/6 -- o mesmo BP que o SSJ2 ja exige -- e o degrau intermediario nunca
+			//existiria. A porta de BP que sobra e a do proprio dispatcher (BP >= ultrassjat/6).
+			var/list/opts = list("Nenhum")
+			opts += "Grade 2 (x[usr.ssj_grade_mult(2)])"
+			if(max_g >= 3) opts += "Grade 3 (x[usr.ssj_grade_mult(3)])"
+			var/pick = input(usr, "Qual grade usar ao transformar a partir do Super Saiyajin?", "SSJ Grades") as null|anything in opts
+			if(!pick) return
+			if(findtext(pick, "Grade 3")) usr.ssj_grade_sel = 3
+			else if(findtext(pick, "Grade 2")) usr.ssj_grade_sel = 2
+			else usr.ssj_grade_sel = 0
+			usr.ultrassjenabled = (usr.ssj_grade_sel != 0) //os gates antigos (SSJ2, DirectSSJ) leem esta flag
+			usr.recompute_saiyan_form_mults() //acerta o dreno do grade escolhido
+			to_chat(usr, "<font color=yellow>Grade selecionado: <b>[usr.ssj_grade_sel ? "Grade [usr.ssj_grade_sel] (x[usr.ssj_grade_mult(usr.ssj_grade_sel)])" : "nenhum"]</b>.[usr.ssj_grade_sel ? " Transforme de novo a partir do Super Saiyajin." : " Voce volta a poder ascender direto para o SSJ2."]")
 
 /datum/skill/forms/ussj
 	skilltype = "Super Saiyan Form"
@@ -336,23 +347,11 @@ mob/var/activatedUSSJ
 	enabled=0
 	expbarrier=15000
 
+//APOSENTADA (2026-08-01): o USSJ virou os GRADES do SSJ1, liberados pela maestria e sem compra.
+//O typepath fica DECLARADO porque savefiles antigos guardam o datum serializado -- o
+//ssj_grade_login_check() e quem devolve os Marcos e descarta a instancia.
 /datum/skill/forms/ussj/effector()
-	..()
-	switch(level)
-		if(0)
-			if(savant.ssj==1.5)
-				exp+=1
-			if(exp>=2500&&exp<=5000)
-				savant.ultrassjdrain = 0.043
-			else if(exp<=10000)
-				savant.ultrassjdrain = 0.038
-			else
-				savant.ultrassjdrain = 0.033
-		if(1)
-			if(levelup)
-				to_chat(usr, "You just mastered USSJ!")
-				levelup = 0
-				savant.ultrassjdrain = 0.027 //USSJ sempre drena: forma insustentavel (boost temporario), NUNCA fica 0
+	return
 
 /datum/skill/forms/mssj
 	skilltype = "Super Saiyan Form"
@@ -366,23 +365,6 @@ mob/var/activatedUSSJ
 	tier = 3
 	enabled=0
 
-/datum/skill/forms/ussj/after_learn()
-	to_chat(savant, "You feel like you are able to go somewhat beyond the regular Super Saiyan.")
-	savant.ultrassjenabled=1
-	to_chat(savant, "USSJ is enabled")
-	savant.hasussj=1
-	assignverb(/mob/keyable/verb/Toggle_USSJ)
-	to_chat(savant, "In order to access Ultra Super Saiyan, power up past 750 million as a Super Saiyan, and have more than [savant.ssj2at*0.5/savant.ssjmult] BP.")
-
-/datum/skill/forms/ussj/before_forget()
-	to_chat(savant, "Super Saiyan seems fine enough, no need for Ultra Super Saiyan anymore, right?")
-	savant.ultrassjenabled=0
-	savant.hasussj=0
-	unassignverb(/mob/keyable/verb/Toggle_USSJ)
-
-/datum/skill/forms/ussj/login(var/mob/logger)
-	..()
-	assignverb(/mob/keyable/verb/Toggle_USSJ)
 
 /datum/skill/forms/mssj/after_learn()
 	to_chat(savant, "You've mastered Super Saiyan completely!")

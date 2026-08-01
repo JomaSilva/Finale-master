@@ -53,16 +53,18 @@ mob/proc/Transformations_Activate()
 						if(usr.godki && usr.godki.usage)
 							if(trans_min_val < 2) return
 						usr.SSj2()
-				//ULTRA SUPER Saiyan
+				//GRADES DO SSJ1 (Grade 2 / Grade 3 -- o antigo Ultra Super Saiyan)
 				if(usr.ssj==1&&usr.BP>=usr.ultrassjat/6)
-					if(usr.hasussj&&usr.ultrassjenabled)
+					if(usr.ssj_grade_unlocked() && usr.ssj_grade_sel)
 						if(usr.godki && usr.godki.usage)
-							//SUPER SAIYAN ROYALE (USSJ em God Ki): maestria 50%+ E sangue de elite (Elite/Kaio)
+							//SUPER SAIYAN ROYALE (Grade 2 em God Ki): maestria 50%+ E sangue de elite (Elite/Kaio).
+							//O caminho divino NAO tem Grade 3 -- o Royale e a unica forma acima do Blue.
 							if(usr.godki.mastery < GODKI_ROYALE_PCT) return
 							if(!(usr.Class == "Elite" || usr.Class == "Kaio"))
 								to_chat(usr, "<font color=#66aaff>O Super Saiyan Royale e um privilegio do sangue de elite -- seu caminho aos 50% e o Kaioken por cima do Blue.")
 								return
-						usr.Ultra_SSj()
+							usr.Ultra_SSj(2)
+						else usr.Ultra_SSj(usr.ssj_grade_sel)
 				//SUPER Saiyan 1
 				if(usr.ssj==0&&usr.BP>=usr.ssjat)
 					if(usr.hasssj&&usr.BP>=usr.ssjat)

@@ -96,7 +96,8 @@ mob/proc/checkReibi()
 mob/proc/TransferSSJStats(var/mob/M)
 	hasssj = M.hasssj
 	ssjat = M.ssjat
-	hasultrassj = M.hasultrassj
+	ssj1mastery = M.ssj1mastery //os GRADES do SSJ1 derivam da maestria (a var hasultrassj era morta e foi deletada)
+	if(!canSSJ) ssj_grade_sel = M.ssj_grade_sel //receptor canSSJ nao tem grades: copiar o seletor o trancaria fora do SSJ2
 	ultrassjat = M.ultrassjat
 	ultrassjenabled = M.ultrassjenabled
 	ssjat = M.ssjat

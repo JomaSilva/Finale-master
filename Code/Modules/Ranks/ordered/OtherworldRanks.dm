@@ -11,11 +11,44 @@ datum/skill/tree/Rank/Otherworld
 	new/datum/skill/rank/SpiritBomb,new/datum/skill/ki/Heal,new/datum/skill/rank/KaiPermission,new/datum/skill/style/DemonStyle,new/datum/skill/Telepathy,\
 	new/datum/skill/rank/Kaioshin_Apprenticeship)//kai/demon/mystical rank skills
 
+//O fund() (trees.dm) nao checa duplicata: o Kaio do Norte que JA aprendeu a Spirit Bomb (ou o
+//Kaio-ken) com o Sr. Kaioh pagaria Marco por uma copia da mesma tecnica. Esta arvore e a unica
+//com skill de DUPLA ORIGEM (NPC + cargo), entao a guarda mora aqui.
+datum/skill/tree/Rank/Otherworld/attemptlearn(var/datum/skill/S)
+	if(S && savant && savant.HasSkill(S.type))
+		to_chat(savant, "Voce ja conhece [S.name].")
+		return
+	..()
+
+//O treeshrink BASE refunda QUALQUER skill aprendida que combine com um constituinte
+//desabilitado -- mesmo a que veio de FORA da arvore. Como o Sr. Kaioh ensina Kaio-ken e
+//Spirit Bomb de graca (SkyNPCs.dm) e as duas ficam desabilitadas pra quem nao e Kaio do
+//Norte, um Grand Kai/Kaioshin perdia a tecnica que o NPC deu. Aqui so cai o que foi
+//comprado NESTA arvore.
+datum/skill/tree/Rank/Otherworld/treeshrink()
+	testskillprereqs()
+	savant.testunlocks()
+	for(var/datum/skill/S in savant.learned_skills)
+		if(!(locate(S.type) in investedskills)) continue //nao saiu daqui: nao e nosso pra tirar
+		if(!S.can_forget) continue
+		if(S.tier > allowedtier)
+			to_chat(savant, "You don't have enough skill in [src.name] to maintain [S.name]!")
+			refund(S)
+			continue
+		for(var/datum/skill/nS in constituentskills)
+			if(nS.type != S.type) continue
+			if(nS.enabled == 0 || nS.override == 1)
+				to_chat(savant, "Voce perdeu os pre-requisitos de [S.name] e a esqueceu junto.")
+				refund(S)
+			break
+
 datum/skill/tree/Rank/Otherworld/growbranches()
 	savant.LastRank=savant.Rank
+	disableskill(/datum/skill/ki/Genkidama) //APOSENTADA: so existe em arvore SALVA (a definicao nova nem lista) -- esconde pra ninguem comprar defunto
 	if(savant.Rank!="West Kai") disableskill(/datum/skill/rank/BusterBarrage)
 	if(savant.Rank!="East Kai") disableskill(/datum/skill/general/selfdestruct)
 	if(savant.Rank!="North Kai") disableskill(/datum/skill/kaioken)
+	if(savant.Rank!="North Kai") disableskill(/datum/skill/rank/SpiritBomb) //mesma tecnica que o Sr. Kaioh ensina (SpiritBomb.dm)
 	if(savant.Rank!="Supreme Kai") disableskill(/datum/skill/rank/Kaioshin_Apprenticeship) //ex-Kaioshin nao toma mais discipulos
 	switch(savant.Rank)
 		if("Demon Lord")//like the grand kai
